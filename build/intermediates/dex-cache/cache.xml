@@ -16,6 +16,13 @@
         <dex dex="/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.2-d9373f48d96097f5dd3bc094dac3d816ec2c493e.jar" />
     </item>
     <item
+        jar="/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/exploded-aar/com.pkmmte.view/circularimageview/1.1/classes.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="c341a7ad32bc2eef9dcfab239262b77ac60788cc">
+        <dex dex="/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/classes-9d775e3cc0c7317936a1891cc875e9c41b4914ba.jar" />
+    </item>
+    <item
         jar="/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.2/classes.jar"
         jumboMode="false"
         revision="21.1.1"
