@@ -1,6 +1,6 @@
     package edu.mit.media.obm.shair.liveobjects;
 
-    import android.content.BroadcastReceiver;
+   import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -61,7 +61,7 @@ import java.util.List;
 
             mLiveObjectsListView = (ListView) rootView.findViewById(R.id.live_objects_list_view);
             mLiveObjectsList = new ArrayList<>();
-            mAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, mLiveObjectsList);
+            mAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_live_objects, R.id.list_item_title_textview, mLiveObjectsList);
             mLiveObjectsListView.setAdapter(mAdapter);
 
             mSwipeLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
