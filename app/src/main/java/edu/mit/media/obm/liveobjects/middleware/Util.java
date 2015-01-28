@@ -1,4 +1,4 @@
-package edu.mit.media.obm.shair.liveobjects;
+package edu.mit.media.obm.liveobjects.middleware;
 
 /**
  * Created by Valerio Panzica La Manna on 08/12/14.
