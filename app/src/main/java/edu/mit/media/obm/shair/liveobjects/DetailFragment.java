@@ -16,6 +16,9 @@ import android.widget.TextView;
 
 import com.pkmmte.view.CircularImageView;
 
+import edu.mit.media.obm.liveobjects.middleware.LiveObject;
+import edu.mit.media.obm.liveobjects.middleware.LiveObjectsManager;
+
 
 /**
  * Created by Valerio Panzica La Manna on 09/01/15.
@@ -39,32 +42,22 @@ public class DetailFragment extends Fragment {
     private TextView mObjectTitleTextView;
 
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-
 
         mIconView = (CircularImageView) rootView.findViewById(R.id.object_image_view);
         mLoadingPanel = rootView.findViewById(R.id.loadingPanel);
         mObjectTitleTextView = (TextView) rootView.findViewById(R.id.object_title_textview);
 
-
-
-
-
-
-
-
         setLiveObjectImage();
         setLiveObjectDescription();
-
-
 
         mIconView.setOnClickListener(
                 new View.OnClickListener() {
                       @Override
                       public void onClick(View v) {
-
                           // launch the video associated to the object
                           Intent viewIntent = new Intent(getActivity(), VideoViewActivity.class);
                           getActivity().startActivity(viewIntent);
@@ -94,9 +87,6 @@ public class DetailFragment extends Fragment {
             protected void onPostExecute(Bitmap bitmap) {
                 if (bitmap != null ) {
                     this.imageView.setImageBitmap(bitmap);
-
-
-
                 }
 
                 mLoadingPanel.setVisibility(View.GONE);
@@ -110,9 +100,10 @@ public class DetailFragment extends Fragment {
 
     private void setLiveObjectDescription() {
         Bundle bundle = getArguments();
-        if (bundle != null && bundle.containsKey(LIVE_OBJECT_NAME)){
-
-            mObjectTitleTextView.setText(bundle.getString(LIVE_OBJECT_NAME));
+        if (bundle != null && bundle.containsKey(LiveObjectsManager.EXTRA_LIVE_OBJECT)){
+            LiveObject liveObject = (LiveObject) bundle.getParcelable(LiveObjectsManager.EXTRA_LIVE_OBJECT);
+            String liveObjectName = liveObject.getName();
+            mObjectTitleTextView.setText(liveObjectName);
         }
 
     }

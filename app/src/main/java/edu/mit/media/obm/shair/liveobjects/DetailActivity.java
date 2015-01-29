@@ -1,21 +1,17 @@
 package edu.mit.media.obm.shair.liveobjects;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-
+import edu.mit.media.obm.liveobjects.middleware.LiveObject;
+import edu.mit.media.obm.liveobjects.middleware.LiveObjectsManager;
 
 
 public class DetailActivity extends ActionBarActivity {
-
-
-
-
-
+    private static final String LOG_TAG = DetailActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,9 +19,9 @@ public class DetailActivity extends ActionBarActivity {
         setContentView(R.layout.activity_detail);
         if (savedInstanceState == null) {
             DetailFragment detailFragment = new DetailFragment();
+            LiveObject liveObject = getIntent().getParcelableExtra(LiveObjectsManager.EXTRA_LIVE_OBJECT);
             Bundle bundle = new Bundle();
-            String liveObjectName = getIntent().getStringExtra(Intent.EXTRA_TEXT);
-            bundle.putString(DetailFragment.LIVE_OBJECT_NAME, liveObjectName);
+            bundle.putParcelable(LiveObjectsManager.EXTRA_LIVE_OBJECT, liveObject);
             detailFragment.setArguments(bundle);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, detailFragment)

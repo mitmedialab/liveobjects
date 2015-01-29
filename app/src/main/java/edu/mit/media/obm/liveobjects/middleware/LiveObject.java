@@ -47,7 +47,7 @@ public class LiveObject implements Parcelable{
     public static final Creator<LiveObject> CREATOR = new Creator<LiveObject>() {
         @Override
         public LiveObject createFromParcel(Parcel source) {
-            return null;
+            return new LiveObject(source);
         }
 
         @Override
