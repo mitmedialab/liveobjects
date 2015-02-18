@@ -16,9 +16,6 @@ import android.widget.TextView;
 
 import com.pkmmte.view.CircularImageView;
 
-import edu.mit.media.obm.liveobjects.middleware.LiveObject;
-import edu.mit.media.obm.liveobjects.middleware.LiveObjectsManager;
-
 
 /**
  * Created by Valerio Panzica La Manna on 09/01/15.
@@ -99,12 +96,13 @@ public class DetailFragment extends Fragment {
     }
 
     private void setLiveObjectDescription() {
-        Bundle bundle = getArguments();
-        if (bundle != null && bundle.containsKey(LiveObjectsManager.EXTRA_LIVE_OBJECT)){
-            LiveObject liveObject = (LiveObject) bundle.getParcelable(LiveObjectsManager.EXTRA_LIVE_OBJECT);
-            String liveObjectName = liveObject.getName();
-            mObjectTitleTextView.setText(liveObjectName);
-        }
+        //TODO
+//        Bundle bundle = getArguments();
+//        if (bundle != null && bundle.containsKey(LiveObjectsManager.EXTRA_LIVE_OBJECT)){
+//            LiveObject liveObject = (LiveObject) bundle.getParcelable(LiveObjectsManager.EXTRA_LIVE_OBJECT);
+//            String liveObjectName = liveObject.getName();
+//            mObjectTitleTextView.setText(liveObjectName);
+//        }
 
     }
 

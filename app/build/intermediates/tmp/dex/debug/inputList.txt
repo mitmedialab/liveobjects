@@ -1,6 +1,8 @@
 /Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/classes/debug
-/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.2-d45cafb30a2d1824bda2f85d55e9eae7de066cb2.jar
+/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-987e68297d25923fd33df635807ea59b6ed45990.jar
+/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/classes-f1ba211e4a6b801b1e32db5bfc0ef4e4bb9be778.jar
 /Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/classes-9d775e3cc0c7317936a1891cc875e9c41b4914ba.jar
-/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.2-d9373f48d96097f5dd3bc094dac3d816ec2c493e.jar
-/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/classes-ab7230cb48b0d69f6e26e3d668ad9b91dc76b190.jar
-/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/classes-8d9940140b2b7a639f756cd78cc5c32704f2a36c.jar
+/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/classes-a00e6a94c5c6dd065167f42cbe4d04af09d6e583.jar
+/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.3-d0d6d3f13ad195be2cef6172aa0fc66f219d0f27.jar
+/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/classes-1d87fc1b39e23d430d276ffdb21a0e3246c6185e.jar
+/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/classes-4634f2fd6b4b9407f74687da4209caee66489900.jar

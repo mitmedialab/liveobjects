@@ -1,22 +1,27 @@
     package edu.mit.media.obm.shair.liveobjects;
 
     import android.content.Intent;
-    import android.os.Bundle;
-    import android.support.v4.app.Fragment;
-    import android.support.v4.widget.SwipeRefreshLayout;
-    import android.util.Log;
-    import android.view.LayoutInflater;
-    import android.view.View;
-    import android.view.ViewGroup;
-    import android.widget.AdapterView;
-    import android.widget.ArrayAdapter;
-    import android.widget.ListView;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
-    import java.util.ArrayList;
+import java.util.ArrayList;
+import java.util.List;
 
-    import edu.mit.media.obm.liveobjects.middleware.LiveObject;
-    import edu.mit.media.obm.liveobjects.middleware.LiveObjectsList;
-    import edu.mit.media.obm.liveobjects.middleware.LiveObjectsManager;
+import edu.mit.media.obm.liveobjects.driver.wifi.WifiDriver;
+import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
+import edu.mit.media.obm.liveobjects.middleware.control.ConnectionListener;
+import edu.mit.media.obm.liveobjects.middleware.control.DiscoveryListener;
+import edu.mit.media.obm.liveobjects.middleware.control.NetworkBridge;
+import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
+import edu.mit.media.obm.liveobjects.middleware.net.NetworkDriver;
 
     /**
      * Created by Valerio Panzica La Manna on 08/12/14.     *
@@ -30,9 +35,11 @@
         private ArrayAdapter<LiveObject> mAdapter;
         private ArrayList<LiveObject> mLiveObjectNamesList;
 
-        private LiveObjectsManager mLiveObjectsManager;
+        private NetworkController mNetworkController;
 
-        private LiveObject currentlySelectedLiveObject = null;
+        private LiveObject mSelectedLiveObject;
+
+
 
         public MainFragment() {
             super();
@@ -45,7 +52,7 @@
             setupUIElements(rootView);
             setupUIListeners();
 
-            initLiveObjectManager();
+            initMiddleware();
 
             return rootView;
         }
@@ -67,7 +74,7 @@
             mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    mLiveObjectsManager.startDiscovery();
+                    mNetworkController.startDiscovery();
                 }
             });
 
@@ -75,83 +82,74 @@
             mLiveObjectsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    currentlySelectedLiveObject = mLiveObjectNamesList.get(position);
-                    mLiveObjectsManager.connect(currentlySelectedLiveObject);
+                    mSelectedLiveObject = mLiveObjectNamesList.get(position);
+                    mNetworkController.connect(mSelectedLiveObject);
 
                 }
             });
         }
 
-        private void initLiveObjectManager() {
-            mLiveObjectsManager = new LiveObjectsManager();
-            mLiveObjectsManager.initialize(getActivity());
+        private void initMiddleware() {
+            //TODO create a middleware class as a wrapper for all controllers
+
+            NetworkDriver networkDriver = new WifiDriver(getActivity());
+            mNetworkController = new NetworkBridge(networkDriver);
             initDiscoveryListener();
             initConnectionListener();
+
+
         }
 
         private void initDiscoveryListener() {
-            mLiveObjectsManager.setDiscoveryListener(new LiveObjectsManager.DiscoveryListener() {
+            mNetworkController.setDiscoveryListener( new DiscoveryListener() {
                 @Override
                 public void onDiscoveryStarted() {
                     Log.d(LOG_TAG, "discovery started");
                 }
 
                 @Override
-                public void onLiveObjectsAvailable(LiveObjectsList liveObjectsList) {
+                public void onLiveObjectsDiscovered(List<LiveObject> liveObjectList) {
                     Log.d(LOG_TAG, "discovery successfully completed");
                     mLiveObjectNamesList.clear();
-                    for (LiveObject liveObject: liveObjectsList) {
+                    for (LiveObject liveObject: liveObjectList) {
                         mLiveObjectNamesList.add(liveObject);
                     }
                     mAdapter.notifyDataSetChanged();
                     mSwipeLayout.setRefreshing(false);
+
                 }
             });
         }
 
         private void initConnectionListener() {
-            mLiveObjectsManager.setConnectionListener(new LiveObjectsManager.ConnectionListener() {
-                @Override
-                public void onConnectionStarted() {
-                    Log.d(LOG_TAG, "connection started");
-                }
-
+            mNetworkController.setConnectionListener(new ConnectionListener() {
                 @Override
                 public void onConnected(LiveObject connectedLiveObject) {
-
-                    if (isCurrentlySelectedLiveObject(connectedLiveObject)) {
+                    if (connectedLiveObject.equals(mSelectedLiveObject)) {
                         // when the selected live objected is connected
                         // start the corresponding detail activity
                         Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
-                        detailIntent.putExtra(LiveObjectsManager.EXTRA_LIVE_OBJECT, connectedLiveObject);
+                        //TODO
+                        //detailIntent.putExtra(LiveObjectsManager.EXTRA_LIVE_OBJECT, connectedLiveObject);
                         getActivity().startActivity(detailIntent);
+                        mSelectedLiveObject = null;
                     }
-                }
 
-                @Override
-                public void onDisconnected() {
-                    Log.d(LOG_TAG, "disconnected");
                 }
-
             });
         }
 
-        private boolean isCurrentlySelectedLiveObject( LiveObject liveObject) {
-            return currentlySelectedLiveObject != null &&
-                    liveObject.equals(currentlySelectedLiveObject);
-        }
-
         @Override
-        public void onResume() {
-            mLiveObjectsManager.startDiscovery();
-            super.onResume();
-
+        public void onStart() {
+            super.onStart();
+            mNetworkController.start();
+            mNetworkController.startDiscovery();
         }
+
 
         @Override
         public void onStop() {
-
-            //getActivity().unregisterReceiver(mWifiReceiver);
+            mNetworkController.stop();
             super.onStop();
 
         }

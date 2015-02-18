@@ -6,9 +6,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import edu.mit.media.obm.liveobjects.middleware.LiveObject;
-import edu.mit.media.obm.liveobjects.middleware.LiveObjectsManager;
-
 
 public class DetailActivity extends ActionBarActivity {
     private static final String LOG_TAG = DetailActivity.class.getSimpleName();
@@ -19,10 +16,11 @@ public class DetailActivity extends ActionBarActivity {
         setContentView(R.layout.activity_detail);
         if (savedInstanceState == null) {
             DetailFragment detailFragment = new DetailFragment();
-            LiveObject liveObject = getIntent().getParcelableExtra(LiveObjectsManager.EXTRA_LIVE_OBJECT);
-            Bundle bundle = new Bundle();
-            bundle.putParcelable(LiveObjectsManager.EXTRA_LIVE_OBJECT, liveObject);
-            detailFragment.setArguments(bundle);
+            //TODO
+//            LiveObject liveObject = getIntent().getParcelableExtra(LiveObjectsManager.EXTRA_LIVE_OBJECT);
+//            Bundle bundle = new Bundle();
+//            bundle.putParcelable(LiveObjectsManager.EXTRA_LIVE_OBJECT, liveObject);
+//            detailFragment.setArguments(bundle);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, detailFragment)
                     .commit();
