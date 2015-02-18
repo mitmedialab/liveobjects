@@ -1,4 +1,4 @@
-package edu.mit.media.obm.shair.liveobjects;
+package edu.mit.media.obm.liveobjects.app;
 
 
 import android.content.Intent;
@@ -15,6 +15,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.pkmmte.view.CircularImageView;
+
+import edu.mit.media.obm.shair.liveobjects.R;
 
 
 /**

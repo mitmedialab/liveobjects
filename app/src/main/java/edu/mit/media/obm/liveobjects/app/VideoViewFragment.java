@@ -1,4 +1,4 @@
-package edu.mit.media.obm.shair.liveobjects;
+package edu.mit.media.obm.liveobjects.app;
 
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.MediaController;
 import android.widget.VideoView;
+
+import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
  *  Created by Valerio Panzica La Manna on 08/12/14.

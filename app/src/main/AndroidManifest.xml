@@ -12,7 +12,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name="edu.mit.media.obm.liveobjects.app.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,12 +20,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".VideoViewActivity"
+            android:name="edu.mit.media.obm.liveobjects.app.VideoViewActivity"
             android:label="@string/app_name"
             >
         </activity>
         <activity
-            android:name=".DetailActivity"
+            android:name="edu.mit.media.obm.liveobjects.app.DetailActivity"
             android:label="" >
         </activity>
     </application>

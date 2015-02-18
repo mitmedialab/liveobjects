@@ -1,7 +1,9 @@
-package edu.mit.media.obm.shair.liveobjects;
+package edu.mit.media.obm.liveobjects.app;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+
+import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
  * Created by Valerio Panzica La Manna on 08/12/14.

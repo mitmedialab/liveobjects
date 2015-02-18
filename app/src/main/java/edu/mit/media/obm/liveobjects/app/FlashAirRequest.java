@@ -1,4 +1,4 @@
-package edu.mit.media.obm.shair.liveobjects;
+package edu.mit.media.obm.liveobjects.app;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

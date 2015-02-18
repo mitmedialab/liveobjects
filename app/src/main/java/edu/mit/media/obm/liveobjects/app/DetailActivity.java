@@ -1,29 +1,40 @@
-package edu.mit.media.obm.shair.liveobjects;
+package edu.mit.media.obm.liveobjects.app;
+
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import edu.mit.media.obm.shair.liveobjects.R;
 
-public class MainActivity extends ActionBarActivity {
+
+public class DetailActivity extends ActionBarActivity {
+    private static final String LOG_TAG = DetailActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_detail);
         if (savedInstanceState == null) {
+            DetailFragment detailFragment = new DetailFragment();
+            //TODO
+//            LiveObject liveObject = getIntent().getParcelableExtra(LiveObjectsManager.EXTRA_LIVE_OBJECT);
+//            Bundle bundle = new Bundle();
+//            bundle.putParcelable(LiveObjectsManager.EXTRA_LIVE_OBJECT, liveObject);
+//            detailFragment.setArguments(bundle);
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new MainFragment())
+                    .add(R.id.container, detailFragment)
                     .commit();
         }
+
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+//        getMenuInflater().inflate(R.menu.menu_detail, menu);
         return true;
     }
 
