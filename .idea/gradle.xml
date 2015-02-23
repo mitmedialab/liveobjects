@@ -10,8 +10,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/liveobjects_driver_wifi_mod" />
             <option value="$PROJECT_DIR$/liveobjects_middleware_mod" />
+            <option value="$PROJECT_DIR$/liveobjects_network_wifi_mod" />
           </set>
         </option>
       </GradleProjectSettings>

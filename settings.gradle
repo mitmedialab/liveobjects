@@ -1,1 +1,1 @@
-include ':app', ':liveobjects_middleware_mod', ':liveobjects_driver_wifi_mod'
+include ':app', ':liveobjects_middleware_mod', ':liveobjects_network_wifi_mod'

@@ -22,7 +22,7 @@ import edu.mit.media.obm.liveobjects.middleware.control.DiscoveryListener;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkBridge;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkDriver;
-    import edu.mit.media.obm.shair.liveobjects.R;
+import edu.mit.media.obm.shair.liveobjects.R;
 
     /**
      * Created by Valerio Panzica La Manna on 08/12/14.     *
