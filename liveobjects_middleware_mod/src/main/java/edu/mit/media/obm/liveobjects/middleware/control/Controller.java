@@ -1,4 +1,4 @@
-package edu.mit.media.obm.liveobjects.middleware.common;
+package edu.mit.media.obm.liveobjects.middleware.control;
 
 /**
  * This is a common interface implemented by all middleware controllers.

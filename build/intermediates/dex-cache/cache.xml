@@ -9,20 +9,6 @@
         <dex dex="/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/classes-1d87fc1b39e23d430d276ffdb21a0e3246c6185e.jar" />
     </item>
     <item
-        jar="/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/exploded-aar/LiveObjects/liveobjects_network_wifi_mod/unspecified/classes.jar"
-        jumboMode="false"
-        revision="21.1.1"
-        sha1="f86419bcdc18fcc1a08b41154deac6b99fc60153">
-        <dex dex="/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/classes-11380eafa0297e0f01ad08de24015a7ba27e4339.jar" />
-    </item>
-    <item
-        jar="/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/exploded-aar/LiveObjects/liveobjects_middleware_mod/unspecified/classes.jar"
-        jumboMode="false"
-        revision="21.1.1"
-        sha1="51079287cbe7328d7869fb85be93bd210a1031e7">
-        <dex dex="/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/classes-f1ba211e4a6b801b1e32db5bfc0ef4e4bb9be778.jar" />
-    </item>
-    <item
         jar="/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/libs/internal_impl-21.0.3.jar"
         jumboMode="false"
         revision="21.1.1"
@@ -30,11 +16,25 @@
         <dex dex="/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.3-d0d6d3f13ad195be2cef6172aa0fc66f219d0f27.jar" />
     </item>
     <item
+        jar="/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/exploded-aar/LiveObjects/liveobjects_storage_wifi_mod/unspecified/classes.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="26b2eb9dca378180cf95444cec385aee545144f8">
+        <dex dex="/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/classes-ef57d6a4e78e41320d6e2a06b1ca827d8946609a.jar" />
+    </item>
+    <item
         jar="/Users/valerio/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.3/support-annotations-21.0.3.jar"
         jumboMode="false"
         revision="21.1.1"
         sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
         <dex dex="/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-987e68297d25923fd33df635807ea59b6ed45990.jar" />
+    </item>
+    <item
+        jar="/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/exploded-aar/LiveObjects/liveobjects_network_wifi_mod/unspecified/classes.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="f86419bcdc18fcc1a08b41154deac6b99fc60153">
+        <dex dex="/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/classes-11380eafa0297e0f01ad08de24015a7ba27e4339.jar" />
     </item>
     <item
         jar="/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/classes.jar"
@@ -49,6 +49,13 @@
         revision="21.1.1"
         sha1="c341a7ad32bc2eef9dcfab239262b77ac60788cc">
         <dex dex="/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/classes-9d775e3cc0c7317936a1891cc875e9c41b4914ba.jar" />
+    </item>
+    <item
+        jar="/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/exploded-aar/LiveObjects/liveobjects_middleware_mod/unspecified/classes.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="bd8195ba68f79b4fea6e31261bc9b0a9dfbf5fcc">
+        <dex dex="/Users/valerio/AndroidStudioProjects/Shair/projects/as/LiveObjects/app/build/intermediates/pre-dexed/debug/classes-f1ba211e4a6b801b1e32db5bfc0ef4e4bb9be778.jar" />
     </item>
 
 </items>

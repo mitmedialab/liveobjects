@@ -3,6 +3,7 @@ package edu.mit.media.obm.liveobjects.app;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,13 @@ import android.widget.TextView;
 
 import com.pkmmte.view.CircularImageView;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import edu.mit.media.obm.liveobjects.middleware.control.ContentBridge;
+import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
+import edu.mit.media.obm.liveobjects.storage.wifi.WifiStorageDriver;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 
@@ -27,18 +35,15 @@ public class DetailFragment extends Fragment {
     public final static String LIVE_OBJECT_NAME = "liveObjectName";
 
     private final static String LOG_TAG = DetailFragment.class.getSimpleName();
-
-
-
-    private static String BASE_URL = "http://flashair";
-    private static String DIRECTORY = "DCIM";
     private static String ICON_FILE_NAME = "icon.jpg";
 
-    private static String ICON_URL= BASE_URL + "/" + DIRECTORY + "/" + ICON_FILE_NAME;
+
 
     private CircularImageView mIconView;
     private View mLoadingPanel;
     private TextView mObjectTitleTextView;
+
+    private ContentController mContentController;
 
 
 
@@ -64,6 +69,8 @@ public class DetailFragment extends Fragment {
                   }
         );
 
+        mContentController = new ContentBridge(getActivity(),null, new WifiStorageDriver(getActivity()));
+
         return rootView;
     }
 
@@ -74,12 +81,21 @@ public class DetailFragment extends Fragment {
             CircularImageView imageView = null;
             @Override
             protected Bitmap doInBackground(CircularImageView... params) {
+                //TODO moving the asynck task in the middleware?
                 this.imageView = params[0];
 
                 if (this.imageView == null)
                     Log.e(LOG_TAG, "IMAGE_VIEW NULL");
 
-                return  FlashAirRequest.getBitmap(ICON_URL);
+
+                try {
+                    return  getBipmap(mContentController.getInputStreamContent(ICON_FILE_NAME));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+
+
             }
 
             @Override
@@ -90,12 +106,38 @@ public class DetailFragment extends Fragment {
 
                 mLoadingPanel.setVisibility(View.GONE);
             }
+
+
+            private Bitmap getBipmap(InputStream inputStream) {
+                //TODO REFACTOR
+                try {
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    byte[] byteChunk = new byte[1024];
+                    int bytesRead = 0;
+                    while ((bytesRead = inputStream.read(byteChunk)) != -1) {
+                        byteArrayOutputStream.write(byteChunk, 0, bytesRead);
+                    }
+                    byte[] byteArray = byteArrayOutputStream.toByteArray();
+                    BitmapFactory.Options bfOptions = new BitmapFactory.Options();
+                    bfOptions.inPurgeable = true;
+                    Bitmap resultBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, bfOptions);
+                    byteArrayOutputStream.close();
+                    inputStream.close();
+                    return resultBitmap;
+                }catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
         }.execute(mIconView);
 
 
 
 
     }
+
+
+
 
     private void setLiveObjectDescription() {
         //TODO

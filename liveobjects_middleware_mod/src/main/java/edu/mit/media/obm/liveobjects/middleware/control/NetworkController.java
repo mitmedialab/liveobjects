@@ -1,6 +1,5 @@
 package edu.mit.media.obm.liveobjects.middleware.control;
 
-import edu.mit.media.obm.liveobjects.middleware.common.Controller;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 
 /**

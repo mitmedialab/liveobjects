@@ -14,12 +14,12 @@ public interface NetworkListener {
      * Callback providing a list of discovered live objects
      * @param liveObjectList list of discovered live objects
      */
-    public void onNetworkDevicesAvailable(List<LiveObject> liveObjectList);
+    void onNetworkDevicesAvailable(List<LiveObject> liveObjectList);
 
     /**
      * Callback informing the middleware that a connection with a live object has been performed
      * @param liveObjectName the name of the connected live object
      */
-    public void onConnected(String liveObjectName);
+    void onConnected(String liveObjectName);
 
 }
