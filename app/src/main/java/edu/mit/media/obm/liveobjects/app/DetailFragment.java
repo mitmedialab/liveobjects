@@ -55,6 +55,8 @@ public class DetailFragment extends Fragment {
         mLoadingPanel = rootView.findViewById(R.id.loadingPanel);
         mObjectTitleTextView = (TextView) rootView.findViewById(R.id.object_title_textview);
 
+        mContentController = new ContentBridge(getActivity(),null, new WifiStorageDriver(getActivity()));
+
         setLiveObjectImage();
         setLiveObjectDescription();
 
@@ -68,8 +70,6 @@ public class DetailFragment extends Fragment {
                       }
                   }
         );
-
-        mContentController = new ContentBridge(getActivity(),null, new WifiStorageDriver(getActivity()));
 
         return rootView;
     }
