@@ -20,7 +20,7 @@ import edu.mit.media.obm.shair.liveobjects.R;
  */
 public class VideoViewFragment extends Fragment {
     public final static String LOG_TAG = VideoViewFragment.class.getSimpleName();
-    private static String BASE_URL = "http://flashair";
+    private static String BASE_URL = "http://192.168.0.1";
     private static String DIRECTORY = "DCIM";
     private static String FILE_NAME = "en.mp4";
 
