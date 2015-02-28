@@ -1,5 +1,6 @@
 package edu.mit.media.obm.liveobjects.app;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import edu.mit.media.obm.liveobjects.storage.wifi.WifiStorageConfig;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
@@ -20,11 +22,7 @@ import edu.mit.media.obm.shair.liveobjects.R;
  */
 public class VideoViewFragment extends Fragment {
     public final static String LOG_TAG = VideoViewFragment.class.getSimpleName();
-    private static String BASE_URL = "http://192.168.0.1";
-    private static String DIRECTORY = "DCIM";
     private static String FILE_NAME = "en.mp4";
-
-    private static String FILE_URL= BASE_URL + "/" + DIRECTORY + "/" + FILE_NAME;
 
     private VideoView mvideoView;
     public VideoViewFragment() {
@@ -45,7 +43,8 @@ public class VideoViewFragment extends Fragment {
             @Override
             protected Void doInBackground(Void... params) {
 
-                Uri vidUri = Uri.parse(FILE_URL);
+                String fileUrl = getFileUrl(getActivity());
+                Uri vidUri = Uri.parse(fileUrl);
                 mvideoView.setVideoURI(vidUri);
                 Log.i(LOG_TAG, "setting video: " +  vidUri.toString());
                 mvideoView.start();
@@ -54,5 +53,12 @@ public class VideoViewFragment extends Fragment {
             }
         }.execute();
         return rootView;
+    }
+
+    private String getFileUrl(Context context) {
+        String fileUrl = WifiStorageConfig.getBasePath(context) + "/" + FILE_NAME;
+        Log.i(LOG_TAG, "fileUrl = " + fileUrl);
+
+        return fileUrl;
     }
 }

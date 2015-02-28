@@ -19,7 +19,7 @@ public class WifiStorageDriver implements RemoteStorageDriver {
     private final String base_path;
     public WifiStorageDriver(Context context) {
         mContext = context;
-        base_path = context.getString(R.string.base_url) + "/" + context.getString(R.string.media_folder_name)+"/";
+        base_path = WifiStorageConfig.getBasePath(context)+ "/";
     }
 
     @Override
