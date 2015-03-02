@@ -3,6 +3,7 @@ package edu.mit.media.obm.liveobjects.storage.wifi;
 import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
+import android.os.RemoteException;
 import android.text.format.Formatter;
 import android.util.Log;
 
@@ -12,22 +13,47 @@ import android.util.Log;
 public class WifiStorageConfig {
     private final static String LOG_TAG = WifiStorageConfig.class.getSimpleName();
 
-    public static String getBasePath(Context context) {
-        return String.format("http://%s/%s", getGatewayIpAddress(context), getMediaFolderName(context));
+    public static class ContextWrapper {
+        private Context mContext;
+
+        private ContextWrapper(Context context) {
+            mContext = context;
+        }
+
+        public Object getSystemService(String name) {
+            return mContext.getSystemService(name);
+        }
+
+        public String getString(int resId) {
+            return mContext.getString(resId);
+        }
+    }
+
+    public static String getBasePath(Context context) throws RemoteException {
+        return getBasePath(new ContextWrapper(context));
+    }
+
+    public static String getBasePath(ContextWrapper contextWrapper) throws RemoteException {
+        return String.format("http://%s/%s",
+                getGatewayIpAddress(contextWrapper), getMediaFolderName(contextWrapper));
     }
 
     @SuppressWarnings("deprecation")
-    private static String getGatewayIpAddress(Context context) {
-        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+    private static String getGatewayIpAddress(ContextWrapper contextWrapper) throws RemoteException {
+        WifiManager wifiManager = (WifiManager) contextWrapper.getSystemService(Context.WIFI_SERVICE);
         DhcpInfo dhcpInfo = wifiManager.getDhcpInfo();
-        String gateway = Formatter.formatIpAddress(dhcpInfo.gateway);
 
+        if (dhcpInfo == null) {
+            throw new RemoteException("cannot get DHCP info from a remote host");
+        }
+
+        String gateway = Formatter.formatIpAddress(dhcpInfo.gateway);
         Log.d(LOG_TAG, "baseUrl = " + gateway);
 
         return gateway;
     }
 
-    private static String getMediaFolderName(Context context) {
-        return context.getString(R.string.media_folder_name);
+    private static String getMediaFolderName(ContextWrapper contextWrapper) {
+        return contextWrapper.getString(R.string.media_folder_name);
     }
 }

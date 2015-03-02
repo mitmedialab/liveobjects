@@ -1,6 +1,7 @@
 package edu.mit.media.obm.liveobjects.storage.wifi;
 
 import android.content.Context;
+import android.os.RemoteException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -17,7 +18,7 @@ public class WifiStorageDriver implements RemoteStorageDriver {
 
     private Context mContext;
     private final String base_path;
-    public WifiStorageDriver(Context context) {
+    public WifiStorageDriver(Context context) throws RemoteException {
         mContext = context;
         base_path = WifiStorageConfig.getBasePath(context)+ "/";
     }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -56,7 +57,15 @@ public class VideoViewFragment extends Fragment {
     }
 
     private String getFileUrl(Context context) {
-        String fileUrl = WifiStorageConfig.getBasePath(context) + "/" + FILE_NAME;
+        String fileUrl = "";
+
+        try {
+            fileUrl = WifiStorageConfig.getBasePath(context) + "/" + FILE_NAME;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            throw new RuntimeException("An unrecoverable error was thrown");
+        }
+
         Log.i(LOG_TAG, "fileUrl = " + fileUrl);
 
         return fileUrl;

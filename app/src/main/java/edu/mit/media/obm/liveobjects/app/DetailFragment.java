@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -55,7 +56,12 @@ public class DetailFragment extends Fragment {
         mLoadingPanel = rootView.findViewById(R.id.loadingPanel);
         mObjectTitleTextView = (TextView) rootView.findViewById(R.id.object_title_textview);
 
-        mContentController = new ContentBridge(getActivity(),null, new WifiStorageDriver(getActivity()));
+        try {
+            mContentController = new ContentBridge(getActivity(), null, new WifiStorageDriver(getActivity()));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            throw new RuntimeException("An unrecoverable error was thrown");
+        }
 
         setLiveObjectImage();
         setLiveObjectDescription();
