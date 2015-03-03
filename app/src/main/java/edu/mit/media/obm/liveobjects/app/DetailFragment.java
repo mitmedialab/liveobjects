@@ -18,9 +18,14 @@ import android.widget.TextView;
 
 import com.pkmmte.view.CircularImageView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import edu.mit.media.obm.liveobjects.middleware.control.ContentBridge;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
@@ -36,7 +41,8 @@ public class DetailFragment extends Fragment {
     public final static String LIVE_OBJECT_NAME = "liveObjectName";
 
     private final static String LOG_TAG = DetailFragment.class.getSimpleName();
-    private static String ICON_FILE_NAME = "icon.jpg";
+    private String ICON_FILE_NAME;
+    private String mediaConfigFileName;
 
 
 
@@ -46,48 +52,69 @@ public class DetailFragment extends Fragment {
 
     private ContentController mContentController;
 
+    private JSONObject mJSONConfig;
+
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         final View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
         mIconView = (CircularImageView) rootView.findViewById(R.id.object_image_view);
         mLoadingPanel = rootView.findViewById(R.id.loadingPanel);
         mObjectTitleTextView = (TextView) rootView.findViewById(R.id.object_title_textview);
 
+        ICON_FILE_NAME = getActivity().getResources().getString(R.string.icon_filename) + ".jpg";
+        mediaConfigFileName = getActivity().getResources().getString(R.string.media_config_filename) + ".txt";
+
         try {
-            mContentController = new ContentBridge(getActivity(), null, new WifiStorageDriver(getActivity()));
+            mContentController = new ContentBridge(getActivity(),null, new WifiStorageDriver(getActivity()));
         } catch (RemoteException e) {
             e.printStackTrace();
-            throw new RuntimeException("An unrecoverable error was thrown");
         }
 
         setLiveObjectImage();
         setLiveObjectDescription();
+        getMediaConfig();
+
 
         mIconView.setOnClickListener(
                 new View.OnClickListener() {
                       @Override
                       public void onClick(View v) {
-                          // launch the video associated to the object
-                          Intent viewIntent = new Intent(getActivity(), VideoViewActivity.class);
-                          getActivity().startActivity(viewIntent);
+
+                          try {
+                              String contentType = mJSONConfig.getJSONObject("media-config").getJSONObject("media").getString("type");
+                              String filename = mJSONConfig.getJSONObject("media-config").getJSONObject("media").getString("filename");
+
+                              // launch the media associated to the object
+                              Intent viewIntent = new Intent(getActivity(), MediaViewActivity.class);
+                              viewIntent.putExtra("contentType", contentType);
+                              viewIntent.putExtra("filename", filename);
+                              getActivity().startActivity(viewIntent);
+                          }catch(JSONException e){
+                              //TODO
+                              e.printStackTrace();
+                          }
+
                       }
                   }
         );
+
+
 
         return rootView;
     }
 
     private void setLiveObjectImage() {
 
-
+        //TODO moving the asynck task in the middleware?
         new AsyncTask<CircularImageView,Void,Bitmap>() {
             CircularImageView imageView = null;
             @Override
             protected Bitmap doInBackground(CircularImageView... params) {
-                //TODO moving the asynck task in the middleware?
+
                 this.imageView = params[0];
 
                 if (this.imageView == null)
@@ -137,13 +164,39 @@ public class DetailFragment extends Fragment {
             }
         }.execute(mIconView);
 
-
-
-
     }
 
 
+    private void getMediaConfig() {
+        StringBuilder builder = new StringBuilder();
+        new AsyncTask<String, Void, Void>() {
+            @Override
+            protected Void doInBackground(String... params) {
+                String mediaFileName = params[0];
 
+                try {
+                    InputStream inputStream = mContentController.getInputStreamContent(mediaFileName);
+                    StringBuilder builder = new StringBuilder();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        builder.append(line);
+                    }
+                    String jsonConfigString = builder.toString();
+                    try {
+                        mJSONConfig = new JSONObject(jsonConfigString);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        }.execute(mediaConfigFileName);
+
+    }
 
     private void setLiveObjectDescription() {
         //TODO
