@@ -83,27 +83,14 @@ public class WifiDriver implements NetworkDriver {
 
     @Override
     public void connect(String liveObjectName) {
+        String ssid = WifiUtil.INSTANCE.convertLiveObjectNameToDeviceId(liveObjectName);
+        WifiConfiguration conf = new WifiConfiguration();
+        conf.SSID = "\"" + ssid + "\"";
+        conf.preSharedKey = "\"" + NETWORK_PASSWORD + "\"";
+        mWifiManager.addNetwork(conf);
+        int netId = mWifiManager.addNetwork(conf);
 
-        new AsyncTask<String,Void,Void>() {
-            @Override
-            protected Void doInBackground(String... params) {
-                String liveObjectName = params[0];
-                String ssid = WifiUtil.INSTANCE.convertLiveObjectNameToDeviceId(liveObjectName);
-                WifiConfiguration conf = new WifiConfiguration();
-                conf.SSID = "\"" + ssid + "\"";
-                conf.preSharedKey = "\"" + NETWORK_PASSWORD + "\"";
-                mWifiManager.addNetwork(conf);
-                int netId = mWifiManager.addNetwork(conf);
-                // TODO do not disconnect if you are already connected with the right liveobject
-                mWifiManager.disconnect();
-                mWifiManager.enableNetwork(netId, true);
-                mWifiManager.reconnect();
-                return null;
-            }
-        }.execute(liveObjectName);
-
-
-
+        mWifiManager.enableNetwork(netId, true);
     }
 
     @Override
