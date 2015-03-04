@@ -40,4 +40,9 @@ public interface NetworkDriver {
      */
     void connect(String liveObjectName);
 
+    /**
+     * Checks if the network driver is trying to connect to a live object
+     */
+    boolean isConnecting();
+
 }

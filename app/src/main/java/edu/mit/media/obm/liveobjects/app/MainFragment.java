@@ -1,5 +1,6 @@
     package edu.mit.media.obm.liveobjects.app;
 
+    import android.app.ProgressDialog;
     import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -40,7 +41,7 @@ import edu.mit.media.obm.shair.liveobjects.R;
 
         private LiveObject mSelectedLiveObject;
 
-
+        private ProgressDialog mConnectingDialog;
 
         public MainFragment() {
             super();
@@ -68,6 +69,10 @@ import edu.mit.media.obm.shair.liveobjects.R;
                     android.R.color.holo_green_light,
                     android.R.color.holo_orange_light,
                     android.R.color.holo_red_light);
+
+            mConnectingDialog = new ProgressDialog(getActivity());
+            mConnectingDialog.setIndeterminate(true);
+            mConnectingDialog.setCancelable(false);
         }
 
         private void setupUIListeners() {
@@ -84,8 +89,12 @@ import edu.mit.media.obm.shair.liveobjects.R;
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     mSelectedLiveObject = mLiveObjectNamesList.get(position);
-                    mNetworkController.connect(mSelectedLiveObject);
 
+                    mConnectingDialog.setMessage(
+                            "Connecting to " + mSelectedLiveObject.getLiveObjectName());
+                    mConnectingDialog.show();
+
+                    mNetworkController.connect(mSelectedLiveObject);
                 }
             });
         }
@@ -134,6 +143,8 @@ import edu.mit.media.obm.shair.liveobjects.R;
                         //detailIntent.putExtra(LiveObjectsManager.EXTRA_LIVE_OBJECT, connectedLiveObject);
                         getActivity().startActivity(detailIntent);
                         mSelectedLiveObject = null;
+
+                        mConnectingDialog.cancel();
                     }
 
                 }

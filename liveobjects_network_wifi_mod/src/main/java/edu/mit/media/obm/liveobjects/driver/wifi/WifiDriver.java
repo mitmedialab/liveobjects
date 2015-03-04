@@ -41,12 +41,15 @@ public class WifiDriver implements NetworkDriver {
 
     private IntentFilter mIntentFilter;
 
+    private boolean mConnecting;
 
     public WifiDriver(Context context) {
         mContext = context;
         NETWORK_PASSWORD = mContext.getResources().getString(R.string.network_password);
         SSID_PREFIX = mContext.getResources().getString(R.string.ssid_prefix);
         WifiUtil.INSTANCE.setSsidPrefix(SSID_PREFIX);
+
+        mConnecting = false;
     }
 
     @Override
@@ -82,15 +85,27 @@ public class WifiDriver implements NetworkDriver {
     }
 
     @Override
-    public void connect(String liveObjectName) {
+    synchronized public void connect(String liveObjectName) throws IllegalStateException {
+        if (mConnecting) {
+            throw new IllegalStateException("Must not try to connect when it's already connecting");
+        }
+
         String ssid = WifiUtil.INSTANCE.convertLiveObjectNameToDeviceId(liveObjectName);
+        removeDuplicatedNetwork(ssid);
+
         WifiConfiguration conf = new WifiConfiguration();
         conf.SSID = "\"" + ssid + "\"";
         conf.preSharedKey = "\"" + NETWORK_PASSWORD + "\"";
         mWifiManager.addNetwork(conf);
         int netId = mWifiManager.addNetwork(conf);
 
+        mConnecting = true;
         mWifiManager.enableNetwork(netId, true);
+    }
+
+    @Override
+    public boolean isConnecting() {
+        return mConnecting;
     }
 
     @Override
@@ -98,6 +113,15 @@ public class WifiDriver implements NetworkDriver {
         mNetworkListener = networkListener;
     }
 
+    private void removeDuplicatedNetwork(String ssid) {
+        // scans over the entire list because there may be two or more network configurations with
+        // the same SSID.
+        for (WifiConfiguration wifiConfig : mWifiManager.getConfiguredNetworks()) {
+            if (wifiConfig.SSID.equals(ssid)) {
+                mWifiManager.removeNetwork(wifiConfig.networkId);
+            }
+        }
+    }
 
     class WifiReceiver extends BroadcastReceiver {
 
@@ -151,6 +175,10 @@ public class WifiDriver implements NetworkDriver {
                     String connectedLiveObjectName = WifiUtil.INSTANCE.convertDeviceIdToLiveObjectName(ssid);
                     Log.d(LOG_TAG, "connectedLiveObjectName = " + connectedLiveObjectName);
                     mNetworkListener.onConnected(connectedLiveObjectName);
+
+                    synchronized (WifiDriver.class) {
+                        mConnecting = false;
+                    }
                 }
             }
         }
