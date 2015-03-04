@@ -57,7 +57,7 @@ public class VideoViewFragment extends Fragment {
     }
 
     private String getFileUrl(Context context) {
-        String fileUrl = "";
+        String fileUrl;
 
         try {
             fileUrl = WifiStorageConfig.getBasePath(context) + "/" + FILE_NAME;
