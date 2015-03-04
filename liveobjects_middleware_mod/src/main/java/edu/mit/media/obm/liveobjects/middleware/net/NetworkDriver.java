@@ -41,6 +41,11 @@ public interface NetworkDriver {
     void connect(String liveObjectName);
 
     /**
+     * Cancel currently running trial to establish a connection with a live object
+     */
+    void cancelConnecting();
+
+    /**
      * Checks if the network driver is trying to connect to a live object
      */
     boolean isConnecting();

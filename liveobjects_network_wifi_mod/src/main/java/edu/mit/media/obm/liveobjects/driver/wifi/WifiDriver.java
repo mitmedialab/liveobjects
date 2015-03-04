@@ -42,6 +42,7 @@ public class WifiDriver implements NetworkDriver {
     private IntentFilter mIntentFilter;
 
     private boolean mConnecting;
+    private int mConnectingNetworkId;
 
     public WifiDriver(Context context) {
         mContext = context;
@@ -86,7 +87,7 @@ public class WifiDriver implements NetworkDriver {
 
     @Override
     synchronized public void connect(String liveObjectName) throws IllegalStateException {
-        if (mConnecting) {
+        if (isConnecting()) {
             throw new IllegalStateException("Must not try to connect when it's already connecting");
         }
 
@@ -100,7 +101,18 @@ public class WifiDriver implements NetworkDriver {
         int netId = mWifiManager.addNetwork(conf);
 
         mConnecting = true;
+        mConnectingNetworkId = netId;
         mWifiManager.enableNetwork(netId, true);
+    }
+
+    @Override
+    synchronized public void cancelConnecting() throws IllegalStateException{
+        if (!isConnecting()) {
+            throw new IllegalStateException("Must not try to cancel when it's not connecting");
+        }
+
+        mWifiManager.disableNetwork(mConnectingNetworkId);
+        mConnecting = false;
     }
 
     @Override

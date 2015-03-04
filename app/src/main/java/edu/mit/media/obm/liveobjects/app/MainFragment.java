@@ -1,6 +1,7 @@
     package edu.mit.media.obm.liveobjects.app;
 
     import android.app.ProgressDialog;
+    import android.content.DialogInterface;
     import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -72,7 +73,13 @@ import edu.mit.media.obm.shair.liveobjects.R;
 
             mConnectingDialog = new ProgressDialog(getActivity());
             mConnectingDialog.setIndeterminate(true);
-            mConnectingDialog.setCancelable(false);
+            mConnectingDialog.setCancelable(true);
+            mConnectingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    mNetworkController.cancelConnecting();
+                }
+            });
         }
 
         private void setupUIListeners() {
@@ -88,15 +95,13 @@ import edu.mit.media.obm.shair.liveobjects.R;
             mLiveObjectsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    if (!mNetworkController.isConnecting()) {
-                        mSelectedLiveObject = mLiveObjectNamesList.get(position);
+                    mSelectedLiveObject = mLiveObjectNamesList.get(position);
 
-                        mConnectingDialog.setMessage(
-                                "Connecting to " + mSelectedLiveObject.getLiveObjectName());
-                        mConnectingDialog.show();
+                    mConnectingDialog.setMessage(
+                            "Connecting to " + mSelectedLiveObject.getLiveObjectName());
+                    mConnectingDialog.show();
 
-                        mNetworkController.connect(mSelectedLiveObject);
-                    }
+                    mNetworkController.connect(mSelectedLiveObject);
                 }
             });
         }
@@ -146,7 +151,7 @@ import edu.mit.media.obm.shair.liveobjects.R;
                         getActivity().startActivity(detailIntent);
                         mSelectedLiveObject = null;
 
-                        mConnectingDialog.cancel();
+                        mConnectingDialog.dismiss();
                     }
 
                 }

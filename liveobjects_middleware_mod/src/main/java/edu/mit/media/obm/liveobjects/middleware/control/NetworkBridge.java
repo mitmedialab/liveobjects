@@ -58,6 +58,11 @@ public class NetworkBridge implements NetworkController, NetworkListener{
     }
 
     @Override
+    public void cancelConnecting() {
+        mNetworkDriver.cancelConnecting();
+    }
+
+    @Override
     public boolean isConnecting() {
         return mNetworkDriver.isConnecting();
     }

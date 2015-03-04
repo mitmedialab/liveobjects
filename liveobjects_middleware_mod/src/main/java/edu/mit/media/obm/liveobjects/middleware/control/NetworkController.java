@@ -44,6 +44,11 @@ public interface NetworkController extends Controller {
     public void connect(LiveObject liveObject);
 
     /**
+     * Cancel currently running trial to establish a connection with a live object
+     */
+    public void cancelConnecting();
+
+    /**
      * Checks if the network driver is trying to connect to a live object
      */
     public boolean isConnecting();
