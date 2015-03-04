@@ -53,10 +53,13 @@ public class NetworkBridge implements NetworkController, NetworkListener{
 
     @Override
     public void connect(LiveObject liveObject) {
-        if (!mNetworkDriver.isConnecting()) {
-            liveObjectToConnectWith = liveObject;
-            mNetworkDriver.connect(liveObject.getLiveObjectName());
-        }
+        liveObjectToConnectWith = liveObject;
+        mNetworkDriver.connect(liveObject.getLiveObjectName());
+    }
+
+    @Override
+    public boolean isConnecting() {
+        return mNetworkDriver.isConnecting();
     }
 
     @Override

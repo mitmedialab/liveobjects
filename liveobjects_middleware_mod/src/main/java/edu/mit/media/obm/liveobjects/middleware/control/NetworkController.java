@@ -43,7 +43,8 @@ public interface NetworkController extends Controller {
      */
     public void connect(LiveObject liveObject);
 
-
-
-
+    /**
+     * Checks if the network driver is trying to connect to a live object
+     */
+    public boolean isConnecting();
 }

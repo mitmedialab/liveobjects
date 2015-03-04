@@ -88,13 +88,15 @@ import edu.mit.media.obm.shair.liveobjects.R;
             mLiveObjectsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    mSelectedLiveObject = mLiveObjectNamesList.get(position);
+                    if (!mNetworkController.isConnecting()) {
+                        mSelectedLiveObject = mLiveObjectNamesList.get(position);
 
-                    mConnectingDialog.setMessage(
-                            "Connecting to " + mSelectedLiveObject.getLiveObjectName());
-                    mConnectingDialog.show();
+                        mConnectingDialog.setMessage(
+                                "Connecting to " + mSelectedLiveObject.getLiveObjectName());
+                        mConnectingDialog.show();
 
-                    mNetworkController.connect(mSelectedLiveObject);
+                        mNetworkController.connect(mSelectedLiveObject);
+                    }
                 }
             });
         }
