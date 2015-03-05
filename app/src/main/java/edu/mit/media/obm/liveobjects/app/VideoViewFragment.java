@@ -22,8 +22,10 @@ import edu.mit.media.obm.shair.liveobjects.R;
  *  Shows a video file from FlashAir
  */
 public class VideoViewFragment extends Fragment {
+    public static final String EXTRA_VIDEO_FILE_NAME = "video-file-name";
     public final static String LOG_TAG = VideoViewFragment.class.getSimpleName();
-    private static String FILE_NAME = "en.mp4";
+    private final static String FILE_NAME = "en.mp4";
+
 
     private VideoView mvideoView;
     public VideoViewFragment() {
@@ -58,9 +60,12 @@ public class VideoViewFragment extends Fragment {
 
     private String getFileUrl(Context context) {
         String fileUrl;
+        String filename = getArguments().getString(EXTRA_VIDEO_FILE_NAME,FILE_NAME);
 
         try {
-            fileUrl = WifiStorageConfig.getBasePath(context) + "/" + FILE_NAME;
+
+            //TODO to change: the app cannot directly talk with the driver
+            fileUrl = WifiStorageConfig.getBasePath(context) + "/" + filename ;
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new RuntimeException("An unrecoverable error was thrown");
