@@ -151,8 +151,7 @@ import edu.mit.media.obm.shair.liveobjects.R;
                         Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
                         //TODO
                         //detailIntent.putExtra(LiveObjectsManager.EXTRA_LIVE_OBJECT, connectedLiveObject);
-                        getActivity().startActivityForResult(
-                                detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
+                        startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
                         mSelectedLiveObject = null;
 
                         mConnectingDialog.dismiss();
@@ -179,13 +178,29 @@ import edu.mit.media.obm.shair.liveobjects.R;
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-            Log.v(LOG_TAG, "onActivityResult()");
+            Log.v(LOG_TAG, String.format("onActivityResult(requestCode=%d)", requestCode));
             super.onActivityResult(requestCode, resultCode, intent);
 
             if (requestCode == DETAIL_ACTIVITY_REQUEST_CODE) {
-                if (resultCode != 0) {
-                    Toast.makeText(getActivity(),
-                            "Internal error in the Live Object", Toast.LENGTH_SHORT).show();
+                Log.v(LOG_TAG, "returned from DetailActivity");
+                final String errorMessage;
+
+                if (resultCode == DetailActivity.RESULT_CONNECTION_ERROR) {
+                    errorMessage = "a network error in the live object";
+                } else if (resultCode == DetailActivity.RESULT_JSON_ERROR) {
+                    errorMessage = "An error in the contents in the live object";
+                } else {
+                    errorMessage = null;
+                }
+
+                if (errorMessage != null) {
+                    getActivity().runOnUiThread(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+                                }
+                            });
                 }
             }
         }

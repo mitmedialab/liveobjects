@@ -7,11 +7,19 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.json.JSONException;
+
+import java.io.IOException;
+import java.net.ConnectException;
+
 import edu.mit.media.obm.shair.liveobjects.R;
 
 
 public class DetailActivity extends ActionBarActivity {
     private static final String LOG_TAG = DetailActivity.class.getSimpleName();
+
+    public static int RESULT_CONNECTION_ERROR = RESULT_FIRST_USER;
+    public static int RESULT_JSON_ERROR = RESULT_FIRST_USER + 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +30,16 @@ public class DetailActivity extends ActionBarActivity {
             detailFragment.setOnCancelListener(new DetailFragment.OnErrorListener() {
                 @Override
                 public void onError(Exception exception) {
-                    setResult(1);
+                    Class exceptionClass = exception.getClass();
+                    int result = RESULT_OK;
+
+                    if (ConnectException.class.equals(exceptionClass)) {
+                        result = RESULT_CONNECTION_ERROR;
+                    } else if (JSONException.class.equals(exceptionClass)) {
+                        result = RESULT_JSON_ERROR;
+                    }
+
+                    setResult(result);
                     finish();
                 }
             });
