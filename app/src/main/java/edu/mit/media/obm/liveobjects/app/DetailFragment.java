@@ -54,7 +54,11 @@ public class DetailFragment extends Fragment {
 
     private JSONObject mJSONConfig;
 
+    OnErrorListener mOnErrorListener = null;
 
+    public interface OnErrorListener {
+        abstract public void onError(Exception exception);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -96,6 +100,7 @@ public class DetailFragment extends Fragment {
                           }catch(JSONException e){
                               //TODO
                               e.printStackTrace();
+                              mOnErrorListener.onError(e);
                           }
 
                       }
@@ -125,6 +130,7 @@ public class DetailFragment extends Fragment {
                     return  getBipmap(mContentController.getInputStreamContent(ICON_FILE_NAME));
                 } catch (IOException e) {
                     e.printStackTrace();
+                    mOnErrorListener.onError(e);
                 }
                 return null;
 
@@ -159,6 +165,7 @@ public class DetailFragment extends Fragment {
                     return resultBitmap;
                 }catch (IOException e) {
                     e.printStackTrace();
+                    mOnErrorListener.onError(e);
                 }
                 return null;
             }
@@ -187,10 +194,12 @@ public class DetailFragment extends Fragment {
                         mJSONConfig = new JSONObject(jsonConfigString);
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        mOnErrorListener.onError(e);
                     }
 
                 } catch (IOException e) {
                     e.printStackTrace();
+                    mOnErrorListener.onError(e);
                 }
                 return null;
             }
@@ -260,5 +269,9 @@ public class DetailFragment extends Fragment {
         mIconView.setAnimation(zoomOut);
 
         mIconView.startAnimation(zoomIn);
+    }
+
+    public void setOnCancelListener(OnErrorListener onCancelListener) {
+        mOnErrorListener = onCancelListener;
     }
 }

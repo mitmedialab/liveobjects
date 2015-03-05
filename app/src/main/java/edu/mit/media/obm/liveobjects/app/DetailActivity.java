@@ -1,6 +1,7 @@
 package edu.mit.media.obm.liveobjects.app;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -18,6 +19,14 @@ public class DetailActivity extends ActionBarActivity {
         setContentView(R.layout.activity_detail);
         if (savedInstanceState == null) {
             DetailFragment detailFragment = new DetailFragment();
+            detailFragment.setOnCancelListener(new DetailFragment.OnErrorListener() {
+                @Override
+                public void onError(Exception exception) {
+                    setResult(1);
+                    finish();
+                }
+            });
+
             //TODO
 //            LiveObject liveObject = getIntent().getParcelableExtra(LiveObjectsManager.EXTRA_LIVE_OBJECT);
 //            Bundle bundle = new Bundle();

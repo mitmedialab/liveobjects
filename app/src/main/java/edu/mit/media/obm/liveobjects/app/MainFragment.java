@@ -13,8 +13,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+    import android.widget.Toast;
 
-import java.util.ArrayList;
+    import java.util.ArrayList;
 import java.util.List;
 
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiDriver;
@@ -31,6 +32,8 @@ import edu.mit.media.obm.shair.liveobjects.R;
      */
     public class MainFragment extends Fragment {
         private static final String LOG_TAG = MainFragment.class.getSimpleName();
+
+        private static final int DETAIL_ACTIVITY_REQUEST_CODE = 1;
 
         private SwipeRefreshLayout mSwipeLayout;
         private ListView mLiveObjectsListView;
@@ -148,7 +151,8 @@ import edu.mit.media.obm.shair.liveobjects.R;
                         Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
                         //TODO
                         //detailIntent.putExtra(LiveObjectsManager.EXTRA_LIVE_OBJECT, connectedLiveObject);
-                        getActivity().startActivity(detailIntent);
+                        getActivity().startActivityForResult(
+                                detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
                         mSelectedLiveObject = null;
 
                         mConnectingDialog.dismiss();
@@ -173,5 +177,16 @@ import edu.mit.media.obm.shair.liveobjects.R;
 
         }
 
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+            Log.v(LOG_TAG, "onActivityResult()");
+            super.onActivityResult(requestCode, resultCode, intent);
 
+            if (requestCode == DETAIL_ACTIVITY_REQUEST_CODE) {
+                if (resultCode != 0) {
+                    Toast.makeText(getActivity(),
+                            "Internal error in the Live Object", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
     }
