@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
+ * TODO TO IMPLEMENT
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * {@link GalleryViewFragment.OnFragmentInteractionListener} interface

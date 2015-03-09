@@ -49,7 +49,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
         }
         else if (contentType.equals(getResources().getString(R.string.content_type_audio)) ){
             getSupportFragmentManager().beginTransaction().
-                    add(R.id.activity_media_container, AudioViewFragment.newInstance(fileUrl)).
+                    add(R.id.activity_media_container, VideoViewFragment.newInstance(fileUrl)).
                     commit();
         }
         else if (contentType.equals(getResources().getString(R.string.content_type_gallery)) ){
