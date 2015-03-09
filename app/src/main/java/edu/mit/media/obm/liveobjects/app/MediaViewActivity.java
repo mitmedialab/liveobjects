@@ -1,8 +1,10 @@
 package edu.mit.media.obm.liveobjects.app;
 
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.v7.app.ActionBarActivity;
 
+import edu.mit.media.obm.liveobjects.storage.wifi.WifiStorageConfig;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 
@@ -10,7 +12,7 @@ import edu.mit.media.obm.shair.liveobjects.R;
 /**
  * Created by Valerio Panzica La Manna on 08/12/14.
  */
-public class MediaViewActivity extends ActionBarActivity {
+public class MediaViewActivity extends ActionBarActivity implements OnMediaViewListener{
 
     public static String CONTENT_TYPE_EXTRA = "contentType";
     public static String FILE_NAME_EXTRA = "filename";
@@ -36,25 +38,43 @@ public class MediaViewActivity extends ActionBarActivity {
 
 
     private void launchMediaFragment(String contentType, String filename) {
+        String fileUrl = getFileUrl(filename);
 
         if (contentType.equals(getResources().getString(R.string.content_type_video)) ){
 
-            Bundle bundle = new Bundle();
-            bundle.putString(VideoViewFragment.EXTRA_VIDEO_FILE_NAME, filename);
-            VideoViewFragment videoViewFragment = new VideoViewFragment();
-            videoViewFragment.setArguments(bundle);
 
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.activity_media_container, videoViewFragment)
+                    .add(R.id.activity_media_container, VideoViewFragment.newInstance(fileUrl))
                     .commit();
         }
         else if (contentType.equals(getResources().getString(R.string.content_type_audio)) ){
-            //todo launch the fragment associated with audio
-
+            getSupportFragmentManager().beginTransaction().
+                    add(R.id.activity_media_container, AudioViewFragment.newInstance(fileUrl)).
+                    commit();
         }
         else if (contentType.equals(getResources().getString(R.string.content_type_gallery)) ){
             //todo launch gallery
         }
 
+    }
+
+
+
+    private String getFileUrl(String filename) {
+        String fileUrl;
+
+        try {
+            //TODO to change: the app cannot directly talk with the driver
+            fileUrl = WifiStorageConfig.getBasePath(this) + "/" + filename ;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            throw new RuntimeException("An unrecoverable error was thrown");
+        }
+        return fileUrl;
+    }
+
+    @Override
+    public void onMediaContentCompleted() {
+        //TODO launch the wrap-up activity
     }
 }

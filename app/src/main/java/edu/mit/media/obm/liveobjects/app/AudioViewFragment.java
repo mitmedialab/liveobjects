@@ -1,16 +1,17 @@
 package edu.mit.media.obm.liveobjects.app;
 
 import android.app.Activity;
-import android.net.Uri;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.MediaController;
-import android.widget.VideoView;
+
+import java.io.IOException;
 
 import edu.mit.media.obm.shair.liveobjects.R;
 
@@ -19,11 +20,10 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * Activities that contain this fragment must implement the
  * {@link edu.mit.media.obm.liveobjects.app.OnMediaViewListener} interface
  * to handle interaction events.
- * Use the {@link VideoViewFragment#newInstance} factory method to
+ * Use the {@link AudioViewFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class VideoViewFragment extends Fragment {
-    private static final String LOG_TAG = VideoViewFragment.class.getSimpleName();
+public class AudioViewFragment extends Fragment {
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_FILE_URL = "fileurl";
@@ -31,8 +31,7 @@ public class VideoViewFragment extends Fragment {
 
 
     private String mFileUrl;
-
-    private VideoView mvideoView;
+    private MediaController mMediaController;
 
 
     private OnMediaViewListener mListener;
@@ -41,19 +40,19 @@ public class VideoViewFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param fileUrl Parameter 1.
-     * @return A new instance of fragment VideoViewFragment.
+     * @param filename name of the audio file to play.
+     * @return A new instance of fragment AudioViewFragment.
      */
-    
-    public static VideoViewFragment newInstance(String fileUrl) {
-        VideoViewFragment fragment = new VideoViewFragment();
+    // TODO: Rename and change types and number of parameters
+    public static AudioViewFragment newInstance(String filename) {
+        AudioViewFragment fragment = new AudioViewFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_FILE_URL, fileUrl);
+        args.putString(ARG_FILE_URL, filename);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public VideoViewFragment() {
+    public AudioViewFragment() {
         // Required empty public constructor
     }
 
@@ -68,32 +67,32 @@ public class VideoViewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_audio_view, container, false);
+        //TODO using mediaController?
+        //mMediaController = (MediaController) rootView.findViewById(R.id.mediaController);
 
-        final View rootView = inflater.inflate(R.layout.fragment_video_view, container, false);
-
-        mvideoView = (VideoView) rootView.findViewById(R.id.myVideo);
-
-        MediaController videoControl = new MediaController(getActivity());
-        videoControl.setAnchorView(mvideoView);
-        mvideoView.setMediaController(videoControl);
-
-        new AsyncTask<Void, Void, Void>() {
+        new AsyncTask<String, Void, Void>() {
             @Override
-            protected Void doInBackground(Void... params) {
-
-                Uri vidUri = Uri.parse(mFileUrl);
-                mvideoView.setVideoURI(vidUri);
-                Log.i(LOG_TAG, "setting video: " + vidUri.toString());
-                mvideoView.start();
+            protected Void doInBackground(String... params) {
+                String url = params[0];
+                MediaPlayer mediaPlayer = new MediaPlayer();
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                try {
+                    mediaPlayer.setDataSource(url);
+                    mediaPlayer.prepare(); // might take long! (for buffering, etc)
+                    mediaPlayer.start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 return null;
-
             }
-        }.execute();
+        }.execute(mFileUrl);
+
+
         return rootView;
 
     }
 
-    //TODO manage the event of completion of the video and call the method of mListener
 
     @Override
     public void onAttach(Activity activity) {

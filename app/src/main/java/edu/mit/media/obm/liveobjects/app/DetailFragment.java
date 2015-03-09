@@ -70,7 +70,7 @@ public class DetailFragment extends Fragment {
         mObjectTitleTextView = (TextView) rootView.findViewById(R.id.object_title_textview);
 
         ICON_FILE_NAME = getActivity().getResources().getString(R.string.icon_filename) + ".jpg";
-        mediaConfigFileName = getActivity().getResources().getString(R.string.media_config_filename) + ".txt";
+        mediaConfigFileName = getActivity().getResources().getString(R.string.media_config_filename) + ".jso";
 
         try {
             mContentController = new ContentBridge(getActivity(),null, new WifiStorageDriver(getActivity()));
@@ -94,8 +94,8 @@ public class DetailFragment extends Fragment {
 
                               // launch the media associated to the object
                               Intent viewIntent = new Intent(getActivity(), MediaViewActivity.class);
-                              viewIntent.putExtra("contentType", contentType);
-                              viewIntent.putExtra("filename", filename);
+                              viewIntent.putExtra(MediaViewActivity.CONTENT_TYPE_EXTRA, contentType);
+                              viewIntent.putExtra(MediaViewActivity.FILE_NAME_EXTRA, filename);
                               getActivity().startActivity(viewIntent);
                           }catch(JSONException e){
                               //TODO

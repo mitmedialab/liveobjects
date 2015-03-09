@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="edu.mit.media.obm.liveobjects.app.VideoViewActivity"
+            android:name="edu.mit.media.obm.liveobjects.app.MediaViewActivity"
             android:label="@string/app_name"
             >
         </activity>
