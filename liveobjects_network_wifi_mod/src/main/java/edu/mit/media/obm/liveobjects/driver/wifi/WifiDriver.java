@@ -92,17 +92,28 @@ public class WifiDriver implements NetworkDriver {
         }
 
         String ssid = WifiUtil.INSTANCE.convertLiveObjectNameToDeviceId(liveObjectName);
+        ssid = "\"" + ssid + "\"";
         removeDuplicatedNetwork(ssid);
 
         WifiConfiguration conf = new WifiConfiguration();
-        conf.SSID = "\"" + ssid + "\"";
+        conf.SSID = ssid;
         conf.preSharedKey = "\"" + NETWORK_PASSWORD + "\"";
         mWifiManager.addNetwork(conf);
-        int netId = mWifiManager.addNetwork(conf);
+        mWifiManager.saveConfiguration();
+
+        List<WifiConfiguration> wifiConfigurationList = mWifiManager.getConfiguredNetworks();
+        for (WifiConfiguration wifiConfiguration : wifiConfigurationList) {
+            if (wifiConfiguration.SSID.equals(conf.SSID)) {
+                conf = wifiConfiguration;
+            }
+        }
+
+        WifiManagerWrapper.connectToConfiguredNetwork(mContext, mWifiManager, conf, true);
 
         mConnecting = true;
-        mConnectingNetworkId = netId;
-        mWifiManager.enableNetwork(netId, true);
+        mConnectingNetworkId = conf.networkId;
+
+        mWifiManager.enableNetwork(mConnectingNetworkId, true);
     }
 
     @Override
@@ -131,6 +142,7 @@ public class WifiDriver implements NetworkDriver {
         for (WifiConfiguration wifiConfig : mWifiManager.getConfiguredNetworks()) {
             if (wifiConfig.SSID.equals(ssid)) {
                 mWifiManager.removeNetwork(wifiConfig.networkId);
+                Log.v(LOG_TAG, "removed a duplicated WiFi config (ssid = " + ssid + ")");
             }
         }
     }
