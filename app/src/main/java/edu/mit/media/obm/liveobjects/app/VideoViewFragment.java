@@ -76,6 +76,8 @@ public class VideoViewFragment extends Fragment {
         MediaController videoControl = new MediaController(getActivity());
         videoControl.setAnchorView(mvideoView);
         mvideoView.setMediaController(videoControl);
+        mvideoView.setOnCompletionListener(mListener);
+        mvideoView.setOnErrorListener(mListener);
 
         new AsyncTask<Void, Void, Void>() {
             @Override

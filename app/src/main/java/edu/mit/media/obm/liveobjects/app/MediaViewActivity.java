@@ -1,5 +1,6 @@
 package edu.mit.media.obm.liveobjects.app;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v7.app.ActionBarActivity;
@@ -74,7 +75,20 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
     }
 
     @Override
-    public void onMediaContentCompleted() {
-        //TODO launch the wrap-up activity
+    public void onCompletion(MediaPlayer mp) {
+        // TODO when the media content has been completed launch the wrap up page
+
+
+    }
+
+    @Override
+    public boolean onError(MediaPlayer mp, int what, int extra) {
+        // to handle the error
+        return false;
+    }
+
+    @Override
+    public boolean onInfo(MediaPlayer mp, int what, int extra) {
+        return false;
     }
 }
