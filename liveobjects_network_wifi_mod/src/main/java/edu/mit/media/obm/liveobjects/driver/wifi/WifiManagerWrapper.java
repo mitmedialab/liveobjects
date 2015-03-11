@@ -127,79 +127,6 @@ public class WifiManagerWrapper {
         
         return true;
     }
-
-    
-    public static boolean disconnectFromCurrentNetwork(String ssid, WifiManager wifiMgr, boolean enableOther)
-    {
-        int netid = wifiMgr.getConnectionInfo().getNetworkId();
-        WifiConfiguration config = null;
-        if (netid == -1) {
-            config = getWifiConfigurationBySsid(wifiMgr, convertToQuotedString(ssid));
-            netid = config.networkId;
-        }
-        else {
-            config = getWifiConfigurationByNetworkId(wifiMgr, netid);
-        }
-        // reduce priority
-        config.priority = 0;
-        wifiMgr.updateNetwork(config);
-        wifiMgr.saveConfiguration();
-        
-        // disable current network
-        if (wifiMgr.disableNetwork(netid)) {
-            INFO("disable current network");
-        }
-        else {
-            return false;
-        }
-        
-        // remove current network
-        if (wifiMgr.removeNetwork(netid)){
-            
-            INFO("current network removed");
-            wifiMgr.saveConfiguration();
-            // shift priorities and save
-            shiftPriorityAndSave(wifiMgr);
-        }
-        else {
-            return false;
-        }
-        
-        if (enableOther){
-            WifiConfiguration newnet = getHighPriorityConfiguration(wifiMgr);
-            INFO( "enabling network config = "+newnet);
-            if (newnet != null){
-                // enable others is may be true if we want the wifi to connect ONLY to config.networkId
-                wifiMgr.enableNetwork(newnet.networkId, false);
-            }
-        }
-            
-        return true;
-    }
-
-    private static WifiConfiguration getHighPriorityConfiguration(WifiManager wifiMgr) {
-        WifiConfiguration config = null;
-        
-        List<WifiConfiguration> configs = wifiMgr.getConfiguredNetworks();
-        List<ScanResult> scanResults = wifiMgr.getScanResults();
-        
-        for (WifiConfiguration test:configs){
-            if (config == null){
-                config = test;
-            }
-            else if (test.priority > config.priority){
-                boolean found = false;
-                for (Iterator<ScanResult> it = scanResults.iterator(); it.hasNext() && !found ; ){
-                    if (test.SSID.equals(convertToQuotedString(it.next().SSID))){
-                        config = test;
-                        found = true;
-                    }
-                }
-            }
-        }
-        
-        return config;
-    }
     
     private static void sortByPriority(final List<WifiConfiguration> configurations) {
         java.util.Collections.sort(configurations, new Comparator<WifiConfiguration>() {
@@ -237,8 +164,6 @@ public class WifiManagerWrapper {
         }
         return pri;
     }
-
-
 
     public static WifiConfiguration getWifiConfigurationBySsid(final WifiManager wifiMgr, String ssid)
     {
@@ -288,35 +213,6 @@ public class WifiManagerWrapper {
         return config;
     }
 
-    public static WifiConfiguration getWifiConfiguration(final WifiManager wifiMgr, final ScanResult hotsopt)
-    {
-        final String ssid = convertToQuotedString(hotsopt.SSID);
-        if(ssid.length() == 0) {
-            return null;
-        }
-        
-        final String bssid = hotsopt.BSSID;
-        if(bssid == null) {
-            return null;
-        }
-        
-        final List<WifiConfiguration> configurations = wifiMgr.getConfiguredNetworks();
-        if(configurations == null) {
-            return null;
-        }
-
-        for(final WifiConfiguration config : configurations) {
-            if(config.SSID == null || !ssid.equals(config.SSID)) {
-                continue;
-            }
-            if(config.BSSID == null || bssid.equals(config.BSSID)) {
-                return config;
-            }
-        }
-        return null;
-    }
-
-    
     public static WifiConfiguration getWifiConfiguration(final WifiManager wifiMgr, final WifiConfiguration configToFind)
     {
         final String ssid = configToFind.SSID;
