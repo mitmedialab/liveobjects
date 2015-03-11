@@ -42,6 +42,24 @@ import android.text.TextUtils;
 import android.util.Log;
 
 public class WifiManagerWrapper {
+
+    public static WifiConfiguration addNewNetwork(WifiManager wifiManager, String ssid, String password) {
+        WifiConfiguration oldConfig = getWifiConfigurationBySsid(wifiManager, ssid);
+
+        if (oldConfig != null) {
+            wifiManager.removeNetwork(oldConfig.networkId);
+        }
+
+        WifiConfiguration conf = new WifiConfiguration();
+        conf.SSID = convertToQuotedString(ssid);
+        conf.preSharedKey = convertToQuotedString(password);
+
+        wifiManager.addNetwork(conf);
+        wifiManager.saveConfiguration();
+
+        return getWifiConfigurationBySsid(wifiManager, ssid);
+    }
+
     /**
      * Connect to a configured network.
      * @param wifiManager
@@ -222,8 +240,9 @@ public class WifiManagerWrapper {
 
 
 
-    public static WifiConfiguration getWifiConfigurationBySsid(final WifiManager wifiMgr, final String ssid)
+    public static WifiConfiguration getWifiConfigurationBySsid(final WifiManager wifiMgr, String ssid)
     {
+        ssid = convertToQuotedString(ssid);
         WifiConfiguration config = null;
         boolean found = false;
 

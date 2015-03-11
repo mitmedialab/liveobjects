@@ -92,26 +92,12 @@ public class WifiDriver implements NetworkDriver {
         }
 
         String ssid = WifiUtil.INSTANCE.convertLiveObjectNameToDeviceId(liveObjectName);
-        ssid = "\"" + ssid + "\"";
-        removeDuplicatedNetwork(ssid);
 
-        WifiConfiguration conf = new WifiConfiguration();
-        conf.SSID = ssid;
-        conf.preSharedKey = "\"" + NETWORK_PASSWORD + "\"";
-        mWifiManager.addNetwork(conf);
-        mWifiManager.saveConfiguration();
-
-        List<WifiConfiguration> wifiConfigurationList = mWifiManager.getConfiguredNetworks();
-        for (WifiConfiguration wifiConfiguration : wifiConfigurationList) {
-            if (wifiConfiguration.SSID.equals(conf.SSID)) {
-                conf = wifiConfiguration;
-            }
-        }
-
-        WifiManagerWrapper.connectToConfiguredNetwork(mContext, mWifiManager, conf, true);
+        WifiConfiguration config = WifiManagerWrapper.addNewNetwork(mWifiManager, ssid, NETWORK_PASSWORD);
+        WifiManagerWrapper.connectToConfiguredNetwork(mContext, mWifiManager, config, true);
 
         mConnecting = true;
-        mConnectingNetworkId = conf.networkId;
+        mConnectingNetworkId = config.networkId;
 
         mWifiManager.enableNetwork(mConnectingNetworkId, true);
     }
