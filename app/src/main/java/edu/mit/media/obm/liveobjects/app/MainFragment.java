@@ -1,8 +1,8 @@
     package edu.mit.media.obm.liveobjects.app;
 
     import android.app.ProgressDialog;
-    import android.content.DialogInterface;
-    import android.content.Intent;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -13,18 +13,16 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-    import android.widget.Toast;
+import android.widget.Toast;
 
-    import java.util.ArrayList;
+import java.util.ArrayList;
 import java.util.List;
 
-import edu.mit.media.obm.liveobjects.driver.wifi.WifiDriver;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
-import edu.mit.media.obm.liveobjects.middleware.control.ConnectionListener;
+    import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
+    import edu.mit.media.obm.liveobjects.middleware.control.ConnectionListener;
 import edu.mit.media.obm.liveobjects.middleware.control.DiscoveryListener;
-import edu.mit.media.obm.liveobjects.middleware.control.NetworkBridge;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
-import edu.mit.media.obm.liveobjects.middleware.net.NetworkDriver;
 import edu.mit.media.obm.shair.liveobjects.R;
 
     /**
@@ -47,6 +45,8 @@ import edu.mit.media.obm.shair.liveobjects.R;
 
         private ProgressDialog mConnectingDialog;
 
+        private MiddlewareInterface mMiddleware;
+
         public MainFragment() {
             super();
         }
@@ -55,10 +55,12 @@ import edu.mit.media.obm.shair.liveobjects.R;
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
             setupUIElements(rootView);
             setupUIListeners();
 
-            initMiddleware();
+            mMiddleware = ((LiveObjectsApplication) getActivity().getApplication()).getMiddleware();
+            initNetworkListeners();
 
             return rootView;
         }
@@ -109,11 +111,9 @@ import edu.mit.media.obm.shair.liveobjects.R;
             });
         }
 
-        private void initMiddleware() {
-            //TODO create a middleware class as a wrapper for all controllers
+        private void initNetworkListeners() {
+            mNetworkController = mMiddleware.getNetworkController();
 
-            NetworkDriver networkDriver = new WifiDriver(getActivity());
-            mNetworkController = new NetworkBridge(networkDriver);
             initDiscoveryListener();
             initConnectionListener();
 

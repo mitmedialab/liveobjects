@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,9 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import edu.mit.media.obm.liveobjects.middleware.control.ContentBridge;
+import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
-import edu.mit.media.obm.liveobjects.storage.wifi.WifiStorageDriver;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 
@@ -50,6 +48,7 @@ public class DetailFragment extends Fragment {
     private View mLoadingPanel;
     private TextView mObjectTitleTextView;
 
+    private MiddlewareInterface mMiddleware;
     private ContentController mContentController;
 
     private JSONObject mJSONConfig;
@@ -72,11 +71,8 @@ public class DetailFragment extends Fragment {
         ICON_FILE_NAME = getActivity().getResources().getString(R.string.icon_filename) + ".jpg";
         mediaConfigFileName = getActivity().getResources().getString(R.string.media_config_filename) + ".jso";
 
-        try {
-            mContentController = new ContentBridge(getActivity(),null, new WifiStorageDriver(getActivity()));
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        mMiddleware = ((LiveObjectsApplication)getActivity().getApplication()).getMiddleware();
+        mContentController = mMiddleware.getContentController();
 
         setLiveObjectImage();
         setLiveObjectDescription();
