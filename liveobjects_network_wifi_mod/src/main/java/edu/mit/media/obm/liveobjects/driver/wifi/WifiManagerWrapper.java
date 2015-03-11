@@ -42,22 +42,6 @@ import android.text.TextUtils;
 import android.util.Log;
 
 public class WifiManagerWrapper {
-    
-    // Constants used for different security types
-    public static final String WPA2 = "WPA2";
-    public static final String WPA = "WPA";
-    public static final String WEP = "WEP";
-    public static final String OPEN = "Open";
-    // For EAP Enterprise fields
-    public static final String WPA_EAP = "WPA-EAP";
-    public static final String IEEE8021X = "IEEE8021X";
-
-    public static final String[] EAP_METHOD = { "PEAP", "TLS", "TTLS" };
-    
-    public static final int WEP_PASSWORD_AUTO = 0;
-    public static final int WEP_PASSWORD_ASCII = 1;
-    public static final int WEP_PASSWORD_HEX = 2;
-
     /**
      * Connect to a configured network.
      * @param wifiManager
@@ -174,34 +158,7 @@ public class WifiManagerWrapper {
             
         return true;
     }
-    
-    
-    public static boolean disconnectFromConfiguredNetwork(final Context ctx, final WifiManager wifiMgr, WifiConfiguration config, boolean enableOther) {
-        // disable wifi
-        int netid = config.networkId;
-        INFO( "disable network " + netid);
-        if (wifiMgr.disableNetwork(netid)){
-            INFO("disable current network");
-        }
-        
-        // remove current network
-        if (wifiMgr.removeNetwork(netid)){
-            INFO("current network removed");
-            wifiMgr.saveConfiguration();
-        }
-        
-        
-        if (enableOther){
-            WifiConfiguration other = getHighPriorityConfiguration(wifiMgr);
-            if (other != null){
-                // enable others is may be true if we want the wifi to connect ONLY to config.networkId
-                wifiMgr.enableNetwork(other.networkId, false);
-            }
-        }
-        
-        return true;
-    }
-    
+
     private static WifiConfiguration getHighPriorityConfiguration(WifiManager wifiMgr) {
         WifiConfiguration config = null;
         
@@ -300,7 +257,7 @@ public class WifiManagerWrapper {
         WifiConfiguration config = null;
         boolean found = false;
         List<WifiConfiguration> configs = wifiMgr.getConfiguredNetworks();
-        
+
         for(Iterator<WifiConfiguration> it=configs.iterator();it.hasNext() && !found;){
             WifiConfiguration test = it.next();
             if (test.networkId == netid) {
@@ -308,7 +265,7 @@ public class WifiManagerWrapper {
                 config = test;
             }
         }
-        
+
         return config;
     }
 
