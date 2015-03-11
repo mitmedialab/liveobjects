@@ -57,78 +57,6 @@ public class WifiManagerWrapper {
     public static final int WEP_PASSWORD_AUTO = 0;
     public static final int WEP_PASSWORD_ASCII = 1;
     public static final int WEP_PASSWORD_HEX = 2;
-    
-    /**
-     * Change the password of an existing configured network and connect to it
-     * @param wifiMgr
-     * @param config
-     * @param newPassword
-     * @return
-     */
-    public static boolean changePasswordAndConnect(final Context ctx, final WifiManager wifiMgr, final WifiConfiguration config, final String newPassword, final int numOpenNetworksKept) {
-        setupSecurity(config, getWifiConfigurationSecurity(config), newPassword);
-        final int networkId = wifiMgr.updateNetwork(config);
-        if(networkId == -1) {
-            // Update failed.
-            return false;
-        }
-        
-        return connectToConfiguredNetwork(ctx, wifiMgr, config, true);
-    }
-    
-
-
-    /**
-     * Configure a network, and connect to it.
-     * @param wifiMgr
-     * @param scanResult
-     * @param password Password for secure network or is ignored.
-     * @return
-     */
-    public static boolean connectToNewNetwork(final Context ctx, final WifiManager wifiMgr, final ScanResult scanResult, final String password, final int numOpenNetworksKept)
-    {
-        final String security = getScanResultSecurity(scanResult);
-        String newpass = convertToQuotedString(password);
-        
-        if(security.equals(OPEN)) {
-            checkForExcessOpenNetworkAndSave(wifiMgr, numOpenNetworksKept);
-        }
-
-        WifiConfiguration config = new WifiConfiguration();
-        config.SSID = convertToQuotedString(scanResult.SSID);
-        config.BSSID = scanResult.BSSID;
-        
-        setupSecurity(config, security, newpass);
-        
-        int id = -1;
-
-        try {
-            id = wifiMgr.addNetwork(config);
-        } catch (NullPointerException e) {
-            ERROR("Weird!! Really!! What's wrong??" + e);
-            // Weird!! Really!!
-            // This exception is reported by user to Android Developer Console(https://market.android.com/publish/Home)
-        }
-
-        if(id == -1) {
-            ERROR("unable to add configuration :" + config.toString());
-            return false;
-        }
-        boolean saved = wifiMgr.saveConfiguration();
-        if(!saved) {
-            ERROR("unable to save configuration :"+config.toString());
-            return false;
-        }       
-        config = getWifiConfiguration(wifiMgr, config, security);
-        if(config == null) {
-            return false;
-        }
-        
-        boolean connected = connectToConfiguredNetwork(ctx, wifiMgr, config, true);
-        return connected;
-    }
-    
-
 
     /**
      * Connect to a configured network.
@@ -139,14 +67,12 @@ public class WifiManagerWrapper {
      */
     public static boolean connectToConfiguredNetwork(final Context ctx, final WifiManager wifiMgr, WifiConfiguration config, boolean reassociate)
     {
-        final String security = getWifiConfigurationSecurity(config);
-        
         int oldPri = config.priority;
         // Make it the highest priority.
         int newPri = getMaxPriority(wifiMgr) + 1;
         if(newPri > MAX_PRIORITY) {
             newPri = shiftPriorityAndSave(wifiMgr);
-            config = getWifiConfiguration(wifiMgr, config, security);
+            config = getWifiConfiguration(wifiMgr, config);
             if(config == null) {
                 return false;
             }
@@ -171,7 +97,7 @@ public class WifiManagerWrapper {
         }
         
         // We have to retrieve the WifiConfiguration after save.
-        config = getWifiConfiguration(wifiMgr, config, security);
+        config = getWifiConfiguration(wifiMgr, config);
         if(config == null) {
             return false;
         }
@@ -311,35 +237,6 @@ public class WifiManagerWrapper {
         });
     }
     
-    /**
-     * Ensure no more than numOpenNetworksKept open networks in configuration list.
-     * @param wifiMgr
-     * @param numOpenNetworksKept
-     * @return Operation succeed or not.
-     */
-    private static boolean checkForExcessOpenNetworkAndSave(final WifiManager wifiMgr, final int numOpenNetworksKept) {
-        final List<WifiConfiguration> configurations = wifiMgr.getConfiguredNetworks();
-        sortByPriority(configurations);
-        
-        boolean modified = false;
-        int tempCount = 0;
-        for(int i = configurations.size() - 1; i >= 0; i--) {
-            final WifiConfiguration config = configurations.get(i);
-            if(getWifiConfigurationSecurity(config).equals(OPEN)) {
-                tempCount++;
-                if(tempCount >= numOpenNetworksKept) {
-                    modified = true;
-                    wifiMgr.removeNetwork(config.networkId);
-                }
-            }
-        }
-        if(modified) {
-            return wifiMgr.saveConfiguration();
-        }
-        
-        return true;
-    }
-    
     private static final int MAX_PRIORITY = 99999;
     
     private static int shiftPriorityAndSave(final WifiManager wifiMgr) {
@@ -413,12 +310,9 @@ public class WifiManagerWrapper {
         }
         
         return config;
-        
     }
 
-
-
-    public static WifiConfiguration getWifiConfiguration(final WifiManager wifiMgr, final ScanResult hotsopt, String hotspotSecurity)
+    public static WifiConfiguration getWifiConfiguration(final WifiManager wifiMgr, final ScanResult hotsopt)
     {
         final String ssid = convertToQuotedString(hotsopt.SSID);
         if(ssid.length() == 0) {
@@ -428,10 +322,6 @@ public class WifiManagerWrapper {
         final String bssid = hotsopt.BSSID;
         if(bssid == null) {
             return null;
-        }
-        
-        if(hotspotSecurity == null) {
-            hotspotSecurity = getScanResultSecurity(hotsopt);
         }
         
         final List<WifiConfiguration> configurations = wifiMgr.getConfiguredNetworks();
@@ -444,26 +334,20 @@ public class WifiManagerWrapper {
                 continue;
             }
             if(config.BSSID == null || bssid.equals(config.BSSID)) {
-                final String configSecurity = getWifiConfigurationSecurity(config);
-                if(hotspotSecurity.equals(configSecurity)) {
-                    return config;
-                }
+                return config;
             }
         }
         return null;
     }
 
     
-    public static WifiConfiguration getWifiConfiguration(final WifiManager wifiMgr, final WifiConfiguration configToFind, String security)
+    public static WifiConfiguration getWifiConfiguration(final WifiManager wifiMgr, final WifiConfiguration configToFind)
     {
         final String ssid = configToFind.SSID;
         if (ssid.length() == 0)
             return null;
         
         final String bssid = configToFind.BSSID;
-
-        if(security == null)
-            security = getWifiConfigurationSecurity(configToFind);
 
         final List<WifiConfiguration> configurations = wifiMgr.getConfiguredNetworks();
 
@@ -472,153 +356,10 @@ public class WifiManagerWrapper {
                 continue;
 
             if (config.BSSID == null || bssid == null || bssid.equals(config.BSSID)) {
-                final String configSecurity = getWifiConfigurationSecurity(config);
-                if (security.equals(configSecurity))
-                    return config;
+                return config;
             }
         }
         return null;
-    }
-    
-
-
-    /**
-     * @return The security of a given {@link WifiConfiguration}.
-     */
-    static public String getWifiConfigurationSecurity(WifiConfiguration wifiConfig) {
-
-        if (wifiConfig.allowedKeyManagement.get(KeyMgmt.NONE)) {
-            // If we never set group ciphers, wpa_supplicant puts all of them.
-            // For open, we don't set group ciphers.
-            // For WEP, we specifically only set WEP40 and WEP104, so CCMP
-            // and TKIP should not be there.
-            if (!wifiConfig.allowedGroupCiphers.get(GroupCipher.CCMP)
-                    && (wifiConfig.allowedGroupCiphers.get(GroupCipher.WEP40)
-                            || wifiConfig.allowedGroupCiphers.get(GroupCipher.WEP104))) {
-                return WEP;
-            } else {
-                return OPEN;
-            }
-        } else if (wifiConfig.allowedProtocols.get(Protocol.RSN)) {
-            return WPA2;
-        } else if (wifiConfig.allowedKeyManagement.get(KeyMgmt.WPA_EAP)) {
-            return WPA_EAP;
-        } else if (wifiConfig.allowedKeyManagement.get(KeyMgmt.IEEE8021X)) {
-            return IEEE8021X;
-        } else if (wifiConfig.allowedProtocols.get(Protocol.WPA)) {
-            return WPA;
-        } else {
-            WARN("Unknown security type from WifiConfiguration, falling back on open.");
-            return OPEN;
-        }
-    }
-    
-    /**
-     * Fill in the security fields of WifiConfiguration config.
-     * @param config The object to fill.
-     * @param security If is OPEN, password is ignored.
-     * @param password Password of the network if security is not OPEN.
-     */
-    static public void setupSecurity(WifiConfiguration config, String security, final String password)
-    {
-        config.allowedAuthAlgorithms.clear();
-        config.allowedGroupCiphers.clear();
-        config.allowedKeyManagement.clear();
-        config.allowedPairwiseCiphers.clear();
-        config.allowedProtocols.clear();
-        
-        if (TextUtils.isEmpty(security) || TextUtils.isEmpty(password)) {
-            security = OPEN;
-            WARN("Empty security, assuming open");
-        }
-        
-        if (security.equals(WEP)) {
-             int wepPasswordType = WEP_PASSWORD_AUTO;
-            // If password is empty, it should be left untouched
-            if (!TextUtils.isEmpty(password)) {
-                if (wepPasswordType == WEP_PASSWORD_AUTO) {
-                    if (isHexWepKey(password)) {
-                        config.wepKeys[0] = password;
-                    } else {
-                        config.wepKeys[0] = convertToQuotedString(password);
-                    }
-                } else {
-                    config.wepKeys[0] = wepPasswordType == WEP_PASSWORD_ASCII
-                            ? convertToQuotedString(password)
-                            : password;
-                }
-            }
-            
-            config.wepTxKeyIndex = 0;
-            
-            config.allowedAuthAlgorithms.set(AuthAlgorithm.OPEN);
-            config.allowedAuthAlgorithms.set(AuthAlgorithm.SHARED);
-
-            config.allowedKeyManagement.set(KeyMgmt.NONE);
-            
-            config.allowedGroupCiphers.set(GroupCipher.WEP40);
-            config.allowedGroupCiphers.set(GroupCipher.WEP104);
-            
-        } else if (security.equals(WPA) || security.equals(WPA2)) {
-            
-            config.allowedGroupCiphers.set(GroupCipher.TKIP);
-            config.allowedGroupCiphers.set(GroupCipher.CCMP);
-            
-            config.allowedKeyManagement.set(KeyMgmt.WPA_PSK);
-            
-            config.allowedPairwiseCiphers.set(PairwiseCipher.CCMP);
-            config.allowedPairwiseCiphers.set(PairwiseCipher.TKIP);
-
-            config.allowedProtocols.set(security.equals(WPA2) ? Protocol.RSN : Protocol.WPA);
-            
-            // If password is empty, it should be left untouched
-            if (!TextUtils.isEmpty(password)) {
-                if (password.length() == 64 && isHex(password)) {
-                    // Goes unquoted as hex
-                    config.preSharedKey = password;
-                } else {
-                    // Goes quoted as ASCII
-                    //config.preSharedKey = convertToQuotedString(password);
-                    config.preSharedKey = password;
-                }
-            }
-            
-        } else if (security.equals(OPEN)) {
-            config.allowedKeyManagement.set(KeyMgmt.NONE);
-        } else if (security.equals(WPA_EAP) || security.equals(IEEE8021X)) {
-            config.allowedGroupCiphers.set(GroupCipher.TKIP);
-            config.allowedGroupCiphers.set(GroupCipher.CCMP);
-            if (security.equals(WPA_EAP)) {
-                config.allowedKeyManagement.set(KeyMgmt.WPA_EAP);
-            } else {
-                config.allowedKeyManagement.set(KeyMgmt.IEEE8021X);
-            }
-            if (!TextUtils.isEmpty(password)) {
-                config.preSharedKey = convertToQuotedString(password);
-            }
-        }
-    }
-    
-    private static boolean isHexWepKey(String wepKey) {
-        final int len = wepKey.length();
-        
-        // WEP-40, WEP-104, and some vendors using 256-bit WEP (WEP-232?)
-        if (len != 10 && len != 26 && len != 58) {
-            return false;
-        }
-        
-        return isHex(wepKey);
-    }
-    
-    private static boolean isHex(String key) {
-        for (int i = key.length() - 1; i >= 0; i--) {
-            final char c = key.charAt(i);
-            if (!(c >= '0' && c <= '9' || c >= 'A' && c <= 'F' || c >= 'a' && c <= 'f')) {
-                return false;
-            }
-        }
-        
-        return true;
     }
     
     public static String convertToQuotedString(String string)
@@ -634,23 +375,6 @@ public class WifiManagerWrapper {
         
         return "\"" + string + "\"";
     }
-    
-    static final String[] SECURITY_MODES = { WEP, WPA, WPA2, WPA_EAP, IEEE8021X };
-    
-    /**
-     * @return The security of a given {@link ScanResult}.
-     */
-    public static String getScanResultSecurity(ScanResult scanResult) {
-        final String cap = scanResult.capabilities;
-        for (int i = SECURITY_MODES.length - 1; i >= 0; i--) {
-            if (cap.contains(SECURITY_MODES[i])) {
-                return SECURITY_MODES[i];
-            }
-        }
-        
-        return OPEN;
-    }
-
 
     private final static String TAG = "Wifiutils:MP2PWifi";
 
