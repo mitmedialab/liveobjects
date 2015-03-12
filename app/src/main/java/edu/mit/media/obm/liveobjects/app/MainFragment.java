@@ -68,7 +68,7 @@ public class MainFragment extends Fragment {
     private void setupUIElements(View rootView) {
         mLiveObjectsListView = (ListView) rootView.findViewById(R.id.live_objects_list_view);
         mLiveObjectNamesList = new ArrayList<>();
-        mAdapter = new ArrayAdapter<LiveObject>(getActivity(), R.layout.list_item_live_objects, R.id.list_item_title_textview, mLiveObjectNamesList);
+        mAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_live_objects, R.id.list_item_title_textview, mLiveObjectNamesList);
         mLiveObjectsListView.setAdapter(mAdapter);
         mSwipeLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
         mSwipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
