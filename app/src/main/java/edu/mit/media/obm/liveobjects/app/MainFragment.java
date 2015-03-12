@@ -1,6 +1,6 @@
-    package edu.mit.media.obm.liveobjects.app;
+package edu.mit.media.obm.liveobjects.app;
 
-    import android.app.ProgressDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,189 +19,189 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
-    import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
-    import edu.mit.media.obm.liveobjects.middleware.control.ConnectionListener;
+import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
+import edu.mit.media.obm.liveobjects.middleware.control.ConnectionListener;
 import edu.mit.media.obm.liveobjects.middleware.control.DiscoveryListener;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
 import edu.mit.media.obm.shair.liveobjects.R;
 
-    /**
-     * Created by Valerio Panzica La Manna on 08/12/14.     *
-     */
-    public class MainFragment extends Fragment {
-        private static final String LOG_TAG = MainFragment.class.getSimpleName();
+/**
+ * Created by Valerio Panzica La Manna on 08/12/14.
+ */
+public class MainFragment extends Fragment {
+    private static final String LOG_TAG = MainFragment.class.getSimpleName();
 
-        private static final int DETAIL_ACTIVITY_REQUEST_CODE = 1;
+    private static final int DETAIL_ACTIVITY_REQUEST_CODE = 1;
 
-        private SwipeRefreshLayout mSwipeLayout;
-        private ListView mLiveObjectsListView;
+    private SwipeRefreshLayout mSwipeLayout;
+    private ListView mLiveObjectsListView;
 
-        private ArrayAdapter<LiveObject> mAdapter;
-        private ArrayList<LiveObject> mLiveObjectNamesList;
+    private ArrayAdapter<LiveObject> mAdapter;
+    private ArrayList<LiveObject> mLiveObjectNamesList;
 
-        private NetworkController mNetworkController;
+    private NetworkController mNetworkController;
 
-        private LiveObject mSelectedLiveObject;
+    private LiveObject mSelectedLiveObject;
 
-        private ProgressDialog mConnectingDialog;
+    private ProgressDialog mConnectingDialog;
 
-        private MiddlewareInterface mMiddleware;
+    private MiddlewareInterface mMiddleware;
 
-        public MainFragment() {
-            super();
-        }
+    public MainFragment() {
+        super();
+    }
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-            setupUIElements(rootView);
-            setupUIListeners();
+        setupUIElements(rootView);
+        setupUIListeners();
 
-            mMiddleware = ((LiveObjectsApplication) getActivity().getApplication()).getMiddleware();
-            initNetworkListeners();
+        mMiddleware = ((LiveObjectsApplication) getActivity().getApplication()).getMiddleware();
+        initNetworkListeners();
 
-            return rootView;
-        }
+        return rootView;
+    }
 
-        private void setupUIElements(View rootView) {
-            mLiveObjectsListView = (ListView) rootView.findViewById(R.id.live_objects_list_view);
-            mLiveObjectNamesList = new ArrayList<>();
-            mAdapter = new ArrayAdapter<LiveObject>(getActivity(), R.layout.list_item_live_objects, R.id.list_item_title_textview, mLiveObjectNamesList);
-            mLiveObjectsListView.setAdapter(mAdapter);
-            mSwipeLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
-            mSwipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
-                    android.R.color.holo_green_light,
-                    android.R.color.holo_orange_light,
-                    android.R.color.holo_red_light);
+    private void setupUIElements(View rootView) {
+        mLiveObjectsListView = (ListView) rootView.findViewById(R.id.live_objects_list_view);
+        mLiveObjectNamesList = new ArrayList<>();
+        mAdapter = new ArrayAdapter<LiveObject>(getActivity(), R.layout.list_item_live_objects, R.id.list_item_title_textview, mLiveObjectNamesList);
+        mLiveObjectsListView.setAdapter(mAdapter);
+        mSwipeLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
+        mSwipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
 
-            mConnectingDialog = new ProgressDialog(getActivity());
-            mConnectingDialog.setIndeterminate(true);
-            mConnectingDialog.setCancelable(true);
-            mConnectingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    mNetworkController.cancelConnecting();
+        mConnectingDialog = new ProgressDialog(getActivity());
+        mConnectingDialog.setIndeterminate(true);
+        mConnectingDialog.setCancelable(true);
+        mConnectingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                mNetworkController.cancelConnecting();
+            }
+        });
+    }
+
+    private void setupUIListeners() {
+        // when refreshing start a new discovery
+        mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mNetworkController.startDiscovery();
+            }
+        });
+
+        // when a live object appearing in the list is clicked, connect to it
+        mLiveObjectsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mSelectedLiveObject = mLiveObjectNamesList.get(position);
+
+                mConnectingDialog.setMessage(
+                        "Connecting to " + mSelectedLiveObject.getLiveObjectName());
+                mConnectingDialog.show();
+
+                mNetworkController.connect(mSelectedLiveObject);
+            }
+        });
+    }
+
+    private void initNetworkListeners() {
+        mNetworkController = mMiddleware.getNetworkController();
+
+        initDiscoveryListener();
+        initConnectionListener();
+
+
+    }
+
+    private void initDiscoveryListener() {
+        mNetworkController.setDiscoveryListener(new DiscoveryListener() {
+            @Override
+            public void onDiscoveryStarted() {
+                Log.d(LOG_TAG, "discovery started");
+            }
+
+            @Override
+            public void onLiveObjectsDiscovered(List<LiveObject> liveObjectList) {
+                Log.d(LOG_TAG, "discovery successfully completed");
+                mLiveObjectNamesList.clear();
+                for (LiveObject liveObject : liveObjectList) {
+                    mLiveObjectNamesList.add(liveObject);
                 }
-            });
-        }
+                mAdapter.notifyDataSetChanged();
+                mSwipeLayout.setRefreshing(false);
 
-        private void setupUIListeners() {
-            // when refreshing start a new discovery
-            mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    mNetworkController.startDiscovery();
-                }
-            });
+            }
+        });
+    }
 
-            // when a live object appearing in the list is clicked, connect to it
-            mLiveObjectsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    mSelectedLiveObject = mLiveObjectNamesList.get(position);
+    private void initConnectionListener() {
+        mNetworkController.setConnectionListener(new ConnectionListener() {
+            @Override
+            public void onConnected(LiveObject connectedLiveObject) {
+                if (connectedLiveObject.equals(mSelectedLiveObject)) {
+                    // when the selected live objected is connected
+                    // start the corresponding detail activity
+                    Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
+                    //TODO
+                    //detailIntent.putExtra(LiveObjectsManager.EXTRA_LIVE_OBJECT, connectedLiveObject);
+                    startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
+                    mSelectedLiveObject = null;
 
-                    mConnectingDialog.setMessage(
-                            "Connecting to " + mSelectedLiveObject.getLiveObjectName());
-                    mConnectingDialog.show();
-
-                    mNetworkController.connect(mSelectedLiveObject);
-                }
-            });
-        }
-
-        private void initNetworkListeners() {
-            mNetworkController = mMiddleware.getNetworkController();
-
-            initDiscoveryListener();
-            initConnectionListener();
-
-
-        }
-
-        private void initDiscoveryListener() {
-            mNetworkController.setDiscoveryListener( new DiscoveryListener() {
-                @Override
-                public void onDiscoveryStarted() {
-                    Log.d(LOG_TAG, "discovery started");
-                }
-
-                @Override
-                public void onLiveObjectsDiscovered(List<LiveObject> liveObjectList) {
-                    Log.d(LOG_TAG, "discovery successfully completed");
-                    mLiveObjectNamesList.clear();
-                    for (LiveObject liveObject: liveObjectList) {
-                        mLiveObjectNamesList.add(liveObject);
-                    }
-                    mAdapter.notifyDataSetChanged();
-                    mSwipeLayout.setRefreshing(false);
-
-                }
-            });
-        }
-
-        private void initConnectionListener() {
-            mNetworkController.setConnectionListener(new ConnectionListener() {
-                @Override
-                public void onConnected(LiveObject connectedLiveObject) {
-                    if (connectedLiveObject.equals(mSelectedLiveObject)) {
-                        // when the selected live objected is connected
-                        // start the corresponding detail activity
-                        Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
-                        //TODO
-                        //detailIntent.putExtra(LiveObjectsManager.EXTRA_LIVE_OBJECT, connectedLiveObject);
-                        startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
-                        mSelectedLiveObject = null;
-
-                        mConnectingDialog.dismiss();
-                    }
-
-                }
-            });
-        }
-
-        @Override
-        public void onStart() {
-            super.onStart();
-            mNetworkController.start();
-            mNetworkController.startDiscovery();
-        }
-
-
-        @Override
-        public void onStop() {
-            mNetworkController.stop();
-            super.onStop();
-
-        }
-
-        @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-            Log.v(LOG_TAG, String.format("onActivityResult(requestCode=%d)", requestCode));
-            super.onActivityResult(requestCode, resultCode, intent);
-
-            if (requestCode == DETAIL_ACTIVITY_REQUEST_CODE) {
-                Log.v(LOG_TAG, "returned from DetailActivity");
-                final String errorMessage;
-
-                if (resultCode == DetailActivity.RESULT_CONNECTION_ERROR) {
-                    errorMessage = "a network error in the live object";
-                } else if (resultCode == DetailActivity.RESULT_JSON_ERROR) {
-                    errorMessage = "An error in the contents in the live object";
-                } else {
-                    errorMessage = null;
+                    mConnectingDialog.dismiss();
                 }
 
-                if (errorMessage != null) {
-                    getActivity().runOnUiThread(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                }
+            }
+        });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mNetworkController.start();
+        mNetworkController.startDiscovery();
+    }
+
+
+    @Override
+    public void onStop() {
+        mNetworkController.stop();
+        super.onStop();
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        Log.v(LOG_TAG, String.format("onActivityResult(requestCode=%d)", requestCode));
+        super.onActivityResult(requestCode, resultCode, intent);
+
+        if (requestCode == DETAIL_ACTIVITY_REQUEST_CODE) {
+            Log.v(LOG_TAG, "returned from DetailActivity");
+            final String errorMessage;
+
+            if (resultCode == DetailActivity.RESULT_CONNECTION_ERROR) {
+                errorMessage = "a network error in the live object";
+            } else if (resultCode == DetailActivity.RESULT_JSON_ERROR) {
+                errorMessage = "An error in the contents in the live object";
+            } else {
+                errorMessage = null;
+            }
+
+            if (errorMessage != null) {
+                getActivity().runOnUiThread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+                            }
+                        });
             }
         }
     }
+}
