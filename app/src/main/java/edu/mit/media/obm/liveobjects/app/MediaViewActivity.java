@@ -1,5 +1,6 @@
 package edu.mit.media.obm.liveobjects.app;
 
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -76,8 +77,9 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        // TODO when the media content has been completed launch the wrap up page
-
+        // when media is completed go to the wrap up activity
+        Intent intent = new Intent(this, WrapUpActivity.class);
+        startActivity(intent);
 
     }
 
