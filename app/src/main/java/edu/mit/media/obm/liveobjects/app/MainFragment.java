@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -34,7 +35,7 @@ public class MainFragment extends Fragment {
     private static final int DETAIL_ACTIVITY_REQUEST_CODE = 1;
 
     private SwipeRefreshLayout mSwipeLayout;
-    private ListView mLiveObjectsListView;
+    private GridView mLiveObjectsGridView;
 
     private ArrayAdapter<LiveObject> mAdapter;
     private ArrayList<LiveObject> mLiveObjectNamesList;
@@ -66,10 +67,10 @@ public class MainFragment extends Fragment {
     }
 
     private void setupUIElements(View rootView) {
-        mLiveObjectsListView = (ListView) rootView.findViewById(R.id.live_objects_list_view);
+        mLiveObjectsGridView = (GridView) rootView.findViewById(R.id.live_objects_list_view);
         mLiveObjectNamesList = new ArrayList<>();
-        mAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_live_objects, R.id.list_item_title_textview, mLiveObjectNamesList);
-        mLiveObjectsListView.setAdapter(mAdapter);
+        mAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_live_objects, R.id.grid_item_title_textview, mLiveObjectNamesList);
+        mLiveObjectsGridView.setAdapter(mAdapter);
         mSwipeLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
         mSwipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
@@ -97,7 +98,7 @@ public class MainFragment extends Fragment {
         });
 
         // when a live object appearing in the list is clicked, connect to it
-        mLiveObjectsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mLiveObjectsGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mSelectedLiveObject = mLiveObjectNamesList.get(position);

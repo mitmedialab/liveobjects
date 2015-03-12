@@ -9,12 +9,16 @@
     android:background="@color/background_material_dark">
 
 
-        <ListView
+        <GridView
             android:id="@+id/live_objects_list_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:columnWidth="160dp"
+            android:numColumns="auto_fit"
+            android:horizontalSpacing="20dp"
+            android:verticalSpacing="20dp"
+            android:stretchMode="columnWidth"
             android:background="@color/background_material_light">
-
-        </ListView>
+        </GridView>
 
 </android.support.v4.widget.SwipeRefreshLayout>
