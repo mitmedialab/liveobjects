@@ -18,8 +18,6 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * Created by arata on 3/13/15.
  */
 public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
-    final private static int ANIMATION_DURATION = 2000;
-
     private Context mContext;
     private LayoutInflater mInflater;
     private int mResource;
@@ -60,7 +58,7 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
         holder.mTextView.setText(text);
 
         Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.bounce_scale);
-        animation.setDuration(ANIMATION_DURATION);
+        animation.setInterpolator(new SpringInterpolator());
         convertView.startAnimation(animation);
 
         return convertView;
