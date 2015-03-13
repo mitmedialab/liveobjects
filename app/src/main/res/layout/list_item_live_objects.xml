@@ -3,7 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <ImageView
+    <edu.mit.media.obm.liveobjects.app.widget.RoundedImageView
         android:id="@+id/grid_item_icon"
         android:layout_width="160dp"
         android:layout_height="160dp"
