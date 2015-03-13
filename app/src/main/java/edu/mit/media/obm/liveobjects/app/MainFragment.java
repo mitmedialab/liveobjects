@@ -13,12 +13,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.mit.media.obm.liveobjects.app.widget.AnimationArrayAdapter;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ConnectionListener;
@@ -69,7 +69,8 @@ public class MainFragment extends Fragment {
     private void setupUIElements(View rootView) {
         mLiveObjectsGridView = (GridView) rootView.findViewById(R.id.live_objects_list_view);
         mLiveObjectNamesList = new ArrayList<>();
-        mAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_live_objects, R.id.grid_item_title_textview, mLiveObjectNamesList);
+        mAdapter = new AnimationArrayAdapter<>(getActivity(), R.layout.list_item_live_objects,
+                R.id.grid_item_title_textview, mLiveObjectNamesList);
         mLiveObjectsGridView.setAdapter(mAdapter);
         mSwipeLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
         mSwipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
