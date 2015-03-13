@@ -48,35 +48,32 @@ public class RoundedImageView extends ImageView {
         Bitmap scaledBitmap = (bitmap.getWidth() != radius || bitmap.getHeight() != radius ?
                 Bitmap.createScaledBitmap(bitmap, radius, radius, false) : bitmap);
 
-        Bitmap resultBitmap = Bitmap.createBitmap(
-                scaledBitmap.getWidth(), scaledBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(resultBitmap);
-
-        final int color = 0xffa19774;
         final Paint paint = new Paint();
         final Rect rect = new Rect(0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight());
+        final float circleX = scaledBitmap.getWidth() / 2 + 0.7f;
+        final float circleY = scaledBitmap.getHeight() / 2 + 0.7f;
+        final float circleRadius = scaledBitmap.getWidth() / 2 * 0.9f;
 
         paint.setAntiAlias(true);
         paint.setFilterBitmap(true);
         paint.setDither(true);
         paint.setColor(Color.parseColor("#BAB399"));
-        canvas.drawARGB(0, 0, 0, 0);
+
+        Bitmap resultBitmap = Bitmap.createBitmap(
+                scaledBitmap.getWidth(), scaledBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(resultBitmap);
+        Bitmap shadowBitmap = resultBitmap.copy(resultBitmap.getConfig(), true);
+        Canvas shadowCanvas = new Canvas(shadowBitmap);
 
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
-        canvas.drawCircle(scaledBitmap.getWidth() / 2 + 0.7f, scaledBitmap.getHeight() / 2 + 0.7f,
-                scaledBitmap.getWidth() / 2 + 0.1f, paint);
+        canvas.drawCircle(circleX, circleY, circleRadius, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(scaledBitmap, rect, rect, paint);
 
-        paint.setShadowLayer(10.0f, 0.0f, 5.0f, 0xff000000);
+        paint.setShadowLayer(6.0f, 0.0f, 4.0f, 0xff000000);
 
-        Bitmap shadowBitmap = Bitmap.createBitmap(
-                scaledBitmap.getWidth(), scaledBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas shadowCanvas = new Canvas(shadowBitmap);
-        shadowCanvas.drawARGB(0, 0, 0, 0);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
-        shadowCanvas.drawCircle(scaledBitmap.getWidth() / 2 + 0.7f, scaledBitmap.getHeight() / 2 + 0.7f,
-                scaledBitmap.getWidth() / 2 + 0.1f, paint);
+        shadowCanvas.drawCircle(circleX, circleY, circleRadius, paint);
 
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER));
         shadowCanvas.drawBitmap(resultBitmap, rect, rect, paint);
