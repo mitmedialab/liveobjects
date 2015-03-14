@@ -18,7 +18,7 @@
             android:horizontalSpacing="15dp"
             android:verticalSpacing="15dp"
             android:stretchMode="columnWidth"
-            android:background="@color/background_material_light">
+            android:background="@color/theme_pale_orange">
         </GridView>
 
 </android.support.v4.widget.SwipeRefreshLayout>

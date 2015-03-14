@@ -10,16 +10,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.mit.media.obm.liveobjects.app.widget.AnimationArrayAdapter;
+import edu.mit.media.obm.liveobjects.app.widget.ExpandIconAnimation;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ConnectionListener;
@@ -110,6 +113,11 @@ public class MainFragment extends Fragment {
                 mConnectingDialog.show();
 
                 mNetworkController.connect(mSelectedLiveObject);
+
+                Animation animation = new ExpandIconAnimation(
+                        getActivity().getWindowManager(), view).getAnimation();
+                view.setAnimation(animation);
+                animation.start();
             }
         });
     }
