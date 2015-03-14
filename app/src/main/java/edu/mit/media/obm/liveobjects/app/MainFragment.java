@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -119,7 +120,13 @@ public class MainFragment extends Fragment {
         initDiscoveryListener();
         initConnectionListener();
 
+        // p    opulate with dummy
+        for (int i = 0; i < 10; i++) {
+            LiveObject liveObject = new LiveObject("test" + i);
+            mLiveObjectNamesList.add(liveObject);
+        }
 
+        mAdapter.notifyDataSetChanged();
     }
 
     private void initDiscoveryListener() {
@@ -138,7 +145,6 @@ public class MainFragment extends Fragment {
                 }
                 mAdapter.notifyDataSetChanged();
                 mSwipeLayout.setRefreshing(false);
-
             }
         });
     }

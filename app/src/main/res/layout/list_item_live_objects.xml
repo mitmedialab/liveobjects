@@ -5,8 +5,8 @@
 
     <edu.mit.media.obm.liveobjects.app.widget.RoundedImageView
         android:id="@+id/grid_item_icon"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:src="@drawable/ic_launcher" />
 
     <TextView
@@ -20,6 +20,6 @@
         android:layout_margin="1dp"
         android:gravity="center"
         android:fontFamily="sans-serif-condensed"
-        android:textSize="28sp"
+        android:textSize="26sp"
         android:text="Colosseum" />
 </RelativeLayout>

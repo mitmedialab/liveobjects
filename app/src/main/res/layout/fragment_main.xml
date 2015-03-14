@@ -13,10 +13,10 @@
             android:id="@+id/live_objects_list_view"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:columnWidth="160dp"
+            android:columnWidth="100dp"
             android:numColumns="auto_fit"
-            android:horizontalSpacing="20dp"
-            android:verticalSpacing="20dp"
+            android:horizontalSpacing="15dp"
+            android:verticalSpacing="15dp"
             android:stretchMode="columnWidth"
             android:background="@color/background_material_light">
         </GridView>

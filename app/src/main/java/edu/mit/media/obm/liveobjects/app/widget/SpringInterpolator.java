@@ -14,7 +14,7 @@ public class SpringInterpolator implements Interpolator {
     public float getInterpolation(float t) {
         double sin = Math.sin(Math.PI * (2.0 * t * 4.0 - 0.5));
         double amplitude = Math.exp(-t * 10.0);
-        Log.v("Spring", t + ", " + amplitude + ", " + sin + ", " + amplitude * sin + 1.0);
+
         return (float)(amplitude * sin + 1.0);
     }
 }
