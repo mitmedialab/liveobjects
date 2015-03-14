@@ -73,7 +73,7 @@ public class VideoViewFragment extends Fragment {
 
         mvideoView = (VideoView) rootView.findViewById(R.id.myVideo);
 
-        MediaController videoControl = new MediaController(getActivity());
+        final MediaController videoControl = new MediaController(getActivity());
         videoControl.setAnchorView(mvideoView);
         mvideoView.setMediaController(videoControl);
         mvideoView.setOnCompletionListener(mListener);
@@ -87,6 +87,7 @@ public class VideoViewFragment extends Fragment {
                 mvideoView.setVideoURI(vidUri);
                 Log.i(LOG_TAG, "setting video: " + vidUri.toString());
                 mvideoView.start();
+
                 return null;
 
             }
