@@ -108,11 +108,11 @@ public class MainFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mSelectedLiveObject = mLiveObjectNamesList.get(position);
 
-                mConnectingDialog.setMessage(
-                        "Connecting to " + mSelectedLiveObject.getLiveObjectName());
-                mConnectingDialog.show();
-
-                mNetworkController.connect(mSelectedLiveObject);
+//                mConnectingDialog.setMessage(
+//                        "Connecting to " + mSelectedLiveObject.getLiveObjectName());
+//                mConnectingDialog.show();
+//
+//                mNetworkController.connect(mSelectedLiveObject);
 
                 Animation animation = new ExpandIconAnimation(
                         getActivity().getWindowManager(), view).getAnimation();
