@@ -23,11 +23,14 @@ public class ExpandIconAnimation {
 
 
     public ExpandIconAnimation(WindowManager windowManager, View view) {
-        Animation translateAnimation = createMoveToCenterAnimation(windowManager, view);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+
+        Animation translateAnimation = createMoveToCenterAnimation(displayMetrics, view);
         translateAnimation.setDuration(TRANSLATE_DURATION);
         translateAnimation.setStartOffset(TRANSLATE_OFFISET);
 
-        Animation expandAnimation = createExpandAnimation(windowManager, view);
+        Animation expandAnimation = createExpandAnimation(displayMetrics, view);
         expandAnimation.setDuration(EXPAND_DURATION);
         expandAnimation.setStartOffset(EXPAND_OFFSET);
 
@@ -36,26 +39,24 @@ public class ExpandIconAnimation {
         mAnimationSet.addAnimation(expandAnimation);
     }
 
-    private Animation createMoveToCenterAnimation(WindowManager windowManager, View view) {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-
+    private Animation createMoveToCenterAnimation(DisplayMetrics displayMetrics, View view) {
         int xDest = displayMetrics.widthPixels / 2 - view.getMeasuredWidth() / 2;
         int yDest = displayMetrics.heightPixels / 2 - view.getMeasuredHeight() / 2;
 
         int originalPos[] = new int[2];
         view.getLocationOnScreen(originalPos);
 
-        Animation animation = new TranslateAnimation( 0, xDest - originalPos[0] , 0, yDest - originalPos[1] );
+        Animation animation = new TranslateAnimation(0, xDest - originalPos[0] , 0, yDest - originalPos[1]);
 
         return animation;
     }
 
-    private Animation createExpandAnimation(WindowManager windowManager, View view) {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-
-        float scale = 10.0f;
+    private Animation createExpandAnimation(DisplayMetrics displayMetrics, View view) {
+        float diagonalLength = (float)Math.sqrt(Math.pow(displayMetrics.widthPixels, 2) +
+            Math.pow(displayMetrics.heightPixels, 2));
+        float scale = diagonalLength / view.getMeasuredWidth() * 1.4f;
+        Log.v(getClass().getSimpleName(), String.format("displayMetrics = (%d, %d)", displayMetrics.widthPixels, displayMetrics.heightPixels));
+        Log.v(getClass().getSimpleName(), String.format("diagonalLength = %f, width = %d, scale = %f", diagonalLength, view.getMeasuredWidth(), scale));
 
         float xDest = displayMetrics.widthPixels / 2 - view.getMeasuredWidth() / 2 / (scale * 2);
         float yDest = displayMetrics.heightPixels / 2 - view.getMeasuredHeight() / 2 / (scale * 2);
