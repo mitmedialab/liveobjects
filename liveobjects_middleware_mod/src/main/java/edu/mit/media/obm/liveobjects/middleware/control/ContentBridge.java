@@ -1,6 +1,7 @@
 package edu.mit.media.obm.liveobjects.middleware.control;
 
 import android.content.Context;
+import android.os.AsyncTask;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,8 +29,32 @@ public class ContentBridge implements ContentController {
 
     @Override
     public void putSerializableContent(String contentId, Serializable content) {
-        // TODO
+        // TODO check if contentId already present?
+        // TODO create a file named with contentId
+        // TODO add content to the file
+        // TODO send the file to the live object
+
+
+
+
         throw  new UnsupportedOperationException();
+    }
+
+    @Override
+    public void putStringContent(final String contentId,final String folder,final String stringContent) {
+
+        new AsyncTask<Void,Void,Void>(){
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    mRemoteStorageDriver.writeNewRawFileFromString(contentId,folder,stringContent);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        }.execute();
+
     }
 
     @Override

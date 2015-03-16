@@ -17,6 +17,8 @@ public interface ContentController {
      */
     void putSerializableContent(String contentId, Serializable content);
 
+    void putStringContent(String contentId, String folder, String stringContent);
+
 
     /**
      * Get serializable content from the live-object

@@ -7,6 +7,7 @@ import android.os.RemoteException;
 import android.text.format.Formatter;
 import android.util.Log;
 
+
 /**
  * @author Arata Miyamoto <arata@media.mit.edu>
  */
@@ -29,11 +30,16 @@ public class WifiStorageConfig {
         }
     }
 
-    public static String getBasePath(Context context) throws RemoteException {
-        return getBasePath(new ContextWrapper(context));
+    public static String getBasePath(Context context) throws RemoteException{
+        ContextWrapper contextWrapper = new ContextWrapper(context);
+        return String.format("http://%s/",getGatewayIpAddress(contextWrapper));
     }
 
-    public static String getBasePath(ContextWrapper contextWrapper) throws RemoteException {
+    public static String getBaseFolderPath(Context context) throws RemoteException {
+        return getBaseFolderPath(new ContextWrapper(context));
+    }
+
+    public static String getBaseFolderPath(ContextWrapper contextWrapper) throws RemoteException {
         return String.format("http://%s/%s",
                 getGatewayIpAddress(contextWrapper), getMediaFolderName(contextWrapper));
     }

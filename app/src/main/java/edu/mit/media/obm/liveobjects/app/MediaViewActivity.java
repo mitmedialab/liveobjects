@@ -67,7 +67,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 
         try {
             //TODO to change: the app cannot directly talk with the driver
-            fileUrl = WifiStorageConfig.getBasePath(this) + "/" + filename ;
+            fileUrl = WifiStorageConfig.getBaseFolderPath(this) + "/" + filename ;
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new RuntimeException("An unrecoverable error was thrown");

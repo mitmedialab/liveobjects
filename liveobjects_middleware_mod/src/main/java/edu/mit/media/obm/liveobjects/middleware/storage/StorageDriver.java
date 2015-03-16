@@ -2,6 +2,7 @@ package edu.mit.media.obm.liveobjects.middleware.storage;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
@@ -16,7 +17,20 @@ public interface StorageDriver {
      * @param stream   Stream to be put into the file
      * @throws java.io.IOException if there was an error while writing the file
      */
-     void writeNewRawFileFromStream(String fileName, InputStream stream) throws IOException;
+    void writeNewRawFileFromStream(String fileName, OutputStream stream) throws IOException;
+
+    /**
+     * Write a file using the content of the specified string.
+     * If the file exists, it is replaced.
+     * If the file does not exist, it is created.
+     *
+     * @param fileName name of the file
+     * @param folderName name of the folder to be put into the file
+     * @param bodyString text to be contained in the file
+     * @throws java.io.IOException if there was an error while writing the file
+     */
+    void writeNewRawFileFromString(String fileName, String folderName, String bodyString) throws IOException;
+
 
     /**
      * Create an input stream associated with the file. It will be used to read

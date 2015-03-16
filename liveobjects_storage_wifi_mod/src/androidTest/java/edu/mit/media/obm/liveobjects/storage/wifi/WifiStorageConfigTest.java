@@ -37,7 +37,7 @@ public class WifiStorageConfigTest extends ApplicationTestCase<Application> {
     }
 
     public void testGetBasePath() throws RemoteException {
-        String basePath = WifiStorageConfig.getBasePath(mMockContextWrapper);
+        String basePath = WifiStorageConfig.getBaseFolderPath(mMockContextWrapper);
         Assert.assertEquals("http://192.168.100.30/base_dir", basePath);
     }
 
@@ -45,7 +45,7 @@ public class WifiStorageConfigTest extends ApplicationTestCase<Application> {
         Mockito.when(mMockWifiManager.getDhcpInfo()).thenReturn(null);
 
         try {
-            WifiStorageConfig.getBasePath(mMockContextWrapper);
+            WifiStorageConfig.getBaseFolderPath(mMockContextWrapper);
             Assert.fail("RemoteException error should be thrown.");
         } catch (RemoteException exception) {
         }

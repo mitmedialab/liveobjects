@@ -4,12 +4,14 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 
@@ -17,6 +19,8 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public class CommentsFragment extends Fragment{
+
+    private final static String LOG_TAG = CommentsFragment.class.getSimpleName();
 
 
     AlertDialog.Builder mAddCommentAlert;
@@ -45,7 +49,10 @@ public class CommentsFragment extends Fragment{
         alert.setPositiveButton("Send", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //TODO send comment to the live object
+                LiveObjectsApplication application = (LiveObjectsApplication) getActivity().getApplication();
+                ContentController contentController = application.getMiddleware().getContentController();
+                Log.d(LOG_TAG, "ADDING COMMENT: " + input.getText().toString());
+                contentController.putStringContent("CM" + getUpToFiveDigitsNumber()+ ".TXT", "COMMENTS", input.getText().toString());
             }
         });
 
@@ -56,6 +63,15 @@ public class CommentsFragment extends Fragment{
         });
 
         return alert;
+
+    }
+
+    private int getUpToFiveDigitsNumber() {
+        int maximum = 10;
+
+        int randomNumber = (int)(Math.random() * maximum);
+        Log.d(LOG_TAG, "RANDOM NUMBER = " + randomNumber);
+        return randomNumber;
 
     }
 
