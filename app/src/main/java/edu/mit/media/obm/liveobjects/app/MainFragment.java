@@ -14,7 +14,6 @@ import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -154,6 +153,7 @@ public class MainFragment extends Fragment {
         mNetworkController.setConnectionListener(new ConnectionListener() {
             @Override
             public void onConnected(LiveObject connectedLiveObject) {
+                Log.v(LOG_TAG, String.format("onConnected(%s)", connectedLiveObject));
                 if (connectedLiveObject.equals(mSelectedLiveObject)) {
                     mConnectingDialog.dismiss();
 
@@ -162,17 +162,18 @@ public class MainFragment extends Fragment {
 
                     Animation animation = new ExpandIconAnimation(
                             getActivity().getWindowManager(), mClickedView).getAnimation();
-                    mClickedView.setAnimation(animation);
                     animation.setAnimationListener(new Animation.AnimationListener() {
                         @Override
                         public void onAnimationStart(Animation animation) {
                             // doesn't show the title of a live object to prevent a strange error
                             // regarding too huge texts when the icon is expanding on an emulator.
+                            Log.v(LOG_TAG, "onAnimationStart()");
                             liveObjectTitleTextView.setVisibility(View.GONE);
                         }
 
                         @Override
                         public void onAnimationEnd(Animation animation) {
+                            Log.v(LOG_TAG, "onAnimationEnd()");
                             liveObjectTitleTextView.setVisibility(View.VISIBLE);
 
                             // when the selected live objected is connected
@@ -189,7 +190,9 @@ public class MainFragment extends Fragment {
 
                         }
                     });
-                    animation.start();
+
+                    mClickedView.startAnimation(animation);
+                    Log.v(LOG_TAG, "starting an animation");
                 }
 
             }

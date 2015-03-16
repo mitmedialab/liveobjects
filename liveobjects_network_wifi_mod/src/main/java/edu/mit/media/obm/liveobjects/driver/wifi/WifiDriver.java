@@ -177,16 +177,17 @@ public class WifiDriver implements NetworkDriver {
         private void handleWifiConnection(Intent intent) {
             NetworkInfo networkInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
             NetworkInfo.State state = networkInfo.getState();
-            if(state.equals(NetworkInfo.State.CONNECTED))
-            {
-                String ssid = mWifiManager.getConnectionInfo().getSSID();
-                ssid = polishSSID(ssid);
-                if (WifiUtil.INSTANCE.isLiveObject(ssid)) {
-                    String connectedLiveObjectName = WifiUtil.INSTANCE.convertDeviceIdToLiveObjectName(ssid);
-                    Log.d(LOG_TAG, "connectedLiveObjectName = " + connectedLiveObjectName);
-                    mNetworkListener.onConnected(connectedLiveObjectName);
+            Log.d(LOG_TAG, "networkInfo = " + networkInfo.toString());
 
-                    synchronized (WifiDriver.class) {
+            synchronized (WifiDriver.class) {
+                if (state.equals(NetworkInfo.State.CONNECTED) && mConnecting == true) {
+                    String ssid = mWifiManager.getConnectionInfo().getSSID();
+                    ssid = polishSSID(ssid);
+                    if (WifiUtil.INSTANCE.isLiveObject(ssid)) {
+                        String connectedLiveObjectName = WifiUtil.INSTANCE.convertDeviceIdToLiveObjectName(ssid);
+                        Log.d(LOG_TAG, "connectedLiveObjectName = " + connectedLiveObjectName);
+                        mNetworkListener.onConnected(connectedLiveObjectName);
+
                         mConnecting = false;
                     }
                 }
