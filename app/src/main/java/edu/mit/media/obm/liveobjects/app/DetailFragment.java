@@ -4,6 +4,7 @@ package edu.mit.media.obm.liveobjects.app;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.pkmmte.view.CircularImageView;
@@ -128,6 +131,7 @@ public class DetailFragment extends Fragment {
                     e.printStackTrace();
                     mOnErrorListener.onError(e);
                 }
+
                 return null;
 
 
@@ -136,10 +140,13 @@ public class DetailFragment extends Fragment {
             @Override
             protected void onPostExecute(Bitmap bitmap) {
                 if (bitmap != null ) {
-                    this.imageView.setImageBitmap(bitmap);
+                    BitmapDrawable background = new BitmapDrawable(bitmap);
+                    mLoadingPanel.setBackgroundDrawable(background);
                 }
 
-                mLoadingPanel.setVisibility(View.GONE);
+                ProgressBar progressBar = (ProgressBar)
+                        DetailFragment.this.getActivity().findViewById(R.id.detail_progress_bar);
+                progressBar.setVisibility(View.GONE);
             }
 
 
