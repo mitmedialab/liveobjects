@@ -91,15 +91,24 @@ public class WifiDriver implements NetworkDriver {
             throw new IllegalStateException("Must not try to connect when it's already connecting");
         }
 
-        String ssid = WifiUtil.INSTANCE.convertLiveObjectNameToDeviceId(liveObjectName);
-
-        WifiConfiguration config = WifiManagerWrapper.addNewNetwork(mWifiManager, ssid, NETWORK_PASSWORD);
-        WifiManagerWrapper.connectToConfiguredNetwork(mContext, mWifiManager, config, true);
-
         mConnecting = true;
-        mConnectingNetworkId = config.networkId;
 
-        mWifiManager.enableNetwork(mConnectingNetworkId, true);
+        // executes as an asynchronous task because WifiManager.getConfiguredNetwork() may block.
+        new AsyncTask<String, Void, Void>() {
+            @Override
+            protected Void doInBackground(String... params) {
+                String liveObjectName = params[0];
+                String ssid = WifiUtil.INSTANCE.convertLiveObjectNameToDeviceId(liveObjectName);
+
+                WifiConfiguration config = WifiManagerWrapper.addNewNetwork(mWifiManager, ssid, NETWORK_PASSWORD);
+                WifiManagerWrapper.connectToConfiguredNetwork(mContext, mWifiManager, config, true);
+
+                mConnectingNetworkId = config.networkId;
+
+                mWifiManager.enableNetwork(mConnectingNetworkId, true);
+                return null;
+            }
+        }.execute(liveObjectName);
     }
 
     @Override
