@@ -16,13 +16,20 @@ import android.view.animation.TranslateAnimation;
 public class ExpandIconAnimation {
     private AnimationSet mAnimationSet;
 
+    private static final int TRANSLATE_DURATION = 250;
+    private static final int TRANSLATE_OFFISET = 0;
+    private static final int EXPAND_DURATION = 300;
+    private static final int EXPAND_OFFSET = TRANSLATE_DURATION;
+
+
     public ExpandIconAnimation(WindowManager windowManager, View view) {
         Animation translateAnimation = createMoveToCenterAnimation(windowManager, view);
-        translateAnimation.setDuration(500);
+        translateAnimation.setDuration(TRANSLATE_DURATION);
+        translateAnimation.setStartOffset(TRANSLATE_OFFISET);
 
         Animation expandAnimation = createExpandAnimation(windowManager, view);
-        expandAnimation.setDuration(500);
-        expandAnimation.setStartOffset(500);
+        expandAnimation.setDuration(EXPAND_DURATION);
+        expandAnimation.setStartOffset(EXPAND_OFFSET);
 
         mAnimationSet = new AnimationSet(true);
         mAnimationSet.addAnimation(translateAnimation);
