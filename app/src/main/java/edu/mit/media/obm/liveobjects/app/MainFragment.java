@@ -127,12 +127,6 @@ public class MainFragment extends Fragment {
         initDiscoveryListener();
         initConnectionListener();
 
-        // p    opulate with dummy
-        for (int i = 0; i < 10; i++) {
-            LiveObject liveObject = new LiveObject("test" + i);
-            mLiveObjectNamesList.add(liveObject);
-        }
-
         mAdapter.notifyDataSetChanged();
     }
 
