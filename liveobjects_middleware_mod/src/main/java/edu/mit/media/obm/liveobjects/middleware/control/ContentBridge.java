@@ -1,6 +1,7 @@
 package edu.mit.media.obm.liveobjects.middleware.control;
 
 import android.content.Context;
+import android.os.RemoteException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,11 +41,7 @@ public class ContentBridge implements ContentController {
     }
 
     @Override
-    public InputStream getInputStreamContent(String contentId) throws IOException{
-
-            return mRemoteStorageDriver.getInputStreamFromFile(contentId);
-
-
-
+    public InputStream getInputStreamContent(String contentId) throws IOException, RemoteException {
+        return mRemoteStorageDriver.getInputStreamFromFile(contentId);
     }
 }

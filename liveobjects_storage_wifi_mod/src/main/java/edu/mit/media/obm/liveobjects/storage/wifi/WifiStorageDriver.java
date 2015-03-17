@@ -2,6 +2,7 @@ package edu.mit.media.obm.liveobjects.storage.wifi;
 
 import android.content.Context;
 import android.os.RemoteException;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -17,10 +18,9 @@ import edu.mit.media.obm.liveobjects.middleware.storage.RemoteStorageDriver;
 public class WifiStorageDriver implements RemoteStorageDriver {
 
     private Context mContext;
-    private final String base_path;
-    public WifiStorageDriver(Context context) throws RemoteException {
+
+    public WifiStorageDriver(Context context) {
         mContext = context;
-        base_path = WifiStorageConfig.getBasePath(context)+ "/";
     }
 
     @Override
@@ -31,8 +31,10 @@ public class WifiStorageDriver implements RemoteStorageDriver {
     }
 
     @Override
-    public InputStream getInputStreamFromFile(String fileName) throws IOException {
-        String path = base_path + fileName;
+    public InputStream getInputStreamFromFile(String fileName) throws IOException, RemoteException {
+        String basePath = WifiStorageConfig.getBasePath(mContext);
+        String path = basePath + "/" + fileName;
+        Log.v(getClass().getSimpleName(), "base_path = " + basePath + ", fileNAme = " + fileName);
         URL url = new URL(path);
         URLConnection urlCon = url.openConnection();
         urlCon.connect();
@@ -41,7 +43,7 @@ public class WifiStorageDriver implements RemoteStorageDriver {
     }
 
     @Override
-    public byte[] getByteArrayFromFile(String filename) throws IOException {
+    public byte[] getByteArrayFromFile(String filename) throws IOException, RemoteException {
         InputStream inputStream = getInputStreamFromFile(filename);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         byte[] byteChunk = new byte[1024];

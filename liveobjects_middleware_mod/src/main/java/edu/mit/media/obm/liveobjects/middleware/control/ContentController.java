@@ -1,5 +1,7 @@
 package edu.mit.media.obm.liveobjects.middleware.control;
 
+import android.os.RemoteException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -31,7 +33,7 @@ public interface ContentController {
      * @param contentId
      * @return the content as InputStream
      */
-    InputStream getInputStreamContent(String contentId) throws IOException;
+    InputStream getInputStreamContent(String contentId) throws IOException, RemoteException;
 
 
 //TODO extending the interface with more functionality?

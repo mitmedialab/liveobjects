@@ -42,11 +42,7 @@ public class LiveObjectsApplication extends Application {
         LocalStorageDriver localStorageDriver = null;
 
         RemoteStorageDriver remoteStorageDriver = null;
-        try {
-            remoteStorageDriver = new WifiStorageDriver(this);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        remoteStorageDriver = new WifiStorageDriver(this);
 
         ContentController contentController = new ContentBridge(this, localStorageDriver, remoteStorageDriver);
         return new LiveObjectsMiddleware(networkController, contentController);

@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -125,8 +126,11 @@ public class DetailFragment extends Fragment {
 
 
                 try {
-                    return  getBipmap(mContentController.getInputStreamContent(ICON_FILE_NAME));
+                    return getBipmap(mContentController.getInputStreamContent(ICON_FILE_NAME));
                 } catch (IOException e) {
+                    e.printStackTrace();
+                    mOnErrorListener.onError(e);
+                } catch (RemoteException e) {
                     e.printStackTrace();
                     mOnErrorListener.onError(e);
                 }
@@ -198,8 +202,10 @@ public class DetailFragment extends Fragment {
                         e.printStackTrace();
                         mOnErrorListener.onError(e);
                     }
-
                 } catch (IOException e) {
+                    e.printStackTrace();
+                    mOnErrorListener.onError(e);
+                } catch (RemoteException e) {
                     e.printStackTrace();
                     mOnErrorListener.onError(e);
                 }
