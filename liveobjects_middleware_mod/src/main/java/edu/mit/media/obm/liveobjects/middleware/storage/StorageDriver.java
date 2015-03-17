@@ -1,5 +1,7 @@
 package edu.mit.media.obm.liveobjects.middleware.storage;
 
+import android.os.RemoteException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -40,7 +42,7 @@ public interface StorageDriver {
      * @return InputStream associated with the file
      * @throws IOException if the file was not found or the stream cannot be created
      */
-    InputStream getInputStreamFromFile(String fileName) throws IOException;
+    InputStream getInputStreamFromFile(String fileName) throws IOException, RemoteException;
 
 
     /**
@@ -49,7 +51,7 @@ public interface StorageDriver {
      * @return the byte array representation of the file
      * @throws IOException
      */
-    byte[] getByteArrayFromFile(String filename) throws IOException;
+    byte[] getByteArrayFromFile(String filename) throws IOException, RemoteException;
 
     /**
      * Get the number of files in a certain storage

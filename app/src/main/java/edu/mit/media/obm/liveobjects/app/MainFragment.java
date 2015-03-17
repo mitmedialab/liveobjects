@@ -10,14 +10,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.mit.media.obm.liveobjects.app.widget.AnimationArrayAdapter;
+import edu.mit.media.obm.liveobjects.app.widget.ExpandIconAnimation;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ConnectionListener;
@@ -34,10 +38,12 @@ public class MainFragment extends Fragment {
     private static final int DETAIL_ACTIVITY_REQUEST_CODE = 1;
 
     private SwipeRefreshLayout mSwipeLayout;
-    private ListView mLiveObjectsListView;
+    private GridView mLiveObjectsGridView;
 
     private ArrayAdapter<LiveObject> mAdapter;
     private ArrayList<LiveObject> mLiveObjectNamesList;
+
+    private View mClickedView;
 
     private NetworkController mNetworkController;
 
@@ -66,10 +72,11 @@ public class MainFragment extends Fragment {
     }
 
     private void setupUIElements(View rootView) {
-        mLiveObjectsListView = (ListView) rootView.findViewById(R.id.live_objects_list_view);
+        mLiveObjectsGridView = (GridView) rootView.findViewById(R.id.live_objects_list_view);
         mLiveObjectNamesList = new ArrayList<>();
-        mAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_live_objects, R.id.list_item_title_textview, mLiveObjectNamesList);
-        mLiveObjectsListView.setAdapter(mAdapter);
+        mAdapter = new AnimationArrayAdapter<>(getActivity(), R.layout.list_item_live_objects,
+                R.id.grid_item_title_textview, mLiveObjectNamesList);
+        mLiveObjectsGridView.setAdapter(mAdapter);
         mSwipeLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
         mSwipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
@@ -97,7 +104,7 @@ public class MainFragment extends Fragment {
         });
 
         // when a live object appearing in the list is clicked, connect to it
-        mLiveObjectsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mLiveObjectsGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mSelectedLiveObject = mLiveObjectNamesList.get(position);
@@ -107,6 +114,8 @@ public class MainFragment extends Fragment {
                 mConnectingDialog.show();
 
                 mNetworkController.connect(mSelectedLiveObject);
+
+                mClickedView = view;
             }
         });
     }
@@ -117,7 +126,7 @@ public class MainFragment extends Fragment {
         initDiscoveryListener();
         initConnectionListener();
 
-
+        mAdapter.notifyDataSetChanged();
     }
 
     private void initDiscoveryListener() {
@@ -136,7 +145,6 @@ public class MainFragment extends Fragment {
                 }
                 mAdapter.notifyDataSetChanged();
                 mSwipeLayout.setRefreshing(false);
-
             }
         });
     }
@@ -145,16 +153,46 @@ public class MainFragment extends Fragment {
         mNetworkController.setConnectionListener(new ConnectionListener() {
             @Override
             public void onConnected(LiveObject connectedLiveObject) {
+                Log.v(LOG_TAG, String.format("onConnected(%s)", connectedLiveObject));
                 if (connectedLiveObject.equals(mSelectedLiveObject)) {
-                    // when the selected live objected is connected
-                    // start the corresponding detail activity
-                    Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
-                    //TODO
-                    //detailIntent.putExtra(LiveObjectsManager.EXTRA_LIVE_OBJECT, connectedLiveObject);
-                    startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
-                    mSelectedLiveObject = null;
-
                     mConnectingDialog.dismiss();
+
+                    final TextView liveObjectTitleTextView =
+                            (TextView)mClickedView.findViewById(R.id.grid_item_title_textview);
+
+                    Animation animation = new ExpandIconAnimation(
+                            getActivity().getWindowManager(), mClickedView).getAnimation();
+                    animation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                            // doesn't show the title of a live object to prevent a strange error
+                            // regarding too huge texts when the icon is expanding on an emulator.
+                            Log.v(LOG_TAG, "onAnimationStart()");
+                            liveObjectTitleTextView.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            Log.v(LOG_TAG, "onAnimationEnd()");
+                            liveObjectTitleTextView.setVisibility(View.VISIBLE);
+
+                            // when the selected live objected is connected
+                            // start the corresponding detail activity
+                            Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
+                            //TODO
+                            //detailIntent.putExtra(LiveObjectsManager.EXTRA_LIVE_OBJECT, connectedLiveObject);
+                            startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
+                            mSelectedLiveObject = null;
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
+
+                    mClickedView.startAnimation(animation);
+                    Log.v(LOG_TAG, "starting an animation");
                 }
 
             }

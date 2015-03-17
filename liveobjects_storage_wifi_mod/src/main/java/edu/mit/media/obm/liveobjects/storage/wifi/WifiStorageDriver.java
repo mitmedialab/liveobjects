@@ -27,10 +27,9 @@ public class WifiStorageDriver implements RemoteStorageDriver {
     private static final String LOG_TAG = WifiStorageDriver.class.getSimpleName();
 
     private Context mContext;
-    private final String base_path;
-    public WifiStorageDriver(Context context) throws RemoteException {
+
+    public WifiStorageDriver(Context context) {
         mContext = context;
-        base_path = WifiStorageConfig.getBaseFolderPath(context)+ "/";
     }
 
     @Override
@@ -140,8 +139,10 @@ public class WifiStorageDriver implements RemoteStorageDriver {
     }
 
     @Override
-    public InputStream getInputStreamFromFile(String fileName) throws IOException {
-        String path = base_path + fileName;
+    public InputStream getInputStreamFromFile(String fileName) throws IOException, RemoteException {
+        String basePath = WifiStorageConfig.getBasePath(mContext);
+        String path = basePath + "/" + fileName;
+        Log.v(getClass().getSimpleName(), "base_path = " + basePath + ", fileNAme = " + fileName);
         Log.d(LOG_TAG, "PATH = " + path);
         URL url = new URL(path);
         URLConnection urlCon = url.openConnection();
@@ -151,7 +152,7 @@ public class WifiStorageDriver implements RemoteStorageDriver {
     }
 
     @Override
-    public byte[] getByteArrayFromFile(String filename) throws IOException {
+    public byte[] getByteArrayFromFile(String filename) throws IOException, RemoteException {
         InputStream inputStream = getInputStreamFromFile(filename);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         byte[] byteChunk = new byte[1024];

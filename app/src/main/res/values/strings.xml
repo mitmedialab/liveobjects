@@ -9,4 +9,5 @@
     <string name="title_activity_wrap_up">WrapUpActivity</string>
     <string name="title_activity_comments">CommentsActivity</string>
 
+    <string name="title_fragment_main">Discovery</string>
 </resources>
