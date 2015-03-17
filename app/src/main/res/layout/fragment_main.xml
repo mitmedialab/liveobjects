@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:paddingTop="?attr/actionBarSize"
     tools:context=".MainFragment"
-    android:background="@color/background_material_dark">
-
+    android:background="@drawable/main_background">
 
         <GridView
             android:id="@+id/live_objects_list_view"
@@ -18,7 +18,6 @@
             android:horizontalSpacing="15dp"
             android:verticalSpacing="15dp"
             android:stretchMode="columnWidth"
-            android:background="@color/theme_pale_orange">
-        </GridView>
+            android:background="@color/theme_transparent_background" />
 
 </android.support.v4.widget.SwipeRefreshLayout>
