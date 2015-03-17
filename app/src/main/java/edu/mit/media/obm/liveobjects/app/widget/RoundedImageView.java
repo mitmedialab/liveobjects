@@ -89,8 +89,4 @@ public class RoundedImageView extends ImageView {
 
         return shadowBitmap;
     }
-
-    private void setColorFilter() {
-        getDrawable().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-    }
 }
