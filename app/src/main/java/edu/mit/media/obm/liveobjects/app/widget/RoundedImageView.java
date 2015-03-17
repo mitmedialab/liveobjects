@@ -79,12 +79,10 @@ public class RoundedImageView extends ImageView {
         canvas.drawBitmap(scaledBitmap, rect, rect, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP));
 
-//        paint.setColorFilter(new PorterDuffColorFilter(0x10000000, PorterDuff.Mode.SRC_ATOP));
-
         paint.setShadowLayer(6.0f, 0.0f, 4.0f, 0xff000000);
 
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
-//        shadowCanvas.drawCircle(circleX, circleY, circleRadius, paint);
+        shadowCanvas.drawCircle(circleX, circleY, circleRadius, paint);
 
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER));
         shadowCanvas.drawBitmap(resultBitmap, rect, rect, paint);
