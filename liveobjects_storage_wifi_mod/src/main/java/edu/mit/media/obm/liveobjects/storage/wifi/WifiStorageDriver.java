@@ -140,7 +140,7 @@ public class WifiStorageDriver implements RemoteStorageDriver {
 
     @Override
     public InputStream getInputStreamFromFile(String fileName) throws IOException, RemoteException {
-        String basePath = WifiStorageConfig.getBasePath(mContext);
+        String basePath = WifiStorageConfig.getBaseFolderPath(mContext);
         String path = basePath + "/" + fileName;
         Log.v(getClass().getSimpleName(), "base_path = " + basePath + ", fileNAme = " + fileName);
         Log.d(LOG_TAG, "PATH = " + path);
