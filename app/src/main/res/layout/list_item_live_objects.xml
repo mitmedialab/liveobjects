@@ -22,7 +22,6 @@
         android:layout_alignBottom="@+id/grid_item_icon"
         android:layout_margin="1dp"
         android:gravity="center"
-        android:fontFamily="sans-serif-condensed"
         android:textSize="26sp"
         android:textColor="@color/theme_icon_text"
         android:shadowColor="@color/theme_icon_text_shadow"
