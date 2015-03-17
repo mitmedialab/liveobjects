@@ -70,14 +70,8 @@ public class WifiDriver implements NetworkDriver {
 
     @Override
     public void startScan() {
-        new AsyncTask<Void,Void,Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                mWifiManager.startScan();
-                return null;
-            }
-        }.execute();
-
+        Log.v(LOG_TAG, "starting Wifi scan");
+        mWifiManager.startScan();
     }
 
     @Override
