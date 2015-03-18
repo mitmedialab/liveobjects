@@ -8,6 +8,10 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -139,7 +143,10 @@ public class DetailFragment extends Fragment {
                     return null;
                 }
 
-                return cropBitmapToDisplayAspectRatio(bitmap);
+                Bitmap croppedBitmap = cropBitmapToDisplayAspectRatio(bitmap);
+                blurBitmap(croppedBitmap, 6);
+
+                return croppedBitmap;
             }
 
             @Override
@@ -201,6 +208,18 @@ public class DetailFragment extends Fragment {
                 }
 
                 return croppedBitmap;
+            }
+
+            private void blurBitmap(Bitmap bitmap, int radius) {
+                RenderScript rs = RenderScript.create(DetailFragment.this.getActivity());
+
+                final Allocation input = Allocation.createFromBitmap(rs, bitmap);
+                final Allocation output = Allocation.createTyped(rs, input.getType());
+                final ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
+                script.setRadius(radius);
+                script.setInput(input);
+                script.forEach(output);
+                output.copyTo(bitmap);
             }
         }.execute(mIconView);
 
