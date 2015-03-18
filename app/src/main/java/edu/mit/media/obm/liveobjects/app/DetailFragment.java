@@ -1,6 +1,7 @@
 package edu.mit.media.obm.liveobjects.app;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -35,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.shair.liveobjects.R;
@@ -143,8 +145,10 @@ public class DetailFragment extends Fragment {
                     return null;
                 }
 
-                Bitmap croppedBitmap = cropBitmapToDisplayAspectRatio(bitmap);
-                blurBitmap(croppedBitmap, 6);
+                Activity activity = DetailFragment.this.getActivity();
+                BitmapEditor bitmapEditor = new BitmapEditor(activity);
+                Bitmap croppedBitmap = bitmapEditor.cropToDisplayAspectRatio(bitmap, activity.getWindowManager());
+                bitmapEditor.blurBitmap(croppedBitmap, 6);
 
                 return croppedBitmap;
             }
@@ -183,43 +187,6 @@ public class DetailFragment extends Fragment {
                     mOnErrorListener.onError(e);
                 }
                 return null;
-            }
-
-            private Bitmap cropBitmapToDisplayAspectRatio(Bitmap bitmap) {
-                DisplayMetrics displayMetrics = new DisplayMetrics();
-                getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-
-                float displayAspectRatio =
-                        (float)displayMetrics.heightPixels / displayMetrics.widthPixels;
-                float bitmapAspectRatio =
-                        (float)bitmap.getHeight() / bitmap.getWidth();
-
-                Bitmap croppedBitmap;
-                if (bitmapAspectRatio < displayAspectRatio) {
-                    Log.v(LOG_TAG, bitmapAspectRatio + ", " + displayAspectRatio);
-                    int croppedWidth = (int)(bitmap.getWidth() * bitmapAspectRatio / displayAspectRatio);
-                    Log.v(LOG_TAG, bitmap.getWidth() + ", " + croppedWidth);
-                    croppedBitmap = Bitmap.createBitmap(bitmap,
-                            (bitmap.getWidth() - croppedWidth) / 2, 0, croppedWidth, bitmap.getHeight());
-                } else {
-                    int croppedHeight = (int)(bitmap.getHeight() * displayAspectRatio / bitmapAspectRatio);
-                    croppedBitmap = Bitmap.createBitmap(bitmap,
-                            0, (bitmap.getHeight() - croppedHeight) / 2, bitmap.getWidth(), croppedHeight);
-                }
-
-                return croppedBitmap;
-            }
-
-            private void blurBitmap(Bitmap bitmap, int radius) {
-                RenderScript rs = RenderScript.create(DetailFragment.this.getActivity());
-
-                final Allocation input = Allocation.createFromBitmap(rs, bitmap);
-                final Allocation output = Allocation.createTyped(rs, input.getType());
-                final ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
-                script.setRadius(radius);
-                script.setInput(input);
-                script.forEach(output);
-                output.copyTo(bitmap);
             }
         }.execute(mIconView);
 

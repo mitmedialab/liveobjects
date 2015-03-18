@@ -3,6 +3,9 @@ package edu.mit.media.obm.liveobjects.app;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -14,6 +17,7 @@ import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.mit.media.obm.liveobjects.app.widget.AnimationArrayAdapter;
+import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.app.widget.ExpandIconAnimation;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
@@ -92,6 +97,15 @@ public class MainFragment extends Fragment {
                 mNetworkController.cancelConnecting();
             }
         });
+
+        Bitmap background = BitmapFactory.decodeResource(getResources(), R.drawable.main_background);
+        BitmapEditor bitmapEditor = new BitmapEditor(getActivity());
+        background = bitmapEditor.cropToDisplayAspectRatio(background, getActivity().getWindowManager());
+        bitmapEditor.blurBitmap(background, 2);
+
+        BitmapDrawable drawableBackground = new BitmapDrawable(getResources(), background);
+        LinearLayout rootLayout = (LinearLayout) rootView.findViewById(R.id.root_layout);
+        rootLayout.setBackground(drawableBackground);
     }
 
     private void setupUIListeners() {
