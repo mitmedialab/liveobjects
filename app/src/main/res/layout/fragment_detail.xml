@@ -23,30 +23,42 @@
     android:orientation="vertical"
     android:gravity="center" >
 
-        <com.pkmmte.view.CircularImageView
-            android:id="@+id/object_image_view"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="108dp"
-            android:layout_width="250dp"
-            android:layout_height="250dp"
-            app:border_color="#EEEEEE"
-            app:border_width="4dp"
-            app:shadow="true"
-            android:clickable="true"
-            app:selector="true"
-            app:selector_color="#44FFBB33"
-            app:selector_stroke_color="#88FF8800"
-            app:selector_stroke_width="2dp"
-            android:background="@drawable/play" />
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="108dp"
+                android:layout_width="240dp"
+                android:layout_height="240dp"
+                android:background="@color/theme_transparent_background"
+                android:layout_gravity="center" />
+
+            <ImageView
+                android:id="@+id/object_image_view"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="108dp"
+                android:layout_width="240dp"
+                android:layout_height="240dp"
+                android:clickable="true"
+                android:background="@drawable/play"
+                android:layout_gravity="center" />
+
+        </RelativeLayout>
 
         <TextView
             android:layout_marginTop="12dp"
             android:text="Placeholder Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/object_title_textview"
-            android:textColor="@color/theme_icon_text" />
+            android:textSize="32dp"
+            android:textColor="@color/theme_icon_text"
+            android:shadowColor="@color/theme_icon_text_shadow"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="4"
+            android:id="@+id/object_title_textview" />
 
     </LinearLayout>
 

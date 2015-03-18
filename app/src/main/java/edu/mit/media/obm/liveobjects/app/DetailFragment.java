@@ -9,12 +9,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -45,9 +47,7 @@ public class DetailFragment extends Fragment {
     private String ICON_FILE_NAME;
     private String mediaConfigFileName;
 
-
-
-    private CircularImageView mIconView;
+    private ImageView mIconView;
     private View mLoadingPanel;
     private TextView mObjectTitleTextView;
 
@@ -67,7 +67,7 @@ public class DetailFragment extends Fragment {
 
         final View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        mIconView = (CircularImageView) rootView.findViewById(R.id.object_image_view);
+        mIconView = (ImageView) rootView.findViewById(R.id.object_image_view);
         mLoadingPanel = rootView.findViewById(R.id.loadingPanel);
         mObjectTitleTextView = (TextView) rootView.findViewById(R.id.object_title_textview);
 
@@ -114,30 +114,32 @@ public class DetailFragment extends Fragment {
     private void setLiveObjectImage() {
 
         //TODO moving the asynck task in the middleware?
-        new AsyncTask<CircularImageView,Void,Bitmap>() {
-            CircularImageView imageView = null;
+        new AsyncTask<ImageView,Void,Bitmap>() {
+            ImageView imageView = null;
+
             @Override
-            protected Bitmap doInBackground(CircularImageView... params) {
+            protected Bitmap doInBackground(ImageView... params) {
 
                 this.imageView = params[0];
 
                 if (this.imageView == null)
                     Log.e(LOG_TAG, "IMAGE_VIEW NULL");
 
+                Bitmap bitmap;
 
                 try {
-                    return getBipmap(mContentController.getInputStreamContent(ICON_FILE_NAME));
+                    bitmap = getBitmap(mContentController.getInputStreamContent(ICON_FILE_NAME));
                 } catch (IOException e) {
                     e.printStackTrace();
                     mOnErrorListener.onError(e);
+                    return null;
                 } catch (RemoteException e) {
                     e.printStackTrace();
                     mOnErrorListener.onError(e);
+                    return null;
                 }
 
-                return null;
-
-
+                return cropBitmapToDisplayAspectRatio(bitmap);
             }
 
             @Override
@@ -153,7 +155,7 @@ public class DetailFragment extends Fragment {
             }
 
 
-            private Bitmap getBipmap(InputStream inputStream) {
+            private Bitmap getBitmap(InputStream inputStream) {
                 //TODO REFACTOR
                 try {
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -175,10 +177,34 @@ public class DetailFragment extends Fragment {
                 }
                 return null;
             }
+
+            private Bitmap cropBitmapToDisplayAspectRatio(Bitmap bitmap) {
+                DisplayMetrics displayMetrics = new DisplayMetrics();
+                getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+                float displayAspectRatio =
+                        (float)displayMetrics.heightPixels / displayMetrics.widthPixels;
+                float bitmapAspectRatio =
+                        (float)bitmap.getHeight() / bitmap.getWidth();
+
+                Bitmap croppedBitmap;
+                if (bitmapAspectRatio < displayAspectRatio) {
+                    Log.v(LOG_TAG, bitmapAspectRatio + ", " + displayAspectRatio);
+                    int croppedWidth = (int)(bitmap.getWidth() * bitmapAspectRatio / displayAspectRatio);
+                    Log.v(LOG_TAG, bitmap.getWidth() + ", " + croppedWidth);
+                    croppedBitmap = Bitmap.createBitmap(bitmap,
+                            (bitmap.getWidth() - croppedWidth) / 2, 0, croppedWidth, bitmap.getHeight());
+                } else {
+                    int croppedHeight = (int)(bitmap.getHeight() * displayAspectRatio / bitmapAspectRatio);
+                    croppedBitmap = Bitmap.createBitmap(bitmap,
+                            0, (bitmap.getHeight() - croppedHeight) / 2, bitmap.getWidth(), croppedHeight);
+                }
+
+                return croppedBitmap;
+            }
         }.execute(mIconView);
 
     }
-
 
     private void getMediaConfig() {
         StringBuilder builder = new StringBuilder();
