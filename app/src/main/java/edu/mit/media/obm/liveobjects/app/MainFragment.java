@@ -125,7 +125,7 @@ public class MainFragment extends Fragment {
 
         initDiscoveryListener();
         initConnectionListener();
-
+        
         mAdapter.notifyDataSetChanged();
     }
 
