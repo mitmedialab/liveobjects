@@ -21,7 +21,6 @@ public class ExpandIconAnimation {
     private static final int EXPAND_DURATION = 300;
     private static final int EXPAND_OFFSET = TRANSLATE_DURATION;
 
-
     public ExpandIconAnimation(WindowManager windowManager, View view) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         windowManager.getDefaultDisplay().getMetrics(displayMetrics);

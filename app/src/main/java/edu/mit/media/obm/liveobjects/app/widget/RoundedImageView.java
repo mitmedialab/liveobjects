@@ -18,6 +18,9 @@ import android.widget.ImageView;
  * Created by arata on 3/12/15.
  */
 public class RoundedImageView extends ImageView {
+    int mFillColor = 0;
+    boolean mFillColorSet = false;
+
     public RoundedImageView(Context context) {
         super(context);
     }
@@ -30,6 +33,15 @@ public class RoundedImageView extends ImageView {
         super(context, attrs, defStyle);
     }
 
+    public void setFillColor(int fillColor) {
+        mFillColor = fillColor;
+        mFillColorSet = true;
+    }
+
+    public void clearFillColor() {
+        mFillColorSet = false;
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         Drawable drawable = getDrawable();
@@ -40,8 +52,12 @@ public class RoundedImageView extends ImageView {
 
         Bitmap originalBitmap = ((BitmapDrawable)drawable).getBitmap();
         Bitmap bitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
-        Paint paint = new Paint();
 
+        if (mFillColorSet) {
+            bitmap.eraseColor(mFillColor);
+        }
+
+        Paint paint = new Paint();
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
 
         Bitmap roundBitmap = getCroppedBitmap(bitmap, getWidth());

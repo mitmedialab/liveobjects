@@ -1,6 +1,7 @@
 package edu.mit.media.obm.liveobjects.app;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,13 +9,19 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -29,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.shair.liveobjects.R;
@@ -45,9 +53,7 @@ public class DetailFragment extends Fragment {
     private String ICON_FILE_NAME;
     private String mediaConfigFileName;
 
-
-
-    private CircularImageView mIconView;
+    private ImageView mIconView;
     private View mLoadingPanel;
     private TextView mObjectTitleTextView;
 
@@ -67,7 +73,7 @@ public class DetailFragment extends Fragment {
 
         final View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        mIconView = (CircularImageView) rootView.findViewById(R.id.object_image_view);
+        mIconView = (ImageView) rootView.findViewById(R.id.object_image_view);
         mLoadingPanel = rootView.findViewById(R.id.loadingPanel);
         mObjectTitleTextView = (TextView) rootView.findViewById(R.id.object_title_textview);
 
@@ -114,30 +120,37 @@ public class DetailFragment extends Fragment {
     private void setLiveObjectImage() {
 
         //TODO moving the asynck task in the middleware?
-        new AsyncTask<CircularImageView,Void,Bitmap>() {
-            CircularImageView imageView = null;
+        new AsyncTask<ImageView,Void,Bitmap>() {
+            ImageView imageView = null;
+
             @Override
-            protected Bitmap doInBackground(CircularImageView... params) {
+            protected Bitmap doInBackground(ImageView... params) {
 
                 this.imageView = params[0];
 
                 if (this.imageView == null)
                     Log.e(LOG_TAG, "IMAGE_VIEW NULL");
 
+                Bitmap bitmap;
 
                 try {
-                    return getBipmap(mContentController.getInputStreamContent(ICON_FILE_NAME));
+                    bitmap = getBitmap(mContentController.getInputStreamContent(ICON_FILE_NAME));
                 } catch (IOException e) {
                     e.printStackTrace();
                     mOnErrorListener.onError(e);
+                    return null;
                 } catch (RemoteException e) {
                     e.printStackTrace();
                     mOnErrorListener.onError(e);
+                    return null;
                 }
 
-                return null;
+                Activity activity = DetailFragment.this.getActivity();
+                BitmapEditor bitmapEditor = new BitmapEditor(activity);
+                Bitmap croppedBitmap = bitmapEditor.cropToDisplayAspectRatio(bitmap, activity.getWindowManager());
+                bitmapEditor.blurBitmap(croppedBitmap, 6);
 
-
+                return croppedBitmap;
             }
 
             @Override
@@ -153,7 +166,7 @@ public class DetailFragment extends Fragment {
             }
 
 
-            private Bitmap getBipmap(InputStream inputStream) {
+            private Bitmap getBitmap(InputStream inputStream) {
                 //TODO REFACTOR
                 try {
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -178,7 +191,6 @@ public class DetailFragment extends Fragment {
         }.execute(mIconView);
 
     }
-
 
     private void getMediaConfig() {
         StringBuilder builder = new StringBuilder();

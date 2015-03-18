@@ -4,6 +4,7 @@
     <color name="theme_pale_orange">#fffef5df</color>
     <color name="theme_icon_text">#ffffffff</color>
     <color name="theme_icon_text_shadow">#ff000000</color>
+    <color name="theme_text">#ff404040</color>
     <color name="theme_transparent_background">#c0f0f0f0</color>
     <color name="theme_actionbar">#00000000</color>
 </resources>
