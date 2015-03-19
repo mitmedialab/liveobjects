@@ -193,6 +193,7 @@ public class MainFragment extends Fragment {
                             // when the selected live objected is connected
                             // start the corresponding detail activity
                             Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
+                            detailIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                             //TODO
                             //detailIntent.putExtra(LiveObjectsManager.EXTRA_LIVE_OBJECT, connectedLiveObject);
                             startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
