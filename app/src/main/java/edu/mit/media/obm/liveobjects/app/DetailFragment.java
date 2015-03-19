@@ -28,6 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.concurrent.ExecutionException;
 
 import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
@@ -55,7 +56,10 @@ public class DetailFragment extends Fragment {
 
     private JSONObject mJSONConfig;
 
-    OnErrorListener mOnErrorListener = null;
+    private OnErrorListener mOnErrorListener = null;
+
+    private AsyncTask<ImageView,Void,Bitmap> mSetLiveObjectImageTask = null;
+    private AsyncTask<String,Void,Void> mGetMediaConfigTask = null;
 
     public interface OnErrorListener {
         abstract public void onError(Exception exception);
@@ -80,8 +84,6 @@ public class DetailFragment extends Fragment {
         setLiveObjectImage();
         setLiveObjectDescription();
 
-
-
         mIconView.setOnClickListener(
                 new View.OnClickListener() {
                       @Override
@@ -91,6 +93,9 @@ public class DetailFragment extends Fragment {
                               String contentType = mJSONConfig.getJSONObject("media-config").getJSONObject("media").getString("type");
                               String filename = mJSONConfig.getJSONObject("media-config").getJSONObject("media").getString("filename");
 
+                              // wait asynchronous tasks finish before starting another activity
+                              cancelAsyncTasks();
+
                               // launch the media associated to the object
                               Intent viewIntent = new Intent(getActivity(), MediaViewActivity.class);
                               viewIntent.putExtra(MediaViewActivity.CONTENT_TYPE_EXTRA, contentType);
@@ -99,22 +104,19 @@ public class DetailFragment extends Fragment {
                           }catch(JSONException e){
                               //TODO
                               e.printStackTrace();
-                              mOnErrorListener.onError(e);
+                              handleOnError(e);
                           }
 
                       }
                   }
         );
 
-
-
         return rootView;
     }
 
-    private void setLiveObjectImage() {
-
+    private synchronized void setLiveObjectImage() {
         //TODO moving the asynck task in the middleware?
-        new AsyncTask<ImageView,Void,Bitmap>() {
+        mSetLiveObjectImageTask = new AsyncTask<ImageView,Void,Bitmap>() {
             ImageView imageView = null;
 
             @Override
@@ -131,15 +133,16 @@ public class DetailFragment extends Fragment {
                     bitmap = getBitmap(mContentController.getInputStreamContent(ICON_FILE_NAME));
                 } catch (IOException e) {
                     e.printStackTrace();
-                    mOnErrorListener.onError(e);
+                    handleOnError(e);
                     return null;
                 } catch (RemoteException e) {
                     e.printStackTrace();
-                    mOnErrorListener.onError(e);
+                    handleOnError(e);
                     return null;
                 }
 
                 Activity activity = DetailFragment.this.getActivity();
+
                 BitmapEditor bitmapEditor = new BitmapEditor(activity);
                 Bitmap croppedBitmap = bitmapEditor.cropToDisplayAspectRatio(bitmap, activity.getWindowManager());
                 bitmapEditor.blurBitmap(croppedBitmap, 6);
@@ -178,7 +181,7 @@ public class DetailFragment extends Fragment {
                     return resultBitmap;
                 }catch (IOException e) {
                     e.printStackTrace();
-                    mOnErrorListener.onError(e);
+                    handleOnError(e);
                 }
                 return null;
             }
@@ -186,9 +189,8 @@ public class DetailFragment extends Fragment {
 
     }
 
-    private void getMediaConfig() {
-        StringBuilder builder = new StringBuilder();
-        new AsyncTask<String, Void, Void>() {
+    private synchronized void getMediaConfig() {
+        mGetMediaConfigTask = new AsyncTask<String, Void, Void>() {
             @Override
             protected Void doInBackground(String... params) {
                 String mediaFileName = params[0];
@@ -207,14 +209,14 @@ public class DetailFragment extends Fragment {
 
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        mOnErrorListener.onError(e);
+                        handleOnError(e);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
-                    mOnErrorListener.onError(e);
+                    handleOnError(e);
                 } catch (RemoteException e) {
                     e.printStackTrace();
-                    mOnErrorListener.onError(e);
+                    handleOnError(e);
                 }
                 return null;
             }
@@ -233,6 +235,21 @@ public class DetailFragment extends Fragment {
 //            e.printStackTrace();
 //        }
 
+    }
+
+    private synchronized void cancelAsyncTasks() {
+        if (mSetLiveObjectImageTask != null) {
+            mSetLiveObjectImageTask.cancel(true);
+        }
+
+        if (mGetMediaConfigTask != null) {
+            mGetMediaConfigTask.cancel(true);
+        }
+    }
+
+    private void handleOnError(Exception e) {
+        cancelAsyncTasks();
+        mOnErrorListener.onError(e);
     }
 
     @Override
