@@ -104,7 +104,7 @@ public class DetailFragment extends Fragment {
                           }catch(JSONException e){
                               //TODO
                               e.printStackTrace();
-                              handleOnError(e);
+                              mOnErrorListener.onError(e);
                           }
 
                       }
@@ -133,11 +133,11 @@ public class DetailFragment extends Fragment {
                     bitmap = getBitmap(mContentController.getInputStreamContent(ICON_FILE_NAME));
                 } catch (IOException e) {
                     e.printStackTrace();
-                    handleOnError(e);
+                    mOnErrorListener.onError(e);
                     return null;
                 } catch (RemoteException e) {
                     e.printStackTrace();
-                    handleOnError(e);
+                    mOnErrorListener.onError(e);
                     return null;
                 }
 
@@ -181,7 +181,7 @@ public class DetailFragment extends Fragment {
                     return resultBitmap;
                 }catch (IOException e) {
                     e.printStackTrace();
-                    handleOnError(e);
+                    mOnErrorListener.onError(e);
                 }
                 return null;
             }
@@ -209,14 +209,14 @@ public class DetailFragment extends Fragment {
 
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        handleOnError(e);
+                        mOnErrorListener.onError(e);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
-                    handleOnError(e);
+                    mOnErrorListener.onError(e);
                 } catch (RemoteException e) {
                     e.printStackTrace();
-                    handleOnError(e);
+                    mOnErrorListener.onError(e);
                 }
                 return null;
             }
@@ -237,7 +237,7 @@ public class DetailFragment extends Fragment {
 
     }
 
-    private synchronized void cancelAsyncTasks() {
+    public synchronized void cancelAsyncTasks() {
         if (mSetLiveObjectImageTask != null) {
             mSetLiveObjectImageTask.cancel(true);
         }
@@ -245,11 +245,6 @@ public class DetailFragment extends Fragment {
         if (mGetMediaConfigTask != null) {
             mGetMediaConfigTask.cancel(true);
         }
-    }
-
-    private void handleOnError(Exception e) {
-        cancelAsyncTasks();
-        mOnErrorListener.onError(e);
     }
 
     @Override
