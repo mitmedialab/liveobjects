@@ -56,24 +56,20 @@
         android:background="@color/theme_transparent_background">
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="profile"
-            android:padding="6dp"
-            android:textSize="28dp"
+            android:id="@+id/profileButton"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:textColor="@color/theme_text"
             android:layout_alignParentLeft="true"
-            android:background="@android:color/transparent"/>
+            android:background="@drawable/profile"/>
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="history"
-            android:padding="6dp"
-            android:textSize="28dp"
+            android:id="@+id/historyButton"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:textColor="@color/theme_text"
             android:layout_alignParentRight="true"
-            android:background="@android:color/transparent"/>
+            android:background="@drawable/history"/>
 
     </RelativeLayout>
 

@@ -85,7 +85,7 @@ public class DetailFragment extends Fragment {
 
         getMediaConfig();
         setLiveObjectImage();
-
+        setLiveObjectDescription();
 
 
 
@@ -211,7 +211,7 @@ public class DetailFragment extends Fragment {
                     String jsonConfigString = builder.toString();
                     try {
                         mJSONConfig = new JSONObject(jsonConfigString);
-                        setLiveObjectDescription();
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                         mOnErrorListener.onError(e);
@@ -230,14 +230,15 @@ public class DetailFragment extends Fragment {
     }
 
     private void setLiveObjectDescription() {
-
-        String title = null;
-        try {
-            title = mJSONConfig.getJSONObject("media-config").getString("title");
-            mObjectTitleTextView.setText(title);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        mObjectTitleTextView.setText("");
+        //TODO
+//        String title = null;
+//        try {
+//            title = mJSONConfig.getJSONObject("media-config").getString("title");
+//            mObjectTitleTextView.setText(title);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
 
     }
 
