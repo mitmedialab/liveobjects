@@ -56,6 +56,10 @@ public class WifiStorageConfig {
         String gateway = Formatter.formatIpAddress(dhcpInfo.gateway);
         Log.d(LOG_TAG, "baseUrl = " + gateway);
 
+        if ("0.0.0.0".equals(gateway)) {
+            throw new RemoteException("failed to get the IP address of the gateway");
+        }
+
         return gateway;
     }
 
