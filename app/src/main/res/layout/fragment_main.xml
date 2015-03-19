@@ -7,32 +7,65 @@
     android:orientation="vertical"
     android:paddingTop="?attr/actionBarSize"
     tools:context=".MainFragment"
-    android:background="@drawable/main_background">
+    android:background="@drawable/main_background"
+    android:clipChildren="false">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="fill_parent"
         android:orientation="vertical"
-        android:background="@color/theme_transparent_background">
+        android:background="@color/theme_transparent_background"
+        android:clipChildren="false">
 
         <TextView
+            android:id="@+id/title_text_view"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
             android:text="@string/title_fragment_main"
             android:padding="6dp"
             android:textSize="28dp" />
 
         <View
+            android:id="@+id/divider_view"
             android:layout_width="fill_parent"
             android:layout_height="3dp"
+            android:layout_below="@id/title_text_view"
             android:background="@android:color/darker_gray" />
+
+        <RelativeLayout
+            android:id="@+id/tab_switch_buttons"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@color/theme_pure_transparent_background">
+
+            <Button
+                android:id="@+id/profileButton"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:textColor="@color/theme_text"
+                android:layout_alignParentLeft="true"
+                android:background="@drawable/profile"/>
+
+            <Button
+                android:id="@+id/historyButton"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:textColor="@color/theme_text"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/history"/>
+
+        </RelativeLayout>
 
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/swipe_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="fill_parent"
+            android:layout_below="@id/divider_view"
+            android:layout_above="@id/tab_switch_buttons"
+            android:orientation="vertical"
+            android:clipChildren="false">
 
             <GridView
                 android:id="@+id/live_objects_list_view"
@@ -43,34 +76,9 @@
                 android:horizontalSpacing="15dp"
                 android:verticalSpacing="15dp"
                 android:stretchMode="columnWidth"
-                android:clipToPadding="false" />
+                android:clipToPadding="false"/>
 
         </android.support.v4.widget.SwipeRefreshLayout>
 
-    </LinearLayout>
-
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:background="@color/theme_transparent_background">
-
-        <Button
-            android:id="@+id/profileButton"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:textColor="@color/theme_text"
-            android:layout_alignParentLeft="true"
-            android:background="@drawable/profile"/>
-
-        <Button
-            android:id="@+id/historyButton"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:textColor="@color/theme_text"
-            android:layout_alignParentRight="true"
-            android:background="@drawable/history"/>
-
     </RelativeLayout>
-
 </LinearLayout>
