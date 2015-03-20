@@ -10,4 +10,10 @@
     <string name="title_activity_comments">CommentsActivity</string>
 
     <string name="title_fragment_main">Discovery</string>
+    <string name="title_activity_saved_live_objects">SavedLiveObjectsActivity</string>
+
+
+    <string name="title_history_tab">History</string>
+    <string name="title_favourite_tab">Favourites</string>
+
 </resources>

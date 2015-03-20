@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -57,6 +58,8 @@ public class MainFragment extends Fragment {
     private ProgressDialog mConnectingDialog;
 
     private MiddlewareInterface mMiddleware;
+
+    private Button mHistoryButton;
 
     public MainFragment() {
         super();
@@ -106,6 +109,9 @@ public class MainFragment extends Fragment {
         BitmapDrawable drawableBackground = new BitmapDrawable(getResources(), background);
         LinearLayout rootLayout = (LinearLayout) rootView.findViewById(R.id.root_layout);
         rootLayout.setBackground(drawableBackground);
+
+        mHistoryButton = (Button) rootView.findViewById(R.id.historyButton);
+
     }
 
     private void setupUIListeners() {
@@ -132,6 +138,16 @@ public class MainFragment extends Fragment {
                 mClickedView = view;
             }
         });
+
+        mHistoryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent  intent = new Intent(getActivity(), SavedLiveObjectsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
     }
 
     private void initNetworkListeners() {

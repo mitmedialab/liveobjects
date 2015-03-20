@@ -33,9 +33,15 @@
             android:name="edu.mit.media.obm.liveobjects.app.WrapUpActivity"
             android:label="Wrap Up" >
         </activity>
+
+        <provider
+            android:name="edu.mit.media.obm.liveobjects.app.data.LObjContentProvider"
+            android:authorities="edu.mit.media.obm.liveobjects.app.provider" >
+        </provider>
+
         <activity
-            android:name="edu.mit.media.obm.liveobjects.app.CommentsActivity"
-            android:label="Comments" >
+            android:name="edu.mit.media.obm.liveobjects.app.SavedLiveObjectsActivity"
+            android:label="@string/title_activity_saved_live_objects" >
         </activity>
     </application>
 
