@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/liveobjects_middleware_mod/liveobjects_middleware_mod.iml" filepath="$PROJECT_DIR$/liveobjects_middleware_mod/liveobjects_middleware_mod.iml" />
       <module fileurl="file://$PROJECT_DIR$/liveobjects_network_wifi_mod/liveobjects_network_wifi_mod.iml" filepath="$PROJECT_DIR$/liveobjects_network_wifi_mod/liveobjects_network_wifi_mod.iml" />
       <module fileurl="file://$PROJECT_DIR$/liveobjects_storage_wifi_mod/liveobjects_storage_wifi_mod.iml" filepath="$PROJECT_DIR$/liveobjects_storage_wifi_mod/liveobjects_storage_wifi_mod.iml" />
+      <module fileurl="file://$PROJECT_DIR$/trunk.iml" filepath="$PROJECT_DIR$/trunk.iml" />
     </modules>
   </component>
 </project>

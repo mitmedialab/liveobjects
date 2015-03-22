@@ -1,4 +1,4 @@
-package edu.mit.media.obm.liveobjects.app;
+package edu.mit.media.obm.liveobjects.app.media;
 
 import android.app.Activity;
 import android.net.Uri;

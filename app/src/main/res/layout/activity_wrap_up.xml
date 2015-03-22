@@ -9,13 +9,13 @@
     sothree:umanoShadowHeight="4dp">
 
     <fragment
-        android:name="edu.mit.media.obm.liveobjects.app.WrapUpFragment"
+        android:name="edu.mit.media.obm.liveobjects.app.wrapup.WrapUpFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"/>
 
     <fragment
-        android:name="edu.mit.media.obm.liveobjects.app.CommentsFragment"
+        android:name="edu.mit.media.obm.liveobjects.app.wrapup.CommentsFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center|top"/>

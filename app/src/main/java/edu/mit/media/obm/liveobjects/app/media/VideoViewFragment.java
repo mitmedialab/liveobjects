@@ -1,4 +1,4 @@
-package edu.mit.media.obm.liveobjects.app;
+package edu.mit.media.obm.liveobjects.app.media;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -17,7 +17,7 @@ import edu.mit.media.obm.shair.liveobjects.R;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link edu.mit.media.obm.liveobjects.app.OnMediaViewListener} interface
+ * {@link OnMediaViewListener} interface
  * to handle interaction events.
  * Use the {@link VideoViewFragment#newInstance} factory method to
  * create an instance of this fragment.

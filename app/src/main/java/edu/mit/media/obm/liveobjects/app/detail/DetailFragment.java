@@ -1,4 +1,4 @@
-package edu.mit.media.obm.liveobjects.app;
+package edu.mit.media.obm.liveobjects.app.detail;
 
 
 import android.app.Activity;
@@ -28,8 +28,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.concurrent.ExecutionException;
 
+import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.app.media.MediaViewActivity;
 import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
@@ -41,10 +42,9 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * Shows the details of a connected live object and allows to play the content
  */
 public class DetailFragment extends Fragment {
+    public final static String LIVE_OBJECT_NAME = "liveObjectName";
+
     private final static String LOG_TAG = DetailFragment.class.getSimpleName();
-
-    private final static int MAX_NETWORK_RETRY_COUNT = 5;
-
     private String ICON_FILE_NAME;
     private String mediaConfigFileName;
 
@@ -196,42 +196,29 @@ public class DetailFragment extends Fragment {
             protected Void doInBackground(String... params) {
                 String mediaFileName = params[0];
 
-                for (int retryCount = MAX_NETWORK_RETRY_COUNT; retryCount > 0; retryCount--) {
-                    // retry only when a RemoteExceptions occurs
+                try {
+                    InputStream inputStream = mContentController.getInputStreamContent(mediaFileName);
+                    StringBuilder builder = new StringBuilder();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        builder.append(line);
+                    }
+                    String jsonConfigString = builder.toString();
                     try {
-                        InputStream inputStream = mContentController.getInputStreamContent(mediaFileName);
-                        StringBuilder builder = new StringBuilder();
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            builder.append(line);
-                        }
-                        String jsonConfigString = builder.toString();
                         mJSONConfig = new JSONObject(jsonConfigString);
 
-                        break;
                     } catch (JSONException e) {
                         e.printStackTrace();
                         mOnErrorListener.onError(e);
-                        break;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        mOnErrorListener.onError(e);
-                        break;
-                    } catch (RemoteException e) {
-                        if (retryCount == 1) {
-                            mOnErrorListener.onError(e);
-                        }
-                        Log.w(LOG_TAG, "retrying content download due to RemoteException");
                     }
-
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    mOnErrorListener.onError(e);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                    mOnErrorListener.onError(e);
                 }
-
                 return null;
             }
         }.execute(mediaConfigFileName);

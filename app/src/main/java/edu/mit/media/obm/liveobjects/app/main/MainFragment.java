@@ -1,4 +1,4 @@
-package edu.mit.media.obm.liveobjects.app;
+package edu.mit.media.obm.liveobjects.app.main;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -25,6 +25,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.mit.media.obm.liveobjects.app.detail.DetailActivity;
+import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.app.SavedLiveObjectsActivity;
 import edu.mit.media.obm.liveobjects.app.widget.AnimationArrayAdapter;
 import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.app.widget.ExpandIconAnimation;

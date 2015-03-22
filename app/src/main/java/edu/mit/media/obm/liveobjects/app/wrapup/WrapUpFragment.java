@@ -1,18 +1,12 @@
-package edu.mit.media.obm.liveobjects.app;
+package edu.mit.media.obm.liveobjects.app.wrapup;
 
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
-import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
@@ -47,14 +41,6 @@ public class WrapUpFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_wrap_up, container, false);
 
-        Bitmap background = BitmapFactory.decodeResource(getResources(), R.drawable.main_background);
-        BitmapEditor bitmapEditor = new BitmapEditor(getActivity());
-        background = bitmapEditor.cropToDisplayAspectRatio(background, getActivity().getWindowManager());
-        bitmapEditor.blurBitmap(background, 2);
-
-        BitmapDrawable drawableBackground = new BitmapDrawable(getResources(), background);
-        RelativeLayout rootLayout = (RelativeLayout) rootView.findViewById(R.id.root_layout);
-        rootLayout.setBackground(drawableBackground);
 
         return rootView;
     }

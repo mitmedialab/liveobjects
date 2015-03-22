@@ -1,4 +1,4 @@
-package edu.mit.media.obm.liveobjects.app;
+package edu.mit.media.obm.liveobjects.app.media;
 
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -8,6 +8,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import edu.mit.media.obm.liveobjects.app.main.MainActivity;
+import edu.mit.media.obm.liveobjects.app.wrapup.WrapUpActivity;
 import edu.mit.media.obm.liveobjects.storage.wifi.WifiStorageConfig;
 import edu.mit.media.obm.shair.liveobjects.R;
 
@@ -16,7 +18,7 @@ import edu.mit.media.obm.shair.liveobjects.R;
 /**
  * Created by Valerio Panzica La Manna on 08/12/14.
  */
-public class MediaViewActivity extends ActionBarActivity implements OnMediaViewListener{
+public class MediaViewActivity extends ActionBarActivity implements OnMediaViewListener {
 
     public static String CONTENT_TYPE_EXTRA = "contentType";
     public static String FILE_NAME_EXTRA = "filename";

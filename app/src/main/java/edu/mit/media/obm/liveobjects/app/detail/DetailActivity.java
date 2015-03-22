@@ -1,4 +1,4 @@
-package edu.mit.media.obm.liveobjects.app;
+package edu.mit.media.obm.liveobjects.app.detail;
 
 
 import android.content.Intent;
@@ -9,9 +9,9 @@ import android.view.MenuItem;
 
 import org.json.JSONException;
 
-import java.io.IOException;
 import java.net.ConnectException;
 
+import edu.mit.media.obm.liveobjects.app.main.MainActivity;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 
