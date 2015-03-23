@@ -1,7 +1,6 @@
 package edu.mit.media.obm.liveobjects.app;
 
 import android.app.Application;
-import android.os.RemoteException;
 
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiDriver;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObjectsMiddleware;

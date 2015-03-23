@@ -9,7 +9,7 @@ import android.provider.BaseColumns;
  */
 public final class LObjContract {
 
-    public static final String AUTHORITY = "edu.mit.media.object.liveobjects.app.provider";
+    public static final String AUTHORITY = "edu.mit.media.obm.liveobjects.app.provider";
     public static final String BASE_PATH = "liveobjects";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH);
 

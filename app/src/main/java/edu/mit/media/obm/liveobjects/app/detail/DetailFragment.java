@@ -2,10 +2,12 @@ package edu.mit.media.obm.liveobjects.app.detail;
 
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -30,6 +32,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.app.data.LObjContract;
 import edu.mit.media.obm.liveobjects.app.media.MediaViewActivity;
 import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
@@ -84,6 +87,8 @@ public class DetailFragment extends Fragment {
         getMediaConfig();
         setLiveObjectImage();
         setLiveObjectDescription();
+
+       // TODO fillData();
 
         mIconView.setOnClickListener(
                 new View.OnClickListener() {
@@ -236,6 +241,16 @@ public class DetailFragment extends Fragment {
 //            e.printStackTrace();
 //        }
 
+    }
+
+    private void fillData() {
+        //TODO to change with actual data
+        ContentValues values = new ContentValues();
+        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE,"title");
+        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_DESCRIPTION,"description");
+        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_FAVOURITE, true);
+
+        Uri newUri = getActivity().getContentResolver().insert(LObjContract.CONTENT_URI, values);
     }
 
     public synchronized void cancelAsyncTasks() {
