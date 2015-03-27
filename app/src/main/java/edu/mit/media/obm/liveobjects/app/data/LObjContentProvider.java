@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.text.TextUtils;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -27,8 +28,9 @@ public class LObjContentProvider extends ContentProvider{
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     static {
         //defines which URIs the content provider has to match
-        sUriMatcher.addURI(LObjContract.AUTHORITY, LObjContract.BASE_PATH, LIVEOBJECTS);
-        sUriMatcher.addURI(LObjContract.AUTHORITY, LObjContract.BASE_PATH + "/#", LIVEOBJECT_ID);
+        sUriMatcher.addURI(LObjContract.AUTHORITY, LObjContract.LiveObjectEntry.BASE_PATH, LIVEOBJECTS);
+        sUriMatcher.addURI(LObjContract.AUTHORITY, LObjContract.LiveObjectEntry.BASE_PATH + "/#", LIVEOBJECT_ID);
+
     }
 
     @Override
@@ -42,9 +44,9 @@ public class LObjContentProvider extends ContentProvider{
         int uriType = sUriMatcher.match(uri);
         switch (uriType) {
             case LIVEOBJECTS:
-                return LObjContract.CONTENT_TYPE;
+                return LObjContract.LiveObjectEntry.CONTENT_TYPE;
             case LIVEOBJECT_ID:
-                return LObjContract.CONTENT_TYPE_ITEM;
+                return LObjContract.LiveObjectEntry.CONTENT_TYPE_ITEM;
         }
         return null;
     }
@@ -62,7 +64,7 @@ public class LObjContentProvider extends ContentProvider{
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
         getContext().getContentResolver().notifyChange(uri,null);
-        return ContentUris.withAppendedId(LObjContract.CONTENT_URI, id);
+        return ContentUris.withAppendedId(LObjContract.LiveObjectEntry.CONTENT_URI, id);
 
     }
 
@@ -74,8 +76,34 @@ public class LObjContentProvider extends ContentProvider{
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        throw new UnsupportedOperationException();
-
+        int uriType = sUriMatcher.match(uri);
+        int rowsUpdated = 0;
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        switch (uriType) {
+            case LIVEOBJECTS:
+                rowsUpdated = db.update(LObjContract.LiveObjectEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            case LIVEOBJECT_ID:
+                String id = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rowsUpdated = db.update(LObjContract.LiveObjectEntry.TABLE_NAME,
+                            values,
+                            LObjContract.LiveObjectEntry._ID + "=" + id,
+                            null);
+                } else {
+                    rowsUpdated = db.update(LObjContract.LiveObjectEntry.TABLE_NAME,
+                            values,
+                            LObjContract.LiveObjectEntry._ID + "=" + id
+                                    + " and "
+                                    + selection,
+                            selectionArgs);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return rowsUpdated;
     }
 
     @Override
@@ -111,13 +139,7 @@ public class LObjContentProvider extends ContentProvider{
     }
 
     private void checkColumns(String[] projection) {
-        String[] available = { LObjContract.LiveObjectEntry._ID,
-                LObjContract.LiveObjectEntry.COLUMN_NAME_DESCRIPTION,
-                LObjContract.LiveObjectEntry.COLUMN_NAME_FAVOURITE,
-                LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILENAME,
-                LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_FILENAME,
-                LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_TYPE,
-                LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE};
+        String[] available = LObjContract.LiveObjectEntry.ALL_COLUMNS;
 
         if (projection != null) {
             HashSet<String> requestedColumns = new HashSet<>(Arrays.asList(projection));
@@ -128,4 +150,5 @@ public class LObjContentProvider extends ContentProvider{
             }
         }
     }
+
 }

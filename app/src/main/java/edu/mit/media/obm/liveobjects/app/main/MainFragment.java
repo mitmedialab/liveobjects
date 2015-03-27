@@ -213,8 +213,8 @@ public class MainFragment extends Fragment {
                             // start the corresponding detail activity
                             Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
                             detailIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                            //TODO
-                            //detailIntent.putExtra(LiveObjectsManager.EXTRA_LIVE_OBJECT, connectedLiveObject);
+
+                            detailIntent.putExtra(DetailActivity.EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
                             startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
                             mSelectedLiveObject = null;
                         }

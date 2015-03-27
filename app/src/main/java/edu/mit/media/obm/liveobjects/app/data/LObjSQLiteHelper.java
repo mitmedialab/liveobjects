@@ -11,7 +11,7 @@ import edu.mit.media.obm.liveobjects.app.data.LObjContract.*;
 public class LObjSQLiteHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "LiveObjects.db";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
     private static final String TEXT_TYPE = " TEXT";
     private static final String COMMA_SEP = ", ";
@@ -19,12 +19,13 @@ public class LObjSQLiteHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_TABLE = "create table " +
             LiveObjectEntry.TABLE_NAME + "(" +
             LiveObjectEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT " + COMMA_SEP +
+            LiveObjectEntry.COLUMN_NAME_ID + TEXT_TYPE + COMMA_SEP +
             LiveObjectEntry.COLUMN_NAME_TITLE + TEXT_TYPE + COMMA_SEP +
             LiveObjectEntry.COLUMN_NAME_DESCRIPTION + TEXT_TYPE + COMMA_SEP +
             LiveObjectEntry.COLUMN_NAME_FAVOURITE + " BOOLEAN" + COMMA_SEP +
-            LiveObjectEntry.COLUMN_NAME_ICON_FILENAME + TEXT_TYPE + COMMA_SEP +
+            LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH + TEXT_TYPE + COMMA_SEP +
             LiveObjectEntry.COLUMN_NAME_MEDIA_TYPE + TEXT_TYPE + COMMA_SEP +
-            LiveObjectEntry.COLUMN_NAME_MEDIA_FILENAME + TEXT_TYPE + " )";
+            LiveObjectEntry.COLUMN_NAME_MEDIA_FILEPATH + TEXT_TYPE + " )";
 
 
     private static final String SQL_DELETE_TABLE =

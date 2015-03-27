@@ -89,7 +89,7 @@ public class SavedLiveObjectsFragment extends Fragment implements LoaderManager.
 
         String[] projection = {LObjContract.LiveObjectEntry._ID, LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE};
 
-        CursorLoader cursorLoader = new CursorLoader(getActivity(), LObjContract.CONTENT_URI, projection, null,null,null);
+        CursorLoader cursorLoader = new CursorLoader(getActivity(), LObjContract.LiveObjectEntry.CONTENT_URI, projection, null,null,null);
         return cursorLoader;
     }
 

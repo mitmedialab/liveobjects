@@ -18,6 +18,8 @@ import edu.mit.media.obm.shair.liveobjects.R;
 public class DetailActivity extends ActionBarActivity {
     private static final String LOG_TAG = DetailActivity.class.getSimpleName();
 
+    public static String EXTRA_LIVE_OBJ_NAME_ID = "live_obj_name_id";
+
     public static int RESULT_CONNECTION_ERROR = RESULT_FIRST_USER;
     public static int RESULT_JSON_ERROR = RESULT_FIRST_USER + 1;
 
@@ -28,7 +30,9 @@ public class DetailActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         if (savedInstanceState == null) {
-            mDetailFragment = new DetailFragment();
+            String liveObjNameId = getIntent().getStringExtra(EXTRA_LIVE_OBJ_NAME_ID);
+
+            mDetailFragment = DetailFragment.newInstance(liveObjNameId);
             mDetailFragment.setOnCancelListener(new DetailFragment.OnErrorListener() {
                 @Override
                 public void onError(Exception exception) {
@@ -47,11 +51,7 @@ public class DetailActivity extends ActionBarActivity {
                 }
             });
 
-            //TODO
-//            LiveObject liveObject = getIntent().getParcelableExtra(LiveObjectsManager.EXTRA_LIVE_OBJECT);
-//            Bundle bundle = new Bundle();
-//            bundle.putParcelable(LiveObjectsManager.EXTRA_LIVE_OBJECT, liveObject);
-//            detailFragment.setArguments(bundle);
+
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, mDetailFragment)
                     .commit();

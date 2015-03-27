@@ -4,20 +4,17 @@ package edu.mit.media.obm.liveobjects.app.detail;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -25,16 +22,18 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.app.data.LObjContract;
 import edu.mit.media.obm.liveobjects.app.media.MediaViewActivity;
+import edu.mit.media.obm.liveobjects.app.utils.Util;
 import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
+import edu.mit.media.obm.liveobjects.app.widget.ZoomInOutAnimation;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.shair.liveobjects.R;
@@ -45,222 +44,329 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * Shows the details of a connected live object and allows to play the content
  */
 public class DetailFragment extends Fragment {
-    public final static String LIVE_OBJECT_NAME = "liveObjectName";
 
-    private final static String LOG_TAG = DetailFragment.class.getSimpleName();
-    private String ICON_FILE_NAME;
-    private String mediaConfigFileName;
+    private static final String LOG_TAG = DetailFragment.class.getSimpleName();
+
+    private static final String ARG_LIVE_OBJ_NAME_ID = "live_obj_name_id";
+
+    private String mLiveObjectNameID;
+
+
 
     private ImageView mIconView;
     private View mLoadingPanel;
     private TextView mObjectTitleTextView;
+    private ProgressBar mProgressBar;
 
     private MiddlewareInterface mMiddleware;
     private ContentController mContentController;
 
     private JSONObject mJSONConfig;
 
+
+
     private OnErrorListener mOnErrorListener = null;
 
-    private AsyncTask<ImageView,Void,Bitmap> mSetLiveObjectImageTask = null;
-    private AsyncTask<String,Void,Void> mGetMediaConfigTask = null;
+    private AsyncTask<String,Void,Void> mSetRemoteContentTask = null;
+
+
+    private Uri mLiveObjectUri;
 
     public interface OnErrorListener {
         abstract public void onError(Exception exception);
     }
 
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameter.
+     *
+     * @param liveObjectNameID the name_id of the live object obtained during discovery.
+     * @return A new instance of fragment DetailFragment
+     */
+    public static DetailFragment newInstance(String liveObjectNameID) {
+        DetailFragment fragment = new DetailFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_LIVE_OBJ_NAME_ID, liveObjectNameID);
+        fragment.setArguments(args);
+        return fragment;
+
+    }
+
+    // Required empty constructor
+    public DetailFragment() {    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mLiveObjectNameID = getArguments().getString(ARG_LIVE_OBJ_NAME_ID);
+        }
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+
         final View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-
-        mIconView = (ImageView) rootView.findViewById(R.id.object_image_view);
-        mLoadingPanel = rootView.findViewById(R.id.loadingPanel);
-        mObjectTitleTextView = (TextView) rootView.findViewById(R.id.object_title_textview);
-
-        ICON_FILE_NAME = getActivity().getResources().getString(R.string.icon_filename) + ".jpg";
-        mediaConfigFileName = getActivity().getResources().getString(R.string.media_config_filename) + ".jso";
 
         mMiddleware = ((LiveObjectsApplication)getActivity().getApplication()).getMiddleware();
         mContentController = mMiddleware.getContentController();
 
-        getMediaConfig();
-        setLiveObjectImage();
-        setLiveObjectDescription();
+        initUIObjects(rootView);
 
-       // TODO fillData();
+        setUIContent();
+        setUIListeners();
 
-        mIconView.setOnClickListener(
-                new View.OnClickListener() {
-                      @Override
-                      public void onClick(View v) {
 
-                          try {
-                              String contentType = mJSONConfig.getJSONObject("media-config").getJSONObject("media").getString("type");
-                              String filename = mJSONConfig.getJSONObject("media-config").getJSONObject("media").getString("filename");
 
-                              // wait asynchronous tasks finish before starting another activity
-                              cancelAsyncTasks();
-
-                              // launch the media associated to the object
-                              Intent viewIntent = new Intent(getActivity(), MediaViewActivity.class);
-                              viewIntent.putExtra(MediaViewActivity.CONTENT_TYPE_EXTRA, contentType);
-                              viewIntent.putExtra(MediaViewActivity.FILE_NAME_EXTRA, filename);
-                              getActivity().startActivity(viewIntent);
-                          }catch(JSONException e){
-                              //TODO
-                              e.printStackTrace();
-                              mOnErrorListener.onError(e);
-                          }
-
-                      }
-                  }
-        );
 
         return rootView;
     }
 
-    private synchronized void setLiveObjectImage() {
-        //TODO moving the asynck task in the middleware?
-        mSetLiveObjectImageTask = new AsyncTask<ImageView,Void,Bitmap>() {
-            ImageView imageView = null;
+    private void setUIContent() {
+        Cursor cursor = getLocalLiveObject(mLiveObjectNameID);
+        if (isLocallyAvailable(cursor)) {
+            Log.d(LOG_TAG, "getting content from local storage");
+            setLocalContent(cursor);
 
-            @Override
-            protected Bitmap doInBackground(ImageView... params) {
+        }
+        else {
+            Log.d(LOG_TAG, "getting content from live object");
+            setRemoteContent();
+        }
+    }
 
-                this.imageView = params[0];
+    private void initUIObjects(View rootView) {
+        mIconView = (ImageView) rootView.findViewById(R.id.object_image_view);
+        mLoadingPanel = rootView.findViewById(R.id.loadingPanel);
+        mObjectTitleTextView = (TextView) rootView.findViewById(R.id.object_title_textview);
+        mProgressBar = (ProgressBar) rootView.findViewById(R.id.detail_progress_bar);
+    }
 
-                if (this.imageView == null)
-                    Log.e(LOG_TAG, "IMAGE_VIEW NULL");
-
-                Bitmap bitmap;
-
-                try {
-                    bitmap = getBitmap(mContentController.getInputStreamContent(ICON_FILE_NAME));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    mOnErrorListener.onError(e);
-                    return null;
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                    mOnErrorListener.onError(e);
-                    return null;
-                }
-
-                Activity activity = DetailFragment.this.getActivity();
-
-                BitmapEditor bitmapEditor = new BitmapEditor(activity);
-                Bitmap croppedBitmap = bitmapEditor.cropToDisplayAspectRatio(bitmap, activity.getWindowManager());
-                bitmapEditor.blurBitmap(croppedBitmap, 6);
-
-                return croppedBitmap;
-            }
-
-            @Override
-            protected void onPostExecute(Bitmap bitmap) {
-                if (bitmap != null ) {
-                    BitmapDrawable background = new BitmapDrawable(bitmap);
-                    mLoadingPanel.setBackgroundDrawable(background);
-                }
-
-                ProgressBar progressBar = (ProgressBar)
-                        DetailFragment.this.getActivity().findViewById(R.id.detail_progress_bar);
-                progressBar.setVisibility(View.GONE);
-            }
-
-
-            private Bitmap getBitmap(InputStream inputStream) {
-                //TODO REFACTOR
-                try {
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    byte[] byteChunk = new byte[1024];
-                    int bytesRead = 0;
-                    while ((bytesRead = inputStream.read(byteChunk)) != -1) {
-                        byteArrayOutputStream.write(byteChunk, 0, bytesRead);
+    private void setUIListeners() {
+        mIconView.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // wait asynchronous tasks finish before starting another activity
+                        cancelAsyncTasks();
+                        // launch the media associated to the object
+                        Intent viewIntent = new Intent(getActivity(), MediaViewActivity.class);
+                        getActivity().startActivity(viewIntent);
                     }
-                    byte[] byteArray = byteArrayOutputStream.toByteArray();
-                    BitmapFactory.Options bfOptions = new BitmapFactory.Options();
-                    bfOptions.inPurgeable = true;
-                    Bitmap resultBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, bfOptions);
-                    byteArrayOutputStream.close();
-                    inputStream.close();
-                    return resultBitmap;
-                }catch (IOException e) {
-                    e.printStackTrace();
-                    mOnErrorListener.onError(e);
                 }
-                return null;
-            }
-        }.execute(mIconView);
+        );
 
     }
 
-    private synchronized void getMediaConfig() {
-        mGetMediaConfigTask = new AsyncTask<String, Void, Void>() {
+
+
+    private Cursor getLocalLiveObject(String liveObjectNameID) {
+        String selection = LObjContract.LiveObjectEntry.COLUMN_NAME_ID + "= ?";
+        String[] selectionArgs ={liveObjectNameID};
+        Cursor cursor = getActivity().getContentResolver().query(
+                LObjContract.LiveObjectEntry.CONTENT_URI,
+                LObjContract.LiveObjectEntry.ALL_COLUMNS,
+                selection, selectionArgs, null);
+        return  cursor;
+    }
+
+    private boolean isLocallyAvailable(Cursor cursor){
+        return cursor.getCount() > 0 ;
+    }
+
+    private void setLocalContent(Cursor cursor) {
+        cursor.moveToFirst();
+        setLocalTitle(cursor);
+        setLocalBackgroundImage(cursor);
+        mProgressBar.setVisibility(View.GONE);
+    }
+
+    private void setLocalTitle(Cursor cursor){
+        Log.d(LOG_TAG, "cursor " + cursor);
+        String title = cursor.getString(cursor.
+                getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE));
+        mObjectTitleTextView.setText(title);
+    }
+
+    private void setLocalBackgroundImage(Cursor cursor) {
+        String imagePath = cursor.getString(cursor.
+                getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH));
+        try {
+            File file = new File(imagePath);
+            FileInputStream inputStream = new FileInputStream(file);
+            Bitmap bitmap = Util.getBitmap(inputStream);
+            setBackgroundImage(bitmap);
+            inputStream.close();
+
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "error opening file: " + imagePath, e);
+        }
+    }
+
+    private void setBackgroundImage(Bitmap bitmap){
+
+        Activity activity = DetailFragment.this.getActivity();
+
+        BitmapEditor bitmapEditor = new BitmapEditor(activity);
+        Bitmap croppedBitmap = bitmapEditor.cropToDisplayAspectRatio(bitmap, activity.getWindowManager());
+        bitmapEditor.blurBitmap(croppedBitmap, 6);
+
+        if (croppedBitmap != null ) {
+            final BitmapDrawable background = new BitmapDrawable(croppedBitmap);
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mLoadingPanel.setBackgroundDrawable(background);
+                }
+            });
+
+        }
+
+    }
+
+    private void setRemoteContent() {
+
+        String mediaConfigFileName = getActivity().getResources().getString(R.string.media_config_filename) + ".jso";
+
+        mSetRemoteContentTask = new AsyncTask<String, Void, Void>() {
             @Override
             protected Void doInBackground(String... params) {
-                String mediaFileName = params[0];
+                String configFileName = params[0];
 
+                InputStream inputStream = null;
                 try {
-                    InputStream inputStream = mContentController.getInputStreamContent(mediaFileName);
-                    StringBuilder builder = new StringBuilder();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        builder.append(line);
+                    if (mContentController == null) {
+                        Log.e(LOG_TAG, "mContentController Null");
                     }
-                    String jsonConfigString = builder.toString();
-                    try {
-                        mJSONConfig = new JSONObject(jsonConfigString);
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        mOnErrorListener.onError(e);
+                    // retrieve JSON Object from remote
+                    inputStream = mContentController.getInputStreamContent(configFileName);
+                    if (inputStream == null) {
+                        Log.e(LOG_TAG, "inputstream Null");
+
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    mOnErrorListener.onError(e);
-                } catch (RemoteException e) {
+
+                    mJSONConfig = Util.getJSON(inputStream);
+                    inputStream.close();
+
+                    //set UI elements
+                    String imageFileName = getFromJSON(mJSONConfig, "icon", null);
+                    final String title = getFromJSON(mJSONConfig, "title", null);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mObjectTitleTextView.setText(title);
+
+                        }
+                    });
+
+                    InputStream imageInputStream = mContentController.getInputStreamContent(imageFileName);
+                    Bitmap bitmap = Util.getBitmap(imageInputStream);
+                    setBackgroundImage(bitmap);
+                    saveData(mJSONConfig, imageFileName, bitmap);
+                    imageInputStream.close();
+
+
+
+                } catch (Exception e) {
                     e.printStackTrace();
                     mOnErrorListener.onError(e);
                 }
+
                 return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                mProgressBar.setVisibility(View.GONE);
             }
         }.execute(mediaConfigFileName);
 
     }
 
-    private void setLiveObjectDescription() {
-        mObjectTitleTextView.setText("");
-        //TODO
-//        String title = null;
-//        try {
-//            title = mJSONConfig.getJSONObject("media-config").getString("title");
-//            mObjectTitleTextView.setText(title);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
+    private void saveData(JSONObject jsonObject, String imageFileName, Bitmap bitmap){
+        String directoryPath = createDirectory();
+        String imageFilePath = createFilePath(directoryPath, imageFileName);
+
+
+        try {
+            saveFile(imageFilePath, bitmap);
+
+            mLiveObjectUri = saveToProvider(jsonObject, imageFilePath, directoryPath);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "error saving data", e);
+        }
+
 
     }
 
-    private void fillData() {
-        //TODO to change with actual data
+    private String createDirectory() {
+        File directory = new File(getActivity().getFilesDir(),mLiveObjectNameID);
+        boolean directoryCreated =directory.mkdir();
+        if (directoryCreated) {
+            Log.d(LOG_TAG, "directory created: " + directory);
+        }
+        return directory.getAbsolutePath();
+    }
+
+    private String createFilePath(String directoryPath, String fileName) {
+        return directoryPath + File.pathSeparator + fileName;
+    }
+
+    private void saveFile(String path, Bitmap bitmap) throws IOException{
+
+        File imgFile = new File(path);
+        FileOutputStream outputStream = new FileOutputStream(imgFile);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+        outputStream.close();
+    }
+
+    private Uri saveToProvider(JSONObject jsonObject, String imagePath, String directoryPath) {
+
+        String title = getFromJSON(jsonObject,"title", null);
+        String description = getFromJSON(jsonObject,"description", null);
+        String contentType = getFromJSON(jsonObject, "type", "media");
+        String mediaFileName = getFromJSON(jsonObject, "filename", "media");
+        String mediaFilePath = createFilePath(directoryPath, mediaFileName);
+
+
         ContentValues values = new ContentValues();
-        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE,"title");
-        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_DESCRIPTION,"description");
-        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_FAVOURITE, true);
+        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE,title);
+        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_DESCRIPTION,description);
+        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH, imagePath);
+        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_ID, mLiveObjectNameID);
+        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_TYPE, contentType);
+        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_FILEPATH, mediaFilePath);
 
-        Uri newUri = getActivity().getContentResolver().insert(LObjContract.CONTENT_URI, values);
+
+        Uri newLiveObjectUri = getActivity().getContentResolver().insert(LObjContract.LiveObjectEntry.CONTENT_URI, values);
+        return newLiveObjectUri;
     }
 
-    public synchronized void cancelAsyncTasks() {
-        if (mSetLiveObjectImageTask != null) {
-            mSetLiveObjectImageTask.cancel(true);
+    private String getFromJSON(JSONObject jsonObject, String key, String intermediateObjectKey) {
+        String value = "";
+        try {
+            if (intermediateObjectKey == null) {
+                value = jsonObject.getJSONObject("media-config").getString(key);
+            }
+            else {
+                value = jsonObject.getJSONObject("media-config").getJSONObject(intermediateObjectKey).getString(key);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return value;
+
+    }
+
+    protected void cancelAsyncTasks() {
+
+        if (mSetRemoteContentTask != null) {
+            mSetRemoteContentTask.cancel(true);
         }
 
-        if (mGetMediaConfigTask != null) {
-            mGetMediaConfigTask.cancel(true);
-        }
     }
 
     @Override
@@ -272,48 +378,8 @@ public class DetailFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
-        final Animation zoomIn = AnimationUtils.loadAnimation(getActivity(), R.anim.zoom_in);
-        final Animation zoomOut = AnimationUtils.loadAnimation(getActivity(), R.anim.zoom_out);
-
-        zoomIn.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mIconView.startAnimation(zoomOut);
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-
-        zoomOut.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mIconView.startAnimation(zoomIn);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-        mIconView.setAnimation(zoomIn);
-        mIconView.setAnimation(zoomOut);
-
-        mIconView.startAnimation(zoomIn);
+        ZoomInOutAnimation zoomInOutAnimation = new ZoomInOutAnimation(mIconView, getActivity());
+        zoomInOutAnimation.startAnimation();
     }
 
     public void setOnCancelListener(OnErrorListener onCancelListener) {

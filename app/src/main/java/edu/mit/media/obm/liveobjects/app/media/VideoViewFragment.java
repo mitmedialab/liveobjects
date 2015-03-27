@@ -44,7 +44,6 @@ public class VideoViewFragment extends Fragment {
      * @param fileUrl Parameter 1.
      * @return A new instance of fragment VideoViewFragment.
      */
-    
     public static VideoViewFragment newInstance(String fileUrl) {
         VideoViewFragment fragment = new VideoViewFragment();
         Bundle args = new Bundle();
