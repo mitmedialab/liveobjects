@@ -10,6 +10,7 @@ import android.view.MenuItem;
 
 import edu.mit.media.obm.liveobjects.app.main.MainActivity;
 import edu.mit.media.obm.liveobjects.app.detail.WrapUpActivity;
+import edu.mit.media.obm.liveobjects.app.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.storage.wifi.WifiStorageConfig;
 import edu.mit.media.obm.shair.liveobjects.R;
 
@@ -101,7 +102,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
     }
 
@@ -114,10 +115,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_goto_home) {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
-            startActivity(intent);
-            finish();
+            MenuActions.goToHome(this);
 
             return true;
         }
