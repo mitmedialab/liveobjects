@@ -194,6 +194,7 @@ public class MainFragment extends Fragment {
 
                     Animation animation = new ExpandIconAnimation(
                             getActivity().getWindowManager(), mClickedView).getAnimation();
+                    animation.setFillAfter(true);
                     animation.setAnimationListener(new Animation.AnimationListener() {
                         @Override
                         public void onAnimationStart(Animation animation) {
