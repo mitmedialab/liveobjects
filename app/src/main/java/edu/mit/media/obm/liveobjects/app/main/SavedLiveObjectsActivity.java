@@ -1,5 +1,8 @@
 package edu.mit.media.obm.liveobjects.app.main;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,11 +13,13 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 
 import java.util.Locale;
 
 import edu.mit.media.obm.liveobjects.app.main.SavedLiveObjectsFragment;
 import edu.mit.media.obm.liveobjects.app.slidingtabs.SlidingTabLayout;
+import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.app.widget.MenuActions;
 import edu.mit.media.obm.shair.liveobjects.R;
 
@@ -92,6 +97,15 @@ public class SavedLiveObjectsActivity extends ActionBarActivity implements Actio
 //                            .setText(mSectionsPagerAdapter.getPageTitle(i))
 //                            .setTabListener(this));
 //        }
+
+        Bitmap background = BitmapFactory.decodeResource(getResources(), R.drawable.main_background);
+        BitmapEditor bitmapEditor = new BitmapEditor(this);
+        background = bitmapEditor.cropToDisplayAspectRatio(background, getWindowManager());
+        bitmapEditor.blurBitmap(background, 2);
+
+        BitmapDrawable drawableBackground = new BitmapDrawable(getResources(), background);
+        LinearLayout rootLayout = (LinearLayout) findViewById(R.id.root_layout);
+        rootLayout.setBackground(drawableBackground);
     }
 
 
