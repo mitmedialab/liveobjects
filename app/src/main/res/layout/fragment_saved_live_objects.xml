@@ -2,15 +2,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="edu.mit.media.obm.liveobjects.app.main.SavedLiveObjectsFragment">
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/saved_liveobjs_listview">
+        android:id="@+id/saved_liveobjs_listview"
+        android:background="@color/theme_pure_transparent_background">
     </ListView>
 
 

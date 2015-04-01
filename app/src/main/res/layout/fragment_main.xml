@@ -33,13 +33,6 @@
             android:layout_below="@id/title_text_view"
             android:background="@android:color/darker_gray" />
 
-        <View
-            android:id="@+id/divider_view"
-            android:layout_width="fill_parent"
-            android:layout_height="3dp"
-            android:layout_below="@id/title_text_view"
-            android:background="@android:color/darker_gray" />
-
         <RelativeLayout
             android:id="@+id/tab_switch_buttons"
             android:layout_width="fill_parent"

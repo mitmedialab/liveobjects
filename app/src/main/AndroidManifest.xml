@@ -36,7 +36,7 @@
 
         <activity
             android:name="edu.mit.media.obm.liveobjects.app.main.SavedLiveObjectsActivity"
-            android:label="@string/title_activity_saved_live_objects" >
+            android:label="History" >
         </activity>
 
         <provider
