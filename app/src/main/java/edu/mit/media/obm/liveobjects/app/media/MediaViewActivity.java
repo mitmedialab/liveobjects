@@ -9,7 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import edu.mit.media.obm.liveobjects.app.main.MainActivity;
-import edu.mit.media.obm.liveobjects.app.wrapup.WrapUpActivity;
+import edu.mit.media.obm.liveobjects.app.detail.WrapUpActivity;
 import edu.mit.media.obm.liveobjects.storage.wifi.WifiStorageConfig;
 import edu.mit.media.obm.shair.liveobjects.R;
 

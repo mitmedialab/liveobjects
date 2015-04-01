@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:paddingTop="?attr/actionBarSize"
     android:orientation="vertical"
-    tools:context="edu.mit.media.obm.liveobjects.app.wrapup.WrapUpActivity$PlaceholderFragment">
+    tools:context="edu.mit.media.obm.liveobjects.app.detail.WrapUpActivity$PlaceholderFragment">
 
     <LinearLayout
         android:orientation="horizontal"

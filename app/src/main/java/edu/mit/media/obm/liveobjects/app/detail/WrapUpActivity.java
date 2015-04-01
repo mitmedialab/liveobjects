@@ -1,4 +1,4 @@
-package edu.mit.media.obm.liveobjects.app.wrapup;
+package edu.mit.media.obm.liveobjects.app.detail;
 
 import android.content.Intent;
 import android.os.Bundle;
