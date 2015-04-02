@@ -147,10 +147,32 @@ public class DetailFragment extends Fragment {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        String contentType;
+                        String fileName;
+                        boolean locallyStored;
+
+                        if (mJSONConfig != null) {
+                            contentType = getFromJSON(mJSONConfig, "type", "media");
+                            fileName = getFromJSON(mJSONConfig, "filename", "media");
+                            locallyStored = false;
+                        } else {
+                            Cursor cursor = getLocalLiveObject(mLiveObjectNameID);
+                            cursor.moveToFirst();
+
+                            contentType = cursor.getString(cursor.
+                                    getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_TYPE));
+                            fileName = cursor.getString(cursor.
+                                    getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_FILEPATH));
+                            locallyStored = true;
+                        }
+
                         // wait asynchronous tasks finish before starting another activity
                         cancelAsyncTasks();
                         // launch the media associated to the object
                         Intent viewIntent = new Intent(getActivity(), MediaViewActivity.class);
+                        viewIntent.putExtra(MediaViewActivity.CONTENT_TYPE_EXTRA, contentType);
+                        viewIntent.putExtra(MediaViewActivity.FILE_NAME_EXTRA, fileName);
+                        viewIntent.putExtra(MediaViewActivity.LOCALLY_STORED, locallyStored);
                         getActivity().startActivity(viewIntent);
                     }
                 }
@@ -266,7 +288,7 @@ public class DetailFragment extends Fragment {
                     saveData(mJSONConfig, imageFileName, bitmap);
                     imageInputStream.close();
 
-
+                    Log.v(LOG_TAG, "saved live object info");
 
                 } catch (Exception e) {
                     e.printStackTrace();

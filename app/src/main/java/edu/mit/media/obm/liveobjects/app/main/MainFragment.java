@@ -214,7 +214,11 @@ public class MainFragment extends Fragment {
                             Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
                             detailIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 
-                            detailIntent.putExtra(DetailActivity.EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
+                            String selectedLiveObjectName = mSelectedLiveObject.getLiveObjectName();
+                            LiveObjectsApplication application = (LiveObjectsApplication) getActivity().getApplication();
+                            application.setSelectedLiveObjectName(selectedLiveObjectName);
+
+                            detailIntent.putExtra(DetailActivity.EXTRA_LIVE_OBJ_NAME_ID, selectedLiveObjectName);
                             startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
                             mSelectedLiveObject = null;
                         }

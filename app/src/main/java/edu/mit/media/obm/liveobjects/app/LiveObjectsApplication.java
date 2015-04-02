@@ -21,7 +21,7 @@ public class LiveObjectsApplication extends Application {
 
     private MiddlewareInterface middleware;
 
-
+    private String mSelectedLiveObjectName;
 
     @Override
     public void onCreate() {
@@ -47,4 +47,11 @@ public class LiveObjectsApplication extends Application {
         return new LiveObjectsMiddleware(networkController, contentController);
     }
 
+    public void setSelectedLiveObjectName(String selectedLiveObjectName) {
+        mSelectedLiveObjectName = selectedLiveObjectName;
+    }
+
+    public String getSelectedLiveObjectName() {
+        return mSelectedLiveObjectName;
+    }
 }

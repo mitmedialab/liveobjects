@@ -23,8 +23,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 
     public static String CONTENT_TYPE_EXTRA = "contentType";
     public static String FILE_NAME_EXTRA = "filename";
-
-
+    public static String LOCALLY_STORED = "locallyStored";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,23 +32,20 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
         if (savedInstanceState == null) {
             String contentType = getIntent().getStringExtra(CONTENT_TYPE_EXTRA);
             String filename = getIntent().getStringExtra(FILE_NAME_EXTRA);
-
+            boolean locallyStored = getIntent().getBooleanExtra(LOCALLY_STORED, false);
 
             if (contentType != null && filename!= null) {
-                launchMediaFragment(contentType, filename);
-
+                // TODO: cannot play a content when locallyStored == true because no contents are currently stored on local storage.
+                launchMediaFragment(contentType, filename, locallyStored);
             }
-
         }
     }
 
 
-    private void launchMediaFragment(String contentType, String filename) {
-        String fileUrl = getFileUrl(filename);
+    private void launchMediaFragment(String contentType, String filename, boolean locallyStored) {
+        String fileUrl = getFileUrl(filename, locallyStored);
 
         if (contentType.equals(getResources().getString(R.string.content_type_video)) ){
-
-
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.activity_media_container, VideoViewFragment.newInstance(fileUrl))
                     .commit();
@@ -67,16 +63,22 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 
 
 
-    private String getFileUrl(String filename) {
+    private String getFileUrl(String filename, boolean locallyStored) {
         String fileUrl;
 
-        try {
-            //TODO to change: the app cannot directly talk with the driver
-            fileUrl = WifiStorageConfig.getBaseFolderPath(this) + "/" + filename ;
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            throw new RuntimeException("An unrecoverable error was thrown");
+        if (locallyStored) {
+            //TODO: this code should be hidden in a driver, which is something like a LocalStorage class.
+            fileUrl = filename;
+        } else {
+            try {
+                //TODO to change: the app cannot directly talk with the driver
+                fileUrl = WifiStorageConfig.getBaseFolderPath(this) + "/" + filename;
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                throw new RuntimeException("An unrecoverable error was thrown");
+            }
         }
+
         return fileUrl;
     }
 

@@ -7,25 +7,15 @@
     android:orientation="vertical"
     tools:context="edu.mit.media.obm.liveobjects.app.detail.WrapUpActivity$PlaceholderFragment">
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true">
-
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:id="@+id/iconImageView"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Text"
-            android:id="@+id/textView" />
-    </LinearLayout>
+        android:layout_alignParentTop="true"
+        android:text="New Text"
+        android:id="@+id/descriptionTextView"
+        android:padding="16dp"
+        android:textSize="32sp"
+        android:textColor="@color/theme_icon_text" />
 
     <LinearLayout
         android:layout_width="fill_parent"
