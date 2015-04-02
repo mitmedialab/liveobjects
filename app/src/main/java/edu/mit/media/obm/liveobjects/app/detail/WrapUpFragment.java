@@ -3,6 +3,7 @@ package edu.mit.media.obm.liveobjects.app.detail;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -12,6 +13,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.io.File;
@@ -19,6 +24,7 @@ import java.io.FileInputStream;
 
 import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.app.data.LObjContract;
+import edu.mit.media.obm.liveobjects.app.media.MediaViewActivity;
 import edu.mit.media.obm.liveobjects.app.utils.Util;
 import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
 import edu.mit.media.obm.shair.liveobjects.R;
@@ -33,6 +39,8 @@ public class WrapUpFragment extends Fragment {
 
     View mRootView;
     TextView mDescriptionTextView;
+    LinearLayout mFavoriteButton;
+    LinearLayout mReplayButton;
 
     /**
      * Use this factory method to create a new instance of
@@ -57,11 +65,46 @@ public class WrapUpFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_wrap_up, container, false);
-        mDescriptionTextView = (TextView) mRootView.findViewById(R.id.descriptionTextView);
+        initUIObjects(mRootView);
 
         setLiveObjectInfo();
 
         return mRootView;
+    }
+
+    private void initUIObjects(View rootView) {
+        mDescriptionTextView = (TextView) rootView.findViewById(R.id.descriptionTextView);
+        mFavoriteButton = (LinearLayout) rootView.findViewById(R.id.favorite_button);
+        mReplayButton = (LinearLayout) rootView.findViewById(R.id.replay_button);
+
+        mFavoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        mReplayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LiveObjectsApplication application = (LiveObjectsApplication)getActivity().getApplication();
+                String selectedLiveObjectName = application.getSelectedLiveObjectName();
+
+                Cursor cursor = getLocalLiveObject(selectedLiveObjectName);
+                cursor.moveToFirst();
+                String mediaType = cursor.getString(cursor.
+                        getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_TYPE));
+                String fileName = cursor.getString(cursor.
+                        getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_FILEPATH));
+                boolean locallyStored = true;
+
+                Intent viewIntent = new Intent(getActivity(), MediaViewActivity.class);
+                viewIntent.putExtra(MediaViewActivity.CONTENT_TYPE_EXTRA, mediaType);
+                viewIntent.putExtra(MediaViewActivity.FILE_NAME_EXTRA, fileName);
+                viewIntent.putExtra(MediaViewActivity.LOCALLY_STORED, locallyStored);
+                getActivity().startActivity(viewIntent);
+            }
+        });
     }
 
     private void setLiveObjectInfo() {
