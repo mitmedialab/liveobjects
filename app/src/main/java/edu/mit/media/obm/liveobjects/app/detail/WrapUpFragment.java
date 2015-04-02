@@ -1,6 +1,7 @@
 package edu.mit.media.obm.liveobjects.app.detail;
 
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 import edu.mit.media.obm.liveobjects.app.data.LObjContentProvider;
 import edu.mit.media.obm.liveobjects.app.data.LObjContract;
+import edu.mit.media.obm.liveobjects.app.media.MediaViewActivity;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
@@ -71,7 +73,7 @@ public class WrapUpFragment extends Fragment {
 
         initUI(rootView);
         setUIContent();
-
+        setUIListener(rootView);
 
         return rootView;
     }
@@ -94,7 +96,22 @@ public class WrapUpFragment extends Fragment {
 
     }
 
+    private void setUIListener(View rootView) {
+        mFavouriteButtonLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
 
+        mReplayButtonLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent viewIntent = new Intent(getActivity(), MediaViewActivity.class);
+                viewIntent.putExtra(MediaViewActivity.EXTRA_LIVE_OBJ_NAME_ID, mLiveObjNameId);
+                getActivity().startActivity(viewIntent);
+            }
+        });
+    }
 
     private void setImage(ImageView imageView, Cursor cursor){
         String imageFilePath = cursor.getString(cursor.getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH));
