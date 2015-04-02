@@ -5,79 +5,116 @@
     android:layout_height="match_parent"
     android:paddingTop="?attr/actionBarSize"
     android:orientation="vertical"
-    tools:context="edu.mit.media.obm.liveobjects.app.detail.WrapUpActivity$PlaceholderFragment">
+    tools:context="edu.mit.media.obm.liveobjects.app.wrapup.WrapUpActivity$PlaceholderFragment">
 
-    <TextView
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:text="New Text"
-        android:id="@+id/descriptionTextView"
-        android:padding="16dp"
-        android:textSize="32sp"
-        android:textColor="@color/theme_icon_text" />
+        android:layout_alignParentTop="true">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:id="@+id/iconImageView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Large Text"
+            android:id="@+id/wrapup_title_textview" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description text"
+            android:id="@+id/wrapup_description_textview" />
+        </LinearLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_alignParentBottom="true"
-        android:background="@color/theme_transparent_background">
-
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
         <LinearLayout
-            style="@android:style/Widget.Button"
-            android:id="@+id/favorite_button"
-            android:layout_width="0dp"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:orientation="horizontal"
-            android:background="@color/theme_pure_transparent_background">
+            android:layout_alignParentBottom="true">
 
-            <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_margin="4dp"
-                android:src="@drawable/favorite" />
+            <LinearLayout
+                style="@android:style/Widget.Button"
+                android:id="@+id/favorite_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:background="@color/theme_transparent_background">
 
-            <TextView
-                android:layout_width="wrap_content"
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="4dp"
+                    android:src="@drawable/favorite"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:text="Favorite"
+                    android:textSize="32sp"
+                    android:gravity="center"/>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="2dp"
                 android:layout_height="fill_parent"
-                android:text="Favorite"
-                android:textSize="32sp"
-                android:gravity="center" />
+                android:background="@android:color/darker_gray" />
 
+            <LinearLayout
+                style="@android:style/Widget.Button"
+                android:id="@+id/replay_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:background="@color/theme_transparent_background">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="4dp"
+                    android:src="@drawable/replay"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:text="Replay"
+                    android:textSize="32sp"
+                    android:gravity="center"/>
+
+            </LinearLayout>
         </LinearLayout>
 
-        <View
-            android:layout_width="2dp"
-            android:layout_height="fill_parent"
-            android:background="@android:color/darker_gray" />
-
-        <LinearLayout
-            style="@android:style/Widget.Button"
-            android:id="@+id/replay_button"
-            android:layout_width="0dp"
+        <Button
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:background="@color/theme_pure_transparent_background">
-
-            <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_margin="4dp"
-                android:src="@drawable/replay" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:text="Replay"
-                android:textSize="32sp"
-                android:gravity="center" />
-
-        </LinearLayout>
+            android:text="add comment"
+            android:id="@+id/addCommentButton"/>
 
     </LinearLayout>
+
 
 
 </RelativeLayout>

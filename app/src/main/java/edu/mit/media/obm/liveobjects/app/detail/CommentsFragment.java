@@ -1,4 +1,4 @@
-package edu.mit.media.obm.liveobjects.app.detail;
+package edu.mit.media.obm.liveobjects.app.wrapup;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;

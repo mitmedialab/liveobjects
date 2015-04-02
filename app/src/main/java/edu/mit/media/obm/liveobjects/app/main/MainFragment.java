@@ -27,6 +27,7 @@ import java.util.List;
 
 import edu.mit.media.obm.liveobjects.app.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.app.history.SavedLiveObjectsActivity;
 import edu.mit.media.obm.liveobjects.app.widget.AnimationArrayAdapter;
 import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.app.widget.ExpandIconAnimation;
@@ -194,7 +195,6 @@ public class MainFragment extends Fragment {
 
                     Animation animation = new ExpandIconAnimation(
                             getActivity().getWindowManager(), mClickedView).getAnimation();
-                    animation.setFillAfter(true);
                     animation.setAnimationListener(new Animation.AnimationListener() {
                         @Override
                         public void onAnimationStart(Animation animation) {
@@ -214,11 +214,7 @@ public class MainFragment extends Fragment {
                             Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
                             detailIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 
-                            String selectedLiveObjectName = mSelectedLiveObject.getLiveObjectName();
-                            LiveObjectsApplication application = (LiveObjectsApplication) getActivity().getApplication();
-                            application.setSelectedLiveObjectName(selectedLiveObjectName);
-
-                            detailIntent.putExtra(DetailActivity.EXTRA_LIVE_OBJ_NAME_ID, selectedLiveObjectName);
+                            detailIntent.putExtra(DetailActivity.EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
                             startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
                             mSelectedLiveObject = null;
                         }

@@ -7,10 +7,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import edu.mit.media.obm.liveobjects.app.main.MainActivity;
-import edu.mit.media.obm.liveobjects.app.widget.MenuActions;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 public class WrapUpActivity extends ActionBarActivity {
+
+    public static String EXTRA_LIVE_OBJ_NAME_ID = "live_obj_name_id";
+    public static String EXTRA_SHOW_ADD_COMMENT = "show_add_comment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +29,7 @@ public class WrapUpActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
+        getMenuInflater().inflate(R.menu.menu_wrap_up, menu);
         return true;
     }
 
@@ -40,7 +42,10 @@ public class WrapUpActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_goto_home) {
-            MenuActions.goToHome(this);
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
+            startActivity(intent);
+            finish();
 
             return true;
         }

@@ -1,8 +1,5 @@
-package edu.mit.media.obm.liveobjects.app.main;
+package edu.mit.media.obm.liveobjects.app.history;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,14 +10,10 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
 
 import java.util.Locale;
 
-import edu.mit.media.obm.liveobjects.app.main.SavedLiveObjectsFragment;
 import edu.mit.media.obm.liveobjects.app.slidingtabs.SlidingTabLayout;
-import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
-import edu.mit.media.obm.liveobjects.app.widget.MenuActions;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 public class SavedLiveObjectsActivity extends ActionBarActivity implements ActionBar.TabListener{
@@ -97,22 +90,13 @@ public class SavedLiveObjectsActivity extends ActionBarActivity implements Actio
 //                            .setText(mSectionsPagerAdapter.getPageTitle(i))
 //                            .setTabListener(this));
 //        }
-
-        Bitmap background = BitmapFactory.decodeResource(getResources(), R.drawable.main_background);
-        BitmapEditor bitmapEditor = new BitmapEditor(this);
-        background = bitmapEditor.cropToDisplayAspectRatio(background, getWindowManager());
-        bitmapEditor.blurBitmap(background, 2);
-
-        BitmapDrawable drawableBackground = new BitmapDrawable(getResources(), background);
-        LinearLayout rootLayout = (LinearLayout) findViewById(R.id.root_layout);
-        rootLayout.setBackground(drawableBackground);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
+        getMenuInflater().inflate(R.menu.menu_saved_live_objects, menu);
         return true;
     }
 
@@ -124,9 +108,7 @@ public class SavedLiveObjectsActivity extends ActionBarActivity implements Actio
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_goto_home) {
-            MenuActions.goToHome(this);
-
+        if (id == R.id.action_settings) {
             return true;
         }
 

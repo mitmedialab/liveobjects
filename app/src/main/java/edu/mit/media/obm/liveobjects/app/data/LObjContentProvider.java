@@ -3,6 +3,7 @@ package edu.mit.media.obm.liveobjects.app.data;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -151,4 +152,14 @@ public class LObjContentProvider extends ContentProvider{
         }
     }
 
+
+    public static Cursor getLocalLiveObject(String liveObjectNameID, Context context) {
+        String selection = LObjContract.LiveObjectEntry.COLUMN_NAME_ID + "= ?";
+        String[] selectionArgs ={liveObjectNameID};
+        Cursor cursor = context.getContentResolver().query(
+                LObjContract.LiveObjectEntry.CONTENT_URI,
+                LObjContract.LiveObjectEntry.ALL_COLUMNS,
+                selection, selectionArgs, null);
+        return  cursor;
+    }
 }

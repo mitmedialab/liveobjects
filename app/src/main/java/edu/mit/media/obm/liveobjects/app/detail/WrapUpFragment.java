@@ -1,34 +1,21 @@
-package edu.mit.media.obm.liveobjects.app.detail;
+package edu.mit.media.obm.liveobjects.app.wrapup;
 
 
-import android.app.Activity;
-import android.app.Application;
-import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.io.File;
-import java.io.FileInputStream;
-
-import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.app.data.LObjContentProvider;
 import edu.mit.media.obm.liveobjects.app.data.LObjContract;
-import edu.mit.media.obm.liveobjects.app.media.MediaViewActivity;
-import edu.mit.media.obm.liveobjects.app.utils.Util;
-import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
@@ -37,20 +24,30 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * create an instance of this fragment.
  */
 public class WrapUpFragment extends Fragment {
-    private static final String LOG_TAG = WrapUpFragment.class.getSimpleName();
+    private static final String ARG_LIVE_OBJ_NAME_ID = "live_obj_name_id";
+    private static final String ARG_SHOW_ADD_COMMENT = "show_add_comment";
 
-    View mRootView;
-    TextView mDescriptionTextView;
-    LinearLayout mFavoriteButton;
-    LinearLayout mReplayButton;
+    private String mLiveObjNameId;
+    private boolean mShowAddComment;
+
+    private ImageView mImageView;
+    private TextView mTitleTextView;
+    private TextView mDescriptionTextView;
+    private LinearLayout mFavouriteButtonLayout;
+    private LinearLayout mReplayButtonLayout;
+    private Button mAddCommentButton;
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      * @return A new instance of fragment WrapUpFragment.
      */
-    public static WrapUpFragment newInstance() {
+    public static WrapUpFragment newInstance(String liveObjNameId, boolean showAddComment) {
         WrapUpFragment fragment = new WrapUpFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_LIVE_OBJ_NAME_ID, liveObjNameId);
+        args.putBoolean(ARG_SHOW_ADD_COMMENT, showAddComment);
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -61,132 +58,71 @@ public class WrapUpFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mLiveObjNameId = getArguments().getString(ARG_LIVE_OBJ_NAME_ID);
+            mShowAddComment = getArguments().getBoolean(ARG_SHOW_ADD_COMMENT);
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mRootView = inflater.inflate(R.layout.fragment_wrap_up, container, false);
-        initUIObjects(mRootView);
+        View rootView = inflater.inflate(R.layout.fragment_wrap_up, container, false);
 
-        setLiveObjectInfo();
+        initUI(rootView);
+        setUIContent();
 
-        return mRootView;
+
+        return rootView;
     }
 
-    private void initUIObjects(View rootView) {
-        mDescriptionTextView = (TextView) rootView.findViewById(R.id.descriptionTextView);
-        mFavoriteButton = (LinearLayout) rootView.findViewById(R.id.favorite_button);
-        mReplayButton = (LinearLayout) rootView.findViewById(R.id.replay_button);
-
-        mFavoriteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LiveObjectsApplication application = (LiveObjectsApplication)getActivity().getApplication();
-                String selectedLiveObjectName = application.getSelectedLiveObjectName();
-
-                ContentValues values = new ContentValues();
-                values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_FAVOURITE, true);
-
-                String selection = LObjContract.LiveObjectEntry.COLUMN_NAME_ID + "= ?";
-                String[] selectionArgs ={ selectedLiveObjectName };
-
-                getActivity().getContentResolver().update(
-                        LObjContract.LiveObjectEntry.CONTENT_URI, values, selection, selectionArgs);
-
-                Log.v(LOG_TAG, "added " + selectedLiveObjectName + " to favorite");
-            }
-        });
-
-        mReplayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LiveObjectsApplication application = (LiveObjectsApplication)getActivity().getApplication();
-                String selectedLiveObjectName = application.getSelectedLiveObjectName();
-
-                Cursor cursor = getLocalLiveObject(selectedLiveObjectName);
-                cursor.moveToFirst();
-                String mediaType = cursor.getString(cursor.
-                        getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_TYPE));
-                String fileName = cursor.getString(cursor.
-                        getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_FILEPATH));
-                boolean locallyStored = true;
-
-                Intent viewIntent = new Intent(getActivity(), MediaViewActivity.class);
-                viewIntent.putExtra(MediaViewActivity.CONTENT_TYPE_EXTRA, mediaType);
-                viewIntent.putExtra(MediaViewActivity.FILE_NAME_EXTRA, fileName);
-                viewIntent.putExtra(MediaViewActivity.LOCALLY_STORED, locallyStored);
-                getActivity().startActivity(viewIntent);
-            }
-        });
+    private void initUI(View rootView) {
+        mImageView = (ImageView)rootView.findViewById(R.id.iconImageView);
+        mTitleTextView = (TextView) rootView.findViewById(R.id.wrapup_title_textview);
+        mDescriptionTextView = (TextView) rootView.findViewById(R.id.wrapup_description_textview);
+        mFavouriteButtonLayout = (LinearLayout) rootView.findViewById(R.id.favorite_button);
+        mReplayButtonLayout = (LinearLayout) rootView.findViewById(R.id.replay_button);
+        mAddCommentButton = (Button) rootView.findViewById(R.id.replay_button);
     }
 
-    private void setLiveObjectInfo() {
-        LiveObjectsApplication application = (LiveObjectsApplication)getActivity().getApplication();
-        String selectedLiveObjectName = application.getSelectedLiveObjectName();
-
-        Cursor cursor = getLocalLiveObject(selectedLiveObjectName);
+    private void setUIContent() {
+        Cursor cursor = LObjContentProvider.getLocalLiveObject(mLiveObjNameId, getActivity());
         cursor.moveToFirst();
+        setImage(mImageView,cursor);
+        setText(mTitleTextView, cursor, LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE);
+        setText(mDescriptionTextView, cursor, LObjContract.LiveObjectEntry.COLUMN_NAME_DESCRIPTION);
 
-        setLocalDescription(cursor);
-        setLocalBackgroundImage(cursor);
     }
 
-    private Cursor getLocalLiveObject(String liveObjectNameID) {
-        String selection = LObjContract.LiveObjectEntry.COLUMN_NAME_ID + "= ?";
-        String[] selectionArgs ={liveObjectNameID};
-        Cursor cursor = getActivity().getContentResolver().query(
-                LObjContract.LiveObjectEntry.CONTENT_URI,
-                LObjContract.LiveObjectEntry.ALL_COLUMNS,
-                selection, selectionArgs, null);
-        return  cursor;
+
+
+    private void setImage(ImageView imageView, Cursor cursor){
+        String imageFilePath = cursor.getString(cursor.getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH));
+        Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath);
+        imageView.setImageBitmap(bitmap);
     }
 
-    private void setLocalTitle(Cursor cursor){
-        Log.d(LOG_TAG, "cursor " + cursor);
-        String title = cursor.getString(cursor.
-                getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE));
-      //  mObjectTitleTextView.setText(title);
+    private void setText(TextView textView, Cursor cursor, String columnName) {
+        String value = cursor.getString(
+                cursor.getColumnIndex(columnName));
+        textView.setText(value);
+
     }
 
-    private void setLocalDescription(Cursor cursor){
-        Log.d(LOG_TAG, "cursor " + cursor);
-        String description = cursor.getString(cursor.
-                getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_DESCRIPTION));
-        mDescriptionTextView.setText(description);
+
+    private void initUIListener() {
+        mReplayButtonLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+            }
+        });
+
     }
 
-    private void setLocalBackgroundImage(Cursor cursor) {
-        String imagePath = cursor.getString(cursor.
-                getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH));
-        try {
-            File file = new File(imagePath);
-            FileInputStream inputStream = new FileInputStream(file);
-            Bitmap bitmap = Util.getBitmap(inputStream);
-            setBackgroundImage(bitmap);
-            inputStream.close();
 
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "error opening file: " + imagePath, e);
-        }
-    }
 
-    private void setBackgroundImage(Bitmap bitmap){
-        final Activity activity = getActivity();
 
-        BitmapEditor bitmapEditor = new BitmapEditor(activity);
-        Bitmap croppedBitmap = bitmapEditor.cropToDisplayAspectRatio(bitmap, activity.getWindowManager());
-        bitmapEditor.blurBitmap(croppedBitmap, 6);
 
-        if (croppedBitmap != null ) {
-            final BitmapDrawable background = new BitmapDrawable(croppedBitmap);
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    View rootLayout = mRootView.findViewById(R.id.root_layout);
-                    rootLayout.setBackgroundDrawable(background);
-                }
-            });
-        }
-    }
 }

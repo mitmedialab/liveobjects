@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.app.data.LObjContentProvider;
 import edu.mit.media.obm.liveobjects.app.data.LObjContract;
 import edu.mit.media.obm.liveobjects.app.media.MediaViewActivity;
 import edu.mit.media.obm.liveobjects.app.utils.Util;
@@ -116,18 +117,14 @@ public class DetailFragment extends Fragment {
         setUIContent();
         setUIListeners();
 
-
-
-
         return rootView;
     }
 
     private void setUIContent() {
-        Cursor cursor = getLocalLiveObject(mLiveObjectNameID);
+        Cursor cursor = LObjContentProvider.getLocalLiveObject(mLiveObjectNameID, getActivity());
         if (isLocallyAvailable(cursor)) {
             Log.d(LOG_TAG, "getting content from local storage");
             setLocalContent(cursor);
-
         }
         else {
             Log.d(LOG_TAG, "getting content from live object");
@@ -147,32 +144,11 @@ public class DetailFragment extends Fragment {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String contentType;
-                        String fileName;
-                        boolean locallyStored;
-
-                        if (mJSONConfig != null) {
-                            contentType = getFromJSON(mJSONConfig, "type", "media");
-                            fileName = getFromJSON(mJSONConfig, "filename", "media");
-                            locallyStored = false;
-                        } else {
-                            Cursor cursor = getLocalLiveObject(mLiveObjectNameID);
-                            cursor.moveToFirst();
-
-                            contentType = cursor.getString(cursor.
-                                    getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_TYPE));
-                            fileName = cursor.getString(cursor.
-                                    getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_FILEPATH));
-                            locallyStored = true;
-                        }
-
                         // wait asynchronous tasks finish before starting another activity
                         cancelAsyncTasks();
                         // launch the media associated to the object
                         Intent viewIntent = new Intent(getActivity(), MediaViewActivity.class);
-                        viewIntent.putExtra(MediaViewActivity.CONTENT_TYPE_EXTRA, contentType);
-                        viewIntent.putExtra(MediaViewActivity.FILE_NAME_EXTRA, fileName);
-                        viewIntent.putExtra(MediaViewActivity.LOCALLY_STORED, locallyStored);
+                        viewIntent.putExtra(MediaViewActivity.EXTRA_LIVE_OBJ_NAME_ID, mLiveObjectNameID);
                         getActivity().startActivity(viewIntent);
                     }
                 }
@@ -182,15 +158,7 @@ public class DetailFragment extends Fragment {
 
 
 
-    private Cursor getLocalLiveObject(String liveObjectNameID) {
-        String selection = LObjContract.LiveObjectEntry.COLUMN_NAME_ID + "= ?";
-        String[] selectionArgs ={liveObjectNameID};
-        Cursor cursor = getActivity().getContentResolver().query(
-                LObjContract.LiveObjectEntry.CONTENT_URI,
-                LObjContract.LiveObjectEntry.ALL_COLUMNS,
-                selection, selectionArgs, null);
-        return  cursor;
-    }
+
 
     private boolean isLocallyAvailable(Cursor cursor){
         return cursor.getCount() > 0 ;
@@ -288,7 +256,7 @@ public class DetailFragment extends Fragment {
                     saveData(mJSONConfig, imageFileName, bitmap);
                     imageInputStream.close();
 
-                    Log.v(LOG_TAG, "saved live object info");
+
 
                 } catch (Exception e) {
                     e.printStackTrace();
