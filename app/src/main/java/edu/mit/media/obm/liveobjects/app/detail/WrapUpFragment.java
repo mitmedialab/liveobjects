@@ -3,10 +3,12 @@ package edu.mit.media.obm.liveobjects.app.detail;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -80,7 +82,19 @@ public class WrapUpFragment extends Fragment {
         mFavoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                LiveObjectsApplication application = (LiveObjectsApplication)getActivity().getApplication();
+                String selectedLiveObjectName = application.getSelectedLiveObjectName();
 
+                ContentValues values = new ContentValues();
+                values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_FAVOURITE, true);
+
+                String selection = LObjContract.LiveObjectEntry.COLUMN_NAME_ID + "= ?";
+                String[] selectionArgs ={ selectedLiveObjectName };
+
+                getActivity().getContentResolver().update(
+                        LObjContract.LiveObjectEntry.CONTENT_URI, values, selection, selectionArgs);
+
+                Log.v(LOG_TAG, "added " + selectedLiveObjectName + " to favorite");
             }
         });
 
