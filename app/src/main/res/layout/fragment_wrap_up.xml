@@ -13,30 +13,27 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true">
 
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:id="@+id/iconImageView"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="8dp"
             android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Large Text"
-            android:id="@+id/wrapup_title_textview" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="38sp"
+                android:textColor="@color/theme_icon_text"
+                android:text="Large Text"
+                android:id="@+id/wrapup_title_textview" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Description text"
-            android:id="@+id/wrapup_description_textview" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="32sp"
+                android:textColor="@color/theme_icon_text"
+                android:text="Description text"
+                android:id="@+id/wrapup_description_textview" />
         </LinearLayout>
     </LinearLayout>
 
@@ -51,7 +48,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_alignParentBottom="true">
+            android:layout_alignParentBottom="true"
+            android:background="@color/theme_transparent_background">
 
             <LinearLayout
                 style="@android:style/Widget.Button"
@@ -60,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="horizontal"
-                android:background="@color/theme_transparent_background">
+                android:background="@drawable/bg_button">
 
                 <ImageView
                     android:layout_width="50dp"
@@ -89,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="horizontal"
-                android:background="@color/theme_transparent_background">
+                android:background="@drawable/bg_button">
 
                 <ImageView
                     android:layout_width="50dp"

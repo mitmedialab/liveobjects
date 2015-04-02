@@ -1,10 +1,12 @@
 package edu.mit.media.obm.liveobjects.app.detail;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 import edu.mit.media.obm.liveobjects.app.data.LObjContentProvider;
 import edu.mit.media.obm.liveobjects.app.data.LObjContract;
 import edu.mit.media.obm.liveobjects.app.media.MediaViewActivity;
+import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
@@ -32,7 +35,6 @@ public class WrapUpFragment extends Fragment {
     private String mLiveObjNameId;
     private boolean mShowAddComment;
 
-    private ImageView mImageView;
     private TextView mTitleTextView;
     private TextView mDescriptionTextView;
     private LinearLayout mFavouriteButtonLayout;
@@ -72,14 +74,13 @@ public class WrapUpFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_wrap_up, container, false);
 
         initUI(rootView);
-        setUIContent();
+        setUIContent(rootView);
         setUIListener(rootView);
 
         return rootView;
     }
 
     private void initUI(View rootView) {
-        mImageView = (ImageView)rootView.findViewById(R.id.iconImageView);
         mTitleTextView = (TextView) rootView.findViewById(R.id.wrapup_title_textview);
         mDescriptionTextView = (TextView) rootView.findViewById(R.id.wrapup_description_textview);
         mFavouriteButtonLayout = (LinearLayout) rootView.findViewById(R.id.favorite_button);
@@ -87,10 +88,10 @@ public class WrapUpFragment extends Fragment {
         mAddCommentButton = (Button) rootView.findViewById(R.id.addCommentButton);
     }
 
-    private void setUIContent() {
+    private void setUIContent(View rootView) {
         Cursor cursor = LObjContentProvider.getLocalLiveObject(mLiveObjNameId, getActivity());
         cursor.moveToFirst();
-        setImage(mImageView,cursor);
+        setImage(rootView, cursor);
         setText(mTitleTextView, cursor, LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE);
         setText(mDescriptionTextView, cursor, LObjContract.LiveObjectEntry.COLUMN_NAME_DESCRIPTION);
 
@@ -113,10 +114,20 @@ public class WrapUpFragment extends Fragment {
         });
     }
 
-    private void setImage(ImageView imageView, Cursor cursor){
+    private void setImage(View view, Cursor cursor){
+        Activity activity = getActivity();
+
         String imageFilePath = cursor.getString(cursor.getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH));
         Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath);
-        imageView.setImageBitmap(bitmap);
+
+        BitmapEditor bitmapEditor = new BitmapEditor(activity);
+        Bitmap croppedBitmap = bitmapEditor.cropToDisplayAspectRatio(bitmap, activity.getWindowManager());
+        bitmapEditor.blurBitmap(croppedBitmap, 6);
+
+        if (croppedBitmap != null ) {
+            BitmapDrawable background = new BitmapDrawable(croppedBitmap);
+            view.setBackgroundDrawable(background);
+        }
     }
 
     private void setText(TextView textView, Cursor cursor, String columnName) {
@@ -125,7 +136,6 @@ public class WrapUpFragment extends Fragment {
         textView.setText(value);
 
     }
-
 
     private void initUIListener() {
         mReplayButtonLayout.setOnClickListener(new View.OnClickListener() {
