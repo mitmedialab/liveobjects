@@ -5,7 +5,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="edu.mit.media.obm.liveobjects.app.history.SavedLiveObjectsFragment">
+    tools:context="edu.mit.media.obm.liveobjects.app.main.SavedLiveObjectsFragment">
 
     <ListView
         android:layout_width="match_parent"
