@@ -1,4 +1,4 @@
-package edu.mit.media.obm.liveobjects.app.history;
+package edu.mit.media.obm.liveobjects.app.main;
 
 import android.database.Cursor;
 import android.os.Bundle;

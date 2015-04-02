@@ -1,4 +1,4 @@
-package edu.mit.media.obm.liveobjects.app.history;
+package edu.mit.media.obm.liveobjects.app.main;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import java.util.Locale;
 
 import edu.mit.media.obm.liveobjects.app.slidingtabs.SlidingTabLayout;
+import edu.mit.media.obm.liveobjects.app.widget.MenuActions;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 public class SavedLiveObjectsActivity extends ActionBarActivity implements ActionBar.TabListener{
@@ -96,7 +97,7 @@ public class SavedLiveObjectsActivity extends ActionBarActivity implements Actio
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_saved_live_objects, menu);
+        getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
     }
 
@@ -108,7 +109,8 @@ public class SavedLiveObjectsActivity extends ActionBarActivity implements Actio
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_goto_home) {
+            MenuActions.goToHome(this);
             return true;
         }
 

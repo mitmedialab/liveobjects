@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import edu.mit.media.obm.liveobjects.app.widget.MenuActions;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 public class ProfileActivity extends ActionBarActivity {
@@ -28,7 +29,7 @@ public class ProfileActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_profile, menu);
+        getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
     }
 
@@ -40,7 +41,8 @@ public class ProfileActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_goto_home) {
+            MenuActions.goToHome(this);
             return true;
         }
 

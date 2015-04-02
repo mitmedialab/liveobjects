@@ -12,6 +12,7 @@ import org.json.JSONException;
 import java.net.ConnectException;
 
 import edu.mit.media.obm.liveobjects.app.main.MainActivity;
+import edu.mit.media.obm.liveobjects.app.widget.MenuActions;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 
@@ -63,7 +64,7 @@ public class DetailActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_detail, menu);
+        getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
     }
 
@@ -76,13 +77,9 @@ public class DetailActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_goto_home) {
-            mDetailFragment.cancelAsyncTasks(); 
+            mDetailFragment.cancelAsyncTasks();
 
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
-            startActivity(intent);
-            finish();
-
+            MenuActions.goToHome(this);
             return true;
         }
 
