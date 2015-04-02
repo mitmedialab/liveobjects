@@ -11,26 +11,33 @@
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true">
+        android:layout_centerVertical="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="38sp"
-                android:textColor="@color/theme_icon_text"
-                android:text="Large Text"
-                android:id="@+id/wrapup_title_textview" />
+            android:layout_margin="8dp"
+            android:padding="4dp"
+            android:orientation="vertical"
+            android:background="@color/theme_transparent_dark_background">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="32sp"
+                android:textColor="@color/theme_icon_text"
+                android:text="Large Text"
+                android:id="@+id/wrapup_title_textview" />
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="2dp"
+                android:background="@android:color/darker_gray" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="26sp"
                 android:textColor="@color/theme_icon_text"
                 android:text="Description text"
                 android:id="@+id/wrapup_description_textview" />
