@@ -21,7 +21,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:background="@color/theme_transparent_background">
 
         <LinearLayout
             style="@android:style/Widget.Button"
@@ -30,20 +31,20 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="horizontal"
-            android:background="@color/theme_transparent_background">
+            android:background="@color/theme_pure_transparent_background">
 
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_margin="4dp"
-                android:src="@drawable/favorite"/>
+                android:src="@drawable/favorite" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:text="Favorite"
                 android:textSize="32sp"
-                android:gravity="center"/>
+                android:gravity="center" />
 
         </LinearLayout>
 
@@ -59,20 +60,20 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="horizontal"
-            android:background="@color/theme_transparent_background">
+            android:background="@color/theme_pure_transparent_background">
 
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_margin="4dp"
-                android:src="@drawable/replay"/>
+                android:src="@drawable/replay" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:text="Replay"
                 android:textSize="32sp"
-                android:gravity="center"/>
+                android:gravity="center" />
 
         </LinearLayout>
 
