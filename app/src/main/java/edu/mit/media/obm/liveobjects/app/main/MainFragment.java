@@ -103,6 +103,12 @@ public class MainFragment extends Fragment {
             }
         });
 
+        mHistoryButton = (Button) rootView.findViewById(R.id.historyButton);
+
+        setBackgroundImage(rootView);
+    }
+
+    private void setBackgroundImage(View rootView) {
         Bitmap background = BitmapFactory.decodeResource(getResources(), R.drawable.main_background);
         BitmapEditor bitmapEditor = new BitmapEditor(getActivity());
         background = bitmapEditor.cropToDisplayAspectRatio(background, getActivity().getWindowManager());
@@ -111,9 +117,6 @@ public class MainFragment extends Fragment {
         BitmapDrawable drawableBackground = new BitmapDrawable(getResources(), background);
         LinearLayout rootLayout = (LinearLayout) rootView.findViewById(R.id.root_layout);
         rootLayout.setBackground(drawableBackground);
-
-        mHistoryButton = (Button) rootView.findViewById(R.id.historyButton);
-
     }
 
     private void setupUIListeners() {
@@ -148,8 +151,6 @@ public class MainFragment extends Fragment {
                 startActivity(intent);
             }
         });
-
-
     }
 
     private void initNetworkListeners() {

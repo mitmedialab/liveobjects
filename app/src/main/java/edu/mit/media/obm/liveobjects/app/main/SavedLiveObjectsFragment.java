@@ -63,6 +63,7 @@ public class SavedLiveObjectsFragment extends Fragment implements LoaderManager.
         mListView = (ListView) rootView.findViewById(R.id.saved_liveobjs_listview);
         fillData();
 
+
         return rootView;
     }
 
