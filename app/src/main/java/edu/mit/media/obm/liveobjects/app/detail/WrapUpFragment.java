@@ -82,7 +82,7 @@ public class WrapUpFragment extends Fragment {
         mDescriptionTextView = (TextView) rootView.findViewById(R.id.wrapup_description_textview);
         mFavouriteButtonLayout = (LinearLayout) rootView.findViewById(R.id.favorite_button);
         mReplayButtonLayout = (LinearLayout) rootView.findViewById(R.id.replay_button);
-        mAddCommentButton = (Button) rootView.findViewById(R.id.replay_button);
+        mAddCommentButton = (Button) rootView.findViewById(R.id.addCommentButton);
     }
 
     private void setUIContent() {
