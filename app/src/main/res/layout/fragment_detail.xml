@@ -52,13 +52,26 @@
             android:text="Placeholder Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="32dp"
+            android:textSize="38sp"
             android:textColor="@color/theme_icon_text"
             android:shadowColor="@color/theme_icon_text_shadow"
             android:shadowDx="1"
             android:shadowDy="1"
             android:shadowRadius="4"
             android:id="@+id/object_title_textview" />
+
+        <TextView
+            android:layout_marginTop="12dp"
+            android:text="Placeholder Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="32sp"
+            android:textColor="@color/theme_icon_text"
+            android:shadowColor="@color/theme_icon_text_shadow"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="4"
+            android:id="@+id/object_description_textview" />
 
     </LinearLayout>
 
