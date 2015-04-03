@@ -171,13 +171,12 @@ public class WrapUpFragment extends Fragment {
     }
 
     private void updateFavoriteUI(LinearLayout favouriteButtonLayout, boolean isFavorite) {
-        if (isFavorite) {
-            favouriteButtonLayout.setBackgroundColor(Color.RED);
-        }
-        else {
-            favouriteButtonLayout.setBackgroundColor(Color.LTGRAY);
-        }
+        int backgroundColorId = (isFavorite ? R.color.theme_transparent_orange : R.color.theme_pure_transparent_background);
+        int backgroundColor = getResources().getColor(backgroundColorId);
+
+        favouriteButtonLayout.setBackgroundColor(backgroundColor);
     }
+
     private void setUIListener(View rootView) {
         mFavouriteButtonLayout.setOnClickListener(new View.OnClickListener() {
             @Override
