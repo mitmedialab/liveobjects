@@ -1,13 +1,17 @@
 package edu.mit.media.obm.liveobjects.app.profile;
 
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import edu.mit.media.obm.liveobjects.app.data.ProfilePreference;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
@@ -15,32 +19,22 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * Use the {@link ProfileFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ProfileFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class ProfileFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener{
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private TextView mNameTextView;
+    private TextView mLastNameTextView;
+    private TextView mCompanyTextView;
+    private TextView mEmailTextView;
 
+    private TextView mNumberVisitedObjects;
 
     /**
      * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * this fragment
      * @return A new instance of fragment ProfileFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static ProfileFragment newInstance(String param1, String param2) {
+    public static ProfileFragment newInstance() {
         ProfileFragment fragment = new ProfileFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -51,19 +45,50 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(this);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        TextView textView = new TextView(getActivity());
-        textView.setText(R.string.hello_blank_fragment);
-        return textView;
+        View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
+        initUI(rootView);
+        setUIContent();
+
+        return rootView;
+    }
+
+    private void initUI(View view){
+        mNameTextView = (TextView)view.findViewById(R.id.nameTextView);
+        mLastNameTextView = (TextView)view.findViewById(R.id.lastNameTextView);
+        mCompanyTextView = (TextView)view.findViewById(R.id.companyTextView);
+        mEmailTextView = (TextView)view.findViewById(R.id.emailTextView);
+
+        mNumberVisitedObjects = (TextView) view.findViewById(R.id.visitedLOsTextView);
     }
 
 
+
+    private void setUIContent() {
+        //TODO update number of visited objects through a query on the content provider
+        //mNumberVisitedObjects.setText();
+
+        //update the data from the preferences
+        Context context =getActivity();
+        SharedPreferences pref = ProfilePreference.getInstance(context);
+        mNameTextView.setText(
+                ProfilePreference.getString(pref,context,R.string.profile_name_key));
+        mLastNameTextView.setText(
+                ProfilePreference.getString(pref,context,R.string.profile_last_name_key));
+        mCompanyTextView.setText(
+                ProfilePreference.getString(pref,context,R.string.profile_company_key));
+        mEmailTextView.setText(
+                ProfilePreference.getString(pref,context,R.string.profile_email_key));
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        setUIContent();
+    }
 }

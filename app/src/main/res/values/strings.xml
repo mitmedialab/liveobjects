@@ -18,6 +18,7 @@
     <string name="title_activity_profile">ProfileActivity</string>
 
 
+    <string name ="profile_preference_file_key">profile_preference_file_key</string>
     <string name="profile_number_visited_objects">number_visited_objects</string>
 
     <string name="profile_name_key">name</string>

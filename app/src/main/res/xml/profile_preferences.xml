@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:key="@string/profile_name_key"
+        android:title="EditText title"
+        android:summary="EditText summary"
+        android:dialogTitle="EditText Dialog" />
+
+
+    <EditTextPreference
+        android:key="@string/profile_last_name_key"
+        android:title="EditText title"
+        android:summary="EditText summary"
+        android:dialogTitle="EditText Dialog" />
+
+
+    <EditTextPreference
+        android:key="@string/profile_company_key"
+        android:title="EditText company"
+        android:summary="EditText summary"
+        android:dialogTitle="EditText Dialog" />
+
+    <EditTextPreference
+        android:key="@string/profile_email_key"
+        android:title="EditText email"
+        android:summary="EditText summary"
+        android:dialogTitle="EditText Dialog" />
+
+
+
+</PreferenceScreen>
