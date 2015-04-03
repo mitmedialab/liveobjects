@@ -70,8 +70,8 @@ public class RoundedImageView extends ImageView {
         final Paint paint = new Paint();
         final Rect rect = new Rect(0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight());
         final float circleX = scaledBitmap.getWidth() / 2 + 0.7f;
-        final float circleY = scaledBitmap.getHeight() / 2 + 0.7f;
-        final float circleRadius = scaledBitmap.getWidth() / 2 * 0.9f;
+        final float circleY = scaledBitmap.getHeight() / 2 - 0.7f;
+        final float circleRadius = scaledBitmap.getWidth() / 2 * 0.86f;
 
         paint.setAntiAlias(true);
         paint.setFilterBitmap(true);
