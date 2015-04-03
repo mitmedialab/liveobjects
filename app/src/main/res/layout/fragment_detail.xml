@@ -25,22 +25,15 @@
 
         <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="108dp"
-                android:layout_width="240dp"
-                android:layout_height="240dp"
-                android:background="@color/theme_transparent_background"
-                android:layout_gravity="center" />
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_oval">
 
             <ImageView
                 android:id="@+id/object_image_view"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="108dp"
-                android:layout_width="240dp"
-                android:layout_height="240dp"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_margin="10dp"
                 android:clickable="true"
                 android:background="@drawable/play"
                 android:layout_gravity="center" />
