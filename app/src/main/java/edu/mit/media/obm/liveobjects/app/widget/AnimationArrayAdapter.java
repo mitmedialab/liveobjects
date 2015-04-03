@@ -1,17 +1,24 @@
 package edu.mit.media.obm.liveobjects.app.widget;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
 
+import edu.mit.media.obm.liveobjects.app.data.LObjContentProvider;
+import edu.mit.media.obm.liveobjects.app.data.LObjContract;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
@@ -61,13 +68,32 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
 
         String text = mObjects.get(position).toString();
         holder.mTextView.setText(text);
-        holder.mImageView.setFillColor(mRandomColorGenerator.getNextColor());
+
+        setImage(holder.mImageView, text);
 
         Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.bounce_scale);
         animation.setInterpolator(new SpringInterpolator());
         convertView.startAnimation(animation);
 
         return convertView;
+    }
+
+    private void setImage(RoundedImageView imageView, String liveObjectName) {
+        Cursor cursor = LObjContentProvider.getLocalLiveObject(liveObjectName, mContext);
+
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            String imageFilePath = cursor.getString(cursor.getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH));
+
+            Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath);
+            BitmapEditor bitmapEditor = new BitmapEditor(mContext);
+            bitmapEditor.blurBitmap(bitmap, 3);
+            BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
+
+            imageView.setImageDrawable(bitmapDrawable);
+        } else {
+            imageView.setFillColor(mRandomColorGenerator.getNextColor());
+        }
     }
 
     private class RandomColorGenerator {
