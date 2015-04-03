@@ -52,14 +52,13 @@ public class DetailActivity extends ActionBarActivity {
                 }
             });
 
-
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, mDetailFragment)
                     .commit();
+
+            getSupportActionBar().setTitle(liveObjNameId);
         }
-
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

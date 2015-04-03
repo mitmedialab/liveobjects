@@ -64,17 +64,13 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
             if (mLiveObjNameId != null) {
                 initContent(mLiveObjNameId);
 
-
                 //TODO to improve: for now we first download all the file and the open the fragment
                 initSavingFileTask();
                 mSavingFileTask.execute();
-
-
-
             }
+
+            getSupportActionBar().setTitle(mLiveObjNameId);
         }
-
-
     }
 
 

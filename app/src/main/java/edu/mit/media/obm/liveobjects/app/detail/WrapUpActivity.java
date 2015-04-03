@@ -27,6 +27,8 @@ public class WrapUpActivity extends ActionBarActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.activity_wrap_up_container, WrapUpFragment.newInstance(mLiveObjectId, mShowAddComment))
                     .commit();
+
+            getSupportActionBar().setTitle(mLiveObjectId);
         }
     }
 
