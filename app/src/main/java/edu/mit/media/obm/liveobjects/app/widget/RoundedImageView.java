@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -50,7 +49,7 @@ public class RoundedImageView extends ImageView {
             return;
         }
 
-        Bitmap originalBitmap = ((BitmapDrawable)drawable).getBitmap();
+        Bitmap originalBitmap = ((BitmapDrawable) drawable).getBitmap();
         Bitmap bitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
 
         if (mFillColorSet) {

@@ -9,11 +9,13 @@ import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
  * Simple Animation repeatedly zooming in and out a given image
+ *
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public class ZoomInOutAnimation {
     private ImageView mImageView;
     private Context mContext;
+
     public ZoomInOutAnimation(ImageView imageView, Context context) {
         mImageView = imageView;
         mContext = context;
@@ -63,10 +65,6 @@ public class ZoomInOutAnimation {
         mImageView.startAnimation(zoomIn);
 
     }
-
-
-
-
 
 
 }

@@ -1,6 +1,5 @@
 package edu.mit.media.obm.liveobjects.app.widget;
 
-import android.content.Context;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -45,14 +44,14 @@ public class ExpandIconAnimation {
         int originalPos[] = new int[2];
         view.getLocationOnScreen(originalPos);
 
-        Animation animation = new TranslateAnimation(0, xDest - originalPos[0] , 0, yDest - originalPos[1]);
+        Animation animation = new TranslateAnimation(0, xDest - originalPos[0], 0, yDest - originalPos[1]);
 
         return animation;
     }
 
     private Animation createExpandAnimation(DisplayMetrics displayMetrics, View view) {
-        float diagonalLength = (float)Math.sqrt(Math.pow(displayMetrics.widthPixels, 2) +
-            Math.pow(displayMetrics.heightPixels, 2));
+        float diagonalLength = (float) Math.sqrt(Math.pow(displayMetrics.widthPixels, 2) +
+                Math.pow(displayMetrics.heightPixels, 2));
         float scale = diagonalLength / view.getMeasuredWidth() * 1.4f;
         Log.v(getClass().getSimpleName(), String.format("displayMetrics = (%d, %d)", displayMetrics.widthPixels, displayMetrics.heightPixels));
         Log.v(getClass().getSimpleName(), String.format("diagonalLength = %f, width = %d, scale = %f", diagonalLength, view.getMeasuredWidth(), scale));
@@ -70,8 +69,7 @@ public class ExpandIconAnimation {
         return animation;
     }
 
-    public Animation getAnimation()
-    {
+    public Animation getAnimation() {
         return mAnimationSet;
     }
 }

@@ -2,14 +2,12 @@ package edu.mit.media.obm.liveobjects.app.widget;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -34,7 +32,7 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
     }
 
     public AnimationArrayAdapter(Context context, int resource, int textViewResourceId, List<T> objects) {
-        super(context, resource ,textViewResourceId, objects);
+        super(context, resource, textViewResourceId, objects);
 
         mContext = context;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -82,7 +80,7 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
 
         public int getNextColor() {
             float[] hsv = new float[3];
-            hsv[0] = (float)mCurrentHue;
+            hsv[0] = (float) mCurrentHue;
             hsv[1] = 1.0f;
             hsv[2] = 0.75f;
 

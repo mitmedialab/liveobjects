@@ -1,6 +1,5 @@
 package edu.mit.media.obm.liveobjects.app.widget;
 
-import android.util.Log;
 import android.view.animation.Interpolator;
 
 /**
@@ -15,6 +14,6 @@ public class SpringInterpolator implements Interpolator {
         double sin = Math.sin(Math.PI * (2.0 * t * 4.0 - 0.5));
         double amplitude = Math.exp(-t * 10.0);
 
-        return (float)(amplitude * sin + 1.0);
+        return (float) (amplitude * sin + 1.0);
     }
 }

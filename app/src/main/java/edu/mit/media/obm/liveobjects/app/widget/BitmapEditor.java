@@ -7,7 +7,6 @@ import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.WindowManager;
 
 /**
@@ -22,15 +21,15 @@ public class BitmapEditor {
 
     public Bitmap cropToAspectRatio(Bitmap bitmap, float aspectRatio) {
         float bitmapAspectRatio =
-                (float)bitmap.getHeight() / bitmap.getWidth();
+                (float) bitmap.getHeight() / bitmap.getWidth();
 
         Bitmap croppedBitmap;
         if (bitmapAspectRatio < aspectRatio) {
-            int croppedWidth = (int)(bitmap.getWidth() * bitmapAspectRatio / aspectRatio);
+            int croppedWidth = (int) (bitmap.getWidth() * bitmapAspectRatio / aspectRatio);
             croppedBitmap = Bitmap.createBitmap(bitmap,
                     (bitmap.getWidth() - croppedWidth) / 2, 0, croppedWidth, bitmap.getHeight());
         } else {
-            int croppedHeight = (int)(bitmap.getHeight() * aspectRatio / bitmapAspectRatio);
+            int croppedHeight = (int) (bitmap.getHeight() * aspectRatio / bitmapAspectRatio);
             croppedBitmap = Bitmap.createBitmap(bitmap,
                     0, (bitmap.getHeight() - croppedHeight) / 2, bitmap.getWidth(), croppedHeight);
         }
@@ -42,7 +41,7 @@ public class BitmapEditor {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         windowManager.getDefaultDisplay().getMetrics(displayMetrics);
 
-        float displayAspectRatio = (float)displayMetrics.heightPixels / displayMetrics.widthPixels;
+        float displayAspectRatio = (float) displayMetrics.heightPixels / displayMetrics.widthPixels;
 
         return cropToAspectRatio(bitmap, displayAspectRatio);
     }
