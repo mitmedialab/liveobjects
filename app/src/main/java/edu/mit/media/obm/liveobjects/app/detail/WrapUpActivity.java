@@ -1,12 +1,10 @@
 package edu.mit.media.obm.liveobjects.app.detail;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import edu.mit.media.obm.liveobjects.app.main.MainActivity;
 import edu.mit.media.obm.liveobjects.app.widget.MenuActions;
 import edu.mit.media.obm.shair.liveobjects.R;
 
@@ -15,15 +13,21 @@ public class WrapUpActivity extends ActionBarActivity {
     public static String EXTRA_LIVE_OBJ_NAME_ID = "live_obj_name_id";
     public static String EXTRA_SHOW_ADD_COMMENT = "show_add_comment";
 
+    private String mLiveObjectId;
+    private boolean mShowAddComment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wrap_up);
-//        if (savedInstanceState == null) {
-//            getSupportFragmentManager().beginTransaction()
-//                    .add(R.id.container, WrapUpFragment.newInstance())
-//                    .commit();
-//        }
+        if (savedInstanceState == null) {
+            mLiveObjectId = getIntent().getStringExtra(EXTRA_LIVE_OBJ_NAME_ID);
+            mShowAddComment = getIntent().getBooleanExtra(EXTRA_SHOW_ADD_COMMENT, true);
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.activity_wrap_up_container, WrapUpFragment.newInstance(mLiveObjectId, mShowAddComment))
+                    .commit();
+        }
     }
 
 

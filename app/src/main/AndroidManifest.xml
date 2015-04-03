@@ -33,7 +33,6 @@
             android:name="edu.mit.media.obm.liveobjects.app.detail.WrapUpActivity"
             android:label="Wrap Up" >
         </activity>
-
         <activity
             android:name="edu.mit.media.obm.liveobjects.app.main.SavedLiveObjectsActivity"
             android:label="@string/title_activity_saved_live_objects" >
@@ -44,9 +43,10 @@
             android:authorities="edu.mit.media.obm.liveobjects.app.provider" >
         </provider>
 
-
+        <activity
+            android:name="edu.mit.media.obm.liveobjects.app.profile.ProfileActivity"
+            android:label="@string/title_activity_profile" >
+        </activity>
     </application>
-
-
 
 </manifest>

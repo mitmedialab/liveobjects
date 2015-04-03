@@ -34,7 +34,11 @@ public final class LObjContract {
         public static final String COLUMN_NAME_ICON_FILEPATH = "icon_filepath";
         public static final String COLUMN_NAME_MEDIA_FILEPATH = "media_filepath";
         public static final String COLUMN_NAME_MEDIA_TYPE = "media_type";
-        public static final String COLUMN_NAME_FAVOURITE = "favourite";
+        public static final String COLUMN_NAME_FAVORITE = "favorite";
+
+        public static final int FAVORITE_FALSE = 0;
+        public static final int FAVORITE_TRUE = 1;
+
 
         public static final String[] ALL_COLUMNS = {
                 _ID,
@@ -44,7 +48,7 @@ public final class LObjContract {
                 COLUMN_NAME_ICON_FILEPATH,
                 COLUMN_NAME_MEDIA_FILEPATH,
                 COLUMN_NAME_MEDIA_TYPE,
-                COLUMN_NAME_FAVOURITE
+                COLUMN_NAME_FAVORITE
         };
     }
 

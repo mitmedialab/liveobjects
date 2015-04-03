@@ -14,7 +14,16 @@
 
 
     <string name="title_history_tab">History</string>
-    <string name="title_favourite_tab">Favourites</string>
+    <string name="title_favourite_tab">Favorites</string>
     <string name="title_activity_profile">ProfileActivity</string>
+
+
+    <string name="profile_number_visited_objects">number_visited_objects</string>
+
+    <string name="profile_name_key">name</string>
+    <string name="profile_last_name_key">lastName</string>
+    <string name="profile_company_key">company</string>
+    <string name="profile_email_key">email</string>
+
 
 </resources>

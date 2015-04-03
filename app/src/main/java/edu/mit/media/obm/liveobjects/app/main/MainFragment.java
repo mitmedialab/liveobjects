@@ -27,6 +27,7 @@ import java.util.List;
 
 import edu.mit.media.obm.liveobjects.app.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.app.profile.ProfileActivity;
 import edu.mit.media.obm.liveobjects.app.widget.AnimationArrayAdapter;
 import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.app.widget.ExpandIconAnimation;
@@ -62,6 +63,7 @@ public class MainFragment extends Fragment {
     private MiddlewareInterface mMiddleware;
 
     private Button mHistoryButton;
+    private Button mProfileButton;
 
     public MainFragment() {
         super();
@@ -104,6 +106,7 @@ public class MainFragment extends Fragment {
         });
 
         mHistoryButton = (Button) rootView.findViewById(R.id.historyButton);
+        mProfileButton = (Button) rootView.findViewById(R.id.profileButton);
 
         setBackgroundImage(rootView);
     }
@@ -148,6 +151,14 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent  intent = new Intent(getActivity(), SavedLiveObjectsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        mProfileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), ProfileActivity.class);
                 startActivity(intent);
             }
         });

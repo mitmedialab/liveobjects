@@ -22,7 +22,6 @@ import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.app.data.LObjContentProvider;
 import edu.mit.media.obm.liveobjects.app.data.LObjContract;
 import edu.mit.media.obm.liveobjects.app.detail.WrapUpActivity;
-import edu.mit.media.obm.liveobjects.app.main.MainActivity;
 import edu.mit.media.obm.liveobjects.app.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
@@ -47,6 +46,8 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
     private String mFilePath;
     private String mFileName;
 
+    private String mLiveObjNameId;
+
     private AsyncTask<Void, Void, Void> mSavingFileTask = null;
 
     @Override
@@ -59,9 +60,9 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
         mContentController = mMiddleware.getContentController();
 
         if (savedInstanceState == null) {
-            String liveObjNameId = getIntent().getStringExtra(EXTRA_LIVE_OBJ_NAME_ID);
-            if (liveObjNameId != null) {
-                initContent(liveObjNameId);
+            mLiveObjNameId = getIntent().getStringExtra(EXTRA_LIVE_OBJ_NAME_ID);
+            if (mLiveObjNameId != null) {
+                initContent(mLiveObjNameId);
 
 
                 //TODO to improve: for now we first download all the file and the open the fragment
@@ -145,6 +146,8 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
         cancelTask();
         // when media is completed go to the wrap up activity
         Intent intent = new Intent(this, WrapUpActivity.class);
+        intent.putExtra(WrapUpActivity.EXTRA_LIVE_OBJ_NAME_ID, mLiveObjNameId);
+        intent.putExtra(WrapUpActivity.EXTRA_SHOW_ADD_COMMENT, true);
         startActivity(intent);
     }
 

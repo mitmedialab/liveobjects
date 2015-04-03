@@ -2,6 +2,7 @@ package edu.mit.media.obm.liveobjects.app.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.widget.ImageView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,5 +53,15 @@ public class Util {
             e.printStackTrace();
         }
         return jsonObject;
+    }
+
+    public static Bitmap cropImage(Bitmap bitmap, ImageView destImageView) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int crop = (width - height) / 2;
+
+        Bitmap croppedBitmap = Bitmap.createBitmap(bitmap, crop, 0,
+                destImageView.getHeight(), destImageView.getHeight());
+        return  croppedBitmap;
     }
 }
