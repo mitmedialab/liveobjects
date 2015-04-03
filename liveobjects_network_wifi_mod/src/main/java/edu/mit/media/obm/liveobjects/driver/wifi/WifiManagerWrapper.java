@@ -44,11 +44,8 @@ import android.util.Log;
 public class WifiManagerWrapper {
 
     public static WifiConfiguration addNewNetwork(WifiManager wifiManager, String ssid, String password) {
-        WifiConfiguration oldConfig = getWifiConfigurationBySsid(wifiManager, ssid);
-
-        if (oldConfig != null) {
-            wifiManager.removeNetwork(oldConfig.networkId);
-        }
+        // remove old config
+        removeNetwork(wifiManager, ssid);
 
         WifiConfiguration conf = new WifiConfiguration();
         conf.SSID = convertToQuotedString(ssid);
@@ -58,6 +55,18 @@ public class WifiManagerWrapper {
         wifiManager.saveConfiguration();
 
         return getWifiConfigurationBySsid(wifiManager, ssid);
+    }
+
+    public static boolean removeNetwork(WifiManager wifiManager, String ssid) {
+        WifiConfiguration config = getWifiConfigurationBySsid(wifiManager, ssid);
+
+        if (config == null) {
+            return false;
+        }
+
+        wifiManager.removeNetwork(config.networkId);
+
+        return true;
     }
 
     /**
@@ -242,6 +251,19 @@ public class WifiManagerWrapper {
         }
 
         return "\"" + string + "\"";
+    }
+
+    public static String unQuoteString(String string) {
+        if (string.length() < 2) {
+            return string;
+        }
+
+        final int lastPos = string.length() - 1;
+        if (string.charAt(0) == '"' && string.charAt(lastPos) == '"') {
+            string = string.substring(1, lastPos);
+        }
+
+        return string;
     }
 
     private final static String TAG = "Wifiutils:MP2PWifi";

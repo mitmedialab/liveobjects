@@ -62,8 +62,6 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
             holder.mTextView = (TextView) convertView.findViewById(mTextViewResourceId);
             holder.mImageView = (RoundedImageView) convertView.findViewById(R.id.grid_item_icon);
 
-            int w = holder.mImageView.getMeasuredWidth(), h = holder.mImageView.getMeasuredHeight();
-
             convertView.setTag(holder);
         } else {
             holder = (Holder) convertView.getTag();

@@ -252,12 +252,17 @@ public class MainFragment extends Fragment {
         mNetworkController.startDiscovery();
     }
 
-
     @Override
     public void onStop() {
         mNetworkController.stop();
         super.onStop();
+    }
 
+    @Override
+    public void onDestroy() {
+        Log.v(LOG_TAG, "deleting all the network configuration related to live objects");
+        mMiddleware.getNetworkController().forgetNetworkConfigurations();
+        super.onDestroy();
     }
 
     @Override

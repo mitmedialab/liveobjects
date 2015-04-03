@@ -125,15 +125,31 @@ public class WifiDriver implements NetworkDriver {
         mNetworkListener = networkListener;
     }
 
-    private void removeDuplicatedNetwork(String ssid) {
-        // scans over the entire list because there may be two or more network configurations with
-        // the same SSID.
-        for (WifiConfiguration wifiConfig : mWifiManager.getConfiguredNetworks()) {
-            if (wifiConfig.SSID.equals(ssid)) {
-                mWifiManager.removeNetwork(wifiConfig.networkId);
-                Log.v(LOG_TAG, "removed a duplicated WiFi config (ssid = " + ssid + ")");
-            }
+    @Override
+    synchronized public void forgetNetworkConfigurations() throws IllegalStateException {
+        if (isConnecting()) {
+            throw new IllegalStateException("Must not try to disconnect when it's already connecting");
         }
+
+        // executes as an asynchronous task because WifiManager.getConfiguredNetwork() may block.
+        new AsyncTask<String, Void, Void>() {
+            @Override
+            protected Void doInBackground(String... params) {
+                Log.v(LOG_TAG, "deletes network configurations for all live objects");
+                final List<WifiConfiguration> configurations = mWifiManager.getConfiguredNetworks();
+                for (WifiConfiguration configuration: configurations) {
+                    String ssid = WifiManagerWrapper.unQuoteString(configuration.SSID);
+
+                    Log.v(LOG_TAG, "found a network configuration for '" + ssid + "'");
+                    if (WifiUtil.INSTANCE.isLiveObject(ssid)) {
+                        Log.v(LOG_TAG, "deleting a network configuration for live object '" + ssid + "'");
+                        WifiManagerWrapper.removeNetwork(mWifiManager, ssid);
+                    }
+                }
+
+                return null;
+            }
+        }.execute();
     }
 
     class WifiReceiver extends BroadcastReceiver {

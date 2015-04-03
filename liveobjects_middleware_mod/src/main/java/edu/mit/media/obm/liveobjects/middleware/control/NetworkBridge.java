@@ -78,4 +78,9 @@ public class NetworkBridge implements NetworkController, NetworkListener{
             mConnectionListener.onConnected(liveObjectToConnectWith);
         }
     }
+
+    @Override
+    public void forgetNetworkConfigurations() {
+        mNetworkDriver.forgetNetworkConfigurations();
+    }
 }

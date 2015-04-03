@@ -52,4 +52,9 @@ public interface NetworkController extends Controller {
      * Checks if the network driver is trying to connect to a live object
      */
     public boolean isConnecting();
+
+    /**
+     * Delete all the network configurations for live objects
+     */
+    public void forgetNetworkConfigurations();
 }

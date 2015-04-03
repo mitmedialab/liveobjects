@@ -50,4 +50,8 @@ public interface NetworkDriver {
      */
     boolean isConnecting();
 
+    /**
+     * Delete all the network configurations for live objects
+     */
+    void forgetNetworkConfigurations();
 }
