@@ -2,10 +2,10 @@ package edu.mit.media.obm.liveobjects.app.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.renderscript.Allocation;
-import android.renderscript.Element;
-import android.renderscript.RenderScript;
-import android.renderscript.ScriptIntrinsicBlur;
+import android.support.v8.renderscript.Allocation;
+import android.support.v8.renderscript.Element;
+import android.support.v8.renderscript.RenderScript;
+import android.support.v8.renderscript.ScriptIntrinsicBlur;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
@@ -57,5 +57,4 @@ public class BitmapEditor {
         script.forEach(output);
         output.copyTo(bitmap);
     }
-
 }
