@@ -72,7 +72,7 @@ public class SavedLiveObjectsActivity extends ActionBarActivity implements Actio
 
         BitmapDrawable drawableBackground = new BitmapDrawable(getResources(), background);
         LinearLayout rootLayout = (LinearLayout) findViewById(R.id.root_layout);
-        rootLayout.setBackground(drawableBackground);
+        rootLayout.setBackgroundDrawable(drawableBackground);
     }
 
     @Override

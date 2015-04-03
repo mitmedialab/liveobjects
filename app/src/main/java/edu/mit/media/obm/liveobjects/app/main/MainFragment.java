@@ -119,7 +119,7 @@ public class MainFragment extends Fragment {
 
         BitmapDrawable drawableBackground = new BitmapDrawable(getResources(), background);
         LinearLayout rootLayout = (LinearLayout) rootView.findViewById(R.id.root_layout);
-        rootLayout.setBackground(drawableBackground);
+        rootLayout.setBackgroundDrawable(drawableBackground);
     }
 
     private void setupUIListeners() {
