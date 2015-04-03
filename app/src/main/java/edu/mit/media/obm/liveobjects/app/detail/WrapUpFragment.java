@@ -49,7 +49,7 @@ public class WrapUpFragment extends Fragment {
     private LinearLayout mReplayButtonLayout;
     private LinearLayout mAddCommentLayout;
 
-    AlertDialog.Builder mAddCommentAlert;
+    AlertDialog mAddCommentAlert;
 
     private boolean mIsFavorite;
 
@@ -102,7 +102,7 @@ public class WrapUpFragment extends Fragment {
 
     }
 
-    private AlertDialog.Builder initAddCommentAlert() {
+    private AlertDialog initAddCommentAlert() {
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
         alert.setTitle("Add Comment");
         alert.setMessage("Message");
@@ -128,7 +128,7 @@ public class WrapUpFragment extends Fragment {
             }
         });
 
-        return alert;
+        return alert.create();
     }
 
     private int getUpToFiveDigitsNumber() {

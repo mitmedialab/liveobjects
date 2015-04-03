@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="theme_orange">#ffe88602</color>
+    <color name="theme_middle_orange">#ffe69845</color>
+    <color name="theme_light_orange">#ffe6b68a</color>
+    <color name="theme_transparent_orange">#80e88602</color>
+    <color name="theme_transparent_middle_orange">#80e69845</color>
+    <color name="theme_transparent_light_orange">#80e6b68a</color>
     <color name="theme_pale_orange">#fffef5df</color>
     <color name="theme_icon_text">#ffffffff</color>
     <color name="theme_icon_text_shadow">#ff000000</color>
