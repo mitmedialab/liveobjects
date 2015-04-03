@@ -15,9 +15,9 @@ import android.view.animation.TranslateAnimation;
 public class ExpandIconAnimation {
     private AnimationSet mAnimationSet;
 
-    private static final int TRANSLATE_DURATION = 250;
+    private static final int TRANSLATE_DURATION = 400;
     private static final int TRANSLATE_OFFISET = 0;
-    private static final int EXPAND_DURATION = 300;
+    private static final int EXPAND_DURATION = 400;
     private static final int EXPAND_OFFSET = TRANSLATE_DURATION;
 
     public ExpandIconAnimation(WindowManager windowManager, View view) {

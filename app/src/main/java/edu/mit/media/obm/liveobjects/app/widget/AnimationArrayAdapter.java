@@ -1,5 +1,6 @@
 package edu.mit.media.obm.liveobjects.app.widget;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -61,6 +62,8 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
             holder.mTextView = (TextView) convertView.findViewById(mTextViewResourceId);
             holder.mImageView = (RoundedImageView) convertView.findViewById(R.id.grid_item_icon);
 
+            int w = holder.mImageView.getMeasuredWidth(), h = holder.mImageView.getMeasuredHeight();
+
             convertView.setTag(holder);
         } else {
             holder = (Holder) convertView.getTag();
@@ -86,8 +89,11 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
             String imageFilePath = cursor.getString(cursor.getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH));
 
             Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath);
+            ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
+            bitmap = bitmap.createScaledBitmap(bitmap, layoutParams.width, layoutParams.height, true);
+
             BitmapEditor bitmapEditor = new BitmapEditor(mContext);
-            bitmapEditor.blurBitmap(bitmap, 3);
+            bitmapEditor.blurBitmap(bitmap, 2);
             BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
 
             imageView.setImageDrawable(bitmapDrawable);
