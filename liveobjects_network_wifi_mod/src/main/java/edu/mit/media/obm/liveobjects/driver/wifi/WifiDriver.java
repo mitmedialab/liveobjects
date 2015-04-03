@@ -36,6 +36,7 @@ public class WifiDriver implements NetworkDriver {
     private WifiManager mWifiManager;
 
     private WifiReceiver mWifiReceiver;
+    private boolean isWifiReceiverRegistered;
 
     private Context mContext;
 
@@ -50,7 +51,6 @@ public class WifiDriver implements NetworkDriver {
         SSID_PREFIX = mContext.getResources().getString(R.string.ssid_prefix);
         WifiUtil.INSTANCE.setSsidPrefix(SSID_PREFIX);
 
-        mConnecting = false;
     }
 
     @Override
@@ -60,23 +60,29 @@ public class WifiDriver implements NetworkDriver {
         mIntentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
         mIntentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         mWifiReceiver = new WifiReceiver();
+        isWifiReceiverRegistered = false;
 
+        mConnecting = false;
     }
 
     @Override
-    public void start() {
+    synchronized public void start() {
         mContext.registerReceiver(mWifiReceiver, mIntentFilter);
+        isWifiReceiverRegistered = true;
     }
 
     @Override
-    public void startScan() {
+    synchronized public void startScan() {
         Log.v(LOG_TAG, "starting Wifi scan");
         mWifiManager.startScan();
     }
 
     @Override
-    public void stop() {
-        mContext.unregisterReceiver(mWifiReceiver);
+    synchronized public void stop() {
+        if (isWifiReceiverRegistered) {
+            mContext.unregisterReceiver(mWifiReceiver);
+            isWifiReceiverRegistered = false;
+        }
     }
 
     @Override
