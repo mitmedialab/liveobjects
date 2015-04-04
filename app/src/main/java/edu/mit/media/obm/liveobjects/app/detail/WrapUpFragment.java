@@ -10,14 +10,17 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -108,11 +111,13 @@ public class WrapUpFragment extends Fragment {
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
 
         TextView titleTextView = new TextView(new ContextThemeWrapper(getActivity(), R.style.LiveObjectsTextViewStyle));
-        titleTextView.setText("Add Comment");
+        titleTextView.setText(" Add Comment");
         alert.setCustomTitle(titleTextView);
 
         // Set an EditText view to get the user input
         final EditText input = new EditText(new ContextThemeWrapper(getActivity(), R.style.LiveObjectsEditTextStyle));
+        input.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+        input.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
         input.setHint("Type your comment here");
         alert.setView(input);
 
@@ -136,7 +141,9 @@ public class WrapUpFragment extends Fragment {
             }
         });
 
-        return alert.create();
+        AlertDialog dialog = alert.create();
+
+        return dialog;
     }
 
     private int getUpToFiveDigitsNumber() {
@@ -210,6 +217,16 @@ public class WrapUpFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mAddCommentAlert.show();
+
+                // TODO: changing button format should be done in initAddCommentAlert()
+                Button positiveButton = mAddCommentAlert.getButton(DialogInterface.BUTTON_POSITIVE);
+                Button negativeButton = mAddCommentAlert.getButton(DialogInterface.BUTTON_NEGATIVE);
+
+                positiveButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+                positiveButton.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+                negativeButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+                negativeButton.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+
             }
         });
 
