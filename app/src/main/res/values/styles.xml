@@ -18,7 +18,7 @@
     </style>
 
     <style name="LiveObjectsTitleText" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
-        <item name="android:textSize">26dp</item>
+        <item name="android:textSize">26sp</item>
         <item name="android:textColor">@color/theme_icon_text</item>
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:shadowColor">@color/theme_icon_text_shadow</item>
@@ -29,6 +29,12 @@
 
     <style name="LiveObjectsTextViewStyle" parent="android:Widget.TextView">
         <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="LiveObjectsEditTextStyle" parent="android:Widget.EditText">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textSize">20sp</item>
     </style>
 
     <style name="LiveObjectsButtonStyle" parent="android:Widget.Holo.Button">

@@ -14,6 +14,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -105,11 +106,14 @@ public class WrapUpFragment extends Fragment {
 
     private AlertDialog initAddCommentAlert() {
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-        alert.setTitle("Add Comment");
-        alert.setMessage("Message");
+
+        TextView titleTextView = new TextView(new ContextThemeWrapper(getActivity(), R.style.LiveObjectsTextViewStyle));
+        titleTextView.setText("Add Comment");
+        alert.setCustomTitle(titleTextView);
 
         // Set an EditText view to get the user input
-        final EditText input = new EditText(getActivity());
+        final EditText input = new EditText(new ContextThemeWrapper(getActivity(), R.style.LiveObjectsEditTextStyle));
+        input.setHint("Type your comment here");
         alert.setView(input);
 
         alert.setPositiveButton("Send", new DialogInterface.OnClickListener() {
@@ -119,7 +123,7 @@ public class WrapUpFragment extends Fragment {
                 ContentController contentController = application.getMiddleware().getContentController();
                 Log.d(LOG_TAG, "ADDING COMMENT: " + input.getText().toString());
                 //TODO change the way of randomly assign the name of the comment file
-                contentController.putStringContent("CM" + getUpToFiveDigitsNumber()+ ".TXT", "COMMENTS", input.getText().toString());
+                contentController.putStringContent("CM" + getUpToFiveDigitsNumber() + ".TXT", "COMMENTS", input.getText().toString());
 
                 input.setText("");
                 Toast.makeText(getActivity(), "Uploaded a comment", Toast.LENGTH_SHORT).show();
