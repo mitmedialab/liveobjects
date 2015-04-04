@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.mit.media.obm.liveobjects.app.data.LObjContentProvider;
@@ -32,6 +33,9 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
     private int mTextViewResourceId;
     private List<T> mObjects;
 
+    private List<String> mNewObjects;
+    private List<String> mOldObjects;
+
     private RandomColorGenerator mRandomColorGenerator;
 
     private class Holder {
@@ -47,6 +51,13 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
         mResource = resource;
         mTextViewResourceId = textViewResourceId;
         mObjects = objects;
+
+        mNewObjects = new ArrayList<>();
+        for (T object : mObjects) {
+            String text = object.toString();
+            mNewObjects.add(text);
+        }
+        mOldObjects = new ArrayList<>();
 
         mRandomColorGenerator = new RandomColorGenerator();
     }
@@ -72,11 +83,32 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
 
         setImage(holder.mImageView, text);
 
-        Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.bounce_scale);
-        animation.setInterpolator(new SpringInterpolator());
-        convertView.startAnimation(animation);
+        if (mNewObjects.contains(text)) {
+            Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.bounce_scale);
+            animation.setInterpolator(new SpringInterpolator());
+            convertView.startAnimation(animation);
+        }
 
         return convertView;
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+
+        mNewObjects.clear();
+        for (T object : mObjects) {
+            String text = object.toString();
+            if (!mOldObjects.contains(text)) {
+                mNewObjects.add(text);
+            }
+        }
+
+        mOldObjects.clear();
+        for (T object : mObjects) {
+            String text = object.toString();
+            mOldObjects.add(text);
+        }
     }
 
     private void setImage(RoundedImageView imageView, String liveObjectName) {
