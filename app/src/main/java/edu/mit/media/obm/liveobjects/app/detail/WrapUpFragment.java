@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.app.data.LObjContentProvider;
@@ -119,6 +120,9 @@ public class WrapUpFragment extends Fragment {
                 Log.d(LOG_TAG, "ADDING COMMENT: " + input.getText().toString());
                 //TODO change the way of randomly assign the name of the comment file
                 contentController.putStringContent("CM" + getUpToFiveDigitsNumber()+ ".TXT", "COMMENTS", input.getText().toString());
+
+                input.setText("");
+                Toast.makeText(getActivity(), "Uploaded a comment", Toast.LENGTH_SHORT).show();
             }
         });
 
