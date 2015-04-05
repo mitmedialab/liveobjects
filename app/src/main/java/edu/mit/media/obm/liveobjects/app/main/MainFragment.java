@@ -247,6 +247,7 @@ public class MainFragment extends Fragment {
 
     @Override
     public void onStart() {
+        Log.v(LOG_TAG, "onStart()");
         super.onStart();
         mNetworkController.start();
         mNetworkController.startDiscovery();
@@ -254,7 +255,8 @@ public class MainFragment extends Fragment {
 
     @Override
     public void onStop() {
-        mNetworkController.stop();
+        Log.v(LOG_TAG, "onStop()");
+//        mNetworkController.stop();
         super.onStop();
     }
 

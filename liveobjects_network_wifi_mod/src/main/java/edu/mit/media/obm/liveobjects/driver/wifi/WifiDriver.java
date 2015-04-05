@@ -67,8 +67,10 @@ public class WifiDriver implements NetworkDriver {
 
     @Override
     synchronized public void start() {
-        mContext.registerReceiver(mWifiReceiver, mIntentFilter);
-        isWifiReceiverRegistered = true;
+        if (!isWifiReceiverRegistered) {
+            mContext.registerReceiver(mWifiReceiver, mIntentFilter);
+            isWifiReceiverRegistered = true;
+        }
     }
 
     @Override
