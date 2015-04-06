@@ -41,4 +41,8 @@
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
+    <style name = "NoActionBar" parent = "Theme.AppCompat.Light.NoActionBar">
+        <item name = "android:windowActionBar">false</item>
+        <item name = "android:windowNoTitle">true</item>
+    </style>
 </resources>

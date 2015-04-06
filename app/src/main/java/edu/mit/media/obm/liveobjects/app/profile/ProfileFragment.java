@@ -2,15 +2,20 @@ package edu.mit.media.obm.liveobjects.app.profile;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.lzyzsd.circleprogress.DonutProgress;
+
+import edu.mit.media.obm.liveobjects.app.data.LObjContract;
 import edu.mit.media.obm.liveobjects.app.data.ProfilePreference;
 import edu.mit.media.obm.shair.liveobjects.R;
 
@@ -19,14 +24,14 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * Use the {@link ProfileFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ProfileFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener{
+public class ProfileFragment extends Fragment {
+    private static final String LOG_TAG = ProfileFragment.class.getSimpleName();
 
     private TextView mNameTextView;
-    private TextView mLastNameTextView;
     private TextView mCompanyTextView;
     private TextView mEmailTextView;
+    private DonutProgress mDonutProgress;
 
-    private TextView mNumberVisitedObjects;
 
     /**
      * Use this factory method to create a new instance of
@@ -45,7 +50,6 @@ public class ProfileFragment extends Fragment implements SharedPreferences.OnSha
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(this);
 
     }
 
@@ -54,41 +58,69 @@ public class ProfileFragment extends Fragment implements SharedPreferences.OnSha
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
         initUI(rootView);
-        setUIContent();
+        setDonutProgress();
+        setUIProfileContent();
 
         return rootView;
     }
 
     private void initUI(View view){
         mNameTextView = (TextView)view.findViewById(R.id.nameTextView);
-        mLastNameTextView = (TextView)view.findViewById(R.id.lastNameTextView);
         mCompanyTextView = (TextView)view.findViewById(R.id.companyTextView);
         mEmailTextView = (TextView)view.findViewById(R.id.emailTextView);
+        mDonutProgress = (DonutProgress) view.findViewById(R.id.donut_progress);
 
-        mNumberVisitedObjects = (TextView) view.findViewById(R.id.visitedLOsTextView);
+
     }
 
 
+    private void setDonutProgress() {
+        int totalNumberOfObjects = getResources().getInteger(R.integer.total_number_of_objects);
+        mDonutProgress.setSuffixText("/" + totalNumberOfObjects);
+        mDonutProgress.setMax(totalNumberOfObjects);
+        int numberOfVisitedObjects = getNumberOfVisitedObjects();
+        mDonutProgress.setProgress(numberOfVisitedObjects);
 
-    private void setUIContent() {
-        //TODO update number of visited objects through a query on the content provider
-        //mNumberVisitedObjects.setText();
+    }
+
+    private int getNumberOfVisitedObjects() {
+        Cursor cursor = getActivity().getContentResolver().query(
+                LObjContract.LiveObjectEntry.CONTENT_URI, LObjContract.LiveObjectEntry.ALL_COLUMNS,
+                null, null, null);
+        return cursor.getCount();
+
+    }
+    private void setUIProfileContent() {
 
         //update the data from the preferences
         Context context =getActivity();
         SharedPreferences pref = ProfilePreference.getInstance(context);
         mNameTextView.setText(
                 ProfilePreference.getString(pref,context,R.string.profile_name_key));
-        mLastNameTextView.setText(
-                ProfilePreference.getString(pref,context,R.string.profile_last_name_key));
         mCompanyTextView.setText(
                 ProfilePreference.getString(pref,context,R.string.profile_company_key));
         mEmailTextView.setText(
                 ProfilePreference.getString(pref,context,R.string.profile_email_key));
     }
 
+
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        setUIContent();
+    public void onResume() {
+        super.onResume();
+        setUIProfileContent();
+        Log.d(LOG_TAG, "onResume");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(LOG_TAG, "onPause");
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(LOG_TAG, "ON ACTIVITY RESULT");
+        setUIProfileContent();
     }
 }

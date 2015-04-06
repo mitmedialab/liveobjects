@@ -28,6 +28,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.2'
     compile 'com.pkmmte.view:circularimageview:1.1'
     compile 'com.sothree.slidinguppanel:library:3.0.0'
+    compile 'com.github.lzyzsd:circleprogress:1.1.0@aar'
     compile project(':liveobjects_middleware_mod')
     compile project(':liveobjects_network_wifi_mod')
     compile project(':liveobjects_storage_wifi_mod')

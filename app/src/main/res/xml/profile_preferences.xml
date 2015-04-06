@@ -8,12 +8,6 @@
         android:dialogTitle="EditText Dialog" />
 
 
-    <EditTextPreference
-        android:key="@string/profile_last_name_key"
-        android:title="EditText title"
-        android:summary="EditText summary"
-        android:dialogTitle="EditText Dialog" />
-
 
     <EditTextPreference
         android:key="@string/profile_company_key"

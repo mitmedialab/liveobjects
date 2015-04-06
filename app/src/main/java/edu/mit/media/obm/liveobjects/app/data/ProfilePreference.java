@@ -19,19 +19,24 @@ public class ProfilePreference {
         return sharedPreferences;
     }
 
-    public static void updateProfileInfo(SharedPreferences profilePreference, Context context, String name, String lastName, String company, String email) {
-        profilePreference = getInstance(context);
+    public static void updateProfileInfo(SharedPreferences profilePreference, Context context, String name, String company, String email) {
 
         SharedPreferences.Editor editor = profilePreference.edit();
         editor.putString(
                 context.getString(R.string.profile_name_key), name);
         editor.putString(
-                context.getString(R.string.profile_last_name_key), lastName);
-        editor.putString(
                 context.getString(R.string.profile_company_key), company);
         editor.putString(
                 context.getString(R.string.profile_email_key), email);
         editor.commit();
+
+    }
+
+    public static boolean isProfileCompleted(SharedPreferences profilePreference, Context context){
+        return profilePreference.contains(context.getString(R.string.profile_name_key)) &&
+                profilePreference.contains(context.getString(R.string.profile_email_key))&&
+                !getString(profilePreference, context, R.string.profile_name_key).isEmpty() &&
+                !getString(profilePreference, context, R.string.profile_email_key).isEmpty();
 
     }
 

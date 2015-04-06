@@ -1,25 +1,34 @@
 package edu.mit.media.obm.liveobjects.app.profile;
 
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import edu.mit.media.obm.liveobjects.app.data.ProfilePreference;
 import edu.mit.media.obm.liveobjects.app.widget.MenuActions;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 public class ProfileActivity extends ActionBarActivity {
+
+    private ProfileFragment mProfileFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         if (savedInstanceState == null) {
+            mProfileFragment = ProfileFragment.newInstance();
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, ProfileFragment.newInstance())
+                    .add(R.id.container, mProfileFragment)
                     .commit();
+            SharedPreferences pref = ProfilePreference.getInstance(this);
+            if (!ProfilePreference.isProfileCompleted(pref, this)){
+                launchProfileEdit();
+            }
         }
     }
 
@@ -44,12 +53,20 @@ public class ProfileActivity extends ActionBarActivity {
             return true;
         }
         else if (id == R.id.action_edit_profile) {
-            DialogFragment editProfileFragment = new EditProfileFragment();
-            editProfileFragment.show(getSupportFragmentManager(), null);
+            launchProfileEdit();
+
 
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void launchProfileEdit() {
+        DialogFragment editProfileFragment = new EditProfileFragment();
+        if (mProfileFragment != null) {
+            editProfileFragment.setTargetFragment(mProfileFragment, 1);
+        }
+        editProfileFragment.show(getSupportFragmentManager(), null);
     }
 
 }

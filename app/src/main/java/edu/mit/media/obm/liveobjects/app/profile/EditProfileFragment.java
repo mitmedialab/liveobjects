@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -19,7 +20,6 @@ import edu.mit.media.obm.shair.liveobjects.R;
 public class EditProfileFragment extends DialogFragment {
 
     private EditText mNameEditText;
-    private EditText mLastNameEditText;
     private EditText mCompanyEditText;
     private EditText mEmailEditText;
     @Override
@@ -45,16 +45,20 @@ public class EditProfileFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 String name = mNameEditText.getText().toString();
-                String lastName = mLastNameEditText.getText().toString();
                 String company = mCompanyEditText.getText().toString();
                 String email = mEmailEditText.getText().toString();
                 SharedPreferences pref= ProfilePreference.getInstance(getActivity());
                 ProfilePreference.updateProfileInfo(pref,
                         getActivity(),
                         name,
-                        lastName,
                         company,
                         email);
+                Fragment targetFragment = getTargetFragment();
+                if (targetFragment != null) {
+                    //notify back the fragment
+                    getTargetFragment().onActivityResult(getTargetRequestCode(),0, null);
+                }
+
 
 
 
@@ -70,7 +74,6 @@ public class EditProfileFragment extends DialogFragment {
 
     private void initUI(View view) {
         mNameEditText = (EditText) view.findViewById(R.id.profile_name_edit_text);
-        mLastNameEditText = (EditText) view.findViewById(R.id.profile_lastname_edit_text);
         mCompanyEditText = (EditText) view.findViewById(R.id.profile_company_edit_text);
         mEmailEditText = (EditText) view.findViewById(R.id.profile_email_edit_text);
 
@@ -81,8 +84,6 @@ public class EditProfileFragment extends DialogFragment {
 
         mNameEditText.setText(ProfilePreference.getString(profilePref,
                 getActivity(), R.string.profile_name_key));
-        mLastNameEditText.setText(ProfilePreference.getString(profilePref,
-                getActivity(), R.string.profile_last_name_key));
         mCompanyEditText.setText(ProfilePreference.getString(profilePref,
                 getActivity(), R.string.profile_company_key));
         mEmailEditText.setText(ProfilePreference.getString(profilePref,
