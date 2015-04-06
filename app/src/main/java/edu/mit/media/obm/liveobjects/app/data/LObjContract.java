@@ -30,6 +30,8 @@ public final class LObjContract {
         public static final String TABLE_NAME = "live_object";
         public static final String COLUMN_NAME_ID = "name_id";
         public static final String COLUMN_NAME_TITLE = "title";
+        public static final String COLUMN_NAME_GROUP = "group_name";
+        public static final String COLUMN_NAME_URL = "url";
         public static final String COLUMN_NAME_DESCRIPTION = "description";
         public static final String COLUMN_NAME_ICON_FILEPATH = "icon_filepath";
         public static final String COLUMN_NAME_MEDIA_FILEPATH = "media_filepath";
@@ -44,6 +46,8 @@ public final class LObjContract {
                 _ID,
                 COLUMN_NAME_ID,
                 COLUMN_NAME_TITLE,
+                COLUMN_NAME_GROUP,
+                COLUMN_NAME_URL,
                 COLUMN_NAME_DESCRIPTION,
                 COLUMN_NAME_ICON_FILEPATH,
                 COLUMN_NAME_MEDIA_FILEPATH,

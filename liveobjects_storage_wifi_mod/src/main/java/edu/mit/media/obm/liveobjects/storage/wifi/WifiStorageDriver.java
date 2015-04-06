@@ -59,9 +59,18 @@ public class WifiStorageDriver implements RemoteStorageDriver {
             e.printStackTrace();
         }
         URL url = new URL(path);
-        URLConnection urlCon = url.openConnection();
+        HttpURLConnection urlCon = (HttpURLConnection) url.openConnection();
         urlCon.connect();
         Log.d(LOG_TAG, "connecting to path " + path);
+
+//        Log.d(LOG_TAG, "status: " + urlCon.getResponseCode() + "response: " + urlCon.getResponseMessage());
+//        if(urlCon.getResponseCode() == HttpURLConnection.HTTP_OK) {
+//            Log.d(LOG_TAG, "status: " + urlCon.getResponseCode() + "response: " + urlCon.getResponseMessage());
+//        }
+        //wait request to be completed
+        urlCon.getResponseCode();
+
+
 
     }
 

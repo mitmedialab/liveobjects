@@ -1,5 +1,6 @@
 package edu.mit.media.obm.liveobjects.app.main;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -18,6 +19,7 @@ import android.widget.LinearLayout;
 import java.util.Locale;
 
 import edu.mit.media.obm.liveobjects.app.slidingtabs.SlidingTabLayout;
+import edu.mit.media.obm.liveobjects.app.utils.EmailFormatter;
 import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.app.widget.MenuActions;
 import edu.mit.media.obm.shair.liveobjects.R;
@@ -78,7 +80,7 @@ public class SavedLiveObjectsActivity extends ActionBarActivity implements Actio
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
+        getMenuInflater().inflate(R.menu.menu_history, menu);
         return true;
     }
 
@@ -93,6 +95,16 @@ public class SavedLiveObjectsActivity extends ActionBarActivity implements Actio
         if (id == R.id.action_goto_home) {
             MenuActions.goToHome(this);
             return true;
+        }
+
+        else if (id == R.id.action_email) {
+            Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+            emailIntent.setType("text/plain");
+            String subject = EmailFormatter.getSubject();
+            emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
+            String body = EmailFormatter.getBody(this);
+            emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, body);
+            startActivity(Intent.createChooser(emailIntent, "Email:"));
         }
 
         return super.onOptionsItemSelected(item);

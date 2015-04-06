@@ -3,6 +3,7 @@ package edu.mit.media.obm.liveobjects.middleware.control;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.RemoteException;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +16,7 @@ import edu.mit.media.obm.liveobjects.middleware.storage.RemoteStorageDriver;
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public class ContentBridge implements ContentController {
+    private static final String LOG_TAG = ContentBridge.class.getSimpleName();
 
     private LocalStorageDriver mLocalStorageDriver; // TODO to implement
     private RemoteStorageDriver mRemoteStorageDriver;
@@ -50,6 +52,7 @@ public class ContentBridge implements ContentController {
                 try {
                     mRemoteStorageDriver.writeNewRawFileFromString(contentId,folder,stringContent);
                 } catch (IOException e) {
+                    Log.e(LOG_TAG,"writeNewRawFile", e);
                     e.printStackTrace();
                 }
                 return null;

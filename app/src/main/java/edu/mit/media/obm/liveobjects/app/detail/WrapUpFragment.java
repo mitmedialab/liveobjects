@@ -6,10 +6,10 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -26,9 +26,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Calendar;
+
 import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.app.data.LObjContentProvider;
 import edu.mit.media.obm.liveobjects.app.data.LObjContract;
+import edu.mit.media.obm.liveobjects.app.data.ProfilePreference;
 import edu.mit.media.obm.liveobjects.app.media.MediaViewActivity;
 import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
@@ -49,6 +52,7 @@ public class WrapUpFragment extends Fragment {
     private boolean mShowAddComment;
 
     private TextView mTitleTextView;
+    private TextView mGroupTextView;
     private TextView mDescriptionTextView;
     private LinearLayout mFavouriteButtonLayout;
     private LinearLayout mReplayButtonLayout;
@@ -99,6 +103,7 @@ public class WrapUpFragment extends Fragment {
 
     private void initUI(View rootView) {
         mTitleTextView = (TextView) rootView.findViewById(R.id.wrapup_title_textview);
+        mGroupTextView =(TextView) rootView.findViewById(R.id.wrapup_group_textview);
         mDescriptionTextView = (TextView) rootView.findViewById(R.id.wrapup_description_textview);
         mFavouriteButtonLayout = (LinearLayout) rootView.findViewById(R.id.favorite_button);
         mReplayButtonLayout = (LinearLayout) rootView.findViewById(R.id.replay_button);
@@ -126,9 +131,9 @@ public class WrapUpFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 LiveObjectsApplication application = (LiveObjectsApplication) getActivity().getApplication();
                 ContentController contentController = application.getMiddleware().getContentController();
+                String commentText = makeComment(input.getText().toString());
                 Log.d(LOG_TAG, "ADDING COMMENT: " + input.getText().toString());
-                //TODO change the way of randomly assign the name of the comment file
-                contentController.putStringContent("CM" + getUpToFiveDigitsNumber() + ".TXT", "COMMENTS", input.getText().toString());
+                contentController.putStringContent(generateCommentFileName(), "COMMENTS", commentText);
 
                 input.setText("");
                 Toast.makeText(getActivity(), "Uploaded a comment", Toast.LENGTH_SHORT).show();
@@ -146,13 +151,21 @@ public class WrapUpFragment extends Fragment {
         return dialog;
     }
 
-    private int getUpToFiveDigitsNumber() {
-        int maximum = 10;
+    private String makeComment(String text) {
+        SharedPreferences pref = ProfilePreference.getInstance(getActivity());
+        String name = "Name: " + ProfilePreference.getString(pref, getActivity(), R.string.profile_name_key) +"\n";
+        String company = "Company: " + ProfilePreference.getString(pref, getActivity(), R.string.profile_company_key) +"\n";
+        String email = "Email: " + ProfilePreference.getString(pref, getActivity(), R.string.profile_email_key) +"\n";
+        String commentHeader = "Comment: \n";
+        String message = name + company + email + commentHeader + text;
+        return message;
+    }
+    private String generateCommentFileName() {
+        Calendar rightNow = Calendar.getInstance();
+        String commentName = String.format("%1$td%1$tk%1$tM%1$tS.TXT", rightNow);
 
-        int randomNumber = (int)(Math.random() * maximum);
-        Log.d(LOG_TAG, "RANDOM NUMBER = " + randomNumber);
-        return randomNumber;
 
+        return commentName;
     }
 
 
@@ -161,6 +174,7 @@ public class WrapUpFragment extends Fragment {
         cursor.moveToFirst();
         setImage(rootView, cursor);
         setText(mTitleTextView, cursor, LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE);
+        setText(mGroupTextView, cursor, LObjContract.LiveObjectEntry.COLUMN_NAME_GROUP);
         setText(mDescriptionTextView, cursor, LObjContract.LiveObjectEntry.COLUMN_NAME_DESCRIPTION);
         setCommentButtonVisibility(mAddCommentLayout);
         mIsFavorite = setFavoriteButtonState(mFavouriteButtonLayout, cursor);
@@ -273,16 +287,7 @@ public class WrapUpFragment extends Fragment {
 
     }
 
-    private void initUIListener() {
-        mReplayButtonLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-
-            }
-        });
-
-    }
 
 
 

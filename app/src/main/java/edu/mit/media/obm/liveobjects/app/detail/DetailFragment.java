@@ -222,7 +222,7 @@ public class DetailFragment extends Fragment {
 
     private void setRemoteContent() {
 
-        String mediaConfigFileName = getActivity().getResources().getString(R.string.media_config_filename) + ".jso";
+        final String mediaConfigFileName = getActivity().getResources().getString(R.string.media_config_filename) + ".jso";
 
         mSetRemoteContentTask = new AsyncTask<String, Void, Void>() {
             @Override
@@ -323,6 +323,8 @@ public class DetailFragment extends Fragment {
 
         String title = getFromJSON(jsonObject,"title", null);
         String description = getFromJSON(jsonObject,"description", null);
+        String group = getFromJSON(jsonObject, "group", null);
+        String url = getFromJSON(jsonObject, "website", null);
         String contentType = getFromJSON(jsonObject, "type", "media");
         String mediaFileName = getFromJSON(jsonObject, "filename", "media");
         String mediaFilePath = createFilePath(directoryPath, mediaFileName);
@@ -331,6 +333,8 @@ public class DetailFragment extends Fragment {
         ContentValues values = new ContentValues();
         values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE,title);
         values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_DESCRIPTION,description);
+        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_GROUP,group);
+        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_URL, url);
         values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH, imagePath);
         values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_ID, mLiveObjectNameID);
         values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_TYPE, contentType);

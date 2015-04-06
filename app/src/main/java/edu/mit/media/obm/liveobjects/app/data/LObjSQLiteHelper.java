@@ -11,7 +11,7 @@ import edu.mit.media.obm.liveobjects.app.data.LObjContract.*;
 public class LObjSQLiteHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "LiveObjects.db";
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 4;
 
     private static final String TEXT_TYPE = " TEXT";
     private static final String COMMA_SEP = ", ";
@@ -21,6 +21,8 @@ public class LObjSQLiteHelper extends SQLiteOpenHelper {
             LiveObjectEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT " + COMMA_SEP +
             LiveObjectEntry.COLUMN_NAME_ID + TEXT_TYPE + COMMA_SEP +
             LiveObjectEntry.COLUMN_NAME_TITLE + TEXT_TYPE + COMMA_SEP +
+            LiveObjectEntry.COLUMN_NAME_GROUP + TEXT_TYPE + COMMA_SEP +
+            LiveObjectEntry.COLUMN_NAME_URL + TEXT_TYPE + COMMA_SEP +
             LiveObjectEntry.COLUMN_NAME_DESCRIPTION + TEXT_TYPE + COMMA_SEP +
             LiveObjectEntry.COLUMN_NAME_FAVORITE + " INTEGER DEFAULT 0" + COMMA_SEP +
             LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH + TEXT_TYPE + COMMA_SEP +

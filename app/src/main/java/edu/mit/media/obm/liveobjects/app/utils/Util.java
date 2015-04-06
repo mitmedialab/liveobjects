@@ -64,4 +64,6 @@ public class Util {
                 destImageView.getHeight(), destImageView.getHeight());
         return  croppedBitmap;
     }
+
+
 }
