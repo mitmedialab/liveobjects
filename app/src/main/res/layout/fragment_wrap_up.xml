@@ -59,6 +59,7 @@
                     android:textSize="22sp"
                     android:textColor="@color/theme_icon_text"
                     android:text="Description text!"
+                    android:singleLine="false"
                     android:id="@+id/wrapup_description_textview" />
 
             </ScrollView>

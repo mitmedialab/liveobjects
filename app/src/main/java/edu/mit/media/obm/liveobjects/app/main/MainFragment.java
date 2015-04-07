@@ -219,7 +219,6 @@ public class MainFragment extends Fragment {
                         @Override
                         public void onAnimationEnd(Animation animation) {
                             Log.v(LOG_TAG, "onAnimationEnd()");
-                            liveObjectTitleTextView.setVisibility(View.VISIBLE);
 
                             // when the selected live objected is connected
                             // start the corresponding detail activity
