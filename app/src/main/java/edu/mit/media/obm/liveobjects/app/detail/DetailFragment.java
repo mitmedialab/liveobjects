@@ -241,7 +241,7 @@ public class DetailFragment extends Fragment {
                     }
 
                     // retrieve JSON Object from remote
-                    inputStream = mContentController.getInputStreamContent(configFileName);
+                    inputStream = mContentController.getInputStreamContent(configFileName, "DCIM");
                     if (inputStream == null) {
                         Log.e(LOG_TAG, "inputstream Null");
 
@@ -264,7 +264,7 @@ public class DetailFragment extends Fragment {
                         }
                     });
 
-                    InputStream imageInputStream = mContentController.getInputStreamContent(imageFileName);
+                    InputStream imageInputStream = mContentController.getInputStreamContent(imageFileName, "DCIM");
                     Bitmap bitmap = Util.getBitmap(imageInputStream);
                     setBackgroundImage(bitmap);
                     saveData(mJSONConfig, imageFileName, bitmap);

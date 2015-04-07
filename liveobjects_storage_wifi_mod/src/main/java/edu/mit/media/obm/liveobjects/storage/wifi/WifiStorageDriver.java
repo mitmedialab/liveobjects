@@ -5,17 +5,21 @@ import android.os.AsyncTask;
 import android.os.RemoteException;
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import edu.mit.media.obm.liveobjects.middleware.storage.RemoteStorageDriver;
 
@@ -148,10 +152,10 @@ public class WifiStorageDriver implements RemoteStorageDriver {
     }
 
     @Override
-    public InputStream getInputStreamFromFile(String fileName) throws IOException, RemoteException {
-        String basePath = WifiStorageConfig.getBaseFolderPath(mContext);
-        String path = basePath + "/" + fileName;
-        Log.v(getClass().getSimpleName(), "base_path = " + basePath + ", fileNAme = " + fileName);
+    public InputStream getInputStreamFromFile(String fileName, String folder) throws IOException, RemoteException {
+        String basePath = WifiStorageConfig.getBasePath(mContext);
+        String path = basePath + folder + "/" + fileName;
+        Log.v(getClass().getSimpleName(), "base_path = " + basePath + ", fileName = " + fileName);
         Log.d(LOG_TAG, "PATH = " + path);
         URL url = new URL(path);
         URLConnection urlCon = url.openConnection();
@@ -162,7 +166,7 @@ public class WifiStorageDriver implements RemoteStorageDriver {
 
     @Override
     public byte[] getByteArrayFromFile(String filename) throws IOException, RemoteException {
-        InputStream inputStream = getInputStreamFromFile(filename);
+        InputStream inputStream = getInputStreamFromFile(filename, "DCIM");
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         byte[] byteChunk = new byte[1024];
         int bytesRead = 0;
@@ -185,5 +189,61 @@ public class WifiStorageDriver implements RemoteStorageDriver {
     public boolean isFileExisting(String filename) {
         //TODO
         throw  new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<String> getFileNamesOfADirectory(String directoryName) {
+
+
+        String dir = directoryName;
+        List<String> fileNames = new ArrayList<>();
+        try {
+            String basePath = WifiStorageConfig.getBasePath(mContext);
+            String requestUrl = basePath + "command.cgi?op=100&DIR=/" + dir;
+            String files = getStringFromRequest(requestUrl);
+            String[] allFiles = files.split("([,\n])"); // split by newline or comma
+            for(int i = 2; i < allFiles.length; i= i + 6) {
+                if(allFiles[i].contains(".")) {
+                    // File
+                    fileNames.add(allFiles[i]);
+                }
+                else { // Directory, append "/"
+                    fileNames.add(allFiles[i] + "/");
+                }
+            }
+
+        } catch (RemoteException e) {
+            Log.e(LOG_TAG, "RemoteException", e);
+        }
+        return fileNames;
+
+
+
+    }
+
+    private String getStringFromRequest(String request) {
+        String result = "";
+        try{
+            URL url = new URL(request);
+            URLConnection urlCon = url.openConnection();
+            urlCon.connect();
+            InputStream inputStream = urlCon.getInputStream();
+            BufferedReader bufreader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+            StringBuffer strbuf = new StringBuffer();
+            String str;
+            while ((str = bufreader.readLine()) != null) {
+                if(strbuf.toString() != "") strbuf.append("\n");
+                strbuf.append(str);
+            }
+            result =  strbuf.toString();
+        }catch(MalformedURLException e) {
+            Log.e("ERROR", "ERROR: " + e.toString());
+            e.printStackTrace();
+        }
+        catch(IOException e) {
+            Log.e("ERROR", "ERROR: " + e.toString());
+            e.printStackTrace();
+        }
+        return result;
     }
 }

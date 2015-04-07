@@ -5,6 +5,7 @@ import android.os.RemoteException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 /**
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
@@ -39,10 +40,11 @@ public interface StorageDriver {
      * the file.
      *
      * @param fileName Name of the file
+     * @param folder the folder where file is stored
      * @return InputStream associated with the file
      * @throws IOException if the file was not found or the stream cannot be created
      */
-    InputStream getInputStreamFromFile(String fileName) throws IOException, RemoteException;
+    InputStream getInputStreamFromFile(String fileName, String folder) throws IOException, RemoteException;
 
 
     /**
@@ -65,5 +67,11 @@ public interface StorageDriver {
      */
     boolean isFileExisting(String filename);
 
+    /**
+     * Get the list of file names of a given directory
+     * @param directoryName
+     * @return the list of file names
+     */
+    List<String> getFileNamesOfADirectory(String directoryName);
 
 }

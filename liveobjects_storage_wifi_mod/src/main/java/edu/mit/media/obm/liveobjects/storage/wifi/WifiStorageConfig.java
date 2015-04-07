@@ -35,11 +35,11 @@ public class WifiStorageConfig {
         return String.format("http://%s/",getGatewayIpAddress(contextWrapper));
     }
 
-    public static String getBaseFolderPath(Context context) throws RemoteException {
-        return getBaseFolderPath(new ContextWrapper(context));
+    public static String getMediaFolderPath(Context context) throws RemoteException {
+        return getMediaFolderPath(new ContextWrapper(context));
     }
 
-    public static String getBaseFolderPath(ContextWrapper contextWrapper) throws RemoteException {
+    public static String getMediaFolderPath(ContextWrapper contextWrapper) throws RemoteException {
         return String.format("http://%s/%s",
                 getGatewayIpAddress(contextWrapper), getMediaFolderName(contextWrapper));
     }

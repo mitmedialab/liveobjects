@@ -5,6 +5,7 @@ import android.os.RemoteException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * This interface defines the basic functionality to access and add to a live object
@@ -33,12 +34,20 @@ public interface ContentController {
     /**
      * get the content as InputStream
      * @param contentId
+     * @param folder folder name
      * @return the content as InputStream
      */
-    InputStream getInputStreamContent(String contentId) throws IOException, RemoteException;
+    InputStream getInputStreamContent(String contentId, String folder) throws IOException, RemoteException;
+
+    /**
+     * Get the list of file names of a given directory
+     * @param directoryName
+     * @return the list of file names
+     */
+    List<String> getFileNamesOfADirectory(String directoryName);
 
 
-//TODO extending the interface with more functionality?
+
 
 
 

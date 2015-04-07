@@ -8,6 +8,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.List;
 
 import edu.mit.media.obm.liveobjects.middleware.storage.LocalStorageDriver;
 import edu.mit.media.obm.liveobjects.middleware.storage.RemoteStorageDriver;
@@ -69,7 +70,12 @@ public class ContentBridge implements ContentController {
     }
 
     @Override
-    public InputStream getInputStreamContent(String contentId) throws IOException, RemoteException {
-        return mRemoteStorageDriver.getInputStreamFromFile(contentId);
+    public InputStream getInputStreamContent(String contentId, String folder) throws IOException, RemoteException {
+        return mRemoteStorageDriver.getInputStreamFromFile(contentId, folder);
+    }
+
+    @Override
+    public List<String> getFileNamesOfADirectory(String directoryName) {
+        return mRemoteStorageDriver.getFileNamesOfADirectory(directoryName);
     }
 }
