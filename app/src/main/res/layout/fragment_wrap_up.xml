@@ -27,12 +27,16 @@
                 android:layout_height="wrap_content"
                 android:textSize="28sp"
                 android:textColor="@color/theme_icon_text"
+                android:shadowColor="@color/theme_icon_text_shadow"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="4"
                 android:text="Large Text"
                 android:id="@+id/wrapup_title_textview" />
 
             <View
                 android:layout_width="fill_parent"
-                android:layout_height="2dp"
+                android:layout_height="1dp"
                 android:background="@android:color/darker_gray" />
 
 
@@ -41,17 +45,23 @@
                 android:layout_height="wrap_content"
                 android:textSize="24sp"
                 android:textColor="@color/theme_icon_text"
+                android:shadowColor="@color/theme_icon_text_shadow"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="4"
+                android:layout_marginBottom="4dp"
                 android:id="@+id/wrapup_group_textview" />
 
             <View
                 android:layout_width="fill_parent"
-                android:layout_height="2dp"
+                android:layout_height="3dp"
                 android:background="@android:color/darker_gray" />
 
 
             <ScrollView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp">
 
                 <TextView
                     android:layout_width="fill_parent"
@@ -59,6 +69,10 @@
                     android:textSize="22sp"
                     android:textColor="@color/theme_icon_text"
                     android:text="Description text!"
+                    android:shadowColor="@color/theme_icon_text_shadow"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="4"
                     android:singleLine="false"
                     android:id="@+id/wrapup_description_textview" />
 

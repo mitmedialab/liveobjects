@@ -62,12 +62,30 @@
 
             <View
                 android:layout_width="fill_parent"
-                android:layout_height="2dp"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:textColor="@color/theme_icon_text"
+                android:shadowColor="@color/theme_icon_text_shadow"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="4"
+                android:layout_marginBottom="4dp"
+                android:id="@+id/object_group_textview" />
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="3dp"
                 android:background="@android:color/darker_gray" />
 
             <ScrollView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

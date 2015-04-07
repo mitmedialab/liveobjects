@@ -57,6 +57,7 @@ public class DetailFragment extends Fragment {
     private ImageView mIconView;
     private View mLoadingPanel;
     private TextView mObjectTitleTextView;
+    private TextView mObjectGroupTextView;
     private TextView mObjectDescriptionTextView;
     private ProgressBar mProgressBar;
 
@@ -137,6 +138,7 @@ public class DetailFragment extends Fragment {
         mIconView = (ImageView) rootView.findViewById(R.id.object_image_view);
         mLoadingPanel = rootView.findViewById(R.id.loadingPanel);
         mObjectTitleTextView = (TextView) rootView.findViewById(R.id.object_title_textview);
+        mObjectGroupTextView = (TextView) rootView.findViewById(R.id.object_group_textview);
         mObjectDescriptionTextView = (TextView) rootView.findViewById(R.id.object_description_textview);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.detail_progress_bar);
     }
@@ -177,10 +179,13 @@ public class DetailFragment extends Fragment {
         Log.d(LOG_TAG, "cursor " + cursor);
         String title = cursor.getString(cursor.
                 getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE));
+        String group = cursor.getString(cursor.
+                getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_GROUP));
         String description = cursor.getString(cursor.
                 getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_DESCRIPTION));
 
         mObjectTitleTextView.setText(title);
+        mObjectGroupTextView.setText(group);
         mObjectDescriptionTextView.setText(description);
     }
 
@@ -248,11 +253,13 @@ public class DetailFragment extends Fragment {
                     //set UI elements
                     String imageFileName = getFromJSON(mJSONConfig, "icon", null);
                     final String title = getFromJSON(mJSONConfig, "title", null);
+                    final String group = getFromJSON(mJSONConfig, "group", null);
                     final String description = getFromJSON(mJSONConfig, "description", null);
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             mObjectTitleTextView.setText(title);
+                            mObjectGroupTextView.setText(group);
                             mObjectDescriptionTextView.setText(description);
                         }
                     });
