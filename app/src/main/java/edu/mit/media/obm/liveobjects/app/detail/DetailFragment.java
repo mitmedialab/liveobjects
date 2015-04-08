@@ -52,8 +52,7 @@ public class DetailFragment extends Fragment {
 
     private String mLiveObjectNameID;
 
-
-
+    private View mRootView;
     private ImageView mIconView;
     private View mLoadingPanel;
     private TextView mObjectTitleTextView;
@@ -109,17 +108,17 @@ public class DetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 
-        final View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+        mRootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
         mMiddleware = ((LiveObjectsApplication)getActivity().getApplication()).getMiddleware();
         mContentController = mMiddleware.getContentController();
 
-        initUIObjects(rootView);
+        initUIObjects(mRootView);
 
         setUIContent();
         setUIListeners();
 
-        return rootView;
+        return mRootView;
     }
 
     private void setUIContent() {
@@ -217,7 +216,7 @@ public class DetailFragment extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mLoadingPanel.setBackgroundDrawable(background);
+                    mRootView.setBackgroundDrawable(background);
                 }
             });
 
