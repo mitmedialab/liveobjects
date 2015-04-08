@@ -236,6 +236,7 @@ public class MainFragment extends Fragment {
                         }
                     });
 
+                    mClickedView.bringToFront();
                     mClickedView.startAnimation(animation);
                     Log.v(LOG_TAG, "starting an animation");
                 }
