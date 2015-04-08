@@ -24,7 +24,8 @@
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginBottom="4dp"
-        android:hint="Name" />
+        android:hint="Name"
+        android:singleLine="true" />
 
     <EditText
         android:id="@+id/profile_company_edit_text"
@@ -34,7 +35,8 @@
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginBottom="4dp"
-        android:hint="Company" />
+        android:hint="Company"
+        android:singleLine="true" />
 
     <EditText
         android:id="@+id/profile_email_edit_text"
@@ -45,6 +47,7 @@
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginBottom="4dp"
-        android:hint="Email" />
+        android:hint="Email"
+        android:singleLine="true" />
 
 </LinearLayout>
