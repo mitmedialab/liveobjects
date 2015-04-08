@@ -236,7 +236,15 @@ public class MainFragment extends Fragment {
                         }
                     });
 
-                    mClickedView.bringToFront();
+                    // make views other than the clicked one invisible for z-ordering problems
+                    ViewGroup viewGroup = ((ViewGroup) mClickedView.getParent());
+                    int clickedIndex = viewGroup.indexOfChild(mClickedView);
+                    for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                        if (i != clickedIndex) {
+                            viewGroup.getChildAt(i).setVisibility(View.INVISIBLE);
+                        }
+                    }
+
                     mClickedView.startAnimation(animation);
                     Log.v(LOG_TAG, "starting an animation");
                 }
