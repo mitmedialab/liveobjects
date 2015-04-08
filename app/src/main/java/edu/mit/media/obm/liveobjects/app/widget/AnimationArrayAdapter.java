@@ -17,7 +17,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.mit.media.obm.liveobjects.app.data.LObjContentProvider;
 import edu.mit.media.obm.liveobjects.app.data.LObjContract;
@@ -128,27 +130,36 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
 
             imageView.setImageDrawable(bitmapDrawable);
         } else {
-            imageView.setFillColor(mRandomColorGenerator.getNextColor());
+            imageView.setFillColor(mRandomColorGenerator.generateColor(liveObjectName));
         }
     }
 
     private class RandomColorGenerator {
         private final static int HUE_OFFSET = 150;
         private int mCurrentHue;
+        private Map<String, Integer> colorMap;
 
         public RandomColorGenerator() {
             mCurrentHue = 0;
+            colorMap = new HashMap<>();
         }
 
-        public int getNextColor() {
+        public int generateColor(String id) {
+            if (colorMap.containsKey(id)) {
+                return colorMap.get(id);
+            }
+
             float[] hsv = new float[3];
             hsv[0] = (float) mCurrentHue;
             hsv[1] = 1.0f;
             hsv[2] = 0.75f;
 
             mCurrentHue = (mCurrentHue + HUE_OFFSET) % 360;
+            int color = Color.HSVToColor(hsv);
 
-            return Color.HSVToColor(hsv);
+            colorMap.put(id, color);
+
+            return color;
         }
     }
 }
