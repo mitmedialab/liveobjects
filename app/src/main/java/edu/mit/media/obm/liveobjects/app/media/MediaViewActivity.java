@@ -207,7 +207,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
                 if (!isLocallyAvailable(mFilePath)) {
                     try {
                         Log.d(LOG_TAG, "starting saving media file " + mFileName + "into " + mFilePath);
-                        InputStream inputStream = mContentController.getInputStreamContent(mFileName);
+                        InputStream inputStream = mContentController.getInputStreamContent(mFileName, "DCIM");
                         File file = new File(mFilePath);
                         OutputStream outputStream = new FileOutputStream(file);
                         byte[] buffer = new byte[1024];
