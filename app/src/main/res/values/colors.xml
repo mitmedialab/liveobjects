@@ -11,8 +11,8 @@
     <color name="theme_icon_text_shadow">#ff000000</color>
     <color name="theme_text">#ff404040</color>
     <color name="theme_transparent_background">#c0f0f0f0</color>
-    <color name="theme_transparent_light_background">#60f0f0f0</color>
-    <color name="theme_transparent_dark_background">#60202020</color>
+    <color name="theme_transparent_light_background">#80f0f0f0</color>
+    <color name="theme_transparent_dark_background">#80202020</color>
     <color name="theme_pure_transparent_background">#00000000</color>
     <color name="theme_actionbar">#60888888</color>
 </resources>

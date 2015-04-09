@@ -272,7 +272,7 @@ public class WrapUpFragment extends Fragment {
 
         BitmapEditor bitmapEditor = new BitmapEditor(activity);
         Bitmap croppedBitmap = bitmapEditor.cropToDisplayAspectRatio(bitmap, activity.getWindowManager());
-        bitmapEditor.blurBitmap(croppedBitmap, 6);
+        bitmapEditor.blurBitmap(croppedBitmap, 2);
 
         if (croppedBitmap != null ) {
             BitmapDrawable background = new BitmapDrawable(croppedBitmap);
