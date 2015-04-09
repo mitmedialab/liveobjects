@@ -1,5 +1,6 @@
 package edu.mit.media.obm.liveobjects.app.media;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaPlayer;
@@ -57,6 +58,8 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 
     private AsyncTask<Void, Void, Void> mSavingFileTask = null;
 
+    private ProgressDialog mDownloadProgressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +68,8 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 
         mMiddleware = ((LiveObjectsApplication)getApplication()).getMiddleware();
         mContentController = mMiddleware.getContentController();
+
+        mDownloadProgressDialog = new ProgressDialog(this);
 
         if (savedInstanceState == null) {
             mLiveObjNameId = getIntent().getStringExtra(EXTRA_LIVE_OBJ_NAME_ID);
@@ -257,6 +262,11 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
     private void initSavingFileTask() {
         mSavingFileTask = new AsyncTask<Void, Void, Void>() {
             @Override
+            protected void onPreExecute() {
+                mDownloadProgressDialog.show();
+            }
+
+            @Override
             protected Void doInBackground(Void... params) {
                 final String dirName = "DCIM";
 
@@ -286,12 +296,16 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
                         Log.e(LOG_TAG, "Error saving media file", e);
                     }
                 }
+
                 return null;
             }
 
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
+
+                mDownloadProgressDialog.dismiss();
+
                 Log.d(LOG_TAG, "file saving completed");
                 launchMediaFragment();
             }
