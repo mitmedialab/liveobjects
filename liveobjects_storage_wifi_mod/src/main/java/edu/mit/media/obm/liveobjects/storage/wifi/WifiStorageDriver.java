@@ -193,8 +193,6 @@ public class WifiStorageDriver implements RemoteStorageDriver {
 
     @Override
     public List<String> getFileNamesOfADirectory(String directoryName) {
-
-
         String dir = directoryName;
         List<String> fileNames = new ArrayList<>();
         try {
@@ -215,10 +213,33 @@ public class WifiStorageDriver implements RemoteStorageDriver {
         } catch (RemoteException e) {
             Log.e(LOG_TAG, "RemoteException", e);
         }
+
         return fileNames;
+    }
 
+    @Override
+    public int getFileSize(String fileName, String folder) throws IOException, RemoteException {
+        String basePath = WifiStorageConfig.getBasePath(mContext);
+        String requestUrl = basePath + "command.cgi?op=100&DIR=/" + folder;
+        String fileListString = getStringFromRequest(requestUrl);
+        String[] files = fileListString.split("([\n])");
 
+        int fileSize = -1;
+        for (int i = 1; i < files.length; i++) {
+            String[] fields = files[i].split("([,])");
+            String fieldName = fields[1];
+            int fieldSize = Integer.valueOf(fields[2]);
 
+            if (fieldName.equals(fileName)) {
+                fileSize = fieldSize;
+            }
+        }
+
+        if (fileSize < 0) {
+            throw new IOException(String.format("no such file '%s/%s'", folder, fileName));
+        }
+
+        return fileSize;
     }
 
     private String getStringFromRequest(String request) {

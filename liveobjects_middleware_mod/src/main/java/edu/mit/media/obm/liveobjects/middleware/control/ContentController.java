@@ -47,10 +47,11 @@ public interface ContentController {
     List<String> getFileNamesOfADirectory(String directoryName);
 
 
-
-
-
-
-
-
+    /**
+     * Get the list of file names of a given directory
+     * @param contentId
+     * @param folder folder name
+     * @return the size of the specified file
+     */
+    int getFileSize(String contentId, String folder) throws IOException, RemoteException;
 }

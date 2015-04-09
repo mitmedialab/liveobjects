@@ -78,4 +78,9 @@ public class ContentBridge implements ContentController {
     public List<String> getFileNamesOfADirectory(String directoryName) {
         return mRemoteStorageDriver.getFileNamesOfADirectory(directoryName);
     }
+
+    @Override
+    public int getFileSize(String contentId, String folder) throws IOException, RemoteException {
+        return mRemoteStorageDriver.getFileSize(contentId, folder);
+    }
 }

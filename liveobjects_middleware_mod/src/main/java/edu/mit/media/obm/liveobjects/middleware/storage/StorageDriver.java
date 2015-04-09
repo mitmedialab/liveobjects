@@ -27,7 +27,7 @@ public interface StorageDriver {
      * If the file exists, it is replaced.
      * If the file does not exist, it is created.
      *
-     * @param fileName name of the file
+     * @param fileName   name of the file
      * @param folderName name of the folder to be put into the file
      * @param bodyString text to be contained in the file
      * @throws java.io.IOException if there was an error while writing the file
@@ -40,7 +40,7 @@ public interface StorageDriver {
      * the file.
      *
      * @param fileName Name of the file
-     * @param folder the folder where file is stored
+     * @param folder   the folder where file is stored
      * @return InputStream associated with the file
      * @throws IOException if the file was not found or the stream cannot be created
      */
@@ -49,6 +49,7 @@ public interface StorageDriver {
 
     /**
      * Get the file in the form of byte array
+     *
      * @param filename
      * @return the byte array representation of the file
      * @throws IOException
@@ -57,21 +58,32 @@ public interface StorageDriver {
 
     /**
      * Get the number of files in a certain storage
+     *
      * @return the number of files
      */
     int getNumberOfFiles();
 
     /**
      * Checks if the file with @param filename exists in the storage
+     *
      * @return true if the file exists
      */
     boolean isFileExisting(String filename);
 
     /**
      * Get the list of file names of a given directory
+     *
      * @param directoryName
      * @return the list of file names
      */
     List<String> getFileNamesOfADirectory(String directoryName);
 
+    /**
+     * @param fileName Name of the file
+     * @param folder   the folder where file is stored
+     * @return the size of the specified size
+     * @throws IOException
+     * @throws RemoteException
+     */
+    int getFileSize(String fileName, String folder) throws IOException, RemoteException;
 }

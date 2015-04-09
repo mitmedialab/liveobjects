@@ -13,10 +13,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 
 import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.app.data.LObjContentProvider;
@@ -85,7 +92,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 
     private void launchMediaFragment() {
         String fileUrl = "";
-        if (isLocallyAvailable(mFilePath)) {
+        if (isLocallyAvailable(mFilePath, mFileName, "DCIM")) {
             Log.d(LOG_TAG, "media file locally available ");
             fileUrl = mFilePath;
         }
@@ -132,9 +139,56 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
         return fileUrl;
     }
 
-    private boolean isLocallyAvailable(String filePath) {
-        File f = new File(filePath);
-        return f.exists();
+    private boolean isLocallyAvailable(String localPath, String remoteFileName, String remoteDirName) {
+        File sizeFile = new File(localPath + ".size");
+
+        if (!sizeFile.exists()) {
+            Log.v(LOG_TAG, "file doesn't exist in local");
+            return false;
+        }
+
+        int fileSize;
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(sizeFile));
+            fileSize = Integer.valueOf(reader.readLine());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        File file = new File(localPath);
+
+        Log.v(LOG_TAG, String.format("file size in local (%d), in remote (%d)", file.length(), fileSize));
+
+        return (fileSize == file.length());
+    }
+
+    private void storeFileSize(String localPath, String remoteFileName, String remoteDirName) {
+        File sizeFile = new File(localPath + ".size");
+
+        if (sizeFile.exists()) {
+            return;
+        }
+
+        try {
+            int fileSize = mContentController.getFileSize(remoteFileName, remoteDirName);
+            PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(sizeFile)));
+            Log.v(LOG_TAG, "file_size = " + fileSize);
+            writer.print(fileSize);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.v(LOG_TAG, "onDestroy()");
+
+        cancelTask();
     }
 
     @Override
@@ -204,10 +258,16 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
         mSavingFileTask = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                if (!isLocallyAvailable(mFilePath)) {
+                final String dirName = "DCIM";
+
+                if (!isLocallyAvailable(mFilePath, mFileName, dirName)) {
                     try {
                         Log.d(LOG_TAG, "starting saving media file " + mFileName + "into " + mFilePath);
-                        InputStream inputStream = mContentController.getInputStreamContent(mFileName, "DCIM");
+
+                        storeFileSize(mFilePath, mFileName, dirName);
+
+                        InputStream inputStream = mContentController.getInputStreamContent(mFileName, dirName);
+                        inputStream.available();
                         File file = new File(mFilePath);
                         OutputStream outputStream = new FileOutputStream(file);
                         byte[] buffer = new byte[1024];
@@ -215,6 +275,10 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
                         while (len != -1) {
                             outputStream.write(buffer, 0, len);
                             len = inputStream.read(buffer);
+
+                            if (isCancelled()) {
+                                break;
+                            }
                         }
                         inputStream.close();
                         outputStream.close();
