@@ -19,7 +19,7 @@
 
     <string name="title_fragment_profile">Profile</string>
     <string name="project_completion_fragment_profile">Project Visit Completion</string>
-    <string name="project_completion_win_a_prize">Congrats! Win a prize at the Live Objects booth (Object-Based Media Group, E15 4th floor).</string>
+    <string name="project_completion_win_a_prize">Congrats! Come to Live Objects booth (E15 4th floor) and see if you won a price.</string>
 
 
     <string name ="profile_preference_file_key">profile_preference_file_key</string>
