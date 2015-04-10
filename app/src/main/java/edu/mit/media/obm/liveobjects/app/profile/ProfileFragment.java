@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import com.github.lzyzsd.circleprogress.DonutProgress;
 
+import org.w3c.dom.Text;
+
 import edu.mit.media.obm.liveobjects.app.data.LObjContract;
 import edu.mit.media.obm.liveobjects.app.data.ProfilePreference;
 import edu.mit.media.obm.shair.liveobjects.R;
@@ -31,6 +33,7 @@ public class ProfileFragment extends Fragment {
     private TextView mCompanyTextView;
     private TextView mEmailTextView;
     private DonutProgress mDonutProgress;
+    private TextView mPrizeTextView;
 
 
     /**
@@ -69,8 +72,7 @@ public class ProfileFragment extends Fragment {
         mCompanyTextView = (TextView)view.findViewById(R.id.companyTextView);
         mEmailTextView = (TextView)view.findViewById(R.id.emailTextView);
         mDonutProgress = (DonutProgress) view.findViewById(R.id.donut_progress);
-
-
+        mPrizeTextView = (TextView)view.findViewById(R.id.prize_text_view);
     }
 
 
@@ -78,9 +80,13 @@ public class ProfileFragment extends Fragment {
         int totalNumberOfObjects = getResources().getInteger(R.integer.total_number_of_objects);
         mDonutProgress.setSuffixText("/" + totalNumberOfObjects);
         mDonutProgress.setMax(totalNumberOfObjects);
-        int numberOfVisitedObjects = getNumberOfVisitedObjects();
+
+        int numberOfVisitedObjects = Math.min(getNumberOfVisitedObjects(), totalNumberOfObjects);
         mDonutProgress.setProgress(numberOfVisitedObjects);
 
+        if (numberOfVisitedObjects == totalNumberOfObjects) {
+            mPrizeTextView.setVisibility(View.VISIBLE);
+        }
     }
 
     private int getNumberOfVisitedObjects() {

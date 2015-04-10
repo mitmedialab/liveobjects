@@ -38,6 +38,15 @@
             android:padding="10dp"
             android:textSize="28dp" />
 
+        <TextView
+            android:id="@+id/prize_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/project_completion_win_a_prize"
+            android:padding="4dp"
+            android:textSize="24dp"
+            android:visibility="gone"/>
 
         <com.github.lzyzsd.circleprogress.DonutProgress
             android:id="@+id/donut_progress"
