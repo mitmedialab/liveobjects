@@ -56,7 +56,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 
     private String mLiveObjNameId;
 
-    private AsyncTask<Void, Void, Void> mSavingFileTask = null;
+    private AsyncTask<Void, Integer, Void> mSavingFileTask = null;
 
     private ProgressDialog mDownloadProgressDialog;
 
@@ -70,6 +70,11 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
         mContentController = mMiddleware.getContentController();
 
         mDownloadProgressDialog = new ProgressDialog(this);
+        mDownloadProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mDownloadProgressDialog.setTitle("Downloading content ...");
+        mDownloadProgressDialog.setMax(100);
+        mDownloadProgressDialog.setProgressNumberFormat(null);
+        mDownloadProgressDialog.setCancelable(false);
 
         if (savedInstanceState == null) {
             mLiveObjNameId = getIntent().getStringExtra(EXTRA_LIVE_OBJ_NAME_ID);
@@ -102,8 +107,6 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
             fileUrl = mFilePath;
         }
         else {
-
-
             Log.d(LOG_TAG, "media file taken from live object ");
             Log.e(LOG_TAG, "filename: " + mFileName);
             Log.e(LOG_TAG, "filePath: " + mFilePath);
@@ -152,15 +155,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
             return false;
         }
 
-        int fileSize;
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(sizeFile));
-            fileSize = Integer.valueOf(reader.readLine());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-
+        int fileSize = getFileSize(localPath, remoteFileName, remoteDirName);
         File file = new File(localPath);
 
         Log.v(LOG_TAG, String.format("file size in local (%d), in remote (%d)", file.length(), fileSize));
@@ -186,6 +181,27 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    private int getFileSize(String localPath, String remoteFileName, String remoteDirName) {
+        File sizeFile = new File(localPath + ".size");
+
+        int fileSize = -1;
+
+        try {
+            if (sizeFile.exists()) {
+                BufferedReader reader = new BufferedReader(new FileReader(sizeFile));
+                fileSize = Integer.valueOf(reader.readLine());
+            } else {
+                fileSize = mContentController.getFileSize(remoteFileName, remoteDirName);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+        return fileSize;
     }
 
     @Override
@@ -260,7 +276,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
     }
 
     private void initSavingFileTask() {
-        mSavingFileTask = new AsyncTask<Void, Void, Void>() {
+        mSavingFileTask = new AsyncTask<Void, Integer, Void>() {
             @Override
             protected void onPreExecute() {
                 mDownloadProgressDialog.show();
@@ -275,6 +291,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
                         Log.d(LOG_TAG, "starting saving media file " + mFileName + "into " + mFilePath);
 
                         storeFileSize(mFilePath, mFileName, dirName);
+                        int fileSize = getFileSize(mFilePath, mFileName, dirName);
 
                         InputStream inputStream = mContentController.getInputStreamContent(mFileName, dirName);
                         inputStream.available();
@@ -282,9 +299,13 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
                         OutputStream outputStream = new FileOutputStream(file);
                         byte[] buffer = new byte[1024];
                         int len = inputStream.read(buffer);
+                        int totalLen = 0;
                         while (len != -1) {
                             outputStream.write(buffer, 0, len);
                             len = inputStream.read(buffer);
+                            totalLen += len;
+
+                            publishProgress(100 * totalLen / fileSize);
 
                             if (isCancelled()) {
                                 break;
@@ -298,6 +319,11 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
                 }
 
                 return null;
+            }
+
+            @Override
+            protected void onProgressUpdate(Integer... progress) {
+                mDownloadProgressDialog.setProgress(progress[0]);
             }
 
             @Override
