@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -54,11 +55,11 @@ public class DetailFragment extends Fragment {
 
     private View mRootView;
     private ImageView mIconView;
-    private View mLoadingPanel;
     private TextView mObjectTitleTextView;
     private TextView mObjectGroupTextView;
     private TextView mObjectDescriptionTextView;
     private ProgressBar mProgressBar;
+    private LinearLayout mDetailInfoLayout;
 
     private MiddlewareInterface mMiddleware;
     private ContentController mContentController;
@@ -135,11 +136,11 @@ public class DetailFragment extends Fragment {
 
     private void initUIObjects(View rootView) {
         mIconView = (ImageView) rootView.findViewById(R.id.object_image_view);
-        mLoadingPanel = rootView.findViewById(R.id.loadingPanel);
         mObjectTitleTextView = (TextView) rootView.findViewById(R.id.object_title_textview);
         mObjectGroupTextView = (TextView) rootView.findViewById(R.id.object_group_textview);
         mObjectDescriptionTextView = (TextView) rootView.findViewById(R.id.object_description_textview);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.detail_progress_bar);
+        mDetailInfoLayout = (LinearLayout) rootView.findViewById(R.id.detail_info_layout);
     }
 
     private void setUIListeners() {
@@ -268,9 +269,6 @@ public class DetailFragment extends Fragment {
                     setBackgroundImage(bitmap);
                     saveData(mJSONConfig, imageFileName, bitmap);
                     imageInputStream.close();
-
-
-
                 } catch (Exception e) {
                     e.printStackTrace();
                     mOnErrorListener.onError(e);
@@ -283,6 +281,7 @@ public class DetailFragment extends Fragment {
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
                 mProgressBar.setVisibility(View.GONE);
+                mDetailInfoLayout.setVisibility(View.VISIBLE);
             }
         }.execute(mediaConfigFileName);
 
