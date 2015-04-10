@@ -3,21 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
 
-
+    <item android:id="@+id/action_edit_profile"
+          android:icon="@drawable/profile_white"
+          android:title="Edit Profile"
+          app:showAsAction="always" />
 
     <item android:id="@+id/action_goto_home"
         android:icon="@drawable/home"
         android:title="home"
         app:showAsAction="always" />
 
-    <!--TODO?
-        <item android:id="@+id/action_send_mail"-->
-        <!--android:title="Email"-->
-        <!--android:orderInCategory="99"-->
-        <!--app:showAsAction="never" />-->
-
-    <item android:id="@+id/action_edit_profile"
-        android:title="Edit Profile"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
 </menu>
