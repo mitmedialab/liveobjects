@@ -157,12 +157,7 @@ public class DetailFragment extends Fragment {
                     }
                 }
         );
-
     }
-
-
-
-
 
     private boolean isLocallyAvailable(Cursor cursor){
         return cursor.getCount() > 0 ;
@@ -173,6 +168,7 @@ public class DetailFragment extends Fragment {
         setLocalTitle(cursor);
         setLocalBackgroundImage(cursor);
         mProgressBar.setVisibility(View.GONE);
+        mDetailInfoLayout.setVisibility(View.VISIBLE);
     }
 
     private void setLocalTitle(Cursor cursor){
