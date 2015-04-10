@@ -96,7 +96,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
         cursor.moveToFirst();
         mContentType = cursor.getString(cursor.getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_TYPE));
         mFilePath = cursor.getString(cursor.getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_FILEPATH));
-        mFileName = mFilePath.substring(mFilePath.lastIndexOf(":") + 1);
+        mFileName = mFilePath.substring(mFilePath.lastIndexOf(File.separator) + 1);
         cursor.close();
     }
 
@@ -288,7 +288,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 
                 if (!isLocallyAvailable(mFilePath, mFileName, dirName)) {
                     try {
-                        Log.d(LOG_TAG, "starting saving media file " + mFileName + "into " + mFilePath);
+                        Log.d(LOG_TAG, "starting saving media file " + mFileName + " into " + mFilePath);
 
                         storeFileSize(mFilePath, mFileName, dirName);
                         int fileSize = getFileSize(mFilePath, mFileName, dirName);

@@ -309,7 +309,7 @@ public class DetailFragment extends Fragment {
     }
 
     private String createFilePath(String directoryPath, String fileName) {
-        return directoryPath + File.pathSeparator + fileName;
+        return directoryPath + File.separator + fileName;
     }
 
     private void saveFile(String path, Bitmap bitmap) throws IOException{
