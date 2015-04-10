@@ -297,20 +297,24 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
                         inputStream.available();
                         File file = new File(mFilePath);
                         OutputStream outputStream = new FileOutputStream(file);
-                        byte[] buffer = new byte[1024];
+                        byte[] buffer = new byte[8192];
                         int len = inputStream.read(buffer);
                         int totalLen = 0;
+                        int progress;
                         while (len != -1) {
                             outputStream.write(buffer, 0, len);
                             len = inputStream.read(buffer);
                             totalLen += len;
 
-                            publishProgress(100 * totalLen / fileSize);
+                            progress = (int)(100L * totalLen / fileSize);
+                            publishProgress(progress);
 
                             if (isCancelled()) {
                                 break;
                             }
                         }
+                        progress = (int)(100L * totalLen / fileSize);
+                        publishProgress(progress);
                         inputStream.close();
                         outputStream.close();
                     } catch (Exception e) {
