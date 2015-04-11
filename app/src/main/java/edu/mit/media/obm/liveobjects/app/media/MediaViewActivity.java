@@ -43,8 +43,8 @@ import edu.mit.media.obm.shair.liveobjects.R;
 public class MediaViewActivity extends ActionBarActivity implements OnMediaViewListener {
     private static final String LOG_TAG = MediaViewActivity.class.getSimpleName();
 
-
     public static String EXTRA_LIVE_OBJ_NAME_ID = "live_obj_name_id";
+    public static String STATE_LIVE_OBJ_NAME_ID = "state_live_obj_name_id";
 
     private MiddlewareInterface mMiddleware;
     private ContentController mContentController;
@@ -86,6 +86,8 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
             }
 
             getSupportActionBar().setTitle(mLiveObjNameId);
+        } else {
+            mLiveObjNameId = savedInstanceState.getString(STATE_LIVE_OBJ_NAME_ID);
         }
     }
 
@@ -209,6 +211,12 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
         Log.v(LOG_TAG, "onDestroy()");
 
         cancelTask();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(STATE_LIVE_OBJ_NAME_ID, mLiveObjNameId);
     }
 
     @Override
