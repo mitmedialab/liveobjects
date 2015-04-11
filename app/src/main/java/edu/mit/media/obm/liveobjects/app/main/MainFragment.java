@@ -215,6 +215,8 @@ public class MainFragment extends Fragment {
                             // regarding too huge texts when the icon is expanding on an emulator.
                             Log.v(LOG_TAG, "onAnimationStart()");
                             liveObjectTitleTextView.setVisibility(View.GONE);
+
+                            mSwipeLayout.setClipChildren(false);
                         }
 
                         @Override
