@@ -138,6 +138,8 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
     }
 
     private void addLineBreakIfNecessary(final TextView textView) {
+        textView.setVisibility(View.INVISIBLE);
+
         textView.post(new Runnable() {
             @Override
             public void run() {
@@ -165,8 +167,10 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
                         }
                     }
                 }
+
                 Log.v("testsetst", String.format("line count = (%d, %d)", lineCount, newLineCount));
 
+                textView.setVisibility(View.VISIBLE);
             }
 
             private void processLine(final TextView textView, int lineCount, int line) {
