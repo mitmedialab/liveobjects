@@ -28,14 +28,15 @@ public class VideoViewFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_FILE_URL = "fileurl";
 
-
-
     private String mFileUrl;
 
     private VideoView mVideoView;
 
-
     private OnMediaViewListener mListener;
+
+    public VideoViewFragment() {
+        // Required empty public constructor
+    }
 
     /**
      * Use this factory method to create a new instance of
@@ -50,10 +51,6 @@ public class VideoViewFragment extends Fragment {
         args.putString(ARG_FILE_URL, fileUrl);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public VideoViewFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -91,8 +88,8 @@ public class VideoViewFragment extends Fragment {
 
             }
         }.execute();
-        return rootView;
 
+        return rootView;
     }
 
     //TODO manage the event of completion of the video and call the method of mListener
@@ -113,6 +110,4 @@ public class VideoViewFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
-
-
 }
