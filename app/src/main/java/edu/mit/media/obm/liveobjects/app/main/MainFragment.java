@@ -271,7 +271,13 @@ public class MainFragment extends Fragment {
     @Override
     public void onDestroy() {
         Log.v(LOG_TAG, "deleting all the network configuration related to live objects");
-        mMiddleware.getNetworkController().forgetNetworkConfigurations();
+
+        NetworkController networkController = mMiddleware.getNetworkController();
+
+        if (!networkController.isConnecting()) {
+            mMiddleware.getNetworkController().forgetNetworkConfigurations();
+        }
+
         super.onDestroy();
     }
 
