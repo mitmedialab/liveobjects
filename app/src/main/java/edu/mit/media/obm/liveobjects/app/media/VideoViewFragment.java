@@ -32,7 +32,7 @@ public class VideoViewFragment extends Fragment {
 
     private String mFileUrl;
 
-    private VideoView mvideoView;
+    private VideoView mVideoView;
 
 
     private OnMediaViewListener mListener;
@@ -70,22 +70,22 @@ public class VideoViewFragment extends Fragment {
 
         final View rootView = inflater.inflate(R.layout.fragment_video_view, container, false);
 
-        mvideoView = (VideoView) rootView.findViewById(R.id.myVideo);
+        mVideoView = (VideoView) rootView.findViewById(R.id.myVideo);
 
         final MediaController videoControl = new MediaController(getActivity());
-        videoControl.setAnchorView(mvideoView);
-        mvideoView.setMediaController(videoControl);
-        mvideoView.setOnCompletionListener(mListener);
-        mvideoView.setOnErrorListener(mListener);
+        videoControl.setAnchorView(mVideoView);
+        mVideoView.setMediaController(videoControl);
+        mVideoView.setOnCompletionListener(mListener);
+        mVideoView.setOnErrorListener(mListener);
 
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
 
                 Uri vidUri = Uri.parse(mFileUrl);
-                mvideoView.setVideoURI(vidUri);
+                mVideoView.setVideoURI(vidUri);
                 Log.i(LOG_TAG, "setting video: " + vidUri.toString());
-                mvideoView.start();
+                mVideoView.start();
 
                 return null;
 
