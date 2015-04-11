@@ -7,6 +7,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,8 +82,9 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
             holder = (Holder) convertView.getTag();
         }
 
-        String text = mObjects.get(position).toString();
+        final String text = mObjects.get(position).toString();
         holder.mTextView.setText(text);
+        addLineBreakIfNecessary(holder.mTextView);
 
         setImage(holder.mImageView, text);
 
@@ -132,6 +135,69 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
         } else {
             imageView.setFillColor(mRandomColorGenerator.generateColor(liveObjectName));
         }
+    }
+
+    private void addLineBreakIfNecessary(final TextView textView) {
+        textView.post(new Runnable() {
+            @Override
+            public void run() {
+                int lineCount = textView.getLineCount();
+                String originalText = textView.getText().toString();
+
+                if (lineCount > 1) {
+                    if (originalText.contains("\n")) {
+                        // prevent to be processed multiple times (getView() may be called more than once)
+                        return;
+                    }
+
+                    for (int line = 0; line < lineCount - 1; line++) {
+                        processLine(textView, lineCount, line);
+                    }
+                }
+
+                int newLineCount = textView.getLineCount();
+                if (newLineCount > lineCount) {
+                    if (newLineCount == 3) {
+                        textView.setText(originalText);
+
+                        for (int line = 0; line < newLineCount - 1; line++) {
+                            processLine(textView, newLineCount, line);
+                        }
+                    }
+                }
+                Log.v("testsetst", String.format("line count = (%d, %d)", lineCount, newLineCount));
+
+            }
+
+            private void processLine(final TextView textView, int lineCount, int line) {
+                String formatText = textView.getText().toString();
+                int textLen = formatText.length();
+                int lineBreakPos = textLen * (line + 1) / lineCount;
+
+                int capitalClosestToCenter = -1;
+                int closestDistanceFromCenter = Integer.MAX_VALUE;
+                for (int i = 0; i < textLen; i++) {
+                    char c = formatText.charAt(i);
+                    if (Character.isUpperCase(c) ||
+                            (i > 0 && !Character.isLetterOrDigit(formatText.charAt(i - 1)))) {
+                        int distanceFromCenter = Math.abs(i - lineBreakPos);
+                        if (distanceFromCenter < closestDistanceFromCenter) {
+                            closestDistanceFromCenter = distanceFromCenter;
+                            capitalClosestToCenter = i;
+                        }
+                    }
+                }
+
+                if (capitalClosestToCenter > 0) {
+                    StringBuilder builder = new StringBuilder();
+                    builder.append(formatText.substring(0, capitalClosestToCenter));
+                    builder.append("\n");
+                    builder.append(formatText.substring(capitalClosestToCenter));
+
+                    textView.setText(builder.toString());
+                }
+            }
+        });
     }
 
     private class RandomColorGenerator {
