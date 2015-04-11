@@ -254,7 +254,7 @@ public class WifiManagerWrapper {
     }
 
     public static String unQuoteString(String string) {
-        if (string.length() < 2) {
+        if (string == null || string.length() < 2) {
             return string;
         }
 

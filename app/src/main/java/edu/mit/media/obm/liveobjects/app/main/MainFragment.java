@@ -31,6 +31,7 @@ import edu.mit.media.obm.liveobjects.app.profile.ProfileActivity;
 import edu.mit.media.obm.liveobjects.app.widget.AnimationArrayAdapter;
 import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.app.widget.ExpandIconAnimation;
+import edu.mit.media.obm.liveobjects.app.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ConnectionListener;
@@ -306,6 +307,9 @@ public class MainFragment extends Fragment {
                                 Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
                             }
                         });
+
+                // recreate the MainActivity to reset the UI state
+                MenuActions.goToHome(getActivity());
             }
         }
     }

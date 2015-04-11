@@ -208,7 +208,12 @@ public class WifiDriver implements NetworkDriver {
 
             synchronized (WifiDriver.class) {
                 if (state.equals(NetworkInfo.State.CONNECTED) && mConnecting == true) {
-                    String ssid = mWifiManager.getConnectionInfo().getSSID();
+                    String ssid = networkInfo.getExtraInfo();
+                    if (ssid == null) {
+                        // SSID in NEtworkInfo may be null depending on the model of the device
+                        ssid = mWifiManager.getConnectionInfo().getSSID();
+                    }
+
                     ssid = WifiManagerWrapper.unQuoteString(ssid);
                     if (WifiUtil.INSTANCE.isLiveObject(ssid)) {
                         String connectedLiveObjectName = WifiUtil.INSTANCE.convertDeviceIdToLiveObjectName(ssid);
