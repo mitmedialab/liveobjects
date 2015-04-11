@@ -27,15 +27,17 @@ public class VideoViewFragment extends Fragment {
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_FILE_URL = "fileurl";
+    private static final String STATE_PLAY_POSITION = "state_play_position";
 
     private String mFileUrl;
 
     private VideoView mVideoView;
+    private Integer mPlayPosition;
 
     private OnMediaViewListener mListener;
 
     public VideoViewFragment() {
-        // Required empty public constructor
+        mPlayPosition = null;
     }
 
     /**
@@ -56,6 +58,11 @@ public class VideoViewFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            mPlayPosition = savedInstanceState.getInt(STATE_PLAY_POSITION);
+        }
+
         if (getArguments() != null) {
             mFileUrl = getArguments().getString(ARG_FILE_URL);
         }
@@ -82,6 +89,11 @@ public class VideoViewFragment extends Fragment {
                 Uri vidUri = Uri.parse(mFileUrl);
                 mVideoView.setVideoURI(vidUri);
                 Log.i(LOG_TAG, "setting video: " + vidUri.toString());
+
+                if (mPlayPosition != null) {
+                    mVideoView.seekTo(mPlayPosition);
+                }
+
                 mVideoView.start();
 
                 return null;
@@ -109,5 +121,11 @@ public class VideoViewFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STATE_PLAY_POSITION, mVideoView.getCurrentPosition());
     }
 }
