@@ -209,7 +209,7 @@ public class WifiDriver implements NetworkDriver {
             synchronized (WifiDriver.class) {
                 if (state.equals(NetworkInfo.State.CONNECTED) && mConnecting == true) {
                     String ssid = mWifiManager.getConnectionInfo().getSSID();
-                    ssid = polishSSID(ssid);
+                    ssid = WifiManagerWrapper.unQuoteString(ssid);
                     if (WifiUtil.INSTANCE.isLiveObject(ssid)) {
                         String connectedLiveObjectName = WifiUtil.INSTANCE.convertDeviceIdToLiveObjectName(ssid);
                         Log.d(LOG_TAG, "connectedLiveObjectName = " + connectedLiveObjectName);
@@ -220,11 +220,5 @@ public class WifiDriver implements NetworkDriver {
                 }
             }
         }
-
-        // removes the "..." surrounding the ssid
-        private String polishSSID(String ssid){
-            return (ssid != null)? ssid.substring(1, ssid.length() - 1) : null;
-        }
-
     }
 }
