@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import edu.mit.media.obm.liveobjects.app.data.LObjContract;
 import edu.mit.media.obm.liveobjects.app.detail.WrapUpActivity;
 import edu.mit.media.obm.liveobjects.app.utils.Util;
+import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
@@ -130,7 +131,10 @@ public class SavedLiveObjectsFragment extends Fragment implements LoaderManager.
                         FileInputStream fileInputStream = new FileInputStream(file);
                         Bitmap bitmap = Util.getBitmap(fileInputStream);
                         ImageView iconView = (ImageView) view;
-                        Bitmap croppedBitmap = Util.cropImage(bitmap, iconView);
+
+                        BitmapEditor bitmapEditor = new BitmapEditor(getActivity());
+                        Bitmap croppedBitmap = bitmapEditor.cropToAspectRatio(bitmap, 1.0F);
+
                         iconView.setImageBitmap(croppedBitmap);
 
                     } catch (Exception e) {
