@@ -13,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.TypedValue;
@@ -26,6 +27,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Calendar;
 
 import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
@@ -109,7 +114,6 @@ public class WrapUpFragment extends Fragment {
         mReplayButtonLayout = (LinearLayout) rootView.findViewById(R.id.replay_button);
         mAddCommentLayout = (LinearLayout) rootView.findViewById(R.id.addCommentButton);
         mAddCommentAlert = initAddCommentAlert();
-
     }
 
     private AlertDialog initAddCommentAlert() {
@@ -176,16 +180,39 @@ public class WrapUpFragment extends Fragment {
         setText(mTitleTextView, cursor, LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE);
         setText(mGroupTextView, cursor, LObjContract.LiveObjectEntry.COLUMN_NAME_GROUP);
         setText(mDescriptionTextView, cursor, LObjContract.LiveObjectEntry.COLUMN_NAME_DESCRIPTION);
-        setCommentButtonVisibility(mAddCommentLayout);
+        mAddCommentLayout.setEnabled(mShowAddComment);
         mIsFavorite = setFavoriteButtonState(mFavouriteButtonLayout, cursor);
 
+        mReplayButtonLayout.setEnabled(isContentStoredLocally(cursor));
     }
 
-    private void setCommentButtonVisibility(LinearLayout addCommentLayout) {
-        if (!mShowAddComment)
-            addCommentLayout.setVisibility(View.INVISIBLE);
-        else
-            addCommentLayout.setVisibility(View.VISIBLE);
+    private boolean isContentStoredLocally(Cursor cursor) {
+        String filePath = cursor.getString(
+                cursor.getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_FILEPATH));
+        String sizeFilePath = filePath + ".size";
+        File sizeFile = new File(sizeFilePath);
+
+        Log.v(LOG_TAG, "111");
+        if (!sizeFile.exists()) {
+            Log.v(LOG_TAG, "222");
+            return false;
+        }
+
+        Log.v(LOG_TAG, "333");
+        int recordedFileSize;
+
+        try {
+            Log.v(LOG_TAG, "444");
+            BufferedReader reader = new BufferedReader(new FileReader(sizeFile));
+            recordedFileSize = Integer.valueOf(reader.readLine());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        File contentFile = new File(filePath);
+
+        return (recordedFileSize == contentFile.length());
     }
 
     private boolean setFavoriteButtonState(LinearLayout favouriteButtonLayout, Cursor cursor) {
