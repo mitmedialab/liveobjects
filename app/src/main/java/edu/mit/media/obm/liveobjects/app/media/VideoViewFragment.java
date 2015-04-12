@@ -82,24 +82,15 @@ public class VideoViewFragment extends Fragment {
         mVideoView.setOnCompletionListener(mListener);
         mVideoView.setOnErrorListener(mListener);
 
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
+        Uri vidUri = Uri.parse(mFileUrl);
+        mVideoView.setVideoURI(vidUri);
+        Log.i(LOG_TAG, "setting video: " + vidUri.toString());
 
-                Uri vidUri = Uri.parse(mFileUrl);
-                mVideoView.setVideoURI(vidUri);
-                Log.i(LOG_TAG, "setting video: " + vidUri.toString());
+        if (mPlayPosition != null) {
+            mVideoView.seekTo(mPlayPosition);
+        }
 
-                if (mPlayPosition != null) {
-                    mVideoView.seekTo(mPlayPosition);
-                }
-
-                mVideoView.start();
-
-                return null;
-
-            }
-        }.execute();
+        mVideoView.start();
 
         return rootView;
     }
