@@ -70,10 +70,10 @@
                 android:id="@+id/live_objects_list_view"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:columnWidth="100dp"
+                android:columnWidth="118dp"
                 android:numColumns="auto_fit"
-                android:horizontalSpacing="15dp"
-                android:verticalSpacing="15dp"
+                android:horizontalSpacing="0dp"
+                android:verticalSpacing="0dp"
                 android:stretchMode="columnWidth"
                 android:clipToPadding="false"/>
 
