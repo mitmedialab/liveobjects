@@ -76,7 +76,9 @@ public class DetailActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_goto_home) {
-            mDetailFragment.cancelAsyncTasks();
+            if (mDetailFragment != null) {
+                mDetailFragment.cancelAsyncTasks();
+            }
 
             MenuActions.goToHome(this);
             return true;
