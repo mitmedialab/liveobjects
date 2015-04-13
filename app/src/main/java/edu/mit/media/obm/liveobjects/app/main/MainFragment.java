@@ -79,6 +79,7 @@ public class MainFragment extends Fragment {
         setupUIListeners();
 
         mMiddleware = ((LiveObjectsApplication) getActivity().getApplication()).getMiddleware();
+
         initNetworkListeners();
 
         return rootView;
@@ -151,7 +152,7 @@ public class MainFragment extends Fragment {
         mHistoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent  intent = new Intent(getActivity(), SavedLiveObjectsActivity.class);
+                Intent intent = new Intent(getActivity(), SavedLiveObjectsActivity.class);
                 startActivity(intent);
             }
         });
@@ -170,6 +171,12 @@ public class MainFragment extends Fragment {
 
         initDiscoveryListener();
         initConnectionListener();
+
+        Log.v(LOG_TAG, "deleting all the network configuration related to live objects");
+        NetworkController networkController = mMiddleware.getNetworkController();
+        if (!networkController.isConnecting()) {
+            mMiddleware.getNetworkController().forgetNetworkConfigurations();
+        }
         
         mAdapter.notifyDataSetChanged();
     }
@@ -203,7 +210,7 @@ public class MainFragment extends Fragment {
                     mConnectingDialog.dismiss();
 
                     final TextView liveObjectTitleTextView =
-                            (TextView)mClickedView.findViewById(R.id.grid_item_title_textview);
+                            (TextView) mClickedView.findViewById(R.id.grid_item_title_textview);
 
                     Animation animation = new ExpandIconAnimation(
                             getActivity().getWindowManager(), mClickedView).getAnimation();
@@ -269,19 +276,6 @@ public class MainFragment extends Fragment {
         Log.v(LOG_TAG, "onStop()");
 //        mNetworkController.stop();
         super.onStop();
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.v(LOG_TAG, "deleting all the network configuration related to live objects");
-
-        NetworkController networkController = mMiddleware.getNetworkController();
-
-        if (!networkController.isConnecting()) {
-            mMiddleware.getNetworkController().forgetNetworkConfigurations();
-        }
-
-        super.onDestroy();
     }
 
     @Override
