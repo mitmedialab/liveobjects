@@ -138,7 +138,9 @@ public class MainFragment extends Fragment {
                             if(strbuf.toString() != "") strbuf.append("\n");
                             strbuf.append(str);
                         }
-                        commentList.add(strbuf.toString());
+                        String stringContent = strbuf.toString();
+                        String comment = extractComment(stringContent);
+                        commentList.add(comment);
                     } catch (IOException e) {
                         Log.e(LOG_TAG, "", e);
                         e.printStackTrace();
@@ -163,6 +165,10 @@ public class MainFragment extends Fragment {
             }
         };
 
+    }
+
+    private String extractComment(String content) {
+        return content.substring(content.indexOf("Comment:") + 8);
     }
 
     private MiddlewareInterface createMiddleware() {
