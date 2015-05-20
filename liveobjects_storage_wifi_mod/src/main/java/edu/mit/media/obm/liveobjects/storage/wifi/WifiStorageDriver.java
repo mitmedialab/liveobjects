@@ -224,13 +224,16 @@ public class WifiStorageDriver implements RemoteStorageDriver {
         String fileListString = getStringFromRequest(requestUrl);
         String[] files = fileListString.split("([\n])");
 
+        // File names in FlashAir consist of only upper letters
+        String fileNameUpper = fileName.toUpperCase();
+
         int fileSize = -1;
         for (int i = 1; i < files.length; i++) {
             String[] fields = files[i].split("([,])");
             String fieldName = fields[1];
             int fieldSize = Integer.valueOf(fields[2]);
 
-            if (fieldName.equals(fileName)) {
+            if (fieldName.equals(fileNameUpper)) {
                 fileSize = fieldSize;
             }
         }
