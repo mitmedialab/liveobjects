@@ -10,10 +10,15 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 
+import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 import edu.mit.media.obm.liveobjects.middleware.storage.LocalStorageDriver;
 import edu.mit.media.obm.liveobjects.middleware.storage.RemoteStorageDriver;
 
 /**
+ * This class implements a ContentController and provides access to the content of a live object.
+ * If available, the content is taken from the user device (local storage),
+ * otherwise it is taken from the live object.
+ *
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public class ContentBridge implements ContentController {
@@ -25,33 +30,35 @@ public class ContentBridge implements ContentController {
 
 
     public ContentBridge (Context context, LocalStorageDriver localStorageDriver, RemoteStorageDriver remoteStorageDriver) {
-        mContext = mContext;
+        mContext = context;
         mLocalStorageDriver = localStorageDriver;
         mRemoteStorageDriver = remoteStorageDriver;
 
     }
 
     @Override
-    public void putSerializableContent(String contentId, Serializable content) {
+    public void putSerializableContent(ContentId contentId, Serializable content) {
         // TODO check if contentId already present?
         // TODO create a file named with contentId
         // TODO add content to the file
         // TODO send the file to the live object
 
+        throw new UnsupportedOperationException();
 
-
-
-        throw  new UnsupportedOperationException();
     }
 
     @Override
-    public void putStringContent(final String contentId,final String folder,final String stringContent) {
+    public void putStringContent(ContentId contentId, final String stringContent) {
+
+        final String directoryPath = contentId.getDirectoryPath();
+        final String filename = contentId.getFilename();
+
 
         new AsyncTask<Void,Void,Void>(){
             @Override
             protected Void doInBackground(Void... params) {
                 try {
-                    mRemoteStorageDriver.writeNewRawFileFromString(contentId,folder,stringContent);
+                    mRemoteStorageDriver.writeNewRawFileFromString(filename, directoryPath, stringContent);
                 } catch (IOException e) {
                     Log.e(LOG_TAG,"writeNewRawFile", e);
                     e.printStackTrace();
@@ -63,24 +70,32 @@ public class ContentBridge implements ContentController {
     }
 
     @Override
-    public Serializable getSerializableContent(String contentId) {
+    public Serializable getSerializableContent(ContentId contentId) {
         //TODO
         throw new UnsupportedOperationException();
 
     }
 
     @Override
-    public InputStream getInputStreamContent(String contentId, String folder) throws IOException, RemoteException {
-        return mRemoteStorageDriver.getInputStreamFromFile(contentId, folder);
+    public InputStream getInputStreamContent(ContentId contentId) throws IOException, RemoteException {
+        // TODO if the content is locally available return it, otherwise return the remote version
+        String filename = contentId.getFilename();
+        String directoryPath = contentId.getDirectoryPath();
+        return mRemoteStorageDriver.getInputStreamFromFile(filename, directoryPath);
     }
 
     @Override
-    public List<String> getFileNamesOfADirectory(String directoryName) {
+    public List<String> getFileNamesOfADirectory(String liveObjectId, String directoryName) {
+        // TODO implement the check locally before contacting the remote liveObject
         return mRemoteStorageDriver.getFileNamesOfADirectory(directoryName);
     }
 
     @Override
-    public int getFileSize(String contentId, String folder) throws IOException, RemoteException {
-        return mRemoteStorageDriver.getFileSize(contentId, folder);
+    public int getContentSize(ContentId contentId) throws IOException, RemoteException {
+        // TODO implement the check locally before contacting the remote liveObject
+        String filename = contentId.getFilename();
+        String directoryPath = contentId.getDirectoryPath();
+        return mRemoteStorageDriver.getFileSize(filename, directoryPath);
     }
+
 }
