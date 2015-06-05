@@ -221,7 +221,9 @@ public class WifiStorageDriver implements RemoteStorageDriver {
     public int getFileSize(String fileName, String folder) throws IOException, RemoteException {
         String basePath = WifiStorageConfig.getBasePath(mContext);
         String requestUrl = basePath + "command.cgi?op=100&DIR=/" + folder;
+        Log.d(LOG_TAG, "requestUrl = " + requestUrl);
         String fileListString = getStringFromRequest(requestUrl);
+        Log.d(LOG_TAG, "fileListString = " + fileListString);
         String[] files = fileListString.split("([\n])");
 
         // File names in FlashAir consist of only upper letters

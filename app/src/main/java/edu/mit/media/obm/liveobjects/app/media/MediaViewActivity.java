@@ -30,6 +30,7 @@ import edu.mit.media.obm.liveobjects.app.data.LObjContentProvider;
 import edu.mit.media.obm.liveobjects.app.data.LObjContract;
 import edu.mit.media.obm.liveobjects.app.detail.WrapUpActivity;
 import edu.mit.media.obm.liveobjects.app.widget.MenuActions;
+import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.liveobjects.storage.wifi.WifiStorageConfig;
@@ -45,6 +46,9 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 
     public static String EXTRA_LIVE_OBJ_NAME_ID = "live_obj_name_id";
     public static String STATE_LIVE_OBJ_NAME_ID = "state_live_obj_name_id";
+
+    //TODO makes the media directory name parametrizable
+    private static final String MEDIA_DIRECTORY_NAME = "DCIM";
 
     private MiddlewareInterface mMiddleware;
     private ContentController mContentController;
@@ -172,7 +176,8 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
         }
 
         try {
-            int fileSize = mContentController.getFileSize(remoteFileName, remoteDirName);
+            ContentId remoteContentId = new ContentId(mLiveObjNameId, remoteDirName, remoteFileName);
+            int fileSize = mContentController.getContentSize(remoteContentId);
             PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(sizeFile)));
             Log.v(LOG_TAG, "file_size = " + fileSize);
             writer.print(fileSize);
@@ -194,7 +199,8 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
                 BufferedReader reader = new BufferedReader(new FileReader(sizeFile));
                 fileSize = Integer.valueOf(reader.readLine());
             } else {
-                fileSize = mContentController.getFileSize(remoteFileName, remoteDirName);
+                ContentId remoteContentId = new ContentId(mLiveObjNameId, remoteDirName, remoteFileName);
+                fileSize = mContentController.getContentSize(remoteContentId);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -247,8 +253,6 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 
     }
 
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -291,16 +295,17 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 
             @Override
             protected Void doInBackground(Void... params) {
-                final String dirName = "DCIM";
 
-                if (!isLocallyAvailable(mFilePath, mFileName, dirName)) {
+
+                if (!isLocallyAvailable(mFilePath, mFileName, MEDIA_DIRECTORY_NAME)) {
                     try {
                         Log.d(LOG_TAG, "starting saving media file " + mFileName + " into " + mFilePath);
 
-                        storeFileSize(mFilePath, mFileName, dirName);
-                        int fileSize = getFileSize(mFilePath, mFileName, dirName);
+                        storeFileSize(mFilePath, mFileName, MEDIA_DIRECTORY_NAME);
+                        int fileSize = getFileSize(mFilePath, mFileName, MEDIA_DIRECTORY_NAME);
 
-                        InputStream inputStream = mContentController.getInputStreamContent(mFileName, dirName);
+                        ContentId mediaContentId = new ContentId(mLiveObjNameId, MEDIA_DIRECTORY_NAME, mFileName);
+                        InputStream inputStream = mContentController.getInputStreamContent(mediaContentId);
                         inputStream.available();
                         File file = new File(mFilePath);
                         OutputStream outputStream = new FileOutputStream(file);

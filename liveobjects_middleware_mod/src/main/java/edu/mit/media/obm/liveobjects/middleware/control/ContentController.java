@@ -7,8 +7,11 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 
+import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
+
 /**
- * This interface defines the basic functionality to access and add to a live object
+ * This interface defines the basic functionality to get and add content to a live object
+ *
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public interface ContentController {
@@ -18,9 +21,9 @@ public interface ContentController {
      * @param contentId
      * @param content
      */
-    void putSerializableContent(String contentId, Serializable content);
+    void putSerializableContent(ContentId contentId, Serializable content);
 
-    void putStringContent(String contentId, String folder, String stringContent);
+    void putStringContent(ContentId contentId, String stringContent);
 
 
     /**
@@ -28,30 +31,29 @@ public interface ContentController {
      * @param contentId
      * @return the content as Serializable
      */
-    Serializable getSerializableContent(String contentId);
+    Serializable getSerializableContent(ContentId contentId);
 
 
     /**
      * get the content as InputStream
      * @param contentId
-     * @param folder folder name
      * @return the content as InputStream
      */
-    InputStream getInputStreamContent(String contentId, String folder) throws IOException, RemoteException;
+    InputStream getInputStreamContent(ContentId contentId) throws IOException, RemoteException;
 
     /**
      * Get the list of file names of a given directory
-     * @param directoryName
+     * @param liveObjectId the id of the live-object
+     * @param directoryName the directory name
      * @return the list of file names
      */
-    List<String> getFileNamesOfADirectory(String directoryName);
+    List<String> getFileNamesOfADirectory(String liveObjectId, String directoryName);
 
 
     /**
-     * Get the list of file names of a given directory
+     * Returns the size of a given content
      * @param contentId
-     * @param folder folder name
      * @return the size of the specified file
      */
-    int getFileSize(String contentId, String folder) throws IOException, RemoteException;
+    int getContentSize(ContentId contentId) throws IOException, RemoteException;
 }

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiDriver;
+import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObjectsMiddleware;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentBridge;
@@ -42,6 +43,8 @@ public class MainFragment extends Fragment {
     private TextView mCommentTextView;
 
     private static final String COMMENT_FOLDER = "COMMENTS";
+    //TODO retrieving the id of the liveObject
+    private static final String DUMMY_LIVE_OBJECT_ID = "dummyLiveObject";
 
     private MiddlewareInterface mMiddleware;
     private ContentController mContentController;
@@ -125,12 +128,14 @@ public class MainFragment extends Fragment {
             @Override
             protected List<String> doInBackground(String... params) {
                 String dir = params[0];
-                List<String> fileNameList =  mContentController.getFileNamesOfADirectory(dir);
+
+                List<String> fileNameList =  mContentController.getFileNamesOfADirectory(DUMMY_LIVE_OBJECT_ID, dir);
                 List<String> commentList = new ArrayList<>();
                 for (String filename : fileNameList) {
 
                     try {
-                        InputStream inputStream = mContentController.getInputStreamContent(filename, "COMMENTS");
+                        ContentId commentContentId =new ContentId(DUMMY_LIVE_OBJECT_ID, COMMENT_FOLDER, filename);
+                        InputStream inputStream = mContentController.getInputStreamContent(commentContentId);
                         BufferedReader bufreader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
                         StringBuffer strbuf = new StringBuffer();
                         String str;

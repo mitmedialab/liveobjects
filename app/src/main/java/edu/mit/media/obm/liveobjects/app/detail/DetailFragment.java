@@ -36,6 +36,7 @@ import edu.mit.media.obm.liveobjects.app.media.MediaViewActivity;
 import edu.mit.media.obm.liveobjects.app.utils.Util;
 import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.app.widget.ZoomInOutAnimation;
+import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.shair.liveobjects.R;
@@ -48,6 +49,8 @@ import edu.mit.media.obm.shair.liveobjects.R;
 public class DetailFragment extends Fragment {
 
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
+    //TODO make the directory name parametrizable
+    private static final String DIRECTORY_NAME = "DCIM";
 
     private static final String ARG_LIVE_OBJ_NAME_ID = "live_obj_name_id";
 
@@ -236,8 +239,9 @@ public class DetailFragment extends Fragment {
                         Log.e(LOG_TAG, "mContentController Null");
                     }
 
-                    // retrieve JSON Object from remote
-                    inputStream = mContentController.getInputStreamContent(configFileName, "DCIM");
+                    ContentId configFileContentId = new ContentId(mLiveObjectNameID, DIRECTORY_NAME, configFileName );
+                    // retrieve JSON Object
+                    inputStream = mContentController.getInputStreamContent(configFileContentId);
                     if (inputStream == null) {
                         Log.e(LOG_TAG, "inputstream Null");
 
@@ -260,7 +264,8 @@ public class DetailFragment extends Fragment {
                         }
                     });
 
-                    InputStream imageInputStream = mContentController.getInputStreamContent(imageFileName, "DCIM");
+                    ContentId imageContentId = new ContentId(mLiveObjectNameID, DIRECTORY_NAME, imageFileName);
+                    InputStream imageInputStream = mContentController.getInputStreamContent(imageContentId);
                     Bitmap bitmap = Util.getBitmap(imageInputStream);
                     setBackgroundImage(bitmap);
                     saveData(mJSONConfig, imageFileName, bitmap);

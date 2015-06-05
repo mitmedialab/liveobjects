@@ -13,7 +13,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.TypedValue;
@@ -39,6 +38,7 @@ import edu.mit.media.obm.liveobjects.app.data.LObjContract;
 import edu.mit.media.obm.liveobjects.app.data.ProfilePreference;
 import edu.mit.media.obm.liveobjects.app.media.MediaViewActivity;
 import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
+import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.shair.liveobjects.R;
 
@@ -49,6 +49,8 @@ import edu.mit.media.obm.shair.liveobjects.R;
  */
 public class WrapUpFragment extends Fragment {
     private static final String LOG_TAG = WrapUpFragment.class.getSimpleName();
+    // TODO make the comment directory name parametrizable
+    private static final String COMMENT_DIRECTORY_NAME = "COMMENTS";
 
     private static final String ARG_LIVE_OBJ_NAME_ID = "live_obj_name_id";
     private static final String ARG_SHOW_ADD_COMMENT = "show_add_comment";
@@ -137,7 +139,8 @@ public class WrapUpFragment extends Fragment {
                 ContentController contentController = application.getMiddleware().getContentController();
                 String commentText = makeComment(input.getText().toString());
                 Log.d(LOG_TAG, "ADDING COMMENT: " + input.getText().toString());
-                contentController.putStringContent(generateCommentFileName(), "COMMENTS", commentText);
+                ContentId commentContentId = new ContentId(mLiveObjNameId, COMMENT_DIRECTORY_NAME, generateCommentFileName());
+                contentController.putStringContent(commentContentId, commentText);
 
                 input.setText("");
                 Toast.makeText(getActivity(), "Uploaded a comment", Toast.LENGTH_SHORT).show();
