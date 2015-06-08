@@ -4,7 +4,6 @@ import android.os.RemoteException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.List;
 
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
@@ -17,21 +16,11 @@ import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 public interface ContentController {
 
     /**
-     * Putting serializable content in a live object
-     * @param contentId
-     * @param content
+     * Put a String content in a live object
+     * @param contentId content id
+     * @param stringContent
      */
-    void putSerializableContent(ContentId contentId, Serializable content);
-
     void putStringContent(ContentId contentId, String stringContent);
-
-
-    /**
-     * Get serializable content from the live-object
-     * @param contentId
-     * @return the content as Serializable
-     */
-    Serializable getSerializableContent(ContentId contentId);
 
 
     /**
@@ -44,7 +33,7 @@ public interface ContentController {
     /**
      * Get the list of file names of a given directory
      * @param liveObjectId the id of the live-object
-     * @param directoryName the directory name
+     * @param directoryName the directory path
      * @return the list of file names
      */
     List<String> getFileNamesOfADirectory(String liveObjectId, String directoryName);

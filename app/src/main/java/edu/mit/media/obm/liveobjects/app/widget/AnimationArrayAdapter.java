@@ -1,21 +1,17 @@
 package edu.mit.media.obm.liveobjects.app.widget;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -168,7 +164,6 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
                     }
                 }
 
-                Log.v("testsetst", String.format("line count = (%d, %d)", lineCount, newLineCount));
 
                 textView.setVisibility(View.VISIBLE);
             }

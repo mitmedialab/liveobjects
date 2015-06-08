@@ -5,9 +5,9 @@ import android.os.AsyncTask;
 import android.os.RemoteException;
 import android.util.Log;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.List;
 
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
@@ -36,29 +36,18 @@ public class ContentBridge implements ContentController {
 
     }
 
-    @Override
-    public void putSerializableContent(ContentId contentId, Serializable content) {
-        // TODO check if contentId already present?
-        // TODO create a file named with contentId
-        // TODO add content to the file
-        // TODO send the file to the live object
 
-        throw new UnsupportedOperationException();
-
-    }
 
     @Override
     public void putStringContent(ContentId contentId, final String stringContent) {
 
-        final String directoryPath = contentId.getDirectoryPath();
-        final String filename = contentId.getFilename();
-
+        final String filePath = contentId.getRelativePath();
 
         new AsyncTask<Void,Void,Void>(){
             @Override
             protected Void doInBackground(Void... params) {
                 try {
-                    mRemoteStorageDriver.writeNewRawFileFromString(filename, directoryPath, stringContent);
+                    mRemoteStorageDriver.writeNewRawFileFromString(filePath, stringContent);
                 } catch (IOException e) {
                     Log.e(LOG_TAG,"writeNewRawFile", e);
                     e.printStackTrace();
@@ -69,33 +58,28 @@ public class ContentBridge implements ContentController {
 
     }
 
-    @Override
-    public Serializable getSerializableContent(ContentId contentId) {
-        //TODO
-        throw new UnsupportedOperationException();
 
-    }
 
     @Override
     public InputStream getInputStreamContent(ContentId contentId) throws IOException, RemoteException {
         // TODO if the content is locally available return it, otherwise return the remote version
-        String filename = contentId.getFilename();
-        String directoryPath = contentId.getDirectoryPath();
-        return mRemoteStorageDriver.getInputStreamFromFile(filename, directoryPath);
+        String filePath = contentId.getRelativePath();
+        return mRemoteStorageDriver.getInputStreamFromFile(filePath);
     }
 
     @Override
     public List<String> getFileNamesOfADirectory(String liveObjectId, String directoryName) {
         // TODO implement the check locally before contacting the remote liveObject
-        return mRemoteStorageDriver.getFileNamesOfADirectory(directoryName);
+        String directoryPath = liveObjectId + File.pathSeparator + directoryName;
+        return mRemoteStorageDriver.getFileNamesOfADirectory(directoryPath);
     }
 
     @Override
     public int getContentSize(ContentId contentId) throws IOException, RemoteException {
         // TODO implement the check locally before contacting the remote liveObject
-        String filename = contentId.getFilename();
-        String directoryPath = contentId.getDirectoryPath();
-        return mRemoteStorageDriver.getFileSize(filename, directoryPath);
+        String filePath = contentId.getRelativePath();
+
+        return mRemoteStorageDriver.getFileSize(filePath);
     }
 
 }

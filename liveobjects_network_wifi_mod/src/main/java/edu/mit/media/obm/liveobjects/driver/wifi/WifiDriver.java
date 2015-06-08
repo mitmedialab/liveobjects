@@ -178,13 +178,13 @@ public class WifiDriver implements NetworkDriver {
         }
 
         private void handleWifiScan() {
-            Log.d(LOG_TAG, "SCANNING WIFI");
+            Log.v(LOG_TAG, "SCANNING WIFI");
             List<LiveObject> liveObjectList = new ArrayList<>();
             List<ScanResult> scanResults = mWifiManager.getScanResults();
 
             for (ScanResult scanResult : scanResults) {
                 String deviceId = scanResult.SSID.toString();
-                Log.d(LOG_TAG, "scanResult: " +  deviceId);
+                Log.v(LOG_TAG, "scanResult: " +  deviceId);
 
                 if (WifiUtil.INSTANCE.isLiveObject(deviceId)){
                     String liveObjectName = WifiUtil.INSTANCE.convertDeviceIdToLiveObjectName(deviceId);
@@ -204,7 +204,7 @@ public class WifiDriver implements NetworkDriver {
         private void handleWifiConnection(Intent intent) {
             NetworkInfo networkInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
             NetworkInfo.State state = networkInfo.getState();
-            Log.d(LOG_TAG, "networkInfo = " + networkInfo.toString());
+            Log.v(LOG_TAG, "networkInfo = " + networkInfo.toString());
 
             synchronized (WifiDriver.class) {
                 if (state.equals(NetworkInfo.State.CONNECTED) && mConnecting == true) {
