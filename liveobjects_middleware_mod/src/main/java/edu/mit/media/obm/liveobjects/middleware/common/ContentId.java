@@ -1,7 +1,5 @@
 package edu.mit.media.obm.liveobjects.middleware.common;
 
-import java.io.File;
-
 /**
  * This immutable class defines how a generic content is identified.
  * The content id is identified by:
@@ -54,8 +52,8 @@ public final class ContentId {
 
     @Override
     public String toString() {
-        return liveObjectId + File.pathSeparator +
-                directoryPath + File.pathSeparator +
+        return liveObjectId + "/" +
+                directoryPath + "/" +
                 filename;
     }
 

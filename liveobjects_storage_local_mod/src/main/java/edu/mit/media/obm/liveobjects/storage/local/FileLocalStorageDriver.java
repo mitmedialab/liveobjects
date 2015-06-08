@@ -28,10 +28,30 @@ public class FileLocalStorageDriver implements LocalStorageDriver {
 
     @Override
     public void writeNewRawFileFromString(String filePath, String bodyString) throws IOException {
+        writeNewRawFileFromByteArray(filePath, bodyString.getBytes());
+    }
+
+    @Override
+    public void writeNewRawFileFromInputStream(String filePath, InputStream inputStream) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int nRead;
+        byte[] data = new byte[16384];
+
+        while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+
+        buffer.flush();
+        writeNewRawFileFromByteArray(filePath, buffer.toByteArray());
+
+    }
+
+    @Override
+    public void writeNewRawFileFromByteArray(String filePath, byte[] byteArray) throws IOException {
         String fullPath = getFullPath(filePath);
         File file = new File(fullPath);
         FileOutputStream outputStream = new FileOutputStream(file);
-        outputStream.write(bodyString.getBytes());
+        outputStream.write(byteArray);
         outputStream.close();
     }
 

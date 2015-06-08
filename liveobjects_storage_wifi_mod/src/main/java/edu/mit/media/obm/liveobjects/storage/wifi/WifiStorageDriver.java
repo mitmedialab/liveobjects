@@ -146,7 +146,17 @@ public class WifiStorageDriver implements RemoteStorageDriver {
 
     }
 
+    @Override
+    public void writeNewRawFileFromByteArray(String filePath, byte[] byteArray) throws IOException {
+        //TODO to implement
+        throw new UnsupportedOperationException();
+    }
 
+    @Override
+    public void writeNewRawFileFromInputStream(String filePath, InputStream inputStream) throws IOException {
+        //TODO to implement
+        throw new UnsupportedOperationException();
+    }
 
     @Override
     public InputStream getInputStreamFromFile(String filePath) throws IOException, RemoteException {

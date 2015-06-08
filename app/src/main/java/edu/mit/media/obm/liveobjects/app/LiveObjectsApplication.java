@@ -12,6 +12,7 @@ import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkDriver;
 import edu.mit.media.obm.liveobjects.middleware.storage.LocalStorageDriver;
 import edu.mit.media.obm.liveobjects.middleware.storage.RemoteStorageDriver;
+import edu.mit.media.obm.liveobjects.storage.local.FileLocalStorageDriver;
 import edu.mit.media.obm.liveobjects.storage.wifi.WifiStorageDriver;
 
 /**
@@ -38,10 +39,10 @@ public class LiveObjectsApplication extends Application {
     private MiddlewareInterface createMiddleware() {
         NetworkDriver networkDriver = new WifiDriver(this);
         NetworkController networkController = new NetworkBridge(networkDriver);
-        LocalStorageDriver localStorageDriver = null;
 
-        RemoteStorageDriver remoteStorageDriver = null;
-        remoteStorageDriver = new WifiStorageDriver(this);
+
+        LocalStorageDriver localStorageDriver = new FileLocalStorageDriver(this);
+        RemoteStorageDriver remoteStorageDriver = new WifiStorageDriver(this);
 
         ContentController contentController = new ContentBridge(this, localStorageDriver, remoteStorageDriver);
         return new LiveObjectsMiddleware(networkController, contentController);

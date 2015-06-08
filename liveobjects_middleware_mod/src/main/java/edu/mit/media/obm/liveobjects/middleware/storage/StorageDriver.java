@@ -25,6 +25,29 @@ public interface StorageDriver {
 
 
     /**
+     * Write a file using the content of the specified byte array.
+     * If the file exists, it is replaced.
+     * If the file does not exist, it is created.
+     *
+     * @param filePath  relative path of the file
+     * @param byteArray content of the file
+     * @throws java.io.IOException if there was an error while writing the file
+     */
+    void writeNewRawFileFromByteArray(String filePath, byte[] byteArray) throws IOException;
+
+    /**
+     * Write a file using the content of the specified byte array.
+     * If the file exists, it is replaced.
+     * If the file does not exist, it is created.
+     *
+     * @param filePath  relative path of the file
+     * @param inputStream content of the file
+     * @throws java.io.IOException if there was an error while writing the file
+     */
+    void writeNewRawFileFromInputStream(String filePath, InputStream inputStream) throws IOException;
+
+
+    /**
      * Create an input stream associated with the file. It will be used to read
      * the file.
      *

@@ -24,7 +24,7 @@ import edu.mit.media.obm.liveobjects.middleware.storage.RemoteStorageDriver;
 public class ContentBridge implements ContentController {
     private static final String LOG_TAG = ContentBridge.class.getSimpleName();
 
-    private LocalStorageDriver mLocalStorageDriver; // TODO to implement
+    private LocalStorageDriver mLocalStorageDriver;
     private RemoteStorageDriver mRemoteStorageDriver;
     private Context mContext;
 
@@ -62,9 +62,18 @@ public class ContentBridge implements ContentController {
 
     @Override
     public InputStream getInputStreamContent(ContentId contentId) throws IOException, RemoteException {
-        // TODO if the content is locally available return it, otherwise return the remote version
+        // if the content is locally available return it,
+        // otherwise return the remote version and save it locally
+        InputStream inputStream;
         String filePath = contentId.getRelativePath();
-        return mRemoteStorageDriver.getInputStreamFromFile(filePath);
+        if (mLocalStorageDriver.isFileExisting(filePath)) {
+            inputStream = mLocalStorageDriver.getInputStreamFromFile(filePath);
+        }
+        else {
+            inputStream = mRemoteStorageDriver.getInputStreamFromFile(filePath);
+            mLocalStorageDriver.writeNewRawFileFromInputStream(filePath, inputStream);
+        }
+        return inputStream;
     }
 
     @Override
