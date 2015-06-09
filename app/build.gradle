@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "edu.mit.media.obm.shair.liveobjects"
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 21
         renderscriptTargetApi 19
         renderscriptSupportModeEnabled true
@@ -23,7 +23,6 @@ android {
 }
 
 dependencies {
-
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:21.0.2'
     compile 'com.pkmmte.view:circularimageview:1.1'
@@ -32,4 +31,5 @@ dependencies {
     compile project(':liveobjects_middleware_mod')
     compile project(':liveobjects_network_wifi_mod')
     compile project(':liveobjects_storage_wifi_mod')
+    compile project(':liveobjects_storage_local_mod')
 }

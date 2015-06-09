@@ -52,7 +52,13 @@ public final class ContentId {
 
     @Override
     public String toString() {
-        return liveObjectId + directoryPath + filename;
+        return liveObjectId + "/" +
+                directoryPath + "/" +
+                filename;
+    }
+
+    public String getRelativePath() {
+        return this.toString();
     }
 
 }

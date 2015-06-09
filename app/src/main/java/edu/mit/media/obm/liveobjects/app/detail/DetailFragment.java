@@ -2,9 +2,7 @@ package edu.mit.media.obm.liveobjects.app.detail;
 
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -24,14 +22,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
 import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
-import edu.mit.media.obm.liveobjects.app.data.LObjContentProvider;
-import edu.mit.media.obm.liveobjects.app.data.LObjContract;
 import edu.mit.media.obm.liveobjects.app.media.MediaViewActivity;
 import edu.mit.media.obm.liveobjects.app.utils.Util;
 import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
@@ -125,18 +118,6 @@ public class DetailFragment extends Fragment {
         return mRootView;
     }
 
-    private void setUIContent() {
-        Cursor cursor = LObjContentProvider.getLocalLiveObject(mLiveObjectNameID, getActivity());
-        if (isLocallyAvailable(cursor)) {
-            Log.d(LOG_TAG, "getting content from local storage");
-            setLocalContent(cursor);
-        }
-        else {
-            Log.d(LOG_TAG, "getting content from live object");
-            setRemoteContent();
-        }
-    }
-
     private void initUIObjects(View rootView) {
         mIconView = (ImageView) rootView.findViewById(R.id.object_image_view);
         mObjectTitleTextView = (TextView) rootView.findViewById(R.id.object_title_textview);
@@ -145,6 +126,21 @@ public class DetailFragment extends Fragment {
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.detail_progress_bar);
         mDetailInfoLayout = (LinearLayout) rootView.findViewById(R.id.detail_info_layout);
     }
+
+    private void setUIContent() {
+//        Cursor cursor = LObjContentProvider.getLocalLiveObject(mLiveObjectNameID, getActivity());
+//        if (isLocallyAvailable(cursor)) {
+//            Log.d(LOG_TAG, "getting content from local storage");
+//            setLocalContent(cursor);
+//        }
+//        else {
+//            Log.d(LOG_TAG, "getting content from live object");
+//            setRemoteContent();
+//        }
+        setRemoteContent();
+    }
+
+
 
     private void setUIListeners() {
         mIconView.setOnClickListener(
@@ -162,67 +158,48 @@ public class DetailFragment extends Fragment {
         );
     }
 
-    private boolean isLocallyAvailable(Cursor cursor){
-        return cursor.getCount() > 0 ;
-    }
+//    private boolean isLocallyAvailable(Cursor cursor){
+//        return cursor.getCount() > 0 ;
+//    }
+//
+//    private void setLocalContent(Cursor cursor) {
+//        cursor.moveToFirst();
+//        setLocalTitle(cursor);
+//        setLocalBackgroundImage(cursor);
+//        mProgressBar.setVisibility(View.GONE);
+//        mDetailInfoLayout.setVisibility(View.VISIBLE);
+//    }
 
-    private void setLocalContent(Cursor cursor) {
-        cursor.moveToFirst();
-        setLocalTitle(cursor);
-        setLocalBackgroundImage(cursor);
-        mProgressBar.setVisibility(View.GONE);
-        mDetailInfoLayout.setVisibility(View.VISIBLE);
-    }
+//    private void setLocalTitle(Cursor cursor){
+//
+//        String title = cursor.getString(cursor.
+//                getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE));
+//        String group = cursor.getString(cursor.
+//                getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_GROUP));
+//        String description = cursor.getString(cursor.
+//                getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_DESCRIPTION));
+//
+//        mObjectTitleTextView.setText(title);
+//        mObjectGroupTextView.setText(group);
+//        mObjectDescriptionTextView.setText(description);
+//    }
+//
+//    private void setLocalBackgroundImage(Cursor cursor) {
+//        String imagePath = cursor.getString(cursor.
+//                getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH));
+//        try {
+//            File file = new File(imagePath);
+//            FileInputStream inputStream = new FileInputStream(file);
+//            Bitmap bitmap = Util.getBitmap(inputStream);
+//            setBackgroundImage(bitmap);
+//            inputStream.close();
+//
+//        } catch (Exception e) {
+//            Log.e(LOG_TAG, "error opening file: " + imagePath, e);
+//        }
+//    }
 
-    private void setLocalTitle(Cursor cursor){
-        Log.d(LOG_TAG, "cursor " + cursor);
-        String title = cursor.getString(cursor.
-                getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE));
-        String group = cursor.getString(cursor.
-                getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_GROUP));
-        String description = cursor.getString(cursor.
-                getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_DESCRIPTION));
 
-        mObjectTitleTextView.setText(title);
-        mObjectGroupTextView.setText(group);
-        mObjectDescriptionTextView.setText(description);
-    }
-
-    private void setLocalBackgroundImage(Cursor cursor) {
-        String imagePath = cursor.getString(cursor.
-                getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH));
-        try {
-            File file = new File(imagePath);
-            FileInputStream inputStream = new FileInputStream(file);
-            Bitmap bitmap = Util.getBitmap(inputStream);
-            setBackgroundImage(bitmap);
-            inputStream.close();
-
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "error opening file: " + imagePath, e);
-        }
-    }
-
-    private void setBackgroundImage(Bitmap bitmap){
-
-        Activity activity = DetailFragment.this.getActivity();
-
-        BitmapEditor bitmapEditor = new BitmapEditor(activity);
-        Bitmap croppedBitmap = bitmapEditor.cropToDisplayAspectRatio(bitmap, activity.getWindowManager());
-        bitmapEditor.blurBitmap(croppedBitmap, 2);
-
-        if (croppedBitmap != null ) {
-            final BitmapDrawable background = new BitmapDrawable(croppedBitmap);
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mRootView.setBackgroundDrawable(background);
-                }
-            });
-
-        }
-
-    }
 
     private void setRemoteContent() {
 
@@ -268,7 +245,6 @@ public class DetailFragment extends Fragment {
                     InputStream imageInputStream = mContentController.getInputStreamContent(imageContentId);
                     Bitmap bitmap = Util.getBitmap(imageInputStream);
                     setBackgroundImage(bitmap);
-                    saveData(mJSONConfig, imageFileName, bitmap);
                     imageInputStream.close();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -288,68 +264,89 @@ public class DetailFragment extends Fragment {
 
     }
 
-    private void saveData(JSONObject jsonObject, String imageFileName, Bitmap bitmap){
-        String directoryPath = createDirectory();
-        String imageFilePath = createFilePath(directoryPath, imageFileName);
 
+    private void setBackgroundImage(Bitmap bitmap){
 
-        try {
-            saveFile(imageFilePath, bitmap);
+        Activity activity = DetailFragment.this.getActivity();
 
-            mLiveObjectUri = saveToProvider(jsonObject, imageFilePath, directoryPath);
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "error saving data", e);
+        BitmapEditor bitmapEditor = new BitmapEditor(activity);
+        Bitmap croppedBitmap = bitmapEditor.cropToDisplayAspectRatio(bitmap, activity.getWindowManager());
+        bitmapEditor.blurBitmap(croppedBitmap, 2);
+
+        if (croppedBitmap != null ) {
+            final BitmapDrawable background = new BitmapDrawable(croppedBitmap);
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mRootView.setBackgroundDrawable(background);
+                }
+            });
+
         }
 
-
     }
+//    private void saveData(JSONObject jsonObject, String imageFileName, Bitmap bitmap){
+//        String directoryPath = createDirectory();
+//        String imageFilePath = createFilePath(directoryPath, imageFileName);
+//
+//
+//        try {
+//            saveFile(imageFilePath, bitmap);
+//
+//            mLiveObjectUri = saveToProvider(jsonObject, imageFilePath, directoryPath);
+//        } catch (IOException e) {
+//            Log.e(LOG_TAG, "error saving data", e);
+//        }
+//
+//
+//    }
 
-    private String createDirectory() {
-        File directory = new File(getActivity().getFilesDir(),mLiveObjectNameID);
-        boolean directoryCreated =directory.mkdir();
-        if (directoryCreated) {
-            Log.d(LOG_TAG, "directory created: " + directory);
-        }
-        return directory.getAbsolutePath();
-    }
+//    private String createDirectory() {
+//        File directory = new File(getActivity().getFilesDir(),mLiveObjectNameID);
+//        boolean directoryCreated =directory.mkdir();
+//        if (directoryCreated) {
+//            Log.d(LOG_TAG, "directory created: " + directory);
+//        }
+//        return directory.getAbsolutePath();
+//    }
 
     private String createFilePath(String directoryPath, String fileName) {
         return directoryPath + File.separator + fileName;
     }
 
-    private void saveFile(String path, Bitmap bitmap) throws IOException{
-
-        File imgFile = new File(path);
-        FileOutputStream outputStream = new FileOutputStream(imgFile);
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-        outputStream.close();
-    }
-
-    private Uri saveToProvider(JSONObject jsonObject, String imagePath, String directoryPath) {
-
-        String title = getFromJSON(jsonObject,"title", null);
-        String description = getFromJSON(jsonObject,"description", null);
-        String group = getFromJSON(jsonObject, "group", null);
-        String url = getFromJSON(jsonObject, "website", null);
-        String contentType = getFromJSON(jsonObject, "type", "media");
-        String mediaFileName = getFromJSON(jsonObject, "filename", "media");
-        String mediaFilePath = createFilePath(directoryPath, mediaFileName);
-
-
-        ContentValues values = new ContentValues();
-        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE,title);
-        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_DESCRIPTION,description);
-        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_GROUP,group);
-        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_URL, url);
-        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH, imagePath);
-        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_ID, mLiveObjectNameID);
-        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_TYPE, contentType);
-        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_FILEPATH, mediaFilePath);
-
-
-        Uri newLiveObjectUri = getActivity().getContentResolver().insert(LObjContract.LiveObjectEntry.CONTENT_URI, values);
-        return newLiveObjectUri;
-    }
+//    private void saveFile(String path, Bitmap bitmap) throws IOException{
+//
+//        File imgFile = new File(path);
+//        FileOutputStream outputStream = new FileOutputStream(imgFile);
+//        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+//        outputStream.close();
+//    }
+//
+//    private Uri saveToProvider(JSONObject jsonObject, String imagePath, String directoryPath) {
+//
+//        String title = getFromJSON(jsonObject,"title", null);
+//        String description = getFromJSON(jsonObject,"description", null);
+//        String group = getFromJSON(jsonObject, "group", null);
+//        String url = getFromJSON(jsonObject, "website", null);
+//        String contentType = getFromJSON(jsonObject, "type", "media");
+//        String mediaFileName = getFromJSON(jsonObject, "filename", "media");
+//        String mediaFilePath = createFilePath(directoryPath, mediaFileName);
+//
+//
+//        ContentValues values = new ContentValues();
+//        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE,title);
+//        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_DESCRIPTION,description);
+//        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_GROUP,group);
+//        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_URL, url);
+//        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH, imagePath);
+//        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_ID, mLiveObjectNameID);
+//        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_TYPE, contentType);
+//        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_FILEPATH, mediaFilePath);
+//
+//
+//        Uri newLiveObjectUri = getActivity().getContentResolver().insert(LObjContract.LiveObjectEntry.CONTENT_URI, values);
+//        return newLiveObjectUri;
+//    }
 
     private String getFromJSON(JSONObject jsonObject, String key, String intermediateObjectKey) {
         String value = "";

@@ -8,10 +8,10 @@ import android.util.Log;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -37,21 +37,27 @@ public class WifiStorageDriver implements RemoteStorageDriver {
     }
 
     @Override
-    public void writeNewRawFileFromString(final String fileName, final String folderName, final String bodyString) {
+    public void writeNewRawFileFromString(String filePath, String bodyString) {
+
+        String fileName = getFileNameFromPath(filePath);
+        String folderName = getFolderNameFromPath(filePath);
+        String[] params = {folderName, fileName, bodyString};
 
         new AsyncTask<String, Void, Void>(){
             @Override
             protected Void doInBackground(String... params) {
-                String foldername = params[0];
+                String folderName = params[0];
+                String fileName = params[1];
+                String bodyString = params[2];
                 try {
-                    setUploadDirectory(foldername);
+                    setUploadDirectory(folderName);
                     writeNewFileFromString(fileName, bodyString);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 return null;
             }
-        }.execute(folderName);
+        }.execute(params);
 
     }
 
@@ -67,10 +73,6 @@ public class WifiStorageDriver implements RemoteStorageDriver {
         urlCon.connect();
         Log.d(LOG_TAG, "connecting to path " + path);
 
-//        Log.d(LOG_TAG, "status: " + urlCon.getResponseCode() + "response: " + urlCon.getResponseMessage());
-//        if(urlCon.getResponseCode() == HttpURLConnection.HTTP_OK) {
-//            Log.d(LOG_TAG, "status: " + urlCon.getResponseCode() + "response: " + urlCon.getResponseMessage());
-//        }
         //wait request to be completed
         urlCon.getResponseCode();
 
@@ -84,10 +86,10 @@ public class WifiStorageDriver implements RemoteStorageDriver {
         int month = (calendar.get(Calendar.MONTH) + 1) << 5;
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         int hours = calendar.get(Calendar.HOUR_OF_DAY) << 11;
-        int minites = calendar.get(Calendar.MINUTE) << 5;
+        int minutes = calendar.get(Calendar.MINUTE) << 5;
         int seconds = calendar.get(Calendar.SECOND) / 2;
         String rtnStr = "0x" +  Integer.toHexString(year + month + day)
-                + Integer.toHexString(hours + minites + seconds);
+                + Integer.toHexString(hours + minutes + seconds);
         return rtnStr;
     }
 
@@ -145,17 +147,22 @@ public class WifiStorageDriver implements RemoteStorageDriver {
     }
 
     @Override
-    public void writeNewRawFileFromStream(String fileName, OutputStream stream) throws IOException {
-        // TODO
+    public void writeNewRawFileFromByteArray(String filePath, byte[] byteArray) throws IOException {
+        //TODO to implement
         throw new UnsupportedOperationException();
-
     }
 
     @Override
-    public InputStream getInputStreamFromFile(String fileName, String folder) throws IOException, RemoteException {
+    public void writeNewRawFileFromInputStream(String filePath, InputStream inputStream) throws IOException {
+        //TODO to implement
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public InputStream getInputStreamFromFile(String filePath) throws IOException, RemoteException {
         String basePath = WifiStorageConfig.getBasePath(mContext);
-        String path = basePath + folder + "/" + fileName;
-        Log.v(getClass().getSimpleName(), "base_path = " + basePath + ", fileName = " + fileName);
+        String path = basePath + filePath;
+        Log.v(getClass().getSimpleName(), "base_path = " + basePath + ", filePath = " + filePath);
         Log.d(LOG_TAG, "PATH = " + path);
         URL url = new URL(path);
         URLConnection urlCon = url.openConnection();
@@ -165,8 +172,8 @@ public class WifiStorageDriver implements RemoteStorageDriver {
     }
 
     @Override
-    public byte[] getByteArrayFromFile(String filename) throws IOException, RemoteException {
-        InputStream inputStream = getInputStreamFromFile(filename, "DCIM");
+    public byte[] getByteArrayFromFile(String filePath) throws IOException, RemoteException {
+        InputStream inputStream = getInputStreamFromFile(filePath);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         byte[] byteChunk = new byte[1024];
         int bytesRead = 0;
@@ -178,22 +185,14 @@ public class WifiStorageDriver implements RemoteStorageDriver {
     }
 
     @Override
-    public int getNumberOfFiles() {
-        //TODO
-        throw  new UnsupportedOperationException();
-
-
-    }
-
-    @Override
     public boolean isFileExisting(String filename) {
         //TODO
         throw  new UnsupportedOperationException();
     }
 
     @Override
-    public List<String> getFileNamesOfADirectory(String directoryName) {
-        String dir = directoryName;
+    public List<String> getFileNamesOfADirectory(String directoryPath) {
+        String dir = directoryPath;
         List<String> fileNames = new ArrayList<>();
         try {
             String basePath = WifiStorageConfig.getBasePath(mContext);
@@ -218,7 +217,9 @@ public class WifiStorageDriver implements RemoteStorageDriver {
     }
 
     @Override
-    public int getFileSize(String fileName, String folder) throws IOException, RemoteException {
+    public int getFileSize(String filePath) throws IOException, RemoteException {
+        String folder = getFolderNameFromPath(filePath);
+        String fileName = getFileNameFromPath(filePath);
         String basePath = WifiStorageConfig.getBasePath(mContext);
         String requestUrl = basePath + "command.cgi?op=100&DIR=/" + folder;
         Log.d(LOG_TAG, "requestUrl = " + requestUrl);
@@ -272,4 +273,16 @@ public class WifiStorageDriver implements RemoteStorageDriver {
         }
         return result;
     }
+
+    private String getFileNameFromPath(String filePath) {
+        File f = new File(filePath);
+        return f.getName();
+    }
+
+    private String getFolderNameFromPath(String filePath) {
+        File f = new File(filePath);
+        return f.getParent();
+    }
+
+
 }

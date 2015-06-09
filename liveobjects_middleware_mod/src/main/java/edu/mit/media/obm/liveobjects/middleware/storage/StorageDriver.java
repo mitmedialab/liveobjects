@@ -4,7 +4,6 @@ import android.os.RemoteException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -12,78 +11,83 @@ import java.util.List;
  */
 public interface StorageDriver {
 
-    /**
-     * Write a file using the content of the specified stream. If the file
-     * exists, it is replaced. If the file does not exist, it is created.
-     *
-     * @param fileName Name of the file
-     * @param stream   Stream to be put into the file
-     * @throws java.io.IOException if there was an error while writing the file
-     */
-    void writeNewRawFileFromStream(String fileName, OutputStream stream) throws IOException;
 
     /**
      * Write a file using the content of the specified string.
      * If the file exists, it is replaced.
      * If the file does not exist, it is created.
      *
-     * @param fileName   name of the file
-     * @param folderName name of the folder to be put into the file
+     * @param filePath  relative path of the file
      * @param bodyString text to be contained in the file
      * @throws java.io.IOException if there was an error while writing the file
      */
-    void writeNewRawFileFromString(String fileName, String folderName, String bodyString) throws IOException;
+    void writeNewRawFileFromString(String filePath, String bodyString) throws IOException;
+
+
+    /**
+     * Write a file using the content of the specified byte array.
+     * If the file exists, it is replaced.
+     * If the file does not exist, it is created.
+     *
+     * @param filePath  relative path of the file
+     * @param byteArray content of the file
+     * @throws java.io.IOException if there was an error while writing the file
+     */
+    void writeNewRawFileFromByteArray(String filePath, byte[] byteArray) throws IOException;
+
+    /**
+     * Write a file using the content of the specified byte array.
+     * If the file exists, it is replaced.
+     * If the file does not exist, it is created.
+     *
+     * @param filePath  relative path of the file
+     * @param inputStream content of the file
+     * @throws java.io.IOException if there was an error while writing the file
+     */
+    void writeNewRawFileFromInputStream(String filePath, InputStream inputStream) throws IOException;
 
 
     /**
      * Create an input stream associated with the file. It will be used to read
      * the file.
      *
-     * @param fileName Name of the file
-     * @param folder   the folder where file is stored
+     * @param filePath relative path of the file
      * @return InputStream associated with the file
      * @throws IOException if the file was not found or the stream cannot be created
      */
-    InputStream getInputStreamFromFile(String fileName, String folder) throws IOException, RemoteException;
+    InputStream getInputStreamFromFile(String filePath) throws IOException, RemoteException;
 
 
     /**
      * Get the file in the form of byte array
      *
-     * @param filename
+     * @param filePath relative path of the file
      * @return the byte array representation of the file
      * @throws IOException
      */
-    byte[] getByteArrayFromFile(String filename) throws IOException, RemoteException;
+    byte[] getByteArrayFromFile(String filePath) throws IOException, RemoteException;
+
 
     /**
-     * Get the number of files in a certain storage
-     *
-     * @return the number of files
-     */
-    int getNumberOfFiles();
-
-    /**
-     * Checks if the file with @param filename exists in the storage
+     * Checks if the file with @param filePath exists in the storage
      *
      * @return true if the file exists
      */
-    boolean isFileExisting(String filename);
+    boolean isFileExisting(String filePath);
 
     /**
      * Get the list of file names of a given directory
      *
-     * @param directoryName
+     * @param directoryPath relative path of the directory
      * @return the list of file names
      */
-    List<String> getFileNamesOfADirectory(String directoryName);
+    List<String> getFileNamesOfADirectory(String directoryPath);
 
     /**
-     * @param fileName Name of the file
-     * @param folder   the folder where file is stored
-     * @return the size of the specified size
+     * @param filePath relative path of the file
+     * @return the size of the specified file
      * @throws IOException
      * @throws RemoteException
      */
-    int getFileSize(String fileName, String folder) throws IOException, RemoteException;
+    int getFileSize(String filePath) throws IOException, RemoteException;
 }
