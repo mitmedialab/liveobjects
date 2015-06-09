@@ -67,11 +67,15 @@ public class ContentBridge implements ContentController {
         InputStream inputStream;
         String filePath = contentId.getRelativePath();
         if (mLocalStorageDriver.isFileExisting(filePath)) {
+            Log.d(LOG_TAG, "accessing content locally, filePath: " + filePath);
             inputStream = mLocalStorageDriver.getInputStreamFromFile(filePath);
         }
         else {
+            Log.d(LOG_TAG, "accessing content remotely, filePath: " + filePath);
             inputStream = mRemoteStorageDriver.getInputStreamFromFile(filePath);
             mLocalStorageDriver.writeNewRawFileFromInputStream(filePath, inputStream);
+            inputStream.close();
+            inputStream = mLocalStorageDriver.getInputStreamFromFile(filePath);
         }
         return inputStream;
     }

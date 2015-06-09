@@ -2,6 +2,7 @@ package edu.mit.media.obm.liveobjects.storage.local;
 
 import android.content.Context;
 import android.os.RemoteException;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -19,6 +20,7 @@ import edu.mit.media.obm.liveobjects.middleware.storage.LocalStorageDriver;
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public class FileLocalStorageDriver implements LocalStorageDriver {
+    private static final String LOG_TAG = FileLocalStorageDriver.class.getSimpleName();
 
     private Context mContext;
 
@@ -33,6 +35,7 @@ public class FileLocalStorageDriver implements LocalStorageDriver {
 
     @Override
     public void writeNewRawFileFromInputStream(String filePath, InputStream inputStream) throws IOException {
+
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int nRead;
         byte[] data = new byte[16384];
@@ -50,9 +53,20 @@ public class FileLocalStorageDriver implements LocalStorageDriver {
     public void writeNewRawFileFromByteArray(String filePath, byte[] byteArray) throws IOException {
         String fullPath = getFullPath(filePath);
         File file = new File(fullPath);
+        createDirectory(file.getParent());
         FileOutputStream outputStream = new FileOutputStream(file);
         outputStream.write(byteArray);
         outputStream.close();
+    }
+
+    private void createDirectory(String directoryPath) {
+
+        File directory = new File(directoryPath);
+        boolean directoryCreated =directory.mkdirs();
+        if (directoryCreated) {
+            Log.d(LOG_TAG, "directory created: " + directory);
+        }
+
     }
 
     @Override
@@ -95,7 +109,7 @@ public class FileLocalStorageDriver implements LocalStorageDriver {
     }
 
     private String getFullPath(String relativePath) {
-        return mContext.getFilesDir().getAbsolutePath() + File.pathSeparator + relativePath;
+        return mContext.getFilesDir().getAbsolutePath() + "/" + relativePath;
 
     }
 }
