@@ -47,7 +47,7 @@ public class DetailFragment extends Fragment {
     //TODO make the directory name parametrizable
     private static final String DIRECTORY_NAME = "DCIM";
 
-git     private static final String ARG_LIVE_OBJ_NAME_ID = "live_obj_name_id";
+    private static final String ARG_LIVE_OBJ_NAME_ID = "live_obj_name_id";
 
     private String mLiveObjectNameID;
 
