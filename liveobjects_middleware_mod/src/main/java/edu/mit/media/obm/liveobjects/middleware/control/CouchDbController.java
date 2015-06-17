@@ -59,8 +59,9 @@ public class CouchDbController implements DbController{
 
     @Override
     public Map<String, Object> getProperties(String liveObjectId) {
+
         Document liveObjDocument = mDatabase.getDocument(liveObjectId);
-        return liveObjDocument.getProperties();
+        return liveObjDocument.getUserProperties();
     }
 
     @Override
@@ -93,8 +94,17 @@ public class CouchDbController implements DbController{
         try {
             liveObjDocument.putProperties(properties);
         } catch (CouchbaseLiteException e) {
-            Log.e(LOG_TAG, "not able to save the live object in the db ", e);
+            Log.e(LOG_TAG, "not able to save the live object in the db, properties = " + properties, e);
+
         }
+
+    }
+
+    @Override
+    public boolean isLiveObjectEmpty(String liveObjectId) {
+        Document liveObjDocument = mDatabase.getDocument(liveObjectId);
+        return liveObjDocument.getCurrentRevision() == null;
+        // TODO review
 
     }
 }

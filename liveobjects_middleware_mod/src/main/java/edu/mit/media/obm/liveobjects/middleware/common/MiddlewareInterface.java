@@ -1,6 +1,7 @@
 package edu.mit.media.obm.liveobjects.middleware.common;
 
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
+import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
 
 /**
@@ -12,6 +13,8 @@ public interface MiddlewareInterface {
     NetworkController getNetworkController();
 
     ContentController getContentController();
+
+    DbController getDbController();
 
 
 }

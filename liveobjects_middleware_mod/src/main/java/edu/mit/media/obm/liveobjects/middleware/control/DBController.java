@@ -12,7 +12,8 @@ public interface DbController extends Controller {
     /**
      * Get the properties of a live object
      * @param liveObjectId live object id
-     * @return a map with all properties
+     * @return a map with all properties.
+     * @return an empty map if the live object is empty.
      */
     Map<String, Object> getProperties(String liveObjectId);
 
@@ -40,6 +41,11 @@ public interface DbController extends Controller {
      */
     void putLiveObject(String liveObjectId, Map<String, Object> properties);
 
-
+    /**
+     * Is the live object does not contains property
+     * @param liveObjectId
+     * @return
+     */
+    boolean isLiveObjectEmpty(String liveObjectId);
 
 }

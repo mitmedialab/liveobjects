@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,8 +20,9 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.app.media.MediaViewActivity;
@@ -32,6 +32,8 @@ import edu.mit.media.obm.liveobjects.app.widget.ZoomInOutAnimation;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
+import edu.mit.media.obm.liveobjects.middleware.control.DbController;
+import edu.mit.media.obm.liveobjects.middleware.util.JSONUtil;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 
@@ -45,7 +47,7 @@ public class DetailFragment extends Fragment {
     //TODO make the directory name parametrizable
     private static final String DIRECTORY_NAME = "DCIM";
 
-    private static final String ARG_LIVE_OBJ_NAME_ID = "live_obj_name_id";
+git     private static final String ARG_LIVE_OBJ_NAME_ID = "live_obj_name_id";
 
     private String mLiveObjectNameID;
 
@@ -59,20 +61,18 @@ public class DetailFragment extends Fragment {
 
     private MiddlewareInterface mMiddleware;
     private ContentController mContentController;
-
-    private JSONObject mJSONConfig;
-
-
+    private DbController mDbController;
 
     private OnErrorListener mOnErrorListener = null;
 
-    private AsyncTask<String,Void,Void> mSetRemoteContentTask = null;
+    private AsyncTask<String,Void,InputStream> mSetBackgroundImageTask = null;
+    private AsyncTask<String,Void,JSONObject> mSetPropertiesTask = null;
 
 
-    private Uri mLiveObjectUri;
+
 
     public interface OnErrorListener {
-        abstract public void onError(Exception exception);
+        void onError(Exception exception);
     }
 
     /**
@@ -109,10 +109,13 @@ public class DetailFragment extends Fragment {
 
         mMiddleware = ((LiveObjectsApplication)getActivity().getApplication()).getMiddleware();
         mContentController = mMiddleware.getContentController();
+        mDbController = mMiddleware.getDbController();
 
         initUIObjects(mRootView);
 
-        setUIContent();
+        Map<String, Object> liveObjectProperties = getLiveObjectProperties(mLiveObjectNameID);
+
+        setUIContent(liveObjectProperties);
         setUIListeners();
 
         return mRootView;
@@ -127,20 +130,153 @@ public class DetailFragment extends Fragment {
         mDetailInfoLayout = (LinearLayout) rootView.findViewById(R.id.detail_info_layout);
     }
 
-    private void setUIContent() {
-//        Cursor cursor = LObjContentProvider.getLocalLiveObject(mLiveObjectNameID, getActivity());
-//        if (isLocallyAvailable(cursor)) {
-//            Log.d(LOG_TAG, "getting content from local storage");
-//            setLocalContent(cursor);
-//        }
-//        else {
-//            Log.d(LOG_TAG, "getting content from live object");
-//            setRemoteContent();
-//        }
-        setRemoteContent();
+    private Map<String, Object> getLiveObjectProperties(String liveObjectId) {
+        Map<String, Object> properties = null;
+
+        if (mDbController.isLiveObjectEmpty(liveObjectId)) {
+            // live object empty, fill it with properties
+            properties = fetchProperties(liveObjectId);
+            storeProperties(liveObjectId, properties);
+        }
+        else {
+            properties = mDbController.getProperties(liveObjectId);
+        }
+
+        return properties;
+    }
+
+    private Map<String, Object> fetchProperties(final String liveObjectId) {
+        String mediaConfigFileName = getActivity().getResources().getString(R.string.media_config_filename) + ".jso";
+
+        mSetPropertiesTask =
+                new AsyncTask<String, Void, JSONObject>() {
+                    @Override
+                    protected JSONObject doInBackground(String... params) {
+                        String configFileName = params[0];
+
+                        InputStream inputStream = null;
+                        try {
+                            if (mContentController == null) {
+                                Log.e(LOG_TAG, "mContentController Null");
+                            }
+
+                            ContentId configFileContentId = new ContentId(liveObjectId, DIRECTORY_NAME, configFileName);
+                            // retrieve JSON Object
+                            inputStream = mContentController.getInputStreamContent(configFileContentId);
+                            if (inputStream == null) {
+                                Log.e(LOG_TAG, "inputstream Null");
+                            }
+
+                            JSONObject jsonConfig = Util.getJSON(inputStream);
+                            inputStream.close();
+                            return jsonConfig;
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            mOnErrorListener.onError(e);
+                        }
+                        return null;
+                    }
+                }.execute(mediaConfigFileName);
+
+
+        Map<String, Object> properties = null;
+        try {
+            JSONObject jsonProperties = mSetPropertiesTask.get();
+             properties = convertJSONToMap(jsonProperties);
+        }
+        catch (Exception e) {
+            mOnErrorListener.onError(e);
+        }
+
+        return properties;
+
     }
 
 
+
+    private Map<String, Object> convertJSONToMap(JSONObject json) {
+        try {
+            return JSONUtil.jsonToMap(json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private void storeProperties(String liveObjectId, Map<String, Object> properties) {
+        mDbController.putLiveObject(liveObjectId, properties);
+    }
+
+
+
+
+    private void setUIContent(Map<String, Object> liveObjectProperties) {
+        Log.d(LOG_TAG, liveObjectProperties.toString());
+
+        String title = (String) ((Map<String, Object> )liveObjectProperties.get("media-config")).get("title");
+        String group = (String) ((Map<String, Object> )liveObjectProperties.get("media-config")).get("group");
+        String description = (String) ((Map<String, Object> )liveObjectProperties.get("media-config")).get("description");
+
+        mObjectTitleTextView.setText(title);
+        mObjectGroupTextView.setText(group);
+        mObjectDescriptionTextView.setText(description);
+
+        String imageFileName = (String) ((Map<String, Object> )liveObjectProperties.get("media-config")).get("icon");
+
+        setBackgroundImage(imageFileName);
+
+    }
+
+    private void setBackgroundImage(String imageFileName) {
+        mSetBackgroundImageTask = new AsyncTask<String, Void, InputStream>() {
+            @Override
+            protected InputStream doInBackground(String... params) {
+                String imageFileName = params[0];
+                ContentId imageContentId = new ContentId(mLiveObjectNameID, DIRECTORY_NAME, imageFileName);
+
+                try {
+                    InputStream imageInputStream = mContentController.getInputStreamContent(imageContentId);
+                    return imageInputStream;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    mOnErrorListener.onError(e);
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(InputStream imageInputStream) {
+
+                try {
+                    Bitmap bitmap = Util.getBitmap(imageInputStream);
+                    setBackgroundImage(bitmap);
+                    imageInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    mOnErrorListener.onError(e);
+                }
+            }
+        }.execute(imageFileName);
+
+    }
+
+    private void setBackgroundImage(Bitmap bitmap){
+
+        Activity activity = DetailFragment.this.getActivity();
+
+        BitmapEditor bitmapEditor = new BitmapEditor(activity);
+
+        if (bitmap != null ) {
+            Bitmap croppedBitmap = bitmapEditor.cropToDisplayAspectRatio(bitmap, activity.getWindowManager());
+            bitmapEditor.blurBitmap(croppedBitmap, 2);
+            BitmapDrawable background = new BitmapDrawable(croppedBitmap);
+            mRootView.setBackgroundDrawable(background);
+
+        }
+        mProgressBar.setVisibility(View.GONE);
+        mDetailInfoLayout.setVisibility(View.VISIBLE);
+    }
 
     private void setUIListeners() {
         mIconView.setOnClickListener(
@@ -158,217 +294,11 @@ public class DetailFragment extends Fragment {
         );
     }
 
-//    private boolean isLocallyAvailable(Cursor cursor){
-//        return cursor.getCount() > 0 ;
-//    }
-//
-//    private void setLocalContent(Cursor cursor) {
-//        cursor.moveToFirst();
-//        setLocalTitle(cursor);
-//        setLocalBackgroundImage(cursor);
-//        mProgressBar.setVisibility(View.GONE);
-//        mDetailInfoLayout.setVisibility(View.VISIBLE);
-//    }
-
-//    private void setLocalTitle(Cursor cursor){
-//
-//        String title = cursor.getString(cursor.
-//                getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE));
-//        String group = cursor.getString(cursor.
-//                getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_GROUP));
-//        String description = cursor.getString(cursor.
-//                getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_DESCRIPTION));
-//
-//        mObjectTitleTextView.setText(title);
-//        mObjectGroupTextView.setText(group);
-//        mObjectDescriptionTextView.setText(description);
-//    }
-//
-//    private void setLocalBackgroundImage(Cursor cursor) {
-//        String imagePath = cursor.getString(cursor.
-//                getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH));
-//        try {
-//            File file = new File(imagePath);
-//            FileInputStream inputStream = new FileInputStream(file);
-//            Bitmap bitmap = Util.getBitmap(inputStream);
-//            setBackgroundImage(bitmap);
-//            inputStream.close();
-//
-//        } catch (Exception e) {
-//            Log.e(LOG_TAG, "error opening file: " + imagePath, e);
-//        }
-//    }
-
-
-
-    private void setRemoteContent() {
-
-        final String mediaConfigFileName = getActivity().getResources().getString(R.string.media_config_filename) + ".jso";
-
-        mSetRemoteContentTask = new AsyncTask<String, Void, Void>() {
-            @Override
-            protected Void doInBackground(String... params) {
-                String configFileName = params[0];
-
-                InputStream inputStream = null;
-                try {
-                    if (mContentController == null) {
-                        Log.e(LOG_TAG, "mContentController Null");
-                    }
-
-                    ContentId configFileContentId = new ContentId(mLiveObjectNameID, DIRECTORY_NAME, configFileName );
-                    // retrieve JSON Object
-                    inputStream = mContentController.getInputStreamContent(configFileContentId);
-                    if (inputStream == null) {
-                        Log.e(LOG_TAG, "inputstream Null");
-
-                    }
-
-                    mJSONConfig = Util.getJSON(inputStream);
-                    inputStream.close();
-
-                    //set UI elements
-                    String imageFileName = getFromJSON(mJSONConfig, "icon", null);
-                    final String title = getFromJSON(mJSONConfig, "title", null);
-                    final String group = getFromJSON(mJSONConfig, "group", null);
-                    final String description = getFromJSON(mJSONConfig, "description", null);
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mObjectTitleTextView.setText(title);
-                            mObjectGroupTextView.setText(group);
-                            mObjectDescriptionTextView.setText(description);
-                        }
-                    });
-
-                    ContentId imageContentId = new ContentId(mLiveObjectNameID, DIRECTORY_NAME, imageFileName);
-                    InputStream imageInputStream = mContentController.getInputStreamContent(imageContentId);
-                    Bitmap bitmap = Util.getBitmap(imageInputStream);
-                    setBackgroundImage(bitmap);
-                    imageInputStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    mOnErrorListener.onError(e);
-                }
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                mProgressBar.setVisibility(View.GONE);
-                mDetailInfoLayout.setVisibility(View.VISIBLE);
-            }
-        }.execute(mediaConfigFileName);
-
-    }
-
-
-    private void setBackgroundImage(Bitmap bitmap){
-
-        Activity activity = DetailFragment.this.getActivity();
-
-        BitmapEditor bitmapEditor = new BitmapEditor(activity);
-        Bitmap croppedBitmap = bitmapEditor.cropToDisplayAspectRatio(bitmap, activity.getWindowManager());
-        bitmapEditor.blurBitmap(croppedBitmap, 2);
-
-        if (croppedBitmap != null ) {
-            final BitmapDrawable background = new BitmapDrawable(croppedBitmap);
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mRootView.setBackgroundDrawable(background);
-                }
-            });
-
-        }
-
-    }
-//    private void saveData(JSONObject jsonObject, String imageFileName, Bitmap bitmap){
-//        String directoryPath = createDirectory();
-//        String imageFilePath = createFilePath(directoryPath, imageFileName);
-//
-//
-//        try {
-//            saveFile(imageFilePath, bitmap);
-//
-//            mLiveObjectUri = saveToProvider(jsonObject, imageFilePath, directoryPath);
-//        } catch (IOException e) {
-//            Log.e(LOG_TAG, "error saving data", e);
-//        }
-//
-//
-//    }
-
-//    private String createDirectory() {
-//        File directory = new File(getActivity().getFilesDir(),mLiveObjectNameID);
-//        boolean directoryCreated =directory.mkdir();
-//        if (directoryCreated) {
-//            Log.d(LOG_TAG, "directory created: " + directory);
-//        }
-//        return directory.getAbsolutePath();
-//    }
-
-    private String createFilePath(String directoryPath, String fileName) {
-        return directoryPath + File.separator + fileName;
-    }
-
-//    private void saveFile(String path, Bitmap bitmap) throws IOException{
-//
-//        File imgFile = new File(path);
-//        FileOutputStream outputStream = new FileOutputStream(imgFile);
-//        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-//        outputStream.close();
-//    }
-//
-//    private Uri saveToProvider(JSONObject jsonObject, String imagePath, String directoryPath) {
-//
-//        String title = getFromJSON(jsonObject,"title", null);
-//        String description = getFromJSON(jsonObject,"description", null);
-//        String group = getFromJSON(jsonObject, "group", null);
-//        String url = getFromJSON(jsonObject, "website", null);
-//        String contentType = getFromJSON(jsonObject, "type", "media");
-//        String mediaFileName = getFromJSON(jsonObject, "filename", "media");
-//        String mediaFilePath = createFilePath(directoryPath, mediaFileName);
-//
-//
-//        ContentValues values = new ContentValues();
-//        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE,title);
-//        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_DESCRIPTION,description);
-//        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_GROUP,group);
-//        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_URL, url);
-//        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH, imagePath);
-//        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_ID, mLiveObjectNameID);
-//        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_TYPE, contentType);
-//        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_FILEPATH, mediaFilePath);
-//
-//
-//        Uri newLiveObjectUri = getActivity().getContentResolver().insert(LObjContract.LiveObjectEntry.CONTENT_URI, values);
-//        return newLiveObjectUri;
-//    }
-
-    private String getFromJSON(JSONObject jsonObject, String key, String intermediateObjectKey) {
-        String value = "";
-        try {
-            if (intermediateObjectKey == null) {
-                value = jsonObject.getJSONObject("media-config").getString(key);
-            }
-            else {
-                value = jsonObject.getJSONObject("media-config").getJSONObject(intermediateObjectKey).getString(key);
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return value;
-
-    }
-
     protected void cancelAsyncTasks() {
 
-        if (mSetRemoteContentTask != null) {
-            mSetRemoteContentTask.cancel(true);
+        if (mSetBackgroundImageTask != null) {
+            mSetPropertiesTask.cancel(true);
+            mSetBackgroundImageTask.cancel(true);
         }
 
     }

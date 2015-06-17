@@ -7,6 +7,8 @@ import edu.mit.media.obm.liveobjects.middleware.common.LiveObjectsMiddleware;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentBridge;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
+import edu.mit.media.obm.liveobjects.middleware.control.CouchDbController;
+import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkBridge;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkDriver;
@@ -45,7 +47,10 @@ public class LiveObjectsApplication extends Application {
         RemoteStorageDriver remoteStorageDriver = new WifiStorageDriver(this);
 
         ContentController contentController = new ContentBridge(this, localStorageDriver, remoteStorageDriver);
-        return new LiveObjectsMiddleware(networkController, contentController);
+
+        DbController dbController = new CouchDbController(this);
+
+        return new LiveObjectsMiddleware(networkController, contentController, dbController);
     }
 
 }

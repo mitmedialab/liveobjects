@@ -185,7 +185,8 @@ public class MainFragment extends Fragment {
         remoteStorageDriver = new WifiStorageDriver(getActivity());
 
         ContentController contentController = new ContentBridge(getActivity(), localStorageDriver, remoteStorageDriver);
-        return new LiveObjectsMiddleware(networkController, contentController);
+        // for this application we set DbController at null since we do not need it.
+        return new LiveObjectsMiddleware(networkController, contentController, null);
     }
 
 
