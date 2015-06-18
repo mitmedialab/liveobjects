@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.app.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.app.media.MediaViewActivity;
 import edu.mit.media.obm.liveobjects.app.utils.Util;
 import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
@@ -214,16 +215,17 @@ public class DetailFragment extends Fragment {
     private void setUIContent(Map<String, Object> liveObjectProperties) {
         Log.d(LOG_TAG, liveObjectProperties.toString());
 
-        String title = (String) ((Map<String, Object> )liveObjectProperties.get("media-config")).get("title");
-        String group = (String) ((Map<String, Object> )liveObjectProperties.get("media-config")).get("group");
-        String description = (String) ((Map<String, Object> )liveObjectProperties.get("media-config")).get("description");
+        MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
+
+        String title = provider.getProjectTitle();
+        String group = provider.getProjectGroup();
+        String description = provider.getProjectDescription();
 
         mObjectTitleTextView.setText(title);
         mObjectGroupTextView.setText(group);
         mObjectDescriptionTextView.setText(description);
 
-        String imageFileName = (String) ((Map<String, Object> )liveObjectProperties.get("media-config")).get("icon");
-
+        String imageFileName = provider.getIconFileName();
         setBackgroundImage(imageFileName);
 
     }
