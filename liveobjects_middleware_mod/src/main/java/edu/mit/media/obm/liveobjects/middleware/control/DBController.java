@@ -27,6 +27,15 @@ public interface DbController extends Controller {
     Object getProperty(String liveObjectId, String key);
 
     /**
+     * Put a single property of a live object.
+     * @param liveObjectId the live object id
+     * @param key the key of the property
+     * @param value the value of the property
+     *
+     */
+    void putProperty(String liveObjectId, String key, Object value);
+
+    /**
      * Get all liveObjectsIds
      * @return the list of all live object ids available in the db
      */

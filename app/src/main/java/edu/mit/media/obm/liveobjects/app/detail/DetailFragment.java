@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.app.data.MLProjectContract;
 import edu.mit.media.obm.liveobjects.app.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.app.media.MediaViewActivity;
 import edu.mit.media.obm.liveobjects.app.utils.Util;
@@ -177,7 +178,11 @@ public class DetailFragment extends Fragment {
         Map<String, Object> properties = null;
         try {
             JSONObject jsonProperties = mSetPropertiesTask.get();
-             properties = JSONUtil.jsonToMap(jsonProperties);
+            properties = JSONUtil.jsonToMap(jsonProperties);
+
+            // add the isFavorite property, which is not present in the remote live-object,
+            // and initialize it to false
+            properties.put(MLProjectContract.IS_FAVORITE, MLProjectContract.IS_FAVORITE_FALSE);
         }
         catch (Exception e) {
             mOnErrorListener.onError(e);
@@ -188,6 +193,7 @@ public class DetailFragment extends Fragment {
     }
 
     private void storeProperties(String liveObjectId, Map<String, Object> properties) {
+        Log.d(LOG_TAG, "storing properties " + properties);
         mDbController.putLiveObject(liveObjectId, properties);
     }
 

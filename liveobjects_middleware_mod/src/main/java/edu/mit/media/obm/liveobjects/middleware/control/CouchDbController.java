@@ -10,10 +10,12 @@ import com.couchbase.lite.Manager;
 import com.couchbase.lite.Query;
 import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
+import com.couchbase.lite.UnsavedRevision;
 import com.couchbase.lite.android.AndroidContext;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -94,10 +96,33 @@ public class CouchDbController implements DbController{
         try {
             liveObjDocument.putProperties(properties);
         } catch (CouchbaseLiteException e) {
-            Log.e(LOG_TAG, "not able to save the live object in the db, properties = " + properties, e);
-
+            updateProperties(liveObjectId, properties);
         }
+    }
 
+    private void updateProperties(String liveObjectId, final Map<String, Object> newProperties) {
+        Document liveObjDocument = mDatabase.getDocument(liveObjectId);
+        try {
+            liveObjDocument.update(new Document.DocumentUpdater() {
+                @Override
+                public boolean update(UnsavedRevision newRevision) {
+                    Map<String, Object> properties = newRevision.getProperties();
+                    properties.putAll(newProperties);
+                    newRevision.setUserProperties(properties);
+                    return true;
+                }
+            });
+        } catch (CouchbaseLiteException e) {
+            Log.e(LOG_TAG, "not able to update the live object in the db ", e);
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void putProperty(String liveObjectId, String key, Object value) {
+       Map<String, Object> properties = new HashMap<>();
+        properties.put(key, value);
+        putLiveObject(liveObjectId, properties);
     }
 
     @Override
@@ -107,4 +132,6 @@ public class CouchDbController implements DbController{
         // TODO review
 
     }
+
+
 }

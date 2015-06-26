@@ -49,4 +49,8 @@ public class MLProjectPropertyProvider extends LiveObjectPropertyProvider {
         return (String) media().get(MLProjectContract.MEDIA_FILENAME);
     }
 
+    public boolean isFavorite() {
+        return ((Integer) getLiveObjectProperties().get(MLProjectContract.IS_FAVORITE)).intValue() == 1;
+    }
+
 }

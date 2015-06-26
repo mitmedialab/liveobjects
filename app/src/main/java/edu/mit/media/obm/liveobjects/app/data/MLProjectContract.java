@@ -20,6 +20,12 @@ public class MLProjectContract implements LiveObjectContract {
     public static final String MEDIA_TYPE = "type";
     public static final String MEDIA_FILENAME = "filename";
 
+    public static final String IS_FAVORITE = "favourite";
+    // constant values for the IS_FAVORITE property
+    public static final Integer IS_FAVORITE_FALSE = 0;
+    public static final Integer IS_FAVORITE_TRUE = 1;
+
+
 
 
 }
