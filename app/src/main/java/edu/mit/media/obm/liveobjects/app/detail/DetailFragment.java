@@ -17,7 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -157,18 +156,12 @@ public class DetailFragment extends Fragment {
 
                         InputStream inputStream = null;
                         try {
-                            if (mContentController == null) {
-                                Log.e(LOG_TAG, "mContentController Null");
-                            }
 
                             ContentId configFileContentId = new ContentId(liveObjectId, DIRECTORY_NAME, configFileName);
                             // retrieve JSON Object
                             inputStream = mContentController.getInputStreamContent(configFileContentId);
-                            if (inputStream == null) {
-                                Log.e(LOG_TAG, "inputstream Null");
-                            }
 
-                            JSONObject jsonConfig = Util.getJSON(inputStream);
+                            JSONObject jsonConfig = JSONUtil.getJSONFromInputStream(inputStream);
                             inputStream.close();
                             return jsonConfig;
 
@@ -184,7 +177,7 @@ public class DetailFragment extends Fragment {
         Map<String, Object> properties = null;
         try {
             JSONObject jsonProperties = mSetPropertiesTask.get();
-             properties = convertJSONToMap(jsonProperties);
+             properties = JSONUtil.jsonToMap(jsonProperties);
         }
         catch (Exception e) {
             mOnErrorListener.onError(e);
@@ -192,17 +185,6 @@ public class DetailFragment extends Fragment {
 
         return properties;
 
-    }
-
-
-
-    private Map<String, Object> convertJSONToMap(JSONObject json) {
-        try {
-            return JSONUtil.jsonToMap(json);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     private void storeProperties(String liveObjectId, Map<String, Object> properties) {

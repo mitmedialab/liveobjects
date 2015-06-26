@@ -4,6 +4,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -24,7 +28,7 @@ public class JSONUtil {
         return retMap;
     }
 
-    public static Map<String, Object> toMap(JSONObject object) throws JSONException {
+    private static Map<String, Object> toMap(JSONObject object) throws JSONException {
         Map<String, Object> map = new HashMap<String, Object>();
 
         Iterator<String> keysItr = object.keys();
@@ -44,7 +48,7 @@ public class JSONUtil {
         return map;
     }
 
-    public static List<Object> toList(JSONArray array) throws JSONException {
+    private static List<Object> toList(JSONArray array) throws JSONException {
         List<Object> list = new ArrayList<Object>();
         for(int i = 0; i < array.length(); i++) {
             Object value = array.get(i);
@@ -58,5 +62,24 @@ public class JSONUtil {
             list.add(value);
         }
         return list;
+    }
+
+    public static JSONObject getJSONFromInputStream(InputStream inputStream) throws IOException {
+        StringBuilder builder = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            builder.append(line);
+        }
+        String jsonConfigString = builder.toString();
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(jsonConfigString);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsonObject;
     }
 }
