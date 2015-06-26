@@ -108,7 +108,8 @@ public class FileLocalStorageDriver implements LocalStorageDriver {
         throw new UnsupportedOperationException();
     }
 
-    private String getFullPath(String relativePath) {
+    @Override
+    public String getFullPath(String relativePath) {
         return mContext.getFilesDir().getAbsolutePath() + "/" + relativePath;
 
     }

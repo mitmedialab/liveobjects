@@ -46,5 +46,12 @@ public interface ContentController extends Controller{
      */
     int getContentSize(ContentId contentId) throws IOException, RemoteException;
 
+    /**
+     * Returns the url (local or remote) of a given content
+     * @param contentId the id of the content
+     * @return the url of the file
+     */
+    String getFileUrl(ContentId contentId) throws IOException, RemoteException;
+
 
 }

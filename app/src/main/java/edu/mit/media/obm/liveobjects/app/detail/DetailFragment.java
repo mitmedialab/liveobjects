@@ -281,8 +281,10 @@ public class DetailFragment extends Fragment {
     protected void cancelAsyncTasks() {
 
         if (mSetBackgroundImageTask != null) {
-            mSetPropertiesTask.cancel(true);
             mSetBackgroundImageTask.cancel(true);
+        }
+        if (mSetPropertiesTask != null) {
+            mSetPropertiesTask.cancel(true);
         }
 
     }

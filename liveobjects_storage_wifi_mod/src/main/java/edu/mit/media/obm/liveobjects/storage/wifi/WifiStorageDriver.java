@@ -285,4 +285,18 @@ public class WifiStorageDriver implements RemoteStorageDriver {
     }
 
 
+    @Override
+    public String getFullPath(String filePath) {
+        String fullPath = null;
+        try {
+            fullPath = WifiStorageConfig.getBasePath(mContext) + "/" + filePath;
+            Log.d(LOG_TAG, "remote full path: " + fullPath);
+
+        } catch (RemoteException e) {
+            Log.e(LOG_TAG, "error get Base Path", e);
+            e.printStackTrace();
+        }
+
+        return fullPath;
+    }
 }

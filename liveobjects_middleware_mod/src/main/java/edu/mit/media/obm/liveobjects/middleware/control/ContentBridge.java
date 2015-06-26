@@ -95,4 +95,36 @@ public class ContentBridge implements ContentController {
         return mRemoteStorageDriver.getFileSize(filePath);
     }
 
+    @Override
+    public String getFileUrl(final ContentId contentId) throws IOException, RemoteException {
+        String filePath = contentId.getRelativePath();
+        if (mLocalStorageDriver.isFileExisting(filePath)) {
+            Log.d(LOG_TAG, "returning local file path, filePath: " + filePath);
+            return mLocalStorageDriver.getFullPath(filePath);
+        }
+        else {
+            Log.d(LOG_TAG, "returning remote file path, filePath: " + filePath);
+            new AsyncTask<String, Void, Void>() {
+                @Override
+                protected Void doInBackground(String... params) {
+                    String filePath = params[0];
+                    // get remotely
+                    InputStream inputStream = null;
+                    try {
+                        inputStream = getInputStreamContent(contentId);
+                        // save it locally
+                        mLocalStorageDriver.writeNewRawFileFromInputStream(filePath, inputStream);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+            }.execute(filePath);
+
+            return mRemoteStorageDriver.getFullPath(filePath);
+
+        }
+    }
 }
