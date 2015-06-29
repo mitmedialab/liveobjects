@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="edu.mit.media.obm.liveobjects.app.main.SavedLiveObjectsFragment">
+    tools:context="edu.mit.media.obm.liveobjects.app.history.SavedLiveObjectsFragment">
 
     <ListView
         android:layout_width="match_parent"

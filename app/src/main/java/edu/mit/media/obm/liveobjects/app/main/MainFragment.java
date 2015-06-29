@@ -27,6 +27,7 @@ import java.util.List;
 
 import edu.mit.media.obm.liveobjects.app.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.app.history.SavedLiveObjectsActivity;
 import edu.mit.media.obm.liveobjects.app.profile.ProfileActivity;
 import edu.mit.media.obm.liveobjects.app.widget.AnimationArrayAdapter;
 import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
