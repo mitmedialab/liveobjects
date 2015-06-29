@@ -1,4 +1,4 @@
-package edu.mit.media.obm.liveobjects.app.main;
+package edu.mit.media.obm.liveobjects.app.history;
 
 import android.content.ContentUris;
 import android.content.Intent;
