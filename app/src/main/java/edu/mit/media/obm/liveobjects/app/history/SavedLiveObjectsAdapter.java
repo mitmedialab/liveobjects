@@ -78,32 +78,6 @@ public class SavedLiveObjectsAdapter extends ArrayAdapter<Map<String,Object>> {
             Log.e(LOG_TAG, "error setting icon image", e);
         }
 
-//
-//        new AsyncTask<Void, Void, InputStream>() {
-//            @Override
-//            protected InputStream doInBackground(Void... params) {
-//                try {
-//                    InputStream imageInputStream = mContentController.getInputStreamContent(iconContentId);
-//                    return imageInputStream;
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//                return null;
-//            }
-//
-//            @Override
-//            protected void onPostExecute(InputStream fileInputStream) {
-//                Bitmap bitmap = null;
-//                try {
-//                    bitmap = Util.getBitmap(fileInputStream);
-//                    BitmapEditor bitmapEditor = new BitmapEditor(mContext);
-//                    Bitmap croppedBitmap = bitmapEditor.cropToAspectRatio(bitmap, 1.0F);
-//                    iconView.setImageBitmap(croppedBitmap);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }.execute();
 
         return rowView;
 
