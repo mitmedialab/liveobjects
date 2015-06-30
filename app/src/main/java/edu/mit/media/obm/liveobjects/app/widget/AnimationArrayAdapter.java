@@ -1,11 +1,11 @@
 package edu.mit.media.obm.liveobjects.app.widget;
 
+import android.app.Activity;
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,19 +14,27 @@ import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.mit.media.obm.liveobjects.app.data.LObjContentProvider;
-import edu.mit.media.obm.liveobjects.app.data.LObjContract;
+import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.app.data.MLProjectPropertyProvider;
+import edu.mit.media.obm.liveobjects.app.utils.Util;
+import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
+import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
+import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
+import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
  * Created by arata on 3/13/15.
  */
 public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
+    private static final String LOG_TAG = AnimationArrayAdapter.class.getSimpleName();
+
     private Context mContext;
     private LayoutInflater mInflater;
     private int mResource;
@@ -37,6 +45,13 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
     private List<String> mOldObjects;
 
     private RandomColorGenerator mRandomColorGenerator;
+
+    private MiddlewareInterface mMiddleware;
+    private DbController mDbController;
+    private ContentController mContentController;
+
+    //TODO to incorporate in the live object
+    private static final String ICON_FOLDER = "DCIM";
 
     private class Holder {
         public RoundedImageView mImageView;
@@ -51,6 +66,10 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
         mResource = resource;
         mTextViewResourceId = textViewResourceId;
         mObjects = objects;
+
+        mMiddleware = ((LiveObjectsApplication) ((Activity) mContext).getApplication()).getMiddleware();
+        mContentController = mMiddleware.getContentController();
+        mDbController = mMiddleware.getDbController();
 
         mNewObjects = new ArrayList<>();
         for (T object : mObjects) {
@@ -113,24 +132,31 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
     }
 
     private void setImage(RoundedImageView imageView, String liveObjectName) {
-        Cursor cursor = LObjContentProvider.getLocalLiveObject(liveObjectName, mContext);
+        if (!mDbController.isLiveObjectEmpty(liveObjectName)) {
+            Map<String, Object> liveObjectProperties = mDbController.getProperties(liveObjectName);
+            MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
+            String iconFileName = provider.getIconFileName();
+            ContentId iconContentId = new ContentId(liveObjectName,ICON_FOLDER, iconFileName);
+            try {
+                InputStream imageInputStream = mContentController.getInputStreamContent(iconContentId);
+                Bitmap bitmap = Util.getBitmap(imageInputStream);
+                ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
+                bitmap = bitmap.createScaledBitmap(bitmap, layoutParams.width, layoutParams.height, true);
 
-        if (cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            String imageFilePath = cursor.getString(cursor.getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH));
+                BitmapEditor bitmapEditor = new BitmapEditor(mContext);
+                bitmapEditor.blurBitmap(bitmap, 2);
+                BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
 
-            Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath);
-            ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
-            bitmap = bitmap.createScaledBitmap(bitmap, layoutParams.width, layoutParams.height, true);
+                imageView.setImageDrawable(bitmapDrawable);
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "error setting icon image", e);
+            }
 
-            BitmapEditor bitmapEditor = new BitmapEditor(mContext);
-            bitmapEditor.blurBitmap(bitmap, 2);
-            BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
-
-            imageView.setImageDrawable(bitmapDrawable);
-        } else {
+        }
+        else {
             imageView.setFillColor(mRandomColorGenerator.generateColor(liveObjectName));
         }
+
     }
 
     private void addLineBreakIfNecessary(final TextView textView) {

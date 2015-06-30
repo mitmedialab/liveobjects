@@ -13,7 +13,7 @@ import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
  *
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
-public interface ContentController {
+public interface ContentController extends Controller{
 
     /**
      * Put a String content in a live object
@@ -45,4 +45,13 @@ public interface ContentController {
      * @return the size of the specified file
      */
     int getContentSize(ContentId contentId) throws IOException, RemoteException;
+
+    /**
+     * Returns the url (local or remote) of a given content
+     * @param contentId the id of the content
+     * @return the url of the file
+     */
+    String getFileUrl(ContentId contentId) throws IOException, RemoteException;
+
+
 }

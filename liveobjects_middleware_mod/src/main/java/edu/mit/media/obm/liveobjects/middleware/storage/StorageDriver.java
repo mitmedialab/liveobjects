@@ -90,4 +90,11 @@ public interface StorageDriver {
      * @throws RemoteException
      */
     int getFileSize(String filePath) throws IOException, RemoteException;
+
+    /**
+     * Returns the full path of a given file
+     * @param filePath
+     * @return the full path
+     */
+    String getFullPath(String filePath);
 }

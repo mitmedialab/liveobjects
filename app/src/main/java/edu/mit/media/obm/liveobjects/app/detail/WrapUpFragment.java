@@ -3,11 +3,9 @@ package edu.mit.media.obm.liveobjects.app.detail;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
@@ -26,20 +24,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Calendar;
+import java.util.Map;
 
 import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
-import edu.mit.media.obm.liveobjects.app.data.LObjContentProvider;
-import edu.mit.media.obm.liveobjects.app.data.LObjContract;
+import edu.mit.media.obm.liveobjects.app.data.MLProjectContract;
+import edu.mit.media.obm.liveobjects.app.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.app.data.ProfilePreference;
 import edu.mit.media.obm.liveobjects.app.media.MediaViewActivity;
 import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
+import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
+import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
@@ -49,11 +46,17 @@ import edu.mit.media.obm.shair.liveobjects.R;
  */
 public class WrapUpFragment extends Fragment {
     private static final String LOG_TAG = WrapUpFragment.class.getSimpleName();
-    // TODO make the comment directory name parametrizable
+    // TODO make the comment directory names parametrizable
     private static final String COMMENT_DIRECTORY_NAME = "COMMENTS";
+    private static final String MEDIA_DIR_NAME = "DCIM";
 
     private static final String ARG_LIVE_OBJ_NAME_ID = "live_obj_name_id";
     private static final String ARG_SHOW_ADD_COMMENT = "show_add_comment";
+
+
+    private DbController mDbController;
+    private ContentController mContentController;
+
 
     private String mLiveObjNameId;
     private boolean mShowAddComment;
@@ -94,6 +97,12 @@ public class WrapUpFragment extends Fragment {
             mLiveObjNameId = getArguments().getString(ARG_LIVE_OBJ_NAME_ID);
             mShowAddComment = getArguments().getBoolean(ARG_SHOW_ADD_COMMENT);
         }
+
+        MiddlewareInterface middleware = ((LiveObjectsApplication)getActivity().getApplication()).getMiddleware();
+        mDbController = middleware.getDbController();
+        mContentController = middleware.getContentController();
+
+
     }
 
     @Override
@@ -135,12 +144,11 @@ public class WrapUpFragment extends Fragment {
         alert.setPositiveButton("Send", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                LiveObjectsApplication application = (LiveObjectsApplication) getActivity().getApplication();
-                ContentController contentController = application.getMiddleware().getContentController();
+
                 String commentText = makeComment(input.getText().toString());
                 Log.d(LOG_TAG, "ADDING COMMENT: " + input.getText().toString());
                 ContentId commentContentId = new ContentId(mLiveObjNameId, COMMENT_DIRECTORY_NAME, generateCommentFileName());
-                contentController.putStringContent(commentContentId, commentText);
+                mContentController.putStringContent(commentContentId, commentText);
 
                 input.setText("");
                 Toast.makeText(getActivity(), "Uploaded a comment", Toast.LENGTH_SHORT).show();
@@ -177,51 +185,24 @@ public class WrapUpFragment extends Fragment {
 
 
     private void setUIContent(View rootView) {
-        Cursor cursor = LObjContentProvider.getLocalLiveObject(mLiveObjNameId, getActivity());
-        cursor.moveToFirst();
-        setImage(rootView, cursor);
-        setText(mTitleTextView, cursor, LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE);
-        setText(mGroupTextView, cursor, LObjContract.LiveObjectEntry.COLUMN_NAME_GROUP);
-        setText(mDescriptionTextView, cursor, LObjContract.LiveObjectEntry.COLUMN_NAME_DESCRIPTION);
+
+        Map<String, Object> properties = mDbController.getProperties(mLiveObjNameId);
+        MLProjectPropertyProvider propertyProvider = new MLProjectPropertyProvider(properties);
+        mTitleTextView.setText(propertyProvider.getProjectTitle());
+        mGroupTextView.setText(propertyProvider.getProjectGroup());
+        mDescriptionTextView.setText(propertyProvider.getProjectDescription());
+        setImage(rootView, propertyProvider.getIconFileName());
+
         mAddCommentLayout.setEnabled(mShowAddComment);
-        mIsFavorite = setFavoriteButtonState(mFavouriteButtonLayout, cursor);
-
-        mReplayButtonLayout.setEnabled(isContentStoredLocally(cursor));
+        mIsFavorite = setFavoriteButtonState(mFavouriteButtonLayout, propertyProvider);
+        mReplayButtonLayout.setEnabled(true);
+// TODO ?
+//        mReplayButtonLayout.setEnabled(isContentStoredLocally());
     }
 
-    private boolean isContentStoredLocally(Cursor cursor) {
-        String filePath = cursor.getString(
-                cursor.getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_FILEPATH));
-        String sizeFilePath = filePath + ".size";
-        File sizeFile = new File(sizeFilePath);
 
-        Log.v(LOG_TAG, "111");
-        if (!sizeFile.exists()) {
-            Log.v(LOG_TAG, "222");
-            return false;
-        }
-
-        Log.v(LOG_TAG, "333");
-        int recordedFileSize;
-
-        try {
-            Log.v(LOG_TAG, "444");
-            BufferedReader reader = new BufferedReader(new FileReader(sizeFile));
-            recordedFileSize = Integer.valueOf(reader.readLine());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        File contentFile = new File(filePath);
-
-        return (recordedFileSize == contentFile.length());
-    }
-
-    private boolean setFavoriteButtonState(LinearLayout favouriteButtonLayout, Cursor cursor) {
-        boolean isFavorite = cursor.getInt(
-                cursor.getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_FAVORITE))
-                == LObjContract.LiveObjectEntry.FAVORITE_TRUE;
+    private boolean setFavoriteButtonState(LinearLayout favouriteButtonLayout, MLProjectPropertyProvider propertyProvider) {
+        boolean isFavorite = propertyProvider.isFavorite();
 
         updateFavoriteUI(favouriteButtonLayout, isFavorite);
 
@@ -279,43 +260,34 @@ public class WrapUpFragment extends Fragment {
 
     private void updateFavorite(String liveObjNameId, boolean isFavorite) {
 
-        String selection = LObjContract.LiveObjectEntry.COLUMN_NAME_ID + "= ?";
-        String[] selectionArgs ={liveObjNameId};
-
-        int isFavoriteInInt = isFavorite ?
-                LObjContract.LiveObjectEntry.FAVORITE_TRUE :
-                LObjContract.LiveObjectEntry.FAVORITE_FALSE;
-        ContentValues values = new ContentValues();
-        values.put(LObjContract.LiveObjectEntry.COLUMN_NAME_FAVORITE, isFavoriteInInt);
-
-        getActivity().getContentResolver().update(LObjContract.LiveObjectEntry.CONTENT_URI,
-                values,
-                selection,
-                selectionArgs);
+        int isFavoriteInInt = isFavorite ? MLProjectContract.IS_FAVORITE_TRUE :
+                MLProjectContract.IS_FAVORITE_FALSE ;
+        Log.d(LOG_TAG, "update property is favorite to: " + isFavoriteInInt);
+        mDbController.putProperty(liveObjNameId, MLProjectContract.IS_FAVORITE, new Integer(isFavoriteInInt));
+        Log.d(LOG_TAG , "now favorite is: " + mDbController.getProperty(liveObjNameId, MLProjectContract.IS_FAVORITE));
     }
 
-    private void setImage(View view, Cursor cursor){
+    private void setImage(View view, String fileName){
         Activity activity = getActivity();
 
-        String imageFilePath = cursor.getString(cursor.getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH));
-        Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath);
+        ContentId imageContentId = new ContentId(mLiveObjNameId, MEDIA_DIR_NAME, fileName);
 
-        BitmapEditor bitmapEditor = new BitmapEditor(activity);
-        Bitmap croppedBitmap = bitmapEditor.cropToDisplayAspectRatio(bitmap, activity.getWindowManager());
-        bitmapEditor.blurBitmap(croppedBitmap, 2);
+        try {
+            Bitmap bitmap = BitmapFactory.decodeFile(mContentController.getFileUrl(imageContentId));
 
-        if (croppedBitmap != null ) {
-            BitmapDrawable background = new BitmapDrawable(croppedBitmap);
-            view.setBackgroundDrawable(background);
+            BitmapEditor bitmapEditor = new BitmapEditor(activity);
+            Bitmap croppedBitmap = bitmapEditor.cropToDisplayAspectRatio(bitmap, activity.getWindowManager());
+            bitmapEditor.blurBitmap(croppedBitmap, 2);
+
+            if (croppedBitmap != null) {
+                BitmapDrawable background = new BitmapDrawable(croppedBitmap);
+                view.setBackgroundDrawable(background);
+            }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "error setting image", e);
         }
     }
 
-    private void setText(TextView textView, Cursor cursor, String columnName) {
-        String value = cursor.getString(
-                cursor.getColumnIndex(columnName));
-        textView.setText(value);
-
-    }
 
 
 
