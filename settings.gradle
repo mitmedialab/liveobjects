@@ -1,1 +1,1 @@
-include ':app', ':liveobjects_middleware_mod', ':liveobjects_network_wifi_mod', ':liveobjects_storage_wifi_mod', ':commentsviewer', ':liveobjects_storage_local_mod'
+include ':app', ':liveobjects_middleware_mod', ':liveobjects_network_wifi_mod', ':liveobjects_storage_wifi_mod', ':commentsviewer', ':liveobjects_storage_local_mod', ':sketchbook'
