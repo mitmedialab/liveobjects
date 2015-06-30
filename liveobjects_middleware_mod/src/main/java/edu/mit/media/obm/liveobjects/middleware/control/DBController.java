@@ -40,6 +40,14 @@ public interface DbController extends Controller {
      * @return the list of all live object ids available in the db
      */
     List<String> getLiveObjectsIds();
+
+    /**
+     * Get the list of all live objects' properties
+     * @return the list of all live objects' properties
+     */
+    List<Map<String, Object>> getAllLiveObjectsProperties();
+
+
     //TODO adding views or query to filter live objects?
 
     /**

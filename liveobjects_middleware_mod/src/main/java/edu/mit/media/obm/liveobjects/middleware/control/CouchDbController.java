@@ -63,7 +63,7 @@ public class CouchDbController implements DbController{
     public Map<String, Object> getProperties(String liveObjectId) {
 
         Document liveObjDocument = mDatabase.getDocument(liveObjectId);
-        return liveObjDocument.getUserProperties();
+        return liveObjDocument.getProperties();
     }
 
     @Override
@@ -88,6 +88,25 @@ public class CouchDbController implements DbController{
         }
         return liveObjectsIds;
 
+    }
+
+    @Override
+    public List<Map<String, Object>> getAllLiveObjectsProperties() {
+        Query query = mDatabase.createAllDocumentsQuery();
+        List<Map<String, Object>> listOfLiveObjectsProperties = new ArrayList<>();
+        try {
+            QueryEnumerator result = query.run();
+            for (Iterator<QueryRow> it = result; it.hasNext(); ) {
+                QueryRow row = it.next();
+                listOfLiveObjectsProperties.add(getProperties(row.getDocumentId()));
+            }
+
+        } catch (CouchbaseLiteException e) {
+            e.printStackTrace();
+        }
+
+
+        return listOfLiveObjectsProperties;
     }
 
     @Override

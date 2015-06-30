@@ -11,6 +11,7 @@ import java.util.Map;
  */
 public abstract class LiveObjectPropertyProvider {
     private Map<String, Object> liveObjectProperties;
+    private static final String ID_KEY = "_id";
 
     public LiveObjectPropertyProvider(Map<String, Object> liveObjectProperties){
         this.liveObjectProperties = liveObjectProperties;
@@ -18,5 +19,9 @@ public abstract class LiveObjectPropertyProvider {
 
     public Map<String, Object> getLiveObjectProperties() {
         return liveObjectProperties;
+    }
+
+    public String getId() {
+        return (String)liveObjectProperties.get(ID_KEY);
     }
 }

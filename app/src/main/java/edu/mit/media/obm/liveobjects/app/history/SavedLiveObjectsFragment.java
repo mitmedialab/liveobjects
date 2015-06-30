@@ -1,38 +1,29 @@
 package edu.mit.media.obm.liveobjects.app.history;
 
-import android.content.ContentUris;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-import edu.mit.media.obm.liveobjects.app.data.LObjContract;
+import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.app.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.app.detail.WrapUpActivity;
-import edu.mit.media.obm.liveobjects.app.utils.Util;
-import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
+import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
+import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
-public class SavedLiveObjectsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class SavedLiveObjectsFragment extends Fragment {
     private static String LOG_TAG = SavedLiveObjectsFragment.class.getSimpleName();
 
     /**
@@ -42,7 +33,12 @@ public class SavedLiveObjectsFragment extends Fragment implements LoaderManager.
     private static final String ARG_TAB_ID = "tab_id";
     private int mTabId;
     private ListView mListView;
-    private SimpleCursorAdapter mAdapter;
+    private SavedLiveObjectsAdapter mAdapter;
+
+    private MiddlewareInterface mMiddleware;
+    private DbController mDbController;
+
+    private List<Map<String,Object>> mLiveObjectsPropertiesList;
 
 
     /**
@@ -67,6 +63,8 @@ public class SavedLiveObjectsFragment extends Fragment implements LoaderManager.
         if (getArguments() != null) {
             mTabId = getArguments().getInt(ARG_TAB_ID);
         }
+        mMiddleware = ((LiveObjectsApplication) getActivity().getApplication()).getMiddleware();
+        mDbController = mMiddleware.getDbController();
     }
 
     @Override
@@ -75,24 +73,26 @@ public class SavedLiveObjectsFragment extends Fragment implements LoaderManager.
         View rootView = inflater.inflate(R.layout.fragment_saved_live_objects, container, false);
         mListView = (ListView) rootView.findViewById(R.id.saved_liveobjs_listview);
         initListListener(mListView);
-        fillData();
+
 
 
         return rootView;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        fillData();
+    }
 
     private void initListListener(ListView l) {
         l.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Uri liveObjectUri = ContentUris.withAppendedId(LObjContract.LiveObjectEntry.CONTENT_URI, id);
-                Cursor cursor = getActivity().getContentResolver().query(liveObjectUri,
-                        LObjContract.LiveObjectEntry.ALL_COLUMNS, null, null, null);
-                cursor.moveToFirst();
-                String liveObjNameId = cursor.getString(
-                        cursor.getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_ID));
+                MLProjectPropertyProvider provider = new MLProjectPropertyProvider(mLiveObjectsPropertiesList.get(position));
+                String liveObjNameId = provider.getId();
+
                 Intent intent = new Intent(getActivity(), WrapUpActivity.class);
                 intent.putExtra(WrapUpActivity.EXTRA_SHOW_ADD_COMMENT, false);
                 intent.putExtra(WrapUpActivity.EXTRA_LIVE_OBJ_NAME_ID, liveObjNameId);
@@ -105,100 +105,28 @@ public class SavedLiveObjectsFragment extends Fragment implements LoaderManager.
 
     private void fillData() {
 
-        // Fields from the database (projection)
-        // Must include the _id column for the adapter to work
-        String[] from = new String[] { LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE,
-                LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH};
-        // Fields on the UI to which we map
-        int[] to = new int[] { R.id.row_item_title_textview, R.id.row_item_icon_imageview};
 
-        getLoaderManager().initLoader(0, null, this);
+        List<Map<String,Object>> allLiveObjects = mDbController.getAllLiveObjectsProperties();
+        mLiveObjectsPropertiesList = new ArrayList<>();
+        if (mTabId == SavedLiveObjectsActivity.FAVOURITE_TAB_ID) {
 
-        mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.saved_live_object_row, null, from,
-                to, 0);
-
-
-        mAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
-            @Override
-            public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-
-                if (view.getId() == R.id.row_item_icon_imageview) {
-                    String imageFilePath = cursor.getString(
-                            cursor.getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH)
-                    );
-                    File file = new File(imageFilePath);
-                    try {
-                        FileInputStream fileInputStream = new FileInputStream(file);
-                        Bitmap bitmap = Util.getBitmap(fileInputStream);
-                        ImageView iconView = (ImageView) view;
-
-                        BitmapEditor bitmapEditor = new BitmapEditor(getActivity());
-                        Bitmap croppedBitmap = bitmapEditor.cropToAspectRatio(bitmap, 1.0F);
-
-                        iconView.setImageBitmap(croppedBitmap);
-
-                    } catch (Exception e) {
-                        Log.e(LOG_TAG, "error opening icon file", e);
-                        return false;
-                    }
-                    return true;
-
+            for (Map<String,Object> liveObjectProperties : allLiveObjects) {
+                MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
+                if (provider.isFavorite()) {
+                    mLiveObjectsPropertiesList.add(liveObjectProperties);
                 }
-
-                else if (view.getId() == R.id.row_item_title_textview) {
-                    String title = cursor.getString(
-                            cursor.getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE)
-                    );
-                    ((TextView)view).setText(title);
-                    return true;
-
-                }
-
-                return false;
             }
-        });
+        }
+        else {
+            mLiveObjectsPropertiesList = allLiveObjects;
+        }
 
+        mAdapter = new SavedLiveObjectsAdapter(getActivity(), mLiveObjectsPropertiesList);
 
         mListView.setAdapter(mAdapter);
 
 
     }
 
-
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
-        String[] projection = {LObjContract.LiveObjectEntry._ID, LObjContract.LiveObjectEntry.COLUMN_NAME_TITLE, LObjContract.LiveObjectEntry.COLUMN_NAME_ICON_FILEPATH};
-        String selection = null;
-        String [] selectionArgs = null;
-
-        if (mTabId == SavedLiveObjectsActivity.FAVOURITE_TAB_ID) {
-            selection = LObjContract.LiveObjectEntry.COLUMN_NAME_FAVORITE + "= ?";
-            selectionArgs = new String[1];
-            selectionArgs[0] = "" + LObjContract.LiveObjectEntry.FAVORITE_TRUE;
-
-        }
-
-
-        CursorLoader cursorLoader = new CursorLoader(getActivity(),
-                LObjContract.LiveObjectEntry.CONTENT_URI, projection,
-                selection, selectionArgs, null);
-        return cursorLoader;
-    }
-
-
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.d(LOG_TAG, "receiving data " + data);
-        mAdapter.swapCursor(data);
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        mAdapter.swapCursor(null);
-    }
 
 }
