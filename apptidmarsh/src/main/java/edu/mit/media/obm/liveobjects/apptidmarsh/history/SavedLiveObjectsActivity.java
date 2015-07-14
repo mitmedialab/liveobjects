@@ -18,10 +18,10 @@ import android.widget.LinearLayout;
 
 import java.util.Locale;
 
-import edu.mit.media.obm.liveobjects.app.slidingtabs.SlidingTabLayout;
-import edu.mit.media.obm.liveobjects.app.utils.EmailFormatter;
-import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
-import edu.mit.media.obm.liveobjects.app.widget.MenuActions;
+import edu.mit.media.obm.liveobjects.apptidmarsh.slidingtabs.SlidingTabLayout;
+import edu.mit.media.obm.liveobjects.apptidmarsh.utils.EmailFormatter;
+import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
+import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 public class SavedLiveObjectsActivity extends ActionBarActivity implements ActionBar.TabListener{

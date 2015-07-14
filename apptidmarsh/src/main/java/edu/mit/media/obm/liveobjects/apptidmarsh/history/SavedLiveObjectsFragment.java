@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
-import edu.mit.media.obm.liveobjects.app.data.MLProjectPropertyProvider;
-import edu.mit.media.obm.liveobjects.app.detail.WrapUpActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
+import edu.mit.media.obm.liveobjects.apptidmarsh.detail.WrapUpActivity;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.shair.liveobjects.R;

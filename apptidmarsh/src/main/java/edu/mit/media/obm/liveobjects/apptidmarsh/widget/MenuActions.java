@@ -3,7 +3,7 @@ package edu.mit.media.obm.liveobjects.apptidmarsh.widget;
 import android.app.Activity;
 import android.content.Intent;
 
-import edu.mit.media.obm.liveobjects.app.main.MainActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainActivity;
 
 /**
  * Created by artimo14 on 3/22/15.

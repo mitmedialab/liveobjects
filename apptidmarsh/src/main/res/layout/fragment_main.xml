@@ -41,14 +41,6 @@
             android:background="@color/theme_pure_transparent_background">
 
             <Button
-                android:id="@+id/profileButton"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:textColor="@color/theme_text"
-                android:layout_alignParentLeft="true"
-                android:background="@drawable/bg_profile_button"/>
-
-            <Button
                 android:id="@+id/historyButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"

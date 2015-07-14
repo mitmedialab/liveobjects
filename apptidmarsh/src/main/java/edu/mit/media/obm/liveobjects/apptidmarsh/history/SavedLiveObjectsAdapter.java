@@ -15,10 +15,10 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
-import edu.mit.media.obm.liveobjects.app.data.MLProjectPropertyProvider;
-import edu.mit.media.obm.liveobjects.app.utils.Util;
-import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
+import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
+import edu.mit.media.obm.liveobjects.apptidmarsh.utils.Util;
+import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.shair.liveobjects.R;

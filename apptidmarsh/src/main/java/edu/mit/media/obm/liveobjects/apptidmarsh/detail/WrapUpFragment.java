@@ -27,12 +27,12 @@ import android.widget.Toast;
 import java.util.Calendar;
 import java.util.Map;
 
-import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
-import edu.mit.media.obm.liveobjects.app.data.MLProjectContract;
-import edu.mit.media.obm.liveobjects.app.data.MLProjectPropertyProvider;
-import edu.mit.media.obm.liveobjects.app.data.ProfilePreference;
-import edu.mit.media.obm.liveobjects.app.media.MediaViewActivity;
-import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
+import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
+import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
+import edu.mit.media.obm.liveobjects.apptidmarsh.data.ProfilePreference;
+import edu.mit.media.obm.liveobjects.apptidmarsh.media.MediaViewActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;

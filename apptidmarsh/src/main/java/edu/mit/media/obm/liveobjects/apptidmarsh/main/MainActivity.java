@@ -5,7 +5,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
 import edu.mit.media.obm.shair.liveobjects.R;
 
