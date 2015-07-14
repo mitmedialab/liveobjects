@@ -8,9 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/saved_liveobjs_listview"
-        android:listSelector="@drawable/bg_button">
-    </ListView>
-
+        android:listSelector="@drawable/bg_button"></ListView>
 
 
 </LinearLayout>

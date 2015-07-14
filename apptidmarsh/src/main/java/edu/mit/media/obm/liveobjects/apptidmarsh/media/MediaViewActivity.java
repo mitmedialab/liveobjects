@@ -63,7 +63,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
         setContentView(R.layout.activity_media_view);
 
 
-        mMiddleware = ((LiveObjectsApplication)getApplication()).getMiddleware();
+        mMiddleware = ((LiveObjectsApplication) getApplication()).getMiddleware();
         mContentController = mMiddleware.getContentController();
         mDbController = mMiddleware.getDbController();
 
@@ -107,7 +107,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 //    }
 
     private void initContent(String liveObjectId) {
-        Map<String, Object>  properties = mDbController.getProperties(liveObjectId);
+        Map<String, Object> properties = mDbController.getProperties(liveObjectId);
         MLProjectPropertyProvider propertyProvider = new MLProjectPropertyProvider(properties);
         mContentType = propertyProvider.getMediaType();
         mFileName = propertyProvider.getMediaFileName();
@@ -118,18 +118,16 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
         String fileUrl = null;
         try {
             fileUrl = mContentController.getFileUrl(mediaContentId);
-            if (mContentType.equals(getResources().getString(R.string.content_type_video)) ){
+            if (mContentType.equals(getResources().getString(R.string.content_type_video))) {
 
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.activity_media_container, VideoViewFragment.newInstance(fileUrl))
                         .commit();
-            }
-            else if (mContentType.equals(getResources().getString(R.string.content_type_audio)) ){
+            } else if (mContentType.equals(getResources().getString(R.string.content_type_audio))) {
                 getSupportFragmentManager().beginTransaction().
                         add(R.id.activity_media_container, VideoViewFragment.newInstance(fileUrl)).
                         commit();
-            }
-            else if (mContentType.equals(getResources().getString(R.string.content_type_gallery)) ){
+            } else if (mContentType.equals(getResources().getString(R.string.content_type_gallery))) {
                 //TODO launch gallery
             }
 
@@ -155,13 +153,12 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
     }
 
 
-
     private String getFileUrl(String filename) {
         String fileUrl;
 
         try {
             //TODO to change: the app cannot directly talk with the driver
-            fileUrl = WifiStorageConfig.getMediaFolderPath(this) + "/" + filename ;
+            fileUrl = WifiStorageConfig.getMediaFolderPath(this) + "/" + filename;
         } catch (RemoteException e) {
             e.printStackTrace();
             throw new RuntimeException("An unrecoverable error was thrown");

@@ -6,9 +6,10 @@ import android.media.SoundPool;
 /**
  * This interface is a wrapper of the different callbacks from the MediaPlayer
  * that an activity has to handle.
+ *
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
-public interface OnMediaViewListener extends MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener, MediaPlayer.OnBufferingUpdateListener, SoundPool.OnLoadCompleteListener{
+public interface OnMediaViewListener extends MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener, MediaPlayer.OnBufferingUpdateListener, SoundPool.OnLoadCompleteListener {
     @Override
     void onCompletion(MediaPlayer mp);
 

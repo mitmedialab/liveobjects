@@ -38,7 +38,7 @@ public class SavedLiveObjectsFragment extends Fragment {
     private MiddlewareInterface mMiddleware;
     private DbController mDbController;
 
-    private List<Map<String,Object>> mLiveObjectsPropertiesList;
+    private List<Map<String, Object>> mLiveObjectsPropertiesList;
 
 
     /**
@@ -75,7 +75,6 @@ public class SavedLiveObjectsFragment extends Fragment {
         initListListener(mListView);
 
 
-
         return rootView;
     }
 
@@ -106,18 +105,17 @@ public class SavedLiveObjectsFragment extends Fragment {
     private void fillData() {
 
 
-        List<Map<String,Object>> allLiveObjects = mDbController.getAllLiveObjectsProperties();
+        List<Map<String, Object>> allLiveObjects = mDbController.getAllLiveObjectsProperties();
         mLiveObjectsPropertiesList = new ArrayList<>();
         if (mTabId == SavedLiveObjectsActivity.FAVOURITE_TAB_ID) {
 
-            for (Map<String,Object> liveObjectProperties : allLiveObjects) {
+            for (Map<String, Object> liveObjectProperties : allLiveObjects) {
                 MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
                 if (provider.isFavorite()) {
                     mLiveObjectsPropertiesList.add(liveObjectProperties);
                 }
             }
-        }
-        else {
+        } else {
             mLiveObjectsPropertiesList = allLiveObjects;
         }
 

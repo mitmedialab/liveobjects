@@ -66,10 +66,8 @@ public class DetailFragment extends Fragment {
 
     private OnErrorListener mOnErrorListener = null;
 
-    private AsyncTask<String,Void,InputStream> mSetBackgroundImageTask = null;
-    private AsyncTask<String,Void,JSONObject> mSetPropertiesTask = null;
-
-
+    private AsyncTask<String, Void, InputStream> mSetBackgroundImageTask = null;
+    private AsyncTask<String, Void, JSONObject> mSetPropertiesTask = null;
 
 
     public interface OnErrorListener {
@@ -93,7 +91,8 @@ public class DetailFragment extends Fragment {
     }
 
     // Required empty constructor
-    public DetailFragment() {    }
+    public DetailFragment() {
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -102,13 +101,14 @@ public class DetailFragment extends Fragment {
             mLiveObjectNameID = getArguments().getString(ARG_LIVE_OBJ_NAME_ID);
         }
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 
         mRootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        mMiddleware = ((LiveObjectsApplication)getActivity().getApplication()).getMiddleware();
+        mMiddleware = ((LiveObjectsApplication) getActivity().getApplication()).getMiddleware();
         mContentController = mMiddleware.getContentController();
         mDbController = mMiddleware.getDbController();
 
@@ -138,8 +138,7 @@ public class DetailFragment extends Fragment {
             // live object empty, fill it with properties
             properties = fetchProperties(liveObjectId);
             storeProperties(liveObjectId, properties);
-        }
-        else {
+        } else {
             properties = mDbController.getProperties(liveObjectId);
         }
 
@@ -183,8 +182,7 @@ public class DetailFragment extends Fragment {
             // add the isFavorite property, which is not present in the remote live-object,
             // and initialize it to false
             properties.put(MLProjectContract.IS_FAVORITE, MLProjectContract.IS_FAVORITE_FALSE);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             mOnErrorListener.onError(e);
         }
 
@@ -196,8 +194,6 @@ public class DetailFragment extends Fragment {
         Log.d(LOG_TAG, "storing properties " + properties);
         mDbController.putLiveObject(liveObjectId, properties);
     }
-
-
 
 
     private void setUIContent(Map<String, Object> liveObjectProperties) {
@@ -251,13 +247,13 @@ public class DetailFragment extends Fragment {
 
     }
 
-    private void setBackgroundImage(Bitmap bitmap){
+    private void setBackgroundImage(Bitmap bitmap) {
 
         Activity activity = DetailFragment.this.getActivity();
 
         BitmapEditor bitmapEditor = new BitmapEditor(activity);
 
-        if (bitmap != null ) {
+        if (bitmap != null) {
             Bitmap croppedBitmap = bitmapEditor.cropToDisplayAspectRatio(bitmap, activity.getWindowManager());
             bitmapEditor.blurBitmap(croppedBitmap, 2);
             BitmapDrawable background = new BitmapDrawable(croppedBitmap);

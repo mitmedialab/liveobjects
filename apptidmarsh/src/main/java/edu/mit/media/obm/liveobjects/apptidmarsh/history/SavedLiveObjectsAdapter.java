@@ -27,19 +27,19 @@ import edu.mit.media.obm.shair.liveobjects.R;
 /**
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
-public class SavedLiveObjectsAdapter extends ArrayAdapter<Map<String,Object>> {
+public class SavedLiveObjectsAdapter extends ArrayAdapter<Map<String, Object>> {
     private static final String LOG_TAG = SavedLiveObjectsAdapter.class.getSimpleName();
 
     private final Context mContext;
-    private final List<Map<String,Object>> mLiveObjectsPropertiesList;
+    private final List<Map<String, Object>> mLiveObjectsPropertiesList;
 
     private final ContentController mContentController;
 
     // TODO to incorporate in the json file
     private static final String IMAGE_FOLDER = "DCIM";
 
-    public SavedLiveObjectsAdapter(Context context, List<Map<String,Object>> liveObjectsPropertiesList) {
-        super(context, R.layout.saved_live_object_row, liveObjectsPropertiesList );
+    public SavedLiveObjectsAdapter(Context context, List<Map<String, Object>> liveObjectsPropertiesList) {
+        super(context, R.layout.saved_live_object_row, liveObjectsPropertiesList);
         mContext = context;
         mLiveObjectsPropertiesList = liveObjectsPropertiesList;
 
@@ -57,11 +57,10 @@ public class SavedLiveObjectsAdapter extends ArrayAdapter<Map<String,Object>> {
         String title = provider.getProjectTitle();
         String liveObjectId = provider.getId();
 
-        final ContentId iconContentId = new ContentId(liveObjectId,IMAGE_FOLDER, iconFileName);
+        final ContentId iconContentId = new ContentId(liveObjectId, IMAGE_FOLDER, iconFileName);
 
 
-
-                LayoutInflater inflater = (LayoutInflater) mContext
+        LayoutInflater inflater = (LayoutInflater) mContext
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.saved_live_object_row, parent, false);
 

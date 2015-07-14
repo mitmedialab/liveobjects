@@ -167,7 +167,7 @@ public class MainFragment extends Fragment {
         if (!networkController.isConnecting()) {
             mMiddleware.getNetworkController().forgetNetworkConfigurations();
         }
-        
+
         mAdapter.notifyDataSetChanged();
     }
 

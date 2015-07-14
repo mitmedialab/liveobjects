@@ -136,7 +136,7 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
             Map<String, Object> liveObjectProperties = mDbController.getProperties(liveObjectName);
             MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
             String iconFileName = provider.getIconFileName();
-            ContentId iconContentId = new ContentId(liveObjectName,ICON_FOLDER, iconFileName);
+            ContentId iconContentId = new ContentId(liveObjectName, ICON_FOLDER, iconFileName);
             try {
                 InputStream imageInputStream = mContentController.getInputStreamContent(iconContentId);
                 Bitmap bitmap = Util.getBitmap(imageInputStream);
@@ -152,8 +152,7 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
                 Log.e(LOG_TAG, "error setting icon image", e);
             }
 
-        }
-        else {
+        } else {
             imageView.setFillColor(mRandomColorGenerator.generateColor(liveObjectName));
         }
 

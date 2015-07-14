@@ -3,6 +3,7 @@
     android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
+
     <TextView
 
         android:layout_width="match_parent"
@@ -13,8 +14,7 @@
         android:paddingBottom="10dp"
         android:layout_gravity="center_vertical"
         android:background="#FFFFBB33"
-        android:text="Edit Profile"
-         />
+        android:text="Edit Profile" />
 
     <EditText
         android:id="@+id/profile_name_edit_text"

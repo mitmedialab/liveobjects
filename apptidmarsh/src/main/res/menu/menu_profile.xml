@@ -3,12 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
 
-    <item android:id="@+id/action_edit_profile"
-          android:icon="@drawable/profile_white"
-          android:title="Edit Profile"
-          app:showAsAction="always" />
+    <item
+        android:id="@+id/action_edit_profile"
+        android:icon="@drawable/profile_white"
+        android:title="Edit Profile"
+        app:showAsAction="always" />
 
-    <item android:id="@+id/action_goto_home"
+    <item
+        android:id="@+id/action_goto_home"
         android:icon="@drawable/home"
         android:title="home"
         app:showAsAction="always" />

@@ -24,7 +24,7 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
 import edu.mit.media.obm.shair.liveobjects.R;
 
-public class SavedLiveObjectsActivity extends ActionBarActivity implements ActionBar.TabListener{
+public class SavedLiveObjectsActivity extends ActionBarActivity implements ActionBar.TabListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -95,9 +95,7 @@ public class SavedLiveObjectsActivity extends ActionBarActivity implements Actio
         if (id == R.id.action_goto_home) {
             MenuActions.goToHome(this);
             return true;
-        }
-
-        else if (id == R.id.action_email) {
+        } else if (id == R.id.action_email) {
             Intent emailIntent = new Intent(Intent.ACTION_SEND);
             emailIntent.setType("text/plain");
             String subject = EmailFormatter.getSubject();

@@ -86,6 +86,7 @@
         android:layout_weight="0"
         android:orientation="vertical"
         android:background="@color/theme_transparent_background">
+
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -104,14 +105,14 @@
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@drawable/favorite"/>
+                    android:src="@drawable/favorite" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
                     android:text="Favorite"
                     android:textSize="28sp"
-                    android:gravity="center"/>
+                    android:gravity="center" />
 
             </LinearLayout>
 
@@ -132,14 +133,14 @@
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@drawable/replay"/>
+                    android:src="@drawable/replay" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
                     android:text="Replay"
                     android:textSize="28sp"
-                    android:gravity="center"/>
+                    android:gravity="center" />
 
             </LinearLayout>
         </LinearLayout>
@@ -165,7 +166,7 @@
                 android:padding="4dp"
                 android:text="Add comment"
                 android:textSize="28sp"
-                android:gravity="center"/>
+                android:gravity="center" />
 
         </LinearLayout>
 

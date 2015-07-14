@@ -4,6 +4,7 @@ import edu.mit.media.obm.liveobjects.middleware.control.LiveObjectContract;
 
 /**
  * Contract that defines the properties of a live object representing a Media Lab project
+ *
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public class MLProjectContract implements LiveObjectContract {
@@ -24,8 +25,6 @@ public class MLProjectContract implements LiveObjectContract {
     // constant values for the IS_FAVORITE property
     public static final Integer IS_FAVORITE_FALSE = 0;
     public static final Integer IS_FAVORITE_TRUE = 1;
-
-
 
 
 }

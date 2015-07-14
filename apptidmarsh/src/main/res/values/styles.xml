@@ -9,8 +9,7 @@
         <item name="android:buttonStyle">@style/LiveObjectsButtonStyle</item>
     </style>
 
-    <style name="LiveObjectsActionBar"
-           parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+    <style name="LiveObjectsActionBar" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@color/theme_actionbar</item>
         <item name="background">@color/theme_actionbar</item>
 
@@ -41,8 +40,8 @@
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
-    <style name = "NoActionBar" parent = "Theme.AppCompat.Light.NoActionBar">
-        <item name = "android:windowActionBar">false</item>
-        <item name = "android:windowNoTitle">true</item>
+    <style name="NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
     </style>
 </resources>

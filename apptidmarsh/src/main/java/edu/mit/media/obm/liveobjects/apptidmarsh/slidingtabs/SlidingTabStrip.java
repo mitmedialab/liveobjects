@@ -100,7 +100,7 @@ public class SlidingTabStrip extends LinearLayout {
             if (mSelectionOffset > 0f && mSelectedPosition < (getChildCount() - 1)) {
                 int nextColor = tabColorizer.getIndicatorColor(mSelectedPosition + 1);
                 if (color != nextColor) {
-                 //   color = blendColors(nextColor, color, mSelectionOffset);
+                    //   color = blendColors(nextColor, color, mSelectionOffset);
                 }
 
                 // Draw the selection partway between the tabs

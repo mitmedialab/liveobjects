@@ -8,7 +8,6 @@
         android:dialogTitle="EditText Dialog" />
 
 
-
     <EditTextPreference
         android:key="@string/profile_company_key"
         android:title="EditText company"
@@ -20,7 +19,6 @@
         android:title="EditText email"
         android:summary="EditText summary"
         android:dialogTitle="EditText Dialog" />
-
 
 
 </PreferenceScreen>

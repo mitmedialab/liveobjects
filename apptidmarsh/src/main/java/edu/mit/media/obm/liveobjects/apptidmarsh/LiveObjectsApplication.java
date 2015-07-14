@@ -25,7 +25,6 @@ public class LiveObjectsApplication extends Application {
     private MiddlewareInterface middleware;
 
 
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -34,7 +33,7 @@ public class LiveObjectsApplication extends Application {
     }
 
     public final MiddlewareInterface getMiddleware() {
-        return  middleware;
+        return middleware;
     }
 
 

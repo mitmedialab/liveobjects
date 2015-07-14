@@ -32,19 +32,18 @@ public class ProfilePreference {
 
     }
 
-    public static boolean isProfileCompleted(SharedPreferences profilePreference, Context context){
+    public static boolean isProfileCompleted(SharedPreferences profilePreference, Context context) {
         return profilePreference.contains(context.getString(R.string.profile_name_key)) &&
-                profilePreference.contains(context.getString(R.string.profile_email_key))&&
+                profilePreference.contains(context.getString(R.string.profile_email_key)) &&
                 !getString(profilePreference, context, R.string.profile_name_key).isEmpty() &&
                 !getString(profilePreference, context, R.string.profile_email_key).isEmpty();
 
     }
 
 
-
     public static String getString(SharedPreferences profilePreference, Context context, int key) {
         return profilePreference.getString(
-                context.getString(key),"");
+                context.getString(key), "");
     }
 
 }

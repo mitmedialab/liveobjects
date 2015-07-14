@@ -22,7 +22,7 @@
     <string name="project_completion_win_a_prize">Congrats! Come to Live Objects booth (E15 4th floor) and see if you won a price.</string>
 
 
-    <string name ="profile_preference_file_key">profile_preference_file_key</string>
+    <string name="profile_preference_file_key">profile_preference_file_key</string>
     <string name="profile_number_visited_objects">number_visited_objects</string>
 
     <string name="profile_name_key">name</string>

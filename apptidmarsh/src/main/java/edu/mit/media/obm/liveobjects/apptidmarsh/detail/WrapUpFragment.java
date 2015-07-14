@@ -75,6 +75,7 @@ public class WrapUpFragment extends Fragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
+     *
      * @return A new instance of fragment WrapUpFragment.
      */
     public static WrapUpFragment newInstance(String liveObjNameId, boolean showAddComment) {
@@ -98,7 +99,7 @@ public class WrapUpFragment extends Fragment {
             mShowAddComment = getArguments().getBoolean(ARG_SHOW_ADD_COMMENT);
         }
 
-        MiddlewareInterface middleware = ((LiveObjectsApplication)getActivity().getApplication()).getMiddleware();
+        MiddlewareInterface middleware = ((LiveObjectsApplication) getActivity().getApplication()).getMiddleware();
         mDbController = middleware.getDbController();
         mContentController = middleware.getContentController();
 
@@ -119,7 +120,7 @@ public class WrapUpFragment extends Fragment {
 
     private void initUI(View rootView) {
         mTitleTextView = (TextView) rootView.findViewById(R.id.wrapup_title_textview);
-        mGroupTextView =(TextView) rootView.findViewById(R.id.wrapup_group_textview);
+        mGroupTextView = (TextView) rootView.findViewById(R.id.wrapup_group_textview);
         mDescriptionTextView = (TextView) rootView.findViewById(R.id.wrapup_description_textview);
         mFavouriteButtonLayout = (LinearLayout) rootView.findViewById(R.id.favorite_button);
         mReplayButtonLayout = (LinearLayout) rootView.findViewById(R.id.replay_button);
@@ -168,13 +169,14 @@ public class WrapUpFragment extends Fragment {
 
     private String makeComment(String text) {
         SharedPreferences pref = ProfilePreference.getInstance(getActivity());
-        String name = "Name: " + ProfilePreference.getString(pref, getActivity(), R.string.profile_name_key) +"\n";
-        String company = "Company: " + ProfilePreference.getString(pref, getActivity(), R.string.profile_company_key) +"\n";
-        String email = "Email: " + ProfilePreference.getString(pref, getActivity(), R.string.profile_email_key) +"\n";
+        String name = "Name: " + ProfilePreference.getString(pref, getActivity(), R.string.profile_name_key) + "\n";
+        String company = "Company: " + ProfilePreference.getString(pref, getActivity(), R.string.profile_company_key) + "\n";
+        String email = "Email: " + ProfilePreference.getString(pref, getActivity(), R.string.profile_email_key) + "\n";
         String commentHeader = "Comment: \n";
         String message = name + company + email + commentHeader + text;
         return message;
     }
+
     private String generateCommentFileName() {
         Calendar rightNow = Calendar.getInstance();
         String commentName = String.format("%1$td%1$tk%1$tM%1$tS.TXT", rightNow);
@@ -261,13 +263,13 @@ public class WrapUpFragment extends Fragment {
     private void updateFavorite(String liveObjNameId, boolean isFavorite) {
 
         int isFavoriteInInt = isFavorite ? MLProjectContract.IS_FAVORITE_TRUE :
-                MLProjectContract.IS_FAVORITE_FALSE ;
+                MLProjectContract.IS_FAVORITE_FALSE;
         Log.d(LOG_TAG, "update property is favorite to: " + isFavoriteInInt);
         mDbController.putProperty(liveObjNameId, MLProjectContract.IS_FAVORITE, new Integer(isFavoriteInInt));
-        Log.d(LOG_TAG , "now favorite is: " + mDbController.getProperty(liveObjNameId, MLProjectContract.IS_FAVORITE));
+        Log.d(LOG_TAG, "now favorite is: " + mDbController.getProperty(liveObjNameId, MLProjectContract.IS_FAVORITE));
     }
 
-    private void setImage(View view, String fileName){
+    private void setImage(View view, String fileName) {
         Activity activity = getActivity();
 
         ContentId imageContentId = new ContentId(mLiveObjNameId, MEDIA_DIR_NAME, fileName);
@@ -287,12 +289,6 @@ public class WrapUpFragment extends Fragment {
             Log.e(LOG_TAG, "error setting image", e);
         }
     }
-
-
-
-
-
-
 
 
 }
