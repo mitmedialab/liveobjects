@@ -4,7 +4,6 @@ package edu.mit.media.obm.liveobjects.app.profile;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -15,9 +14,6 @@ import android.widget.TextView;
 
 import com.github.lzyzsd.circleprogress.DonutProgress;
 
-import org.w3c.dom.Text;
-
-import edu.mit.media.obm.liveobjects.app.data.LObjContract;
 import edu.mit.media.obm.liveobjects.app.data.ProfilePreference;
 import edu.mit.media.obm.shair.liveobjects.R;
 
@@ -90,10 +86,9 @@ public class ProfileFragment extends Fragment {
     }
 
     private int getNumberOfVisitedObjects() {
-        Cursor cursor = getActivity().getContentResolver().query(
-                LObjContract.LiveObjectEntry.CONTENT_URI, LObjContract.LiveObjectEntry.ALL_COLUMNS,
-                null, null, null);
-        return cursor.getCount();
+        return 0;
+        //TODO to implement
+
 
     }
     private void setUIProfileContent() {
