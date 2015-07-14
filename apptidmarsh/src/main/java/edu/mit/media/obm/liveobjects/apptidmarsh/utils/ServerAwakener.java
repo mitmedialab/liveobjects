@@ -54,6 +54,11 @@ public class ServerAwakener {
         mContext.registerReceiver(mBroadcastReceiver, filter);
 
         mBluetoothAdapter.startDiscovery();
+
+        debug("num bonded devices:" + mBluetoothAdapter.getBondedDevices().size());
+        for (BluetoothDevice device : mBluetoothAdapter.getBondedDevices()) {
+            debug("device = " + device.getName());
+        }
     }
 
     public synchronized void cancel() {
@@ -78,6 +83,8 @@ public class ServerAwakener {
     }
 
     private class BluetoothDetectionReceiver extends BroadcastReceiver {
+        private BluetoothGatt mBluetoothGatt = null;
+
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -92,7 +99,7 @@ public class ServerAwakener {
 
                 if (deviceName != null && deviceName.startsWith("liveobj-")) {
                     debug(String.format("trying to connect to BLE device '%s'", deviceName));
-                    device.connectGatt(mContext, true, mGattCallback);
+                    mBluetoothGatt = device.connectGatt(mContext, true, mGattCallback);
 
                     Toast.makeText(mContext, String.format("Awakening '%s'", deviceName), Toast.LENGTH_SHORT).show();
                 }
@@ -106,6 +113,11 @@ public class ServerAwakener {
             @Override
             public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
                 super.onConnectionStateChange(gatt, status, newState);
+
+                if (newState == BluetoothGatt.STATE_CONNECTED) {
+                    debug("disconecting from GATT");
+                    mBluetoothGatt.disconnect();
+                }
             }
         };
     }
