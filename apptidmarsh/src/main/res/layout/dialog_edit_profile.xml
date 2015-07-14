@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <TextView
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="center"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_gravity="center_vertical"
+        android:background="#FFFFBB33"
+        android:text="Edit Profile" />
+
+    <EditText
+        android:id="@+id/profile_name_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
+        android:hint="Name"
+        android:singleLine="true" />
+
+    <EditText
+        android:id="@+id/profile_company_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
+        android:hint="Company"
+        android:singleLine="true" />
+
+    <EditText
+        android:id="@+id/profile_email_edit_text"
+        android:inputType="textEmailAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
+        android:hint="Email"
+        android:singleLine="true" />
+
+</LinearLayout>

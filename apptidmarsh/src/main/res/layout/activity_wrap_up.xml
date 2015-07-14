@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/activity_wrap_up_container">
+
+</FrameLayout>
+
+    <!--<com.sothree.slidinguppanel.SlidingUpPanelLayout--><!--xmlns:android="http://schemas.android.com/apk/res/android"--><!--xmlns:sothree="http://schemas.android.com/apk/res-auto"--><!--android:id="@+id/sliding_layout"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent"--><!--android:gravity="bottom"--><!--sothree:umanoPanelHeight="68dp"--><!--sothree:umanoShadowHeight="4dp">-->
+
+    <!--<fragment--><!--android:name="edu.mit.media.obm.liveobjects.app.wrapup.WrapUpFragment"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent"--><!--android:gravity="center"/>-->
+
+    <!--<fragment--><!--android:name="edu.mit.media.obm.liveobjects.app.wrapup.CommentsFragment"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent"--><!--android:gravity="center|top"/>-->
+
+    <!--</com.sothree.slidinguppanel.SlidingUpPanelLayout>-->
+

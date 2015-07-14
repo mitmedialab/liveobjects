@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <edu.mit.media.obm.liveobjects.apptidmarsh.widget.RoundedImageView
+        android:id="@+id/grid_item_icon"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_centerInParent="true"
+        app:border="true"
+        app:shadow="true"
+        android:gravity="center"
+        android:src="@drawable/ic_launcher" />
+
+    <TextView
+        android:id="@+id/grid_item_title_textview"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_centerInParent="true"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:gravity="center"
+        android:layout_centerVertical="true"
+        android:textSize="24sp"
+        android:textColor="@color/theme_icon_text"
+        android:shadowColor="@color/theme_icon_text_shadow"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="4"
+        android:text="Colosseum" />
+</RelativeLayout>

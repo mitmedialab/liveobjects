@@ -1,0 +1,106 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="?attr/actionBarSize"
+    tools:context="edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity$PlaceholderFragment"
+    android:gravity="center">
+
+    <ProgressBar
+        android:id="@+id/detail_progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true" />
+
+    <LinearLayout
+        android:id="@+id/detail_info_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="invisible">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@drawable/bg_oval">
+
+            <ImageView
+                android:id="@+id/object_image_view"
+                android:layout_centerHorizontal="true"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_margin="10dp"
+                android:clickable="true"
+                android:background="@drawable/play"
+                android:layout_gravity="center" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="8dp"
+            android:padding="4dp"
+            android:background="@color/theme_transparent_dark_background">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="28sp"
+                android:textColor="@color/theme_icon_text"
+                android:shadowColor="@color/theme_icon_text_shadow"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="4"
+                android:id="@+id/object_title_textview" />
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:textColor="@color/theme_icon_text"
+                android:shadowColor="@color/theme_icon_text_shadow"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="4"
+                android:layout_marginBottom="4dp"
+                android:id="@+id/object_group_textview" />
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="3dp"
+                android:background="@android:color/darker_gray" />
+
+            <ScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="22sp"
+                    android:textColor="@color/theme_icon_text"
+                    android:shadowColor="@color/theme_icon_text_shadow"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="4"
+                    android:singleLine="false"
+                    android:id="@+id/object_description_textview" />
+            </ScrollView>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>
+

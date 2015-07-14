@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="icon_filename">icon</string>
+    <string name="media_config_filename">conf</string>
+    <string name="content_type_video">video</string>
+    <string name="content_type_audio">audio</string>
+    <string name="content_type_gallery">gallery</string>
+
+    <integer name="total_number_of_objects">10</integer>
+</resources>

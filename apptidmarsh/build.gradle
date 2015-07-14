@@ -1,0 +1,42 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion '22.0.1'
+
+    defaultConfig {
+        applicationId "edu.mit.media.obm.shair.liveobjects"
+        minSdkVersion 18
+        targetSdkVersion 21
+        renderscriptTargetApi 19
+        renderscriptSupportModeEnabled true
+
+        versionCode 5
+        versionName "1.0.4"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    // couchbase-lite
+    // workaround for "duplicate files during packaging of APK" issue
+    // see https://groups.google.com/d/msg/adt-dev/bl5Rc4Szpzg/wC8cylTWuIEJ
+    packagingOptions {
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.pkmmte.view:circularimageview:1.1'
+    compile 'com.sothree.slidinguppanel:library:3.0.0'
+    compile project(':liveobjects_middleware_mod')
+    compile project(':liveobjects_network_wifi_mod')
+    compile project(':liveobjects_storage_wifi_mod')
+    compile project(':liveobjects_storage_local_mod')
+}
