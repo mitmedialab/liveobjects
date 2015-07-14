@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "edu.mit.media.obm.shair.liveobjects"
-        minSdkVersion 15
+        minSdkVersion 18
         targetSdkVersion 21
         renderscriptTargetApi 19
         renderscriptSupportModeEnabled true
