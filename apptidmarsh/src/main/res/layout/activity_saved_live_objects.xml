@@ -7,7 +7,7 @@
     android:background="@drawable/main_background"
     android:orientation="vertical">
 
-    <edu.mit.media.obm.liveobjects.app.slidingtabs.SlidingTabLayout
+    <edu.mit.media.obm.liveobjects.apptidmarsh.slidingtabs.SlidingTabLayout
         android:id="@+id/sliding_tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

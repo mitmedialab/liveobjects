@@ -28,6 +28,7 @@ import java.util.List;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.utils.ServerAwakener;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.AnimationArrayAdapter;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.ExpandIconAnimation;
@@ -64,6 +65,8 @@ public class MainFragment extends Fragment {
     private MiddlewareInterface mMiddleware;
 
     private Button mHistoryButton;
+
+    private ServerAwakener mServerAwakener;
 
     public MainFragment() {
         super();
@@ -128,6 +131,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onRefresh() {
                 mNetworkController.startDiscovery();
+                mServerAwakener.awaken();
             }
         });
 
@@ -169,6 +173,8 @@ public class MainFragment extends Fragment {
         }
 
         mAdapter.notifyDataSetChanged();
+
+        mServerAwakener = new ServerAwakener(getActivity());
     }
 
     private void initDiscoveryListener() {
@@ -259,6 +265,8 @@ public class MainFragment extends Fragment {
         super.onStart();
         mNetworkController.start();
         mNetworkController.startDiscovery();
+
+        mServerAwakener.awaken();
     }
 
     @Override
@@ -266,6 +274,8 @@ public class MainFragment extends Fragment {
         Log.v(LOG_TAG, "onStop()");
 //        mNetworkController.stop();
         super.onStop();
+
+        mServerAwakener.cancel();
     }
 
     @Override

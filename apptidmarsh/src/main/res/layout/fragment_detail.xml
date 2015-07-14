@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="?attr/actionBarSize"
-    tools:context="edu.mit.media.obm.liveobjects.app.detail.DetailActivity$PlaceholderFragment"
+    tools:context="edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity$PlaceholderFragment"
     android:gravity="center">
 
     <ProgressBar

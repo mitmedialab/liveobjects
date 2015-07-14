@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.util.Log;
+import android.widget.Toast;
 
 /**
  * Created by arata on 7/14/15.
@@ -38,8 +40,10 @@ public class ServerAwakener {
         }
     }
 
-    private synchronized void awaken() {
+    public synchronized void awaken() {
         cancel();
+
+        debug("start awakening...");
 
         mBroadcastReceiver = new BluetoothDetectionReceiver();
 
@@ -52,7 +56,9 @@ public class ServerAwakener {
         mBluetoothAdapter.startDiscovery();
     }
 
-    private synchronized void cancel() {
+    public synchronized void cancel() {
+        debug("cancel awakening...");
+
         if (mBroadcastReceiver != null) {
             mBluetoothAdapter.cancelDiscovery();
             mContext.unregisterReceiver(mBroadcastReceiver);
@@ -80,10 +86,18 @@ public class ServerAwakener {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 String deviceName = device.getName();
 
+                if (deviceName != null) {
+                    debug("detected device: " + deviceName);
+                }
+
                 if (deviceName != null && deviceName.startsWith("liveobj-")) {
+                    debug(String.format("trying to connect to BLE device '%s'", deviceName));
                     device.connectGatt(mContext, true, mGattCallback);
+
+                    Toast.makeText(mContext, String.format("Awakening '%s'", deviceName), Toast.LENGTH_SHORT).show();
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                debug("finished BLE discovery");
                 cancel();
             }
         }
@@ -94,5 +108,9 @@ public class ServerAwakener {
                 super.onConnectionStateChange(gatt, status, newState);
             }
         };
+    }
+
+    private void debug(String message) {
+        Log.d(LOG_TAG, message);
     }
 }
