@@ -18,15 +18,13 @@
     <string name="title_activity_profile">ProfileActivity</string>
 
     <string name="title_fragment_profile">Profile</string>
-    <string name="project_completion_fragment_profile">Project Visit Completion</string>
-    <string name="project_completion_win_a_prize">Congrats! Come to Live Objects booth (E15 4th floor) and see if you won a price.</string>
 
 
     <string name="profile_preference_file_key">profile_preference_file_key</string>
     <string name="profile_number_visited_objects">number_visited_objects</string>
 
     <string name="profile_name_key">name</string>
-    <string name="profile_company_key">company</string>
+    <string name="profile_company_key">organization</string>
     <string name="profile_email_key">email</string>
 
     <string name="title_activity_splash">SplashActivity</string>

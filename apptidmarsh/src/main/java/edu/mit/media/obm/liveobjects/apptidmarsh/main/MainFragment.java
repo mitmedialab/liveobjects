@@ -25,10 +25,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsActivity;
-import edu.mit.media.obm.liveobjects.apptidmarsh.utils.ServerAwakener;
+import edu.mit.media.obm.liveobjects.apptidmarsh.profile.ProfileActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.AnimationArrayAdapter;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.ExpandIconAnimation;
@@ -65,8 +65,7 @@ public class MainFragment extends Fragment {
     private MiddlewareInterface mMiddleware;
 
     private Button mHistoryButton;
-
-    private ServerAwakener mServerAwakener;
+    private Button mProfileButton;
 
     public MainFragment() {
         super();
@@ -110,6 +109,7 @@ public class MainFragment extends Fragment {
         });
 
         mHistoryButton = (Button) rootView.findViewById(R.id.historyButton);
+        mProfileButton = (Button) rootView.findViewById(R.id.profileButton);
 
         setBackgroundImage(rootView);
     }
@@ -131,7 +131,6 @@ public class MainFragment extends Fragment {
             @Override
             public void onRefresh() {
                 mNetworkController.startDiscovery();
-                mServerAwakener.awaken();
             }
         });
 
@@ -158,6 +157,14 @@ public class MainFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        mProfileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void initNetworkListeners() {
@@ -173,8 +180,6 @@ public class MainFragment extends Fragment {
         }
 
         mAdapter.notifyDataSetChanged();
-
-        mServerAwakener = new ServerAwakener(getActivity());
     }
 
     private void initDiscoveryListener() {
@@ -265,8 +270,6 @@ public class MainFragment extends Fragment {
         super.onStart();
         mNetworkController.start();
         mNetworkController.startDiscovery();
-
-        mServerAwakener.awaken();
     }
 
     @Override
@@ -274,8 +277,6 @@ public class MainFragment extends Fragment {
         Log.v(LOG_TAG, "onStop()");
 //        mNetworkController.stop();
         super.onStop();
-
-        mServerAwakener.cancel();
     }
 
     @Override
