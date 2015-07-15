@@ -1,4 +1,5 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_layout"
     android:layout_width="match_parent"
@@ -40,12 +41,20 @@
             android:background="@color/theme_pure_transparent_background">
 
             <Button
+                android:id="@+id/profileButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:textColor="@color/theme_text"
+                android:layout_alignParentLeft="true"
+                android:background="@drawable/bg_profile_button"/>
+
+            <Button
                 android:id="@+id/historyButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:textColor="@color/theme_text"
                 android:layout_alignParentRight="true"
-                android:background="@drawable/bg_history_button" />
+                android:background="@drawable/bg_history_button"/>
 
         </RelativeLayout>
 
@@ -66,7 +75,7 @@
                 android:horizontalSpacing="0dp"
                 android:verticalSpacing="0dp"
                 android:stretchMode="columnWidth"
-                android:clipToPadding="false" />
+                android:clipToPadding="false"/>
 
         </android.support.v4.widget.SwipeRefreshLayout>
 

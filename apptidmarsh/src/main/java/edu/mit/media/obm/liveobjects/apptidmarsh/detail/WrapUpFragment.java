@@ -170,7 +170,7 @@ public class WrapUpFragment extends Fragment {
     private String makeComment(String text) {
         SharedPreferences pref = ProfilePreference.getInstance(getActivity());
         String name = "Name: " + ProfilePreference.getString(pref, getActivity(), R.string.profile_name_key) + "\n";
-        String company = "Company: " + ProfilePreference.getString(pref, getActivity(), R.string.profile_company_key) + "\n";
+        String company = "Organization: " + ProfilePreference.getString(pref, getActivity(), R.string.profile_company_key) + "\n";
         String email = "Email: " + ProfilePreference.getString(pref, getActivity(), R.string.profile_email_key) + "\n";
         String commentHeader = "Comment: \n";
         String message = name + company + email + commentHeader + text;
