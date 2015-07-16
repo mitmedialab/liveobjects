@@ -35,8 +35,8 @@ public class FileLocalStorageDriver implements LocalStorageDriver {
 
     @Override
     public void writeNewRawFileFromInputStream(String filePath, InputStream inputStream) throws IOException {
-
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        //TODO check the size of the buffer
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream(30000000);
         int nRead;
         byte[] data = new byte[16384];
 
