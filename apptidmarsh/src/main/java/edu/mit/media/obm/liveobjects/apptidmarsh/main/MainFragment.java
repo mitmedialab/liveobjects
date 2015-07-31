@@ -25,6 +25,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsActivity;
@@ -49,8 +51,10 @@ public class MainFragment extends Fragment {
 
     private static final int DETAIL_ACTIVITY_REQUEST_CODE = 1;
 
-    private SwipeRefreshLayout mSwipeLayout;
-    private GridView mLiveObjectsGridView;
+    @Bind(R.id.swipe_container) SwipeRefreshLayout mSwipeLayout;
+    @Bind(R.id.live_objects_list_view) GridView mLiveObjectsGridView;
+    @Bind(R.id.historyButton) Button mHistoryButton;
+    @Bind(R.id.profileButton) Button mProfileButton;
 
     private ArrayAdapter<LiveObject> mAdapter;
     private ArrayList<LiveObject> mLiveObjectNamesList;
@@ -64,9 +68,6 @@ public class MainFragment extends Fragment {
     private ProgressDialog mConnectingDialog;
 
     private MiddlewareInterface mMiddleware;
-
-    private Button mHistoryButton;
-    private Button mProfileButton;
 
     private ServerAwakener mServerAwakener;
 
@@ -90,12 +91,12 @@ public class MainFragment extends Fragment {
     }
 
     private void setupUIElements(View rootView) {
-        mLiveObjectsGridView = (GridView) rootView.findViewById(R.id.live_objects_list_view);
+        ButterKnife.bind(this, rootView);
+
         mLiveObjectNamesList = new ArrayList<>();
         mAdapter = new AnimationArrayAdapter<>(getActivity(), R.layout.list_item_live_objects,
                 R.id.grid_item_title_textview, mLiveObjectNamesList);
         mLiveObjectsGridView.setAdapter(mAdapter);
-        mSwipeLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
         mSwipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
@@ -110,9 +111,6 @@ public class MainFragment extends Fragment {
                 mNetworkController.cancelConnecting();
             }
         });
-
-        mHistoryButton = (Button) rootView.findViewById(R.id.historyButton);
-        mProfileButton = (Button) rootView.findViewById(R.id.profileButton);
 
         setBackgroundImage(rootView);
     }
