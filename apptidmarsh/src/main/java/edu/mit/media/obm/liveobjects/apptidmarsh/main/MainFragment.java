@@ -28,6 +28,8 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnItemClick;
+import butterknife.OnItemSelected;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsActivity;
@@ -70,6 +72,19 @@ public class MainFragment extends Fragment {
     @Bind(R.id.swipe_container) SwipeRefreshLayout mSwipeLayout;
     @Bind(R.id.live_objects_list_view) GridView mLiveObjectsGridView;
     @Bind(R.id.root_layout) LinearLayout mRootLayout;
+
+    @OnItemClick(R.id.live_objects_list_view)
+    void onLiveObjectsListViewItemClick(View view, int position) {
+        // when a live object appearing in the list is clicked, connect to it
+        mSelectedLiveObject = mLiveObjectNamesList.get(position);
+
+        mConnectingDialog.setMessage("Connecting to " + mSelectedLiveObject.getLiveObjectName());
+        mConnectingDialog.show();
+
+        mNetworkController.connect(mSelectedLiveObject);
+
+        mClickedView = view;
+    }
 
     @OnClick(R.id.historyButton)
     void onClickHistoryButton() {

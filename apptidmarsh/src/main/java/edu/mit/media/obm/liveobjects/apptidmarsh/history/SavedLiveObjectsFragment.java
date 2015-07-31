@@ -15,6 +15,7 @@ import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnItemClick;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.WrapUpActivity;
@@ -36,6 +37,18 @@ public class SavedLiveObjectsFragment extends Fragment {
     private int mTabId;
 
     @Bind(R.id.saved_liveobjs_listview) ListView mListView;
+
+    @OnItemClick(R.id.saved_liveobjs_listview)
+    void onSavedLiveObjectsListViewItemClick(int position) {
+        MLProjectPropertyProvider provider =
+                new MLProjectPropertyProvider(mLiveObjectsPropertiesList.get(position));
+        String liveObjNameId = provider.getId();
+
+        Intent intent = new Intent(getActivity(), WrapUpActivity.class);
+        intent.putExtra(WrapUpActivity.EXTRA_SHOW_ADD_COMMENT, false);
+        intent.putExtra(WrapUpActivity.EXTRA_LIVE_OBJ_NAME_ID, liveObjNameId);
+        startActivity(intent);
+    }
 
     private SavedLiveObjectsAdapter mAdapter;
 
@@ -77,8 +90,6 @@ public class SavedLiveObjectsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_saved_live_objects, container, false);
         ButterKnife.bind(this, rootView);
 
-        initListListener(mListView);
-
         return rootView;
     }
 
@@ -87,23 +98,6 @@ public class SavedLiveObjectsFragment extends Fragment {
         super.onStart();
         fillData();
     }
-
-    private void initListListener(ListView l) {
-        l.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                MLProjectPropertyProvider provider = new MLProjectPropertyProvider(mLiveObjectsPropertiesList.get(position));
-                String liveObjNameId = provider.getId();
-
-                Intent intent = new Intent(getActivity(), WrapUpActivity.class);
-                intent.putExtra(WrapUpActivity.EXTRA_SHOW_ADD_COMMENT, false);
-                intent.putExtra(WrapUpActivity.EXTRA_LIVE_OBJ_NAME_ID, liveObjNameId);
-                startActivity(intent);
-            }
-        });
-    }
-
 
     private void fillData() {
         List<Map<String, Object>> allLiveObjects = mDbController.getAllLiveObjectsProperties();
