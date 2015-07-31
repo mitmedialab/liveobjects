@@ -160,22 +160,6 @@ public class MainFragment extends Fragment {
                 mServerAwakener.awaken();
             }
         });
-
-        // when a live object appearing in the list is clicked, connect to it
-        mLiveObjectsGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mSelectedLiveObject = mLiveObjectNamesList.get(position);
-
-                mConnectingDialog.setMessage(
-                        "Connecting to " + mSelectedLiveObject.getLiveObjectName());
-                mConnectingDialog.show();
-
-                mNetworkController.connect(mSelectedLiveObject);
-
-                mClickedView = view;
-            }
-        });
     }
 
     private void initNetworkListeners() {
