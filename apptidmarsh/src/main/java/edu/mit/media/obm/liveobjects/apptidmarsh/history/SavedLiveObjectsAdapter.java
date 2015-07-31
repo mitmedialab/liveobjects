@@ -15,6 +15,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.Util;
@@ -84,13 +86,12 @@ public class SavedLiveObjectsAdapter extends ArrayAdapter<Map<String, Object>> {
         return convertView;
     }
 
-    private static class ViewHolder {
-        ImageView mIconView;
-        TextView mTitleView;
+    static class ViewHolder {
+        @Bind(R.id.row_item_icon_imageview) ImageView mIconView;
+        @Bind(R.id.row_item_title_textview) TextView mTitleView;
 
         public ViewHolder(View view) {
-            mIconView = (ImageView) view.findViewById(R.id.row_item_icon_imageview);
-            mTitleView = (TextView) view.findViewById(R.id.row_item_title_textview);
+            ButterKnife.bind(this, view);
         }
     }
 

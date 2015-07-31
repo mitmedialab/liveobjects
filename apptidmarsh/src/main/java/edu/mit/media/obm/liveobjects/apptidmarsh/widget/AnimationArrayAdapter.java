@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.Util;
@@ -38,7 +40,6 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
     private Context mContext;
     private LayoutInflater mInflater;
     private int mResource;
-    private int mTextViewResourceId;
     private List<T> mObjects;
 
     private List<String> mNewObjects;
@@ -53,18 +54,12 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
     //TODO to incorporate in the live object
     private static final String ICON_FOLDER = "DCIM";
 
-    private class Holder {
-        public RoundedImageView mImageView;
-        public TextView mTextView;
-    }
-
-    public AnimationArrayAdapter(Context context, int resource, int textViewResourceId, List<T> objects) {
-        super(context, resource, textViewResourceId, objects);
+    public AnimationArrayAdapter(Context context, int resource, List<T> objects) {
+        super(context, resource, objects);
 
         mContext = context;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mResource = resource;
-        mTextViewResourceId = textViewResourceId;
         mObjects = objects;
 
         mMiddleware = ((LiveObjectsApplication) ((Activity) mContext).getApplication()).getMiddleware();
@@ -83,18 +78,16 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final Holder holder;
+        final ViewHolder holder;
 
-        if (convertView == null) {
+        if (convertView != null) {
+            holder = (ViewHolder) convertView.getTag();
+        } else {
             convertView = mInflater.inflate(mResource, null);
 
-            holder = new Holder();
-            holder.mTextView = (TextView) convertView.findViewById(mTextViewResourceId);
-            holder.mImageView = (RoundedImageView) convertView.findViewById(R.id.grid_item_icon);
+            holder = new ViewHolder(convertView);
 
             convertView.setTag(holder);
-        } else {
-            holder = (Holder) convertView.getTag();
         }
 
         final String text = mObjects.get(position).toString();
@@ -110,6 +103,15 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
         }
 
         return convertView;
+    }
+
+    static class ViewHolder {
+        @Bind(R.id.grid_item_icon) RoundedImageView mImageView;
+        @Bind(R.id.grid_item_title_textview) TextView mTextView;
+
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
     }
 
     @Override

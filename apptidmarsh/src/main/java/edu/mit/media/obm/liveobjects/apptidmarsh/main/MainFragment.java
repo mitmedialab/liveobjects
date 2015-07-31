@@ -95,7 +95,7 @@ public class MainFragment extends Fragment {
     private void setupUIElements(View rootView) {
         mLiveObjectNamesList = new ArrayList<>();
         mAdapter = new AnimationArrayAdapter<>(getActivity(), R.layout.list_item_live_objects,
-                R.id.grid_item_title_textview, mLiveObjectNamesList);
+                mLiveObjectNamesList);
         mLiveObjectsGridView.setAdapter(mAdapter);
         mSwipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
