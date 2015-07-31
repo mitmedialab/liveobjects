@@ -27,6 +27,8 @@ import android.widget.Toast;
 import java.util.Calendar;
 import java.util.Map;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
@@ -61,12 +63,12 @@ public class WrapUpFragment extends Fragment {
     private String mLiveObjNameId;
     private boolean mShowAddComment;
 
-    private TextView mTitleTextView;
-    private TextView mGroupTextView;
-    private TextView mDescriptionTextView;
-    private LinearLayout mFavouriteButtonLayout;
-    private LinearLayout mReplayButtonLayout;
-    private LinearLayout mAddCommentLayout;
+    @Bind(R.id.wrapup_title_textview) TextView mTitleTextView;
+    @Bind(R.id.wrapup_group_textview) TextView mGroupTextView;
+    @Bind(R.id.wrapup_description_textview) TextView mDescriptionTextView;
+    @Bind(R.id.favorite_button) LinearLayout mFavouriteButtonLayout;
+    @Bind(R.id.replay_button) LinearLayout mReplayButtonLayout;
+    @Bind(R.id.addCommentButton) LinearLayout mAddCommentLayout;
 
     AlertDialog mAddCommentAlert;
 
@@ -110,22 +112,13 @@ public class WrapUpFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_wrap_up, container, false);
+        ButterKnife.bind(this, rootView);
 
-        initUI(rootView);
+        mAddCommentAlert = initAddCommentAlert();
         setUIContent(rootView);
         setUIListener(rootView);
 
         return rootView;
-    }
-
-    private void initUI(View rootView) {
-        mTitleTextView = (TextView) rootView.findViewById(R.id.wrapup_title_textview);
-        mGroupTextView = (TextView) rootView.findViewById(R.id.wrapup_group_textview);
-        mDescriptionTextView = (TextView) rootView.findViewById(R.id.wrapup_description_textview);
-        mFavouriteButtonLayout = (LinearLayout) rootView.findViewById(R.id.favorite_button);
-        mReplayButtonLayout = (LinearLayout) rootView.findViewById(R.id.replay_button);
-        mAddCommentLayout = (LinearLayout) rootView.findViewById(R.id.addCommentButton);
-        mAddCommentAlert = initAddCommentAlert();
     }
 
     private AlertDialog initAddCommentAlert() {

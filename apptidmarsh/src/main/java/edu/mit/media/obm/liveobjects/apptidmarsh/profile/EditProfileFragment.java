@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.ProfilePreference;
 import edu.mit.media.obm.shair.liveobjects.R;
 
@@ -19,9 +21,9 @@ import edu.mit.media.obm.shair.liveobjects.R;
  */
 public class EditProfileFragment extends DialogFragment {
 
-    private EditText mNameEditText;
-    private EditText mCompanyEditText;
-    private EditText mEmailEditText;
+    @Bind(R.id.profile_name_edit_text) EditText mNameEditText;
+    @Bind(R.id.profile_company_edit_text) EditText mCompanyEditText;
+    @Bind(R.id.profile_email_edit_text) EditText mEmailEditText;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -31,7 +33,7 @@ public class EditProfileFragment extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
         View rootView = inflater.inflate(R.layout.dialog_edit_profile, null);
-        initUI(rootView);
+        ButterKnife.bind(this, rootView);
 
         setUIContent();
 
@@ -66,13 +68,6 @@ public class EditProfileFragment extends DialogFragment {
                     }
                 });
         return builder.create();
-    }
-
-    private void initUI(View view) {
-        mNameEditText = (EditText) view.findViewById(R.id.profile_name_edit_text);
-        mCompanyEditText = (EditText) view.findViewById(R.id.profile_company_edit_text);
-        mEmailEditText = (EditText) view.findViewById(R.id.profile_email_edit_text);
-
     }
 
     private void setUIContent() {

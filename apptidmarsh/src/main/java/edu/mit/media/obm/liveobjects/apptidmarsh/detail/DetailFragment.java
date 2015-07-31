@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
@@ -53,12 +55,12 @@ public class DetailFragment extends Fragment {
     private String mLiveObjectNameID;
 
     private View mRootView;
-    private ImageView mIconView;
-    private TextView mObjectTitleTextView;
-    private TextView mObjectGroupTextView;
-    private TextView mObjectDescriptionTextView;
-    private ProgressBar mProgressBar;
-    private LinearLayout mDetailInfoLayout;
+    @Bind(R.id.object_image_view) ImageView mIconView;
+    @Bind(R.id.object_title_textview) TextView mObjectTitleTextView;
+    @Bind(R.id.object_group_textview) TextView mObjectGroupTextView;
+    @Bind(R.id.object_description_textview) TextView mObjectDescriptionTextView;
+    @Bind(R.id.detail_progress_bar) ProgressBar mProgressBar;
+    @Bind(R.id.detail_info_layout) LinearLayout mDetailInfoLayout;
 
     private MiddlewareInterface mMiddleware;
     private ContentController mContentController;
@@ -68,7 +70,6 @@ public class DetailFragment extends Fragment {
 
     private AsyncTask<String, Void, InputStream> mSetBackgroundImageTask = null;
     private AsyncTask<String, Void, JSONObject> mSetPropertiesTask = null;
-
 
     public interface OnErrorListener {
         void onError(Exception exception);
@@ -86,8 +87,8 @@ public class DetailFragment extends Fragment {
         Bundle args = new Bundle();
         args.putString(ARG_LIVE_OBJ_NAME_ID, liveObjectNameID);
         fragment.setArguments(args);
-        return fragment;
 
+        return fragment;
     }
 
     // Required empty constructor
@@ -104,15 +105,12 @@ public class DetailFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-
         mRootView = inflater.inflate(R.layout.fragment_detail, container, false);
+        ButterKnife.bind(this, mRootView);
 
         mMiddleware = ((LiveObjectsApplication) getActivity().getApplication()).getMiddleware();
         mContentController = mMiddleware.getContentController();
         mDbController = mMiddleware.getDbController();
-
-        initUIObjects(mRootView);
 
         Map<String, Object> liveObjectProperties = getLiveObjectProperties(mLiveObjectNameID);
 
@@ -120,15 +118,6 @@ public class DetailFragment extends Fragment {
         setUIListeners();
 
         return mRootView;
-    }
-
-    private void initUIObjects(View rootView) {
-        mIconView = (ImageView) rootView.findViewById(R.id.object_image_view);
-        mObjectTitleTextView = (TextView) rootView.findViewById(R.id.object_title_textview);
-        mObjectGroupTextView = (TextView) rootView.findViewById(R.id.object_group_textview);
-        mObjectDescriptionTextView = (TextView) rootView.findViewById(R.id.object_description_textview);
-        mProgressBar = (ProgressBar) rootView.findViewById(R.id.detail_progress_bar);
-        mDetailInfoLayout = (LinearLayout) rootView.findViewById(R.id.detail_info_layout);
     }
 
     private Map<String, Object> getLiveObjectProperties(String liveObjectId) {

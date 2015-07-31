@@ -55,6 +55,7 @@ public class MainFragment extends Fragment {
     @Bind(R.id.live_objects_list_view) GridView mLiveObjectsGridView;
     @Bind(R.id.historyButton) Button mHistoryButton;
     @Bind(R.id.profileButton) Button mProfileButton;
+    @Bind(R.id.root_layout) LinearLayout mRootLayout;
 
     private ArrayAdapter<LiveObject> mAdapter;
     private ArrayList<LiveObject> mLiveObjectNamesList;
@@ -79,6 +80,7 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        ButterKnife.bind(this, rootView);
 
         setupUIElements(rootView);
         setupUIListeners();
@@ -91,8 +93,6 @@ public class MainFragment extends Fragment {
     }
 
     private void setupUIElements(View rootView) {
-        ButterKnife.bind(this, rootView);
-
         mLiveObjectNamesList = new ArrayList<>();
         mAdapter = new AnimationArrayAdapter<>(getActivity(), R.layout.list_item_live_objects,
                 R.id.grid_item_title_textview, mLiveObjectNamesList);
@@ -112,18 +112,17 @@ public class MainFragment extends Fragment {
             }
         });
 
-        setBackgroundImage(rootView);
+        setBackgroundImage();
     }
 
-    private void setBackgroundImage(View rootView) {
+    private void setBackgroundImage() {
         Bitmap background = BitmapFactory.decodeResource(getResources(), R.drawable.main_background);
         BitmapEditor bitmapEditor = new BitmapEditor(getActivity());
         background = bitmapEditor.cropToDisplayAspectRatio(background, getActivity().getWindowManager());
         bitmapEditor.blurBitmap(background, 2);
 
         BitmapDrawable drawableBackground = new BitmapDrawable(getResources(), background);
-        LinearLayout rootLayout = (LinearLayout) rootView.findViewById(R.id.root_layout);
-        rootLayout.setBackgroundDrawable(drawableBackground);
+        mRootLayout.setBackgroundDrawable(drawableBackground);
     }
 
     private void setupUIListeners() {

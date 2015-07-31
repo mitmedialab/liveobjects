@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.WrapUpActivity;
@@ -32,7 +34,9 @@ public class SavedLiveObjectsFragment extends Fragment {
      */
     private static final String ARG_TAB_ID = "tab_id";
     private int mTabId;
-    private ListView mListView;
+
+    @Bind(R.id.saved_liveobjs_listview) ListView mListView;
+
     private SavedLiveObjectsAdapter mAdapter;
 
     private MiddlewareInterface mMiddleware;
@@ -71,9 +75,9 @@ public class SavedLiveObjectsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_saved_live_objects, container, false);
-        mListView = (ListView) rootView.findViewById(R.id.saved_liveobjs_listview);
-        initListListener(mListView);
+        ButterKnife.bind(this, rootView);
 
+        initListListener(mListView);
 
         return rootView;
     }
@@ -96,15 +100,12 @@ public class SavedLiveObjectsFragment extends Fragment {
                 intent.putExtra(WrapUpActivity.EXTRA_SHOW_ADD_COMMENT, false);
                 intent.putExtra(WrapUpActivity.EXTRA_LIVE_OBJ_NAME_ID, liveObjNameId);
                 startActivity(intent);
-
             }
         });
     }
 
 
     private void fillData() {
-
-
         List<Map<String, Object>> allLiveObjects = mDbController.getAllLiveObjectsProperties();
         mLiveObjectsPropertiesList = new ArrayList<>();
         if (mTabId == SavedLiveObjectsActivity.FAVOURITE_TAB_ID) {

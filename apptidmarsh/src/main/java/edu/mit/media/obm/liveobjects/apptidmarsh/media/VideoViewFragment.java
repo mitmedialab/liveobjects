@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
@@ -30,7 +32,8 @@ public class VideoViewFragment extends Fragment {
 
     private String mFileUrl;
 
-    private VideoView mVideoView;
+    @Bind(R.id.myVideo) VideoView mVideoView;
+
     private Integer mPlayPosition;
 
     private OnMediaViewListener mListener;
@@ -72,8 +75,7 @@ public class VideoViewFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         final View rootView = inflater.inflate(R.layout.fragment_video_view, container, false);
-
-        mVideoView = (VideoView) rootView.findViewById(R.id.myVideo);
+        ButterKnife.bind(this, rootView);
 
         final MediaController videoControl = new MediaController(getActivity());
         videoControl.setAnchorView(mVideoView);

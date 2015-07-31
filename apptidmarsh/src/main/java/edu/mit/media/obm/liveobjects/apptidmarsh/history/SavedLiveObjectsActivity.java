@@ -18,6 +18,8 @@ import android.widget.LinearLayout;
 
 import java.util.Locale;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.slidingtabs.SlidingTabLayout;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.EmailFormatter;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
@@ -39,7 +41,9 @@ public class SavedLiveObjectsActivity extends ActionBarActivity implements Actio
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    ViewPager mViewPager;
+    @Bind(R.id.viewpager) ViewPager mViewPager;
+    @Bind(R.id.sliding_tabs) SlidingTabLayout mSlidingTabLayout;
+    @Bind(R.id.root_layout) LinearLayout mRootLayout;
 
     private static final int NUMBER_OF_TABS = 2;
     public static final int HISTORY_TAB_ID = 0;
@@ -49,20 +53,19 @@ public class SavedLiveObjectsActivity extends ActionBarActivity implements Actio
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_saved_live_objects);
+        ButterKnife.bind(this);
 
         // Create the adapter that will return a fragment for each of the
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.viewpager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         // Give the SlidingTabLayout the ViewPager
-        SlidingTabLayout slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
         // Center the tabs in the layout
-        slidingTabLayout.setDistributeEvenly(true);
-        slidingTabLayout.setViewPager(mViewPager);
+        mSlidingTabLayout.setDistributeEvenly(true);
+        mSlidingTabLayout.setViewPager(mViewPager);
         setBackgroundImage();
     }
 
@@ -73,8 +76,7 @@ public class SavedLiveObjectsActivity extends ActionBarActivity implements Actio
         bitmapEditor.blurBitmap(background, 2);
 
         BitmapDrawable drawableBackground = new BitmapDrawable(getResources(), background);
-        LinearLayout rootLayout = (LinearLayout) findViewById(R.id.root_layout);
-        rootLayout.setBackgroundDrawable(drawableBackground);
+        mRootLayout.setBackgroundDrawable(drawableBackground);
     }
 
     @Override

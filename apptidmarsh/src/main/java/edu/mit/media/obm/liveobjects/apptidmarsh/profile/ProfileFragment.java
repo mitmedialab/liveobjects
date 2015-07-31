@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.ProfilePreference;
 import edu.mit.media.obm.shair.liveobjects.R;
 
@@ -23,10 +25,9 @@ import edu.mit.media.obm.shair.liveobjects.R;
 public class ProfileFragment extends Fragment {
     private static final String LOG_TAG = ProfileFragment.class.getSimpleName();
 
-    private TextView mNameTextView;
-    private TextView mCompanyTextView;
-    private TextView mEmailTextView;
-
+    @Bind(R.id.nameTextView) TextView mNameTextView;
+    @Bind(R.id.companyTextView) TextView mCompanyTextView;
+    @Bind(R.id.emailTextView) TextView mEmailTextView;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -53,16 +54,11 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
-        initUI(rootView);
+        ButterKnife.bind(this, rootView);
+
         setUIProfileContent();
 
         return rootView;
-    }
-
-    private void initUI(View view) {
-        mNameTextView = (TextView) view.findViewById(R.id.nameTextView);
-        mCompanyTextView = (TextView) view.findViewById(R.id.companyTextView);
-        mEmailTextView = (TextView) view.findViewById(R.id.emailTextView);
     }
 
     private void setUIProfileContent() {
