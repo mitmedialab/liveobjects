@@ -209,7 +209,7 @@ public class MainFragment extends Fragment {
                     mConnectingDialog.dismiss();
 
                     final TextView liveObjectTitleTextView =
-                            (TextView) mClickedView.findViewById(R.id.grid_item_title_textview);
+                            ButterKnife.findById(mClickedView, R.id.grid_item_title_textview);
 
                     Animation animation = new ExpandIconAnimation(
                             getActivity().getWindowManager(), mClickedView).getAnimation();
