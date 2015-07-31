@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 
+import butterknife.BindString;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.WrapUpActivity;
@@ -56,6 +57,10 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
     private AsyncTask<Void, Integer, Void> mSavingFileTask = null;
 
     private ProgressDialog mDownloadProgressDialog;
+
+    @BindString(R.string.content_type_video) String mContentTypeVideo;
+    @BindString(R.string.content_type_audio) String mContentTypeAudio;
+    @BindString(R.string.content_type_gallery) String mContentTypeGallery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,16 +123,16 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
         String fileUrl = null;
         try {
             fileUrl = mContentController.getFileUrl(mediaContentId);
-            if (mContentType.equals(getResources().getString(R.string.content_type_video))) {
+            if (mContentType.equals(mContentTypeVideo)) {
 
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.activity_media_container, VideoViewFragment.newInstance(fileUrl))
                         .commit();
-            } else if (mContentType.equals(getResources().getString(R.string.content_type_audio))) {
+            } else if (mContentType.equals(mContentTypeAudio)) {
                 getSupportFragmentManager().beginTransaction().
                         add(R.id.activity_media_container, VideoViewFragment.newInstance(fileUrl)).
                         commit();
-            } else if (mContentType.equals(getResources().getString(R.string.content_type_gallery))) {
+            } else if (mContentType.equals(mContentTypeGallery)) {
                 //TODO launch gallery
             }
 

@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 import butterknife.Bind;
+import butterknife.BindString;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
@@ -72,6 +73,8 @@ public class DetailFragment extends Fragment {
     @Bind(R.id.object_description_textview) TextView mObjectDescriptionTextView;
     @Bind(R.id.detail_progress_bar) ProgressBar mProgressBar;
     @Bind(R.id.detail_info_layout) LinearLayout mDetailInfoLayout;
+
+    @BindString(R.string.media_config_filename) String mMediaConfigFileName;
 
     @OnClick(R.id.object_image_view)
     void onClickIconView() {
@@ -146,7 +149,7 @@ public class DetailFragment extends Fragment {
     }
 
     private Map<String, Object> fetchProperties(final String liveObjectId) {
-        String mediaConfigFileName = getActivity().getResources().getString(R.string.media_config_filename) + ".jso";
+        String mediaConfigFileName = mMediaConfigFileName + ".jso";
 
         mSetPropertiesTask =
                 new AsyncTask<String, Void, JSONObject>() {

@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import java.util.Locale;
 
 import butterknife.Bind;
+import butterknife.BindString;
 import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.slidingtabs.SlidingTabLayout;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.EmailFormatter;
@@ -44,6 +45,9 @@ public class SavedLiveObjectsActivity extends ActionBarActivity implements Actio
     @Bind(R.id.viewpager) ViewPager mViewPager;
     @Bind(R.id.sliding_tabs) SlidingTabLayout mSlidingTabLayout;
     @Bind(R.id.root_layout) LinearLayout mRootLayout;
+
+    @BindString(R.string.title_history_tab) String mTitleHistoryTab;
+    @BindString(R.string.title_favourite_tab) String mTitleFavouriteTab;
 
     private static final int NUMBER_OF_TABS = 2;
     public static final int HISTORY_TAB_ID = 0;
@@ -151,9 +155,9 @@ public class SavedLiveObjectsActivity extends ActionBarActivity implements Actio
             Locale l = Locale.getDefault();
             switch (position) {
                 case HISTORY_TAB_ID:
-                    return getString(R.string.title_history_tab).toUpperCase(l);
+                    return mTitleHistoryTab.toUpperCase(l);
                 case FAVOURITE_TAB_ID:
-                    return getString(R.string.title_favourite_tab).toUpperCase(l);
+                    return mTitleFavouriteTab.toUpperCase(l);
             }
             return null;
         }
