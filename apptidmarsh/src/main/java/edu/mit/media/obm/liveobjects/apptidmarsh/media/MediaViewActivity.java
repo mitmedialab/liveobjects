@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 import java.util.Map;
 
 import butterknife.BindString;
+import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.WrapUpActivity;
@@ -66,7 +67,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media_view);
-
+        ButterKnife.bind(this);
 
         mMiddleware = ((LiveObjectsApplication) getApplication()).getMiddleware();
         mContentController = mMiddleware.getContentController();
