@@ -59,27 +59,39 @@ public class SavedLiveObjectsAdapter extends ArrayAdapter<Map<String, Object>> {
 
         final ContentId iconContentId = new ContentId(liveObjectId, IMAGE_FOLDER, iconFileName);
 
+        ViewHolder holder;
+        if (convertView != null) {
+            holder = (ViewHolder) convertView.getTag();
+        } else {
+            LayoutInflater inflater = (LayoutInflater) mContext
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.saved_live_object_row, parent, false);
+            holder = new ViewHolder(convertView);
+            convertView.setTag(holder);
+        }
 
-        LayoutInflater inflater = (LayoutInflater) mContext
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.saved_live_object_row, parent, false);
-
-        final ImageView iconView = (ImageView) rowView.findViewById(R.id.row_item_icon_imageview);
-        TextView titleView = (TextView) rowView.findViewById(R.id.row_item_title_textview);
-        titleView.setText(title);
+        holder.mTitleView.setText(title);
         try {
             InputStream imageInputStream = mContentController.getInputStreamContent(iconContentId);
             Bitmap bitmap = Util.getBitmap(imageInputStream);
             BitmapEditor bitmapEditor = new BitmapEditor(mContext);
             Bitmap croppedBitmap = bitmapEditor.cropToAspectRatio(bitmap, 1.0F);
-            iconView.setImageBitmap(croppedBitmap);
+            holder.mIconView.setImageBitmap(croppedBitmap);
         } catch (Exception e) {
             Log.e(LOG_TAG, "error setting icon image", e);
         }
 
+        return convertView;
+    }
 
-        return rowView;
+    private static class ViewHolder {
+        ImageView mIconView;
+        TextView mTitleView;
 
+        public ViewHolder(View view) {
+            mIconView = (ImageView) view.findViewById(R.id.row_item_icon_imageview);
+            mTitleView = (TextView) view.findViewById(R.id.row_item_title_textview);
+        }
     }
 
     @Override
