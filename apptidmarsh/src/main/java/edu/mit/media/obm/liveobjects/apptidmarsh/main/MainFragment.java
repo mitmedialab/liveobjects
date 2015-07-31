@@ -27,6 +27,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsActivity;
@@ -51,12 +52,6 @@ public class MainFragment extends Fragment {
 
     private static final int DETAIL_ACTIVITY_REQUEST_CODE = 1;
 
-    @Bind(R.id.swipe_container) SwipeRefreshLayout mSwipeLayout;
-    @Bind(R.id.live_objects_list_view) GridView mLiveObjectsGridView;
-    @Bind(R.id.historyButton) Button mHistoryButton;
-    @Bind(R.id.profileButton) Button mProfileButton;
-    @Bind(R.id.root_layout) LinearLayout mRootLayout;
-
     private ArrayAdapter<LiveObject> mAdapter;
     private ArrayList<LiveObject> mLiveObjectNamesList;
 
@@ -71,6 +66,22 @@ public class MainFragment extends Fragment {
     private MiddlewareInterface mMiddleware;
 
     private ServerAwakener mServerAwakener;
+
+    @Bind(R.id.swipe_container) SwipeRefreshLayout mSwipeLayout;
+    @Bind(R.id.live_objects_list_view) GridView mLiveObjectsGridView;
+    @Bind(R.id.root_layout) LinearLayout mRootLayout;
+
+    @OnClick(R.id.historyButton)
+    void onClickHistoryButton() {
+        Intent intent = new Intent(getActivity(), SavedLiveObjectsActivity.class);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.profileButton)
+    void onClickProfileButton() {
+        Intent intent = new Intent(getActivity(), ProfileActivity.class);
+        startActivity(intent);
+    }
 
     public MainFragment() {
         super();
@@ -148,22 +159,6 @@ public class MainFragment extends Fragment {
                 mNetworkController.connect(mSelectedLiveObject);
 
                 mClickedView = view;
-            }
-        });
-
-        mHistoryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), SavedLiveObjectsActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        mProfileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ProfileActivity.class);
-                startActivity(intent);
             }
         });
     }

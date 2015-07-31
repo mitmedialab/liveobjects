@@ -25,6 +25,7 @@ import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
@@ -55,12 +56,6 @@ public class DetailFragment extends Fragment {
     private String mLiveObjectNameID;
 
     private View mRootView;
-    @Bind(R.id.object_image_view) ImageView mIconView;
-    @Bind(R.id.object_title_textview) TextView mObjectTitleTextView;
-    @Bind(R.id.object_group_textview) TextView mObjectGroupTextView;
-    @Bind(R.id.object_description_textview) TextView mObjectDescriptionTextView;
-    @Bind(R.id.detail_progress_bar) ProgressBar mProgressBar;
-    @Bind(R.id.detail_info_layout) LinearLayout mDetailInfoLayout;
 
     private MiddlewareInterface mMiddleware;
     private ContentController mContentController;
@@ -70,6 +65,23 @@ public class DetailFragment extends Fragment {
 
     private AsyncTask<String, Void, InputStream> mSetBackgroundImageTask = null;
     private AsyncTask<String, Void, JSONObject> mSetPropertiesTask = null;
+
+    @Bind(R.id.object_image_view) ImageView mIconView;
+    @Bind(R.id.object_title_textview) TextView mObjectTitleTextView;
+    @Bind(R.id.object_group_textview) TextView mObjectGroupTextView;
+    @Bind(R.id.object_description_textview) TextView mObjectDescriptionTextView;
+    @Bind(R.id.detail_progress_bar) ProgressBar mProgressBar;
+    @Bind(R.id.detail_info_layout) LinearLayout mDetailInfoLayout;
+
+    @OnClick(R.id.object_image_view)
+    void onClickIconView() {
+        // wait asynchronous tasks finish before starting another activity
+        cancelAsyncTasks();
+        // launch the media associated to the object
+        Intent viewIntent = new Intent(getActivity(), MediaViewActivity.class);
+        viewIntent.putExtra(MediaViewActivity.EXTRA_LIVE_OBJ_NAME_ID, mLiveObjectNameID);
+        getActivity().startActivity(viewIntent);
+    }
 
     public interface OnErrorListener {
         void onError(Exception exception);
@@ -115,7 +127,6 @@ public class DetailFragment extends Fragment {
         Map<String, Object> liveObjectProperties = getLiveObjectProperties(mLiveObjectNameID);
 
         setUIContent(liveObjectProperties);
-        setUIListeners();
 
         return mRootView;
     }
@@ -251,22 +262,6 @@ public class DetailFragment extends Fragment {
         }
         mProgressBar.setVisibility(View.GONE);
         mDetailInfoLayout.setVisibility(View.VISIBLE);
-    }
-
-    private void setUIListeners() {
-        mIconView.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // wait asynchronous tasks finish before starting another activity
-                        cancelAsyncTasks();
-                        // launch the media associated to the object
-                        Intent viewIntent = new Intent(getActivity(), MediaViewActivity.class);
-                        viewIntent.putExtra(MediaViewActivity.EXTRA_LIVE_OBJ_NAME_ID, mLiveObjectNameID);
-                        getActivity().startActivity(viewIntent);
-                    }
-                }
-        );
     }
 
     protected void cancelAsyncTasks() {

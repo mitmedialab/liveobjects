@@ -29,6 +29,7 @@ import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
@@ -70,6 +71,36 @@ public class WrapUpFragment extends Fragment {
     @Bind(R.id.replay_button) LinearLayout mReplayButtonLayout;
     @Bind(R.id.addCommentButton) LinearLayout mAddCommentLayout;
 
+    @OnClick(R.id.favorite_button)
+    void onClickFavoriteButton() {
+        // change the favorite state state
+        mIsFavorite = !mIsFavorite;
+        updateFavorite(mLiveObjNameId, mIsFavorite);
+        updateFavoriteUI(mFavouriteButtonLayout, mIsFavorite);
+    }
+
+
+    @OnClick(R.id.replay_button)
+    void onClickReplayButton() {
+        Intent viewIntent = new Intent(getActivity(), MediaViewActivity.class);
+        viewIntent.putExtra(MediaViewActivity.EXTRA_LIVE_OBJ_NAME_ID, mLiveObjNameId);
+        getActivity().startActivity(viewIntent);
+    }
+
+    @OnClick(R.id.addCommentButton)
+    void onClickAddCommentButton() {
+        mAddCommentAlert.show();
+
+        // TODO: changing button format should be done in initAddCommentAlert()
+        Button positiveButton = mAddCommentAlert.getButton(DialogInterface.BUTTON_POSITIVE);
+        Button negativeButton = mAddCommentAlert.getButton(DialogInterface.BUTTON_NEGATIVE);
+
+        positiveButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+        positiveButton.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+        negativeButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+        negativeButton.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+    }
+
     AlertDialog mAddCommentAlert;
 
     private boolean mIsFavorite;
@@ -104,8 +135,6 @@ public class WrapUpFragment extends Fragment {
         MiddlewareInterface middleware = ((LiveObjectsApplication) getActivity().getApplication()).getMiddleware();
         mDbController = middleware.getDbController();
         mContentController = middleware.getContentController();
-
-
     }
 
     @Override
@@ -116,7 +145,6 @@ public class WrapUpFragment extends Fragment {
 
         mAddCommentAlert = initAddCommentAlert();
         setUIContent(rootView);
-        setUIListener(rootView);
 
         return rootView;
     }
@@ -210,47 +238,6 @@ public class WrapUpFragment extends Fragment {
         int backgroundColor = getResources().getColor(backgroundColorId);
 
         favouriteButtonLayout.setBackgroundColor(backgroundColor);
-    }
-
-    private void setUIListener(View rootView) {
-        mFavouriteButtonLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // change the favorite state state
-                mIsFavorite = !mIsFavorite;
-                updateFavorite(mLiveObjNameId, mIsFavorite);
-                updateFavoriteUI(mFavouriteButtonLayout, mIsFavorite);
-
-            }
-        });
-
-        mReplayButtonLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent viewIntent = new Intent(getActivity(), MediaViewActivity.class);
-                viewIntent.putExtra(MediaViewActivity.EXTRA_LIVE_OBJ_NAME_ID, mLiveObjNameId);
-                getActivity().startActivity(viewIntent);
-            }
-        });
-
-        mAddCommentLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAddCommentAlert.show();
-
-                // TODO: changing button format should be done in initAddCommentAlert()
-                Button positiveButton = mAddCommentAlert.getButton(DialogInterface.BUTTON_POSITIVE);
-                Button negativeButton = mAddCommentAlert.getButton(DialogInterface.BUTTON_NEGATIVE);
-
-                positiveButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-                positiveButton.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-                negativeButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-                negativeButton.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-
-            }
-        });
-
-
     }
 
     private void updateFavorite(String liveObjNameId, boolean isFavorite) {
