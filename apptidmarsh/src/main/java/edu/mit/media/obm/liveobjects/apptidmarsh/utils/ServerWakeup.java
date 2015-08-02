@@ -40,8 +40,8 @@ public class ServerWakeup {
         }
     }
 
-    public synchronized void awaken() {
-        cancel();
+    public synchronized void wakeUp() {
+        cancelWakeUp();
 
         debug("start awakening...");
 
@@ -61,7 +61,7 @@ public class ServerWakeup {
         }
     }
 
-    public synchronized void cancel() {
+    public synchronized void cancelWakeUp() {
         debug("cancel awakening...");
 
         if (mBroadcastReceiver != null) {
@@ -105,7 +105,7 @@ public class ServerWakeup {
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 debug("finished BLE discovery");
-                cancel();
+                cancelWakeUp();
             }
         }
 

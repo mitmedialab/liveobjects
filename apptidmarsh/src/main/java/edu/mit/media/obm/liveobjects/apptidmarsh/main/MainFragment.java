@@ -23,13 +23,16 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
+import dagger.ObjectGraph;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
-import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.MainFragmentModule;
 import edu.mit.media.obm.liveobjects.apptidmarsh.profile.ProfileActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.ServerWakeup;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.AnimationArrayAdapter;
@@ -56,15 +59,15 @@ public class MainFragment extends Fragment {
 
     private View mClickedView;
 
-    private NetworkController mNetworkController;
+    @Inject NetworkController mNetworkController;
 
     private LiveObject mSelectedLiveObject;
 
     private ProgressDialog mConnectingDialog;
 
-    private MiddlewareInterface mMiddleware;
+    @Inject MiddlewareInterface mMiddleware;
 
-    private ServerWakeup mServerWakeup;
+    @Inject ServerWakeup mServerWakeup;
 
     @Bind(R.id.swipe_container) SwipeRefreshLayout mSwipeLayout;
     @Bind(R.id.live_objects_list_view) GridView mLiveObjectsGridView;
@@ -104,11 +107,10 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, rootView);
+        ObjectGraph.create(new MainFragmentModule(getActivity())).inject(this);
 
         setupUIElements(rootView);
         setupUIListeners();
-
-        mMiddleware = ((LiveObjectsApplication) getActivity().getApplication()).getMiddleware();
 
         initNetworkListeners();
 
@@ -154,14 +156,12 @@ public class MainFragment extends Fragment {
             @Override
             public void onRefresh() {
                 mNetworkController.startDiscovery();
-                mServerWakeup.awaken();
+                mServerWakeup.wakeUp();
             }
         });
     }
 
     private void initNetworkListeners() {
-        mNetworkController = mMiddleware.getNetworkController();
-
         initDiscoveryListener();
         initConnectionListener();
 
@@ -172,8 +172,6 @@ public class MainFragment extends Fragment {
         }
 
         mAdapter.notifyDataSetChanged();
-
-        mServerWakeup = new ServerWakeup(getActivity());
     }
 
     private void initDiscoveryListener() {
@@ -265,7 +263,7 @@ public class MainFragment extends Fragment {
         mNetworkController.start();
         mNetworkController.startDiscovery();
 
-        mServerWakeup.awaken();
+        mServerWakeup.wakeUp();
     }
 
     @Override
@@ -274,7 +272,7 @@ public class MainFragment extends Fragment {
 //        mNetworkController.stop();
         super.onStop();
 
-        mServerWakeup.cancel();
+        mServerWakeup.cancelWakeUp();
     }
 
     @Override
