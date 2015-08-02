@@ -164,8 +164,7 @@ public class MainFragment extends Fragment {
         initConnectionListener();
 
         Log.v(LOG_TAG, "deleting all the network configuration related to live objects");
-        NetworkController networkController = mMiddleware.getNetworkController();
-        if (!networkController.isConnecting()) {
+        if (!mNetworkController.isConnecting()) {
             mMiddleware.getNetworkController().forgetNetworkConfigurations();
         }
 

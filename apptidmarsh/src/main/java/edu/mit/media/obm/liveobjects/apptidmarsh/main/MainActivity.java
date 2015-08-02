@@ -5,12 +5,15 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import javax.inject.Inject;
+
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 
 public class MainActivity extends ActionBarActivity {
+    @Inject NetworkController mNetWorkController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
