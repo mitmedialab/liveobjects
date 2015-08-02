@@ -36,6 +36,8 @@ dependencies {
     compile 'com.pkmmte.view:circularimageview:1.1'
     compile 'com.sothree.slidinguppanel:library:3.0.0'
     compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.squareup.dagger:dagger:1.2.2'
+    compile 'com.squareup.dagger:dagger-compiler:1.2.2'
     compile project(':liveobjects_middleware_mod')
     compile project(':liveobjects_network_wifi_mod')
     compile project(':liveobjects_storage_wifi_mod')

@@ -31,7 +31,7 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.profile.ProfileActivity;
-import edu.mit.media.obm.liveobjects.apptidmarsh.utils.ServerAwakener;
+import edu.mit.media.obm.liveobjects.apptidmarsh.utils.ServerWakeup;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.AnimationArrayAdapter;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.ExpandIconAnimation;
@@ -64,7 +64,7 @@ public class MainFragment extends Fragment {
 
     private MiddlewareInterface mMiddleware;
 
-    private ServerAwakener mServerAwakener;
+    private ServerWakeup mServerWakeup;
 
     @Bind(R.id.swipe_container) SwipeRefreshLayout mSwipeLayout;
     @Bind(R.id.live_objects_list_view) GridView mLiveObjectsGridView;
@@ -154,7 +154,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onRefresh() {
                 mNetworkController.startDiscovery();
-                mServerAwakener.awaken();
+                mServerWakeup.awaken();
             }
         });
     }
@@ -173,7 +173,7 @@ public class MainFragment extends Fragment {
 
         mAdapter.notifyDataSetChanged();
 
-        mServerAwakener = new ServerAwakener(getActivity());
+        mServerWakeup = new ServerWakeup(getActivity());
     }
 
     private void initDiscoveryListener() {
@@ -265,7 +265,7 @@ public class MainFragment extends Fragment {
         mNetworkController.start();
         mNetworkController.startDiscovery();
 
-        mServerAwakener.awaken();
+        mServerWakeup.awaken();
     }
 
     @Override
@@ -274,7 +274,7 @@ public class MainFragment extends Fragment {
 //        mNetworkController.stop();
         super.onStop();
 
-        mServerAwakener.cancel();
+        mServerWakeup.cancel();
     }
 
     @Override

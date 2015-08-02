@@ -15,15 +15,15 @@ import android.widget.Toast;
 /**
  * Created by arata on 7/14/15.
  */
-public class ServerAwakener {
-    private static final String LOG_TAG = ServerAwakener.class.getSimpleName();
+public class ServerWakeup {
+    private static final String LOG_TAG = ServerWakeup.class.getSimpleName();
 
     private BluetoothAdapter mBluetoothAdapter = null;
     private BluetoothDetectionReceiver mBroadcastReceiver = null;
 
     private Context mContext;
 
-    public ServerAwakener(Context appContext) {
+    public ServerWakeup(Context appContext) {
         mContext = appContext;
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
