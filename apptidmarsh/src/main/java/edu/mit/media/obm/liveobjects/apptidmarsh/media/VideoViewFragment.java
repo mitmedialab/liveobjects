@@ -11,8 +11,12 @@ import android.view.ViewGroup;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import dagger.ObjectGraph;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.VideoViewFragmentModule;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
@@ -33,6 +37,7 @@ public class VideoViewFragment extends Fragment {
     private String mFileUrl;
 
     @Bind(R.id.myVideo) VideoView mVideoView;
+    @Inject MediaController mVideoControl;
 
     private Integer mPlayPosition;
 
@@ -76,10 +81,10 @@ public class VideoViewFragment extends Fragment {
 
         final View rootView = inflater.inflate(R.layout.fragment_video_view, container, false);
         ButterKnife.bind(this, rootView);
+        ObjectGraph.create(new VideoViewFragmentModule(getActivity())).inject(this);
 
-        final MediaController videoControl = new MediaController(getActivity());
-        videoControl.setAnchorView(mVideoView);
-        mVideoView.setMediaController(videoControl);
+        mVideoControl.setAnchorView(mVideoView);
+        mVideoView.setMediaController(mVideoControl);
         mVideoView.setOnCompletionListener(mListener);
         mVideoView.setOnErrorListener(mListener);
 
