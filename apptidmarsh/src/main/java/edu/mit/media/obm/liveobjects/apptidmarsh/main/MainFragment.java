@@ -59,14 +59,12 @@ public class MainFragment extends Fragment {
 
     private View mClickedView;
 
-    @Inject NetworkController mNetworkController;
-
     private LiveObject mSelectedLiveObject;
 
     private ProgressDialog mConnectingDialog;
 
+    @Inject NetworkController mNetworkController;
     @Inject MiddlewareInterface mMiddleware;
-
     @Inject ServerWakeup mServerWakeup;
 
     @Bind(R.id.swipe_container) SwipeRefreshLayout mSwipeLayout;

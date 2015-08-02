@@ -27,14 +27,18 @@ import android.widget.Toast;
 import java.util.Calendar;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import dagger.ObjectGraph;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.ProfilePreference;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.MediaViewActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.WrapUpFragmentModule;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
@@ -56,13 +60,11 @@ public class WrapUpFragment extends Fragment {
     private static final String ARG_LIVE_OBJ_NAME_ID = "live_obj_name_id";
     private static final String ARG_SHOW_ADD_COMMENT = "show_add_comment";
 
-
-    private DbController mDbController;
-    private ContentController mContentController;
-
-
     private String mLiveObjNameId;
     private boolean mShowAddComment;
+
+    @Inject DbController mDbController;
+    @Inject ContentController mContentController;
 
     @Bind(R.id.wrapup_title_textview) TextView mTitleTextView;
     @Bind(R.id.wrapup_group_textview) TextView mGroupTextView;
@@ -127,14 +129,12 @@ public class WrapUpFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ObjectGraph.create(new WrapUpFragmentModule(getActivity())).inject(this);
+
         if (getArguments() != null) {
             mLiveObjNameId = getArguments().getString(ARG_LIVE_OBJ_NAME_ID);
             mShowAddComment = getArguments().getBoolean(ARG_SHOW_ADD_COMMENT);
         }
-
-        MiddlewareInterface middleware = ((LiveObjectsApplication) getActivity().getApplication()).getMiddleware();
-        mDbController = middleware.getDbController();
-        mContentController = middleware.getContentController();
     }
 
     @Override

@@ -23,14 +23,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import dagger.ObjectGraph;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.MediaViewActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.DetailFragmentModule;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.Util;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.ZoomInOutAnimation;
@@ -58,9 +62,8 @@ public class DetailFragment extends Fragment {
 
     private View mRootView;
 
-    private MiddlewareInterface mMiddleware;
-    private ContentController mContentController;
-    private DbController mDbController;
+    @Inject ContentController mContentController;
+    @Inject DbController mDbController;
 
     private OnErrorListener mOnErrorListener = null;
 
@@ -122,10 +125,7 @@ public class DetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, mRootView);
-
-        mMiddleware = ((LiveObjectsApplication) getActivity().getApplication()).getMiddleware();
-        mContentController = mMiddleware.getContentController();
-        mDbController = mMiddleware.getDbController();
+        ObjectGraph.create(new DetailFragmentModule(getActivity())).inject(this);
 
         Map<String, Object> liveObjectProperties = getLiveObjectProperties(mLiveObjectNameID);
 
