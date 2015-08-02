@@ -20,10 +20,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import dagger.ObjectGraph;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.AnimationArrayAdapterModule;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.Util;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
@@ -38,7 +42,6 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
     private static final String LOG_TAG = AnimationArrayAdapter.class.getSimpleName();
 
     private Context mContext;
-    private LayoutInflater mInflater;
     private int mResource;
     private List<T> mObjects;
 
@@ -47,24 +50,20 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
 
     private RandomColorGenerator mRandomColorGenerator;
 
-    private MiddlewareInterface mMiddleware;
-    private DbController mDbController;
-    private ContentController mContentController;
+    @Inject DbController mDbController;
+    @Inject ContentController mContentController;
+    @Inject LayoutInflater mInflater;
 
     //TODO to incorporate in the live object
     private static final String ICON_FOLDER = "DCIM";
 
     public AnimationArrayAdapter(Context context, int resource, List<T> objects) {
         super(context, resource, objects);
+        ObjectGraph.create(new AnimationArrayAdapterModule(context)).inject(this);
 
         mContext = context;
-        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mResource = resource;
         mObjects = objects;
-
-        mMiddleware = ((LiveObjectsApplication) ((Activity) mContext).getApplication()).getMiddleware();
-        mContentController = mMiddleware.getContentController();
-        mDbController = mMiddleware.getDbController();
 
         mNewObjects = new ArrayList<>();
         for (T object : mObjects) {
