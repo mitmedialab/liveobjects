@@ -6,19 +6,20 @@ import android.content.Context;
 import dagger.Module;
 import dagger.Provides;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
-import edu.mit.media.obm.liveobjects.apptidmarsh.detail.WrapUpFragment;
+import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailFragment;
+import edu.mit.media.obm.liveobjects.apptidmarsh.media.MediaViewActivity;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 
 /**
- * Created by artimo14 on 8/1/15.
+ * Created by artimo14 on 8/2/15.
  */
-@Module(injects = WrapUpFragment.class)
-public class WrapUpFragmentModule {
+@Module(injects = MediaViewActivity.class)
+public class MediaViewActivityModule {
     Context mContext;
 
-    public WrapUpFragmentModule(Context context) {
+    public MediaViewActivityModule(Context context) {
         mContext = context;
     }
 

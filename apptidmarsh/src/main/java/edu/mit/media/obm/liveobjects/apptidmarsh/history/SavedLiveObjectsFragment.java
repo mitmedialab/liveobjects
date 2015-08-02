@@ -13,12 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnItemClick;
+import dagger.ObjectGraph;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.WrapUpActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.SavedLiveObjectsFragmentModule;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.shair.liveobjects.R;
@@ -38,6 +42,9 @@ public class SavedLiveObjectsFragment extends Fragment {
 
     @Bind(R.id.saved_liveobjs_listview) ListView mListView;
 
+    @Inject MiddlewareInterface mMiddleware;
+    @Inject DbController mDbController;
+
     @OnItemClick(R.id.saved_liveobjs_listview)
     void onSavedLiveObjectsListViewItemClick(int position) {
         MLProjectPropertyProvider provider =
@@ -52,11 +59,7 @@ public class SavedLiveObjectsFragment extends Fragment {
 
     private SavedLiveObjectsAdapter mAdapter;
 
-    private MiddlewareInterface mMiddleware;
-    private DbController mDbController;
-
     private List<Map<String, Object>> mLiveObjectsPropertiesList;
-
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -71,7 +74,7 @@ public class SavedLiveObjectsFragment extends Fragment {
     }
 
     public SavedLiveObjectsFragment() {
-
+        ObjectGraph.create(new SavedLiveObjectsFragmentModule(getActivity())).inject(this);
     }
 
     @Override

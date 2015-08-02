@@ -20,11 +20,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import butterknife.BindString;
 import butterknife.ButterKnife;
+import dagger.ObjectGraph;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.WrapUpActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.MediaViewActivityModule;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
@@ -46,10 +50,6 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
     //TODO makes the media directory name parametrizable
     private static final String MEDIA_DIRECTORY_NAME = "DCIM";
 
-    private MiddlewareInterface mMiddleware;
-    private ContentController mContentController;
-    private DbController mDbController;
-
     private String mContentType;
     private String mFileName;
 
@@ -63,15 +63,15 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
     @BindString(R.string.content_type_audio) String mContentTypeAudio;
     @BindString(R.string.content_type_gallery) String mContentTypeGallery;
 
+    @Inject ContentController mContentController;
+    @Inject DbController mDbController;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media_view);
         ButterKnife.bind(this);
-
-        mMiddleware = ((LiveObjectsApplication) getApplication()).getMiddleware();
-        mContentController = mMiddleware.getContentController();
-        mDbController = mMiddleware.getDbController();
+        ObjectGraph.create(new MediaViewActivityModule(this)).inject(this);
 
         mDownloadProgressDialog = new ProgressDialog(this);
 // TODO to reintroduce
