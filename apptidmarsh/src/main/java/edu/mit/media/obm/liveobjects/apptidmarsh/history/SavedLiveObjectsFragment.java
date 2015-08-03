@@ -74,12 +74,13 @@ public class SavedLiveObjectsFragment extends Fragment {
     }
 
     public SavedLiveObjectsFragment() {
-        ObjectGraph.create(new SavedLiveObjectsFragmentModule(getActivity())).inject(this);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ObjectGraph.create(new SavedLiveObjectsFragmentModule(getActivity())).inject(this);
+
         if (getArguments() != null) {
             mTabId = getArguments().getInt(ARG_TAB_ID);
         }
