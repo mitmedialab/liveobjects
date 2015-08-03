@@ -23,6 +23,8 @@ public class ServerWakeup {
 
     private Context mContext;
 
+    private WakeupStatusCallback mWakeupStatusCallback = null;
+
     public ServerWakeup(Context appContext) {
         mContext = appContext;
 
@@ -59,6 +61,10 @@ public class ServerWakeup {
         for (BluetoothDevice device : mBluetoothAdapter.getBondedDevices()) {
             debug("device = " + device.getName());
         }
+
+        if (mWakeupStatusCallback != null) {
+            mWakeupStatusCallback.onWakeupStarted();
+        }
     }
 
     public synchronized void cancelWakeUp() {
@@ -82,6 +88,19 @@ public class ServerWakeup {
         mContext.startActivity(enableBtIntent);
     }
 
+    public synchronized void registerWakeupStatusCallback(WakeupStatusCallback callback) {
+        mWakeupStatusCallback = callback;
+    }
+
+    public synchronized void unregisterWakeupStatusCallback() {
+        mWakeupStatusCallback = null;
+    }
+
+    public interface WakeupStatusCallback {
+        void onWakeupStarted();
+        void onDetected(String deviceName);
+    }
+
     private class BluetoothDetectionReceiver extends BroadcastReceiver {
         private BluetoothGatt mBluetoothGatt = null;
 
@@ -102,6 +121,12 @@ public class ServerWakeup {
                     mBluetoothGatt = device.connectGatt(mContext, true, mGattCallback);
 
                     Toast.makeText(mContext, String.format("Awakening '%s'", deviceName), Toast.LENGTH_SHORT).show();
+
+                    synchronized (ServerWakeup.class) {
+                        if (mWakeupStatusCallback != null) {
+                            mWakeupStatusCallback.onDetected(deviceName);
+                        }
+                    }
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 debug("finished BLE discovery");

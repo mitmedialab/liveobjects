@@ -29,11 +29,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
-import dagger.ObjectGraph;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsActivity;
-import edu.mit.media.obm.liveobjects.apptidmarsh.module.ApplicationModule;
 import edu.mit.media.obm.liveobjects.apptidmarsh.profile.ProfileActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.ServerWakeup;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.AnimationArrayAdapter;
@@ -41,7 +39,6 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.ExpandIconAnimation;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
-import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ConnectionListener;
 import edu.mit.media.obm.liveobjects.middleware.control.DiscoveryListener;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
@@ -56,7 +53,10 @@ public class MainFragment extends Fragment {
     private static final int DETAIL_ACTIVITY_REQUEST_CODE = 1;
 
     private ArrayAdapter<LiveObject> mAdapter;
+
     private ArrayList<LiveObject> mLiveObjectNamesList;
+    private ArrayList<LiveObject> mActiveLiveObjectNamesList;
+    private ArrayList<LiveObject> mSleepingLiveObjectNamesList;
 
     private View mClickedView;
 
@@ -65,7 +65,6 @@ public class MainFragment extends Fragment {
     private ProgressDialog mConnectingDialog;
 
     @Inject NetworkController mNetworkController;
-    @Inject MiddlewareInterface mMiddleware;
     @Inject ServerWakeup mServerWakeup;
 
     @Bind(R.id.swipe_container) SwipeRefreshLayout mSwipeLayout;
@@ -110,7 +109,7 @@ public class MainFragment extends Fragment {
         LiveObjectsApplication app = (LiveObjectsApplication) getActivity().getApplication();
         app.injectObjectGraph(this);
 
-        setupUIElements(rootView);
+        setupUIElements();
         setupUIListeners();
 
         initNetworkListeners();
@@ -118,8 +117,11 @@ public class MainFragment extends Fragment {
         return rootView;
     }
 
-    private void setupUIElements(View rootView) {
+    private void setupUIElements() {
         mLiveObjectNamesList = new ArrayList<>();
+        mActiveLiveObjectNamesList = new ArrayList<>();
+        mSleepingLiveObjectNamesList = new ArrayList<>();
+
         mAdapter = new AnimationArrayAdapter<>(getActivity(), R.layout.list_item_live_objects,
                 mLiveObjectNamesList);
         mLiveObjectsGridView.setAdapter(mAdapter);
@@ -168,7 +170,7 @@ public class MainFragment extends Fragment {
 
         Log.v(LOG_TAG, "deleting all the network configuration related to live objects");
         if (!mNetworkController.isConnecting()) {
-            mMiddleware.getNetworkController().forgetNetworkConfigurations();
+            mNetworkController.forgetNetworkConfigurations();
         }
 
         mAdapter.notifyDataSetChanged();
@@ -184,10 +186,15 @@ public class MainFragment extends Fragment {
             @Override
             public void onLiveObjectsDiscovered(List<LiveObject> liveObjectList) {
                 Log.d(LOG_TAG, "discovery successfully completed");
-                mLiveObjectNamesList.clear();
+                mActiveLiveObjectNamesList.clear();
                 for (LiveObject liveObject : liveObjectList) {
-                    mLiveObjectNamesList.add(liveObject);
+                    mActiveLiveObjectNamesList.add(liveObject);
                 }
+
+                mLiveObjectNamesList.clear();
+                mLiveObjectNamesList.addAll(mActiveLiveObjectNamesList);
+                mLiveObjectNamesList.addAll(mSleepingLiveObjectNamesList);
+
                 mAdapter.notifyDataSetChanged();
                 mSwipeLayout.setRefreshing(false);
             }
@@ -263,6 +270,25 @@ public class MainFragment extends Fragment {
         mNetworkController.start();
         mNetworkController.startDiscovery();
 
+        mServerWakeup.registerWakeupStatusCallback(new ServerWakeup.WakeupStatusCallback() {
+            @Override
+            public void onWakeupStarted() {
+                mSleepingLiveObjectNamesList.clear();
+            }
+
+            @Override
+            public void onDetected(String deviceName) {
+                LiveObject liveObject = new LiveObject(deviceName);
+                mSleepingLiveObjectNamesList.add(liveObject);
+
+                mLiveObjectNamesList.clear();
+                mLiveObjectNamesList.addAll(mActiveLiveObjectNamesList);
+                mLiveObjectNamesList.addAll(mSleepingLiveObjectNamesList);
+
+                mAdapter.notifyDataSetChanged();
+                mSwipeLayout.setRefreshing(false);
+            }
+        });
         mServerWakeup.wakeUp();
     }
 
