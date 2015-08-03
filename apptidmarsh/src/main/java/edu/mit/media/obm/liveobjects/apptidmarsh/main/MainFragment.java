@@ -299,7 +299,7 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onDetected(String deviceName) {
-                LiveObject liveObject = new LiveObject(deviceName);
+                LiveObject liveObject = new LiveObject(deviceName, false);
                 mSleepingLiveObjectNamesList.add(liveObject);
 
                 updateLiveObjectsList();

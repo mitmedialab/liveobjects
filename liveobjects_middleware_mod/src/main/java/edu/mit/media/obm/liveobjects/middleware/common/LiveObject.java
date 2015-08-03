@@ -7,14 +7,18 @@ package edu.mit.media.obm.liveobjects.middleware.common;
  */
 public final class LiveObject {
     private final String mLiveObjectName;
+    private final boolean mIsActive;
 
     /**
      * Creates a new network device with specified id
      */
-    public LiveObject(String liveObjectName) {
-        if (liveObjectName == null)
+    public LiveObject(String liveObjectName, boolean isActive) {
+        if (liveObjectName == null) {
             throw new NullPointerException();
+        }
+
         mLiveObjectName = liveObjectName;
+        mIsActive = isActive;
     }
 
     /**
@@ -24,6 +28,15 @@ public final class LiveObject {
      */
     public String getLiveObjectName() {
         return mLiveObjectName;
+    }
+
+    /**
+     * Get a boolean value which indicates if the network device is active or sleeping.
+     *
+     * @return true if the network device is not sleeping
+     */
+    public boolean isActive() {
+        return mIsActive;
     }
 
 

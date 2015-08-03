@@ -188,7 +188,7 @@ public class WifiDriver implements NetworkDriver {
 
                 if (WifiUtil.INSTANCE.isLiveObject(deviceId)){
                     String liveObjectName = WifiUtil.INSTANCE.convertDeviceIdToLiveObjectName(deviceId);
-                            LiveObject liveObject = new LiveObject(liveObjectName);
+                            LiveObject liveObject = new LiveObject(liveObjectName, true);
 
                     //network device representing a live object found
                     // add it to the list
