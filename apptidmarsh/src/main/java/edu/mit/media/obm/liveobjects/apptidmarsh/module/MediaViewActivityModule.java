@@ -6,7 +6,6 @@ import android.content.Context;
 import dagger.Module;
 import dagger.Provides;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
-import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.MediaViewActivity;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
