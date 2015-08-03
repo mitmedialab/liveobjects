@@ -12,6 +12,9 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import edu.mit.media.obm.liveobjects.driver.wifi.WifiUtil;
+import edu.mit.media.obm.liveobjects.middleware.net.NetworkUtil;
+
 /**
  * Created by arata on 7/14/15.
  */
@@ -116,7 +119,8 @@ public class ServerWakeup {
                     debug("detected device: " + deviceName);
                 }
 
-                if (deviceName != null && deviceName.startsWith("liveobj-")) {
+                // ToDo; shouldn't use WiFiUtil directly
+                if (deviceName != null && WifiUtil.INSTANCE.isLiveObject(deviceName)) {
                     debug(String.format("trying to connect to BLE device '%s'", deviceName));
                     mBluetoothGatt = device.connectGatt(mContext, true, mGattCallback);
 
@@ -124,7 +128,10 @@ public class ServerWakeup {
 
                     synchronized (ServerWakeup.class) {
                         if (mWakeupStatusCallback != null) {
-                            mWakeupStatusCallback.onDetected(deviceName);
+                            // ToDo; shouldn't use WiFiUtil directly
+                            String liveObjectName =
+                                    WifiUtil.INSTANCE.convertDeviceIdToLiveObjectName(deviceName);
+                            mWakeupStatusCallback.onDetected(liveObjectName);
                         }
                     }
                 }
