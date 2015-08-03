@@ -24,14 +24,11 @@ import javax.inject.Inject;
 
 import butterknife.BindString;
 import butterknife.ButterKnife;
-import dagger.ObjectGraph;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.WrapUpActivity;
-import edu.mit.media.obm.liveobjects.apptidmarsh.module.MediaViewActivityModule;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
-import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.liveobjects.storage.wifi.WifiStorageConfig;
@@ -71,7 +68,9 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media_view);
         ButterKnife.bind(this);
-        ObjectGraph.create(new MediaViewActivityModule(this)).inject(this);
+
+        LiveObjectsApplication app = (LiveObjectsApplication) getApplication();
+        app.injectObjectGraph(this);
 
         mDownloadProgressDialog = new ProgressDialog(this);
 // TODO to reintroduce

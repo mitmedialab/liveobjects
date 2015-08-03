@@ -19,6 +19,10 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        LiveObjectsApplication app = (LiveObjectsApplication) getApplication();
+        app.injectObjectGraph(this);
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new MainFragment())
@@ -45,10 +49,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public void onBackPressed() {
-        NetworkController networkController =
-                ((LiveObjectsApplication) getApplication()).getMiddleware().getNetworkController();
-        networkController.stop();
-
+        mNetWorkController.stop();
         super.onBackPressed();
     }
 

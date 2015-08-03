@@ -2,6 +2,12 @@ package edu.mit.media.obm.liveobjects.apptidmarsh;
 
 import android.app.Application;
 
+import java.util.AbstractCollection;
+
+import dagger.ObjectGraph;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.ApplicationModule;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.MiddlewareModule;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.SystemModule;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiDriver;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObjectsMiddleware;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
@@ -24,23 +30,25 @@ public class LiveObjectsApplication extends Application {
 
     private MiddlewareInterface middleware;
 
+    private ObjectGraph mObjectGraph;
 
     @Override
     public void onCreate() {
         super.onCreate();
         middleware = createMiddleware();
 
+        // create object class for dependency injection
+        mObjectGraph = ObjectGraph.create(
+                new MiddlewareModule(), new ApplicationModule(), new SystemModule(this));
     }
 
     public final MiddlewareInterface getMiddleware() {
         return middleware;
     }
 
-
     private MiddlewareInterface createMiddleware() {
         NetworkDriver networkDriver = new WifiDriver(this);
         NetworkController networkController = new NetworkBridge(networkDriver);
-
 
         LocalStorageDriver localStorageDriver = new FileLocalStorageDriver(this);
         RemoteStorageDriver remoteStorageDriver = new WifiStorageDriver(this);
@@ -52,4 +60,7 @@ public class LiveObjectsApplication extends Application {
         return new LiveObjectsMiddleware(networkController, contentController, dbController);
     }
 
+    public void injectObjectGraph(Object object) {
+        mObjectGraph.inject(object);
+    }
 }

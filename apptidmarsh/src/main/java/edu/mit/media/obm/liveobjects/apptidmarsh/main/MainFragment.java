@@ -30,9 +30,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 import dagger.ObjectGraph;
+import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsActivity;
-import edu.mit.media.obm.liveobjects.apptidmarsh.module.MainFragmentModule;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.ApplicationModule;
 import edu.mit.media.obm.liveobjects.apptidmarsh.profile.ProfileActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.ServerWakeup;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.AnimationArrayAdapter;
@@ -105,7 +106,9 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, rootView);
-        ObjectGraph.create(new MainFragmentModule(getActivity())).inject(this);
+
+        LiveObjectsApplication app = (LiveObjectsApplication) getActivity().getApplication();
+        app.injectObjectGraph(this);
 
         setupUIElements(rootView);
         setupUIListeners();

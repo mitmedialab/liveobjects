@@ -24,13 +24,10 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import dagger.ObjectGraph;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
-import edu.mit.media.obm.liveobjects.apptidmarsh.module.AnimationArrayAdapterModule;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.Util;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
-import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.shair.liveobjects.R;
@@ -59,7 +56,10 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
 
     public AnimationArrayAdapter(Context context, int resource, List<T> objects) {
         super(context, resource, objects);
-        ObjectGraph.create(new AnimationArrayAdapterModule(context)).inject(this);
+
+        Activity activity = (Activity) context;
+        LiveObjectsApplication app = (LiveObjectsApplication) activity.getApplication();
+        app.injectObjectGraph(this);
 
         mContext = context;
         mResource = resource;

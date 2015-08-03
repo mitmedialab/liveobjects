@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -18,11 +17,9 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnItemClick;
-import dagger.ObjectGraph;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.WrapUpActivity;
-import edu.mit.media.obm.liveobjects.apptidmarsh.module.SavedLiveObjectsFragmentModule;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.shair.liveobjects.R;
@@ -79,7 +76,9 @@ public class SavedLiveObjectsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ObjectGraph.create(new SavedLiveObjectsFragmentModule(getActivity())).inject(this);
+
+        LiveObjectsApplication app = (LiveObjectsApplication) getActivity().getApplication();
+        app.injectObjectGraph(this);
 
         if (getArguments() != null) {
             mTabId = getArguments().getInt(ARG_TAB_ID);

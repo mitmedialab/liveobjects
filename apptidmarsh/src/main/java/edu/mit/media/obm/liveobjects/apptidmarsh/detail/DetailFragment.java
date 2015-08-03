@@ -29,17 +29,14 @@ import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import dagger.ObjectGraph;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.MediaViewActivity;
-import edu.mit.media.obm.liveobjects.apptidmarsh.module.DetailFragmentModule;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.Util;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.ZoomInOutAnimation;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
-import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.liveobjects.middleware.util.JSONUtil;
@@ -125,7 +122,9 @@ public class DetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, mRootView);
-        ObjectGraph.create(new DetailFragmentModule(getActivity())).inject(this);
+
+        LiveObjectsApplication app = (LiveObjectsApplication) getActivity().getApplication();
+        app.injectObjectGraph(this);
 
         Map<String, Object> liveObjectProperties = getLiveObjectProperties(mLiveObjectNameID);
 

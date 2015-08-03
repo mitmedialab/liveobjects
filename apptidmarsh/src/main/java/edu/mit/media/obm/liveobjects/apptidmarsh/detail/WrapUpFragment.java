@@ -38,10 +38,8 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.ProfilePreference;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.MediaViewActivity;
-import edu.mit.media.obm.liveobjects.apptidmarsh.module.WrapUpFragmentModule;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
-import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.shair.liveobjects.R;
@@ -129,7 +127,9 @@ public class WrapUpFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ObjectGraph.create(new WrapUpFragmentModule(getActivity())).inject(this);
+
+        LiveObjectsApplication app = (LiveObjectsApplication) getActivity().getApplication();
+        app.injectObjectGraph(this);
 
         if (getArguments() != null) {
             mLiveObjNameId = getArguments().getString(ARG_LIVE_OBJ_NAME_ID);
