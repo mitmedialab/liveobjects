@@ -191,14 +191,35 @@ public class MainFragment extends Fragment {
                     mActiveLiveObjectNamesList.add(liveObject);
                 }
 
-                mLiveObjectNamesList.clear();
-                mLiveObjectNamesList.addAll(mActiveLiveObjectNamesList);
-                mLiveObjectNamesList.addAll(mSleepingLiveObjectNamesList);
-
-                mAdapter.notifyDataSetChanged();
-                mSwipeLayout.setRefreshing(false);
+                updateLiveObjectsList();
             }
         });
+    }
+
+    private void updateLiveObjectsList() {
+        mLiveObjectNamesList.clear();
+        mLiveObjectNamesList.addAll(mActiveLiveObjectNamesList);
+
+        // add only ones in active list if the same live object exists both in active and in
+        // sleeping lists.
+        // ToDo: should use Set<T>
+        for (LiveObject liveObject : mSleepingLiveObjectNamesList) {
+            boolean inActiveList = false;
+
+            for (LiveObject activeLiveObject : mActiveLiveObjectNamesList) {
+                if (liveObject.getLiveObjectName().equals(activeLiveObject.getLiveObjectName())) {
+                    inActiveList = true;
+                    break;
+                }
+            }
+
+            if (!inActiveList) {
+                mLiveObjectNamesList.add(liveObject);
+            }
+        }
+
+        mAdapter.notifyDataSetChanged();
+        mSwipeLayout.setRefreshing(false);
     }
 
     private void initConnectionListener() {
@@ -281,12 +302,7 @@ public class MainFragment extends Fragment {
                 LiveObject liveObject = new LiveObject(deviceName);
                 mSleepingLiveObjectNamesList.add(liveObject);
 
-                mLiveObjectNamesList.clear();
-                mLiveObjectNamesList.addAll(mActiveLiveObjectNamesList);
-                mLiveObjectNamesList.addAll(mSleepingLiveObjectNamesList);
-
-                mAdapter.notifyDataSetChanged();
-                mSwipeLayout.setRefreshing(false);
+                updateLiveObjectsList();
             }
         });
         mServerWakeup.wakeUp();
