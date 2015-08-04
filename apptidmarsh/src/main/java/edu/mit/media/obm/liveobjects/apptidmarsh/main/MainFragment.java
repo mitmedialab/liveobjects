@@ -315,6 +315,7 @@ public class MainFragment extends Fragment {
         super.onStop();
 
         mServerWakeup.cancelWakeUp();
+        mServerWakeup.unregisterWakeupStatusCallback();
     }
 
     @Override
