@@ -93,10 +93,9 @@ public class AnimationArrayAdapter extends ArrayAdapter<LiveObject> {
         setImage(holder.mImageView, liveObject);
 
         // make sleeping live objects transparent
-        if (!liveObject.isActive()) {
-            holder.mImageView.setAlpha(0.5f);
-            holder.mTextView.setAlpha(0.5f);
-        }
+        float alpha = (liveObject.isActive() ? 1.0f : 0.5f);
+        holder.mImageView.setAlpha(alpha);
+        holder.mTextView.setAlpha(alpha);
 
         if (mNewObjects.contains(liveObject)) {
             Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.bounce_scale);
