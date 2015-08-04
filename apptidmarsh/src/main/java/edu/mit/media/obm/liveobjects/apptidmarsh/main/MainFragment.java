@@ -122,7 +122,7 @@ public class MainFragment extends Fragment {
         mActiveLiveObjectNamesList = new ArrayList<>();
         mSleepingLiveObjectNamesList = new ArrayList<>();
 
-        mAdapter = new AnimationArrayAdapter<>(getActivity(), R.layout.list_item_live_objects,
+        mAdapter = new AnimationArrayAdapter(getActivity(), R.layout.list_item_live_objects,
                 mLiveObjectNamesList);
         mLiveObjectsGridView.setAdapter(mAdapter);
         mSwipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
