@@ -1,6 +1,8 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.utils;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -12,6 +14,11 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.squareup.otto.Bus;
+
+import javax.inject.Inject;
+
+import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiUtil;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkUtil;
 
@@ -26,9 +33,12 @@ public class ServerWakeup {
 
     private Context mContext;
 
-    private WakeupStatusCallback mWakeupStatusCallback = null;
+    @Inject Bus mBus;
 
     public ServerWakeup(Context appContext) {
+        LiveObjectsApplication app = (LiveObjectsApplication) appContext;
+        app.injectObjectGraph(this);
+
         mContext = appContext;
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -64,10 +74,6 @@ public class ServerWakeup {
         for (BluetoothDevice device : mBluetoothAdapter.getBondedDevices()) {
             debug("device = " + device.getName());
         }
-
-        if (mWakeupStatusCallback != null) {
-            mWakeupStatusCallback.onWakeupStarted();
-        }
     }
 
     public synchronized void cancelWakeUp() {
@@ -88,20 +94,8 @@ public class ServerWakeup {
 
     private void promptEnablingBluetooth() {
         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        enableBtIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(enableBtIntent);
-    }
-
-    public synchronized void registerWakeupStatusCallback(WakeupStatusCallback callback) {
-        mWakeupStatusCallback = callback;
-    }
-
-    public synchronized void unregisterWakeupStatusCallback() {
-        mWakeupStatusCallback = null;
-    }
-
-    public interface WakeupStatusCallback {
-        void onWakeupStarted();
-        void onDetected(String deviceName);
     }
 
     private class BluetoothDetectionReceiver extends BroadcastReceiver {
@@ -126,14 +120,10 @@ public class ServerWakeup {
 
                     Toast.makeText(mContext, String.format("Awakening '%s'", deviceName), Toast.LENGTH_SHORT).show();
 
-                    synchronized (ServerWakeup.class) {
-                        if (mWakeupStatusCallback != null) {
-                            // ToDo; shouldn't use WiFiUtil directly
-                            String liveObjectName =
-                                    WifiUtil.INSTANCE.convertDeviceIdToLiveObjectName(deviceName);
-                            mWakeupStatusCallback.onDetected(liveObjectName);
-                        }
-                    }
+                    // ToDo; shouldn't use WiFiUtil directly
+                    String liveObjectName =
+                            WifiUtil.INSTANCE.convertDeviceIdToLiveObjectName(deviceName);
+                    mBus.post(new DeviceDetectedEvent(liveObjectName));
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 debug("finished BLE discovery");
@@ -152,6 +142,14 @@ public class ServerWakeup {
                 }
             }
         };
+    }
+
+    public class DeviceDetectedEvent {
+        public final String mDeviceName;
+
+        public DeviceDetectedEvent(String deviceName) {
+            mDeviceName = deviceName;
+        }
     }
 
     private void debug(String message) {

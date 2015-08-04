@@ -20,6 +20,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +69,7 @@ public class MainFragment extends Fragment {
 
     @Inject NetworkController mNetworkController;
     @Inject ServerWakeup mServerWakeup;
+    @Inject Bus mBus;
 
     @Bind(R.id.swipe_container) SwipeRefreshLayout mSwipeLayout;
     @Bind(R.id.live_objects_list_view) GridView mLiveObjectsGridView;
@@ -288,23 +292,13 @@ public class MainFragment extends Fragment {
     public void onStart() {
         Log.v(LOG_TAG, "onStart()");
         super.onStart();
+
+        mBus.register(this);
+
         mNetworkController.start();
         mNetworkController.startDiscovery();
 
-        mServerWakeup.registerWakeupStatusCallback(new ServerWakeup.WakeupStatusCallback() {
-            @Override
-            public void onWakeupStarted() {
-                mSleepingLiveObjectNamesList.clear();
-            }
-
-            @Override
-            public void onDetected(String deviceName) {
-                LiveObject liveObject = new LiveObject(deviceName, false);
-                mSleepingLiveObjectNamesList.add(liveObject);
-
-                updateLiveObjectsList();
-            }
-        });
+        mSleepingLiveObjectNamesList.clear();
         mServerWakeup.wakeUp();
     }
 
@@ -314,8 +308,9 @@ public class MainFragment extends Fragment {
 //        mNetworkController.stop();
         super.onStop();
 
+        mBus.unregister(this);
+
         mServerWakeup.cancelWakeUp();
-        mServerWakeup.unregisterWakeupStatusCallback();
     }
 
     @Override
@@ -348,5 +343,14 @@ public class MainFragment extends Fragment {
                 MenuActions.goToHome(getActivity());
             }
         }
+    }
+
+    @Subscribe
+    public void addDetectedBluetoothDevice(ServerWakeup.DeviceDetectedEvent event) {
+        Log.v(LOG_TAG, "addDetectedBluetoothDevice()");
+        LiveObject liveObject = new LiveObject(event.mDeviceName, false);
+        mSleepingLiveObjectNamesList.add(liveObject);
+
+        updateLiveObjectsList();
     }
 }
