@@ -1,5 +1,7 @@
 package edu.mit.media.obm.liveobjects.middleware.common;
 
+import java.util.Map;
+
 /**
  * This class represent a live object discovered through the network.
  * The class is final to force immutability.
@@ -7,18 +9,31 @@ package edu.mit.media.obm.liveobjects.middleware.common;
  */
 public final class LiveObject {
     private final String mLiveObjectName;
-    private final boolean mIsActive;
+    private final MapLocation mMapLocation;
+    private boolean mIsActive = true;
 
     /**
      * Creates a new network device with specified id
      */
-    public LiveObject(String liveObjectName, boolean isActive) {
+    public LiveObject(String liveObjectName) {
         if (liveObjectName == null) {
             throw new NullPointerException();
         }
 
         mLiveObjectName = liveObjectName;
-        mIsActive = isActive;
+        mMapLocation = null;
+    }
+
+    /**
+     * Creates a new network device with specified id
+     */
+    public LiveObject(String liveObjectName, MapLocation mapLocation) {
+        if (liveObjectName == null || mapLocation == null) {
+            throw new NullPointerException();
+        }
+
+        mLiveObjectName = liveObjectName;
+        mMapLocation = mapLocation;
     }
 
     /**
@@ -31,6 +46,15 @@ public final class LiveObject {
     }
 
     /**
+     * Get the location information of this network device.
+     *
+     * @return Device's location information
+     */
+    public MapLocation getMapLocation() {
+        return mMapLocation;
+    }
+
+    /**
      * Get a boolean value which indicates if the network device is active or sleeping.
      *
      * @return true if the network device is not sleeping
@@ -39,6 +63,9 @@ public final class LiveObject {
         return mIsActive;
     }
 
+    public void setActive(boolean active) {
+        mIsActive = active;
+    }
 
     @Override
     public String toString() {

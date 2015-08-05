@@ -20,6 +20,7 @@ import javax.inject.Inject;
 
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiUtil;
+import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkUtil;
 
 /**
@@ -121,9 +122,8 @@ public class ServerWakeup {
                     Toast.makeText(mContext, String.format("Awakening '%s'", deviceName), Toast.LENGTH_SHORT).show();
 
                     // ToDo; shouldn't use WiFiUtil directly
-                    String liveObjectName =
-                            WifiUtil.INSTANCE.convertDeviceIdToLiveObjectName(deviceName);
-                    mBus.post(new DeviceDetectedEvent(liveObjectName));
+                    LiveObject liveObject = WifiUtil.INSTANCE.convertDeviceIdToLiveObject(deviceName);
+                    mBus.post(new DeviceDetectedEvent(liveObject.getLiveObjectName()));
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 debug("finished BLE discovery");

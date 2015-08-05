@@ -2,4 +2,5 @@
 <resources>
     <string name="network_password">shair-shair</string>
     <string name="ssid_prefix">liveobj-</string>
+    <string name="ssid_delimiter">\@</string>
 </resources>

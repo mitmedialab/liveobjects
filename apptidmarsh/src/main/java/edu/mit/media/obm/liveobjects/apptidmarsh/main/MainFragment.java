@@ -348,7 +348,8 @@ public class MainFragment extends Fragment {
     @Subscribe
     public void addDetectedBluetoothDevice(ServerWakeup.DeviceDetectedEvent event) {
         Log.v(LOG_TAG, "addDetectedBluetoothDevice()");
-        LiveObject liveObject = new LiveObject(event.mDeviceName, false);
+        LiveObject liveObject = new LiveObject(event.mDeviceName);
+        liveObject.setActive(false);
         mSleepingLiveObjectNamesList.add(liveObject);
 
         updateLiveObjectsList();

@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
@@ -27,8 +28,8 @@ public class WifiDriver implements NetworkDriver {
     private final static String LOG_TAG = WifiDriver.class.getSimpleName();
 
     private final String NETWORK_PASSWORD;
-
     protected final String SSID_PREFIX;
+    private final char SSID_DELIMITER;
 
 
     private NetworkListener mNetworkListener;
@@ -47,10 +48,15 @@ public class WifiDriver implements NetworkDriver {
 
     public WifiDriver(Context context) {
         mContext = context;
-        NETWORK_PASSWORD = mContext.getResources().getString(R.string.network_password);
-        SSID_PREFIX = mContext.getResources().getString(R.string.ssid_prefix);
-        WifiUtil.INSTANCE.setSsidPrefix(SSID_PREFIX);
 
+        Resources resources = mContext.getResources();
+        NETWORK_PASSWORD = resources.getString(R.string.network_password);
+        SSID_PREFIX = resources.getString(R.string.ssid_prefix);
+        // use only the first char as a delimiter
+        // (ssid_delimiter should be 1 byte long string, though)
+        SSID_DELIMITER = resources.getString(R.string.ssid_delimiter).charAt(0);
+
+        WifiUtil.INSTANCE.setSsidPrefix(SSID_PREFIX);
     }
 
     @Override
@@ -100,7 +106,8 @@ public class WifiDriver implements NetworkDriver {
             @Override
             protected Void doInBackground(String... params) {
                 String liveObjectName = params[0];
-                String ssid = WifiUtil.INSTANCE.convertLiveObjectNameToDeviceId(liveObjectName);
+                LiveObject liveObject = new LiveObject(liveObjectName);
+                String ssid = WifiUtil.INSTANCE.convertLiveObjectToDeviceId(liveObject);
 
                 WifiConfiguration config = WifiManagerWrapper.addNewNetwork(mWifiManager, ssid, NETWORK_PASSWORD);
                 WifiManagerWrapper.connectToConfiguredNetwork(mContext, mWifiManager, config, true);
@@ -187,8 +194,8 @@ public class WifiDriver implements NetworkDriver {
                 Log.v(LOG_TAG, "scanResult: " +  deviceId);
 
                 if (WifiUtil.INSTANCE.isLiveObject(deviceId)){
-                    String liveObjectName = WifiUtil.INSTANCE.convertDeviceIdToLiveObjectName(deviceId);
-                            LiveObject liveObject = new LiveObject(liveObjectName, true);
+                    LiveObject liveObject = WifiUtil.INSTANCE.convertDeviceIdToLiveObject(deviceId);
+                    liveObject.setActive(true);
 
                     //network device representing a live object found
                     // add it to the list
@@ -216,9 +223,9 @@ public class WifiDriver implements NetworkDriver {
 
                     ssid = WifiManagerWrapper.unQuoteString(ssid);
                     if (WifiUtil.INSTANCE.isLiveObject(ssid)) {
-                        String connectedLiveObjectName = WifiUtil.INSTANCE.convertDeviceIdToLiveObjectName(ssid);
-                        Log.d(LOG_TAG, "connectedLiveObjectName = " + connectedLiveObjectName);
-                        mNetworkListener.onConnected(connectedLiveObjectName);
+                        LiveObject connectedLiveObject = WifiUtil.INSTANCE.convertDeviceIdToLiveObject(ssid);
+                        Log.d(LOG_TAG, "connectedLiveObject = " + connectedLiveObject);
+                        mNetworkListener.onConnected(connectedLiveObject.getLiveObjectName());
 
                         mConnecting = false;
                     }
