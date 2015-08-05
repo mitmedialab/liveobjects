@@ -48,7 +48,7 @@ public final class LiveObject {
     /**
      * Get the location information of this network device.
      *
-     * @return Device's location information
+     * @return Device's location information. It can be null if no location is set.
      */
     public MapLocation getMapLocation() {
         return mMapLocation;

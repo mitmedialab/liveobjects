@@ -1,7 +1,5 @@
 package edu.mit.media.obm.liveobjects.driver.wifi;
 
-import java.util.IllegalFormatConversionException;
-import java.util.IllegalFormatException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
