@@ -19,6 +19,7 @@ import com.squareup.otto.Bus;
 import javax.inject.Inject;
 
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.driver.wifi.WifiLocationUtil;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiUtil;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkUtil;
@@ -115,7 +116,7 @@ public class ServerWakeup {
                 }
 
                 // ToDo; shouldn't use WiFiUtil directly
-                if (deviceName != null && WifiUtil.INSTANCE.isLiveObject(deviceName)) {
+                if (deviceName != null && WifiLocationUtil.INSTANCE.isLiveObject(deviceName)) {
                     debug(String.format("trying to connect to BLE device '%s'", deviceName));
                     mBluetoothGatt = device.connectGatt(mContext, true, mGattCallback);
 

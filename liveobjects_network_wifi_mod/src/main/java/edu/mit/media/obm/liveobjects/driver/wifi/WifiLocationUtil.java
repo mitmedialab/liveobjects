@@ -14,23 +14,23 @@ public enum WifiLocationUtil implements NetworkUtil {
     INSTANCE;
 
     private String SSID_PREFIX;
-    private String SSID_DELIMITER;
+    private char SSID_DELIMITER;
 
     private int LOCATION_COORDINATE_X_LENGTH;
     private int LOCATION_COORDINATE_Y_LENGTH;
     private int LOCATION_MAP_ID_LENGTH;
 
-    private String SSID_PATTERN;
+    private Pattern SSID_PATTERN;
 
     @Override
     public boolean isLiveObject(String deviceId) {
-        return Pattern.matches(SSID_PATTERN, deviceId);
+        Matcher matcher = SSID_PATTERN.matcher(deviceId);
+        return matcher.find();
     }
 
     @Override
     public LiveObject convertDeviceIdToLiveObject(String deviceId) {
-        Pattern pattern = Pattern.compile(SSID_PATTERN);
-        Matcher matcher = pattern.matcher(deviceId);
+        Matcher matcher = SSID_PATTERN.matcher(deviceId);
 
         if (!matcher.find()) {
             throw new RuntimeException("illegal deviceId '" + deviceId + "'");
@@ -57,7 +57,7 @@ public enum WifiLocationUtil implements NetworkUtil {
         return deviceId;
     }
 
-    protected final void setSsidFormat(String ssidPrefix, String ssidDelimiter,
+    protected final void setSsidFormat(String ssidPrefix, char ssidDelimiter,
             int locationCoordinateXLength, int locationCoordinateYLength, int locationMapIdLength) {
         SSID_PREFIX = ssidPrefix;
         SSID_DELIMITER = ssidDelimiter;
@@ -65,9 +65,10 @@ public enum WifiLocationUtil implements NetworkUtil {
         LOCATION_COORDINATE_Y_LENGTH = locationCoordinateYLength;
         LOCATION_MAP_ID_LENGTH = locationMapIdLength;
 
-        SSID_PATTERN = SSID_PREFIX + "(.*)" + SSID_DELIMITER
+        String patternString = SSID_PREFIX + "(.*)" + SSID_DELIMITER
                 + "(\\p{XDigit}{" + LOCATION_COORDINATE_X_LENGTH + "})"
                 + "(\\p{XDigit}{" + LOCATION_COORDINATE_Y_LENGTH + "})"
                 + "(\\p{XDigit}{" + LOCATION_MAP_ID_LENGTH + "})";
+        SSID_PATTERN = Pattern.compile(patternString);
     }
 }

@@ -59,8 +59,13 @@ public class WifiDriver implements NetworkDriver {
         // (ssid_delimiter should be 1 byte long string, though)
         SSID_DELIMITER = resources.getString(R.string.ssid_delimiter).charAt(0);
 
-        WifiUtil.INSTANCE.setSsidPrefix(SSID_PREFIX);
-        mNetworkUtil = WifiUtil.INSTANCE;
+        int locationXLength = resources.getInteger(R.integer.map_location_coordinate_x_length);
+        int locationYLength = resources.getInteger(R.integer.map_location_coordinate_y_length);
+        int mapIdLength = resources.getInteger(R.integer.map_location_map_id_length);
+
+        WifiLocationUtil.INSTANCE.setSsidFormat(
+                SSID_PREFIX, SSID_DELIMITER, locationXLength, locationYLength, mapIdLength);
+        mNetworkUtil = WifiLocationUtil.INSTANCE;
     }
 
     @Override
