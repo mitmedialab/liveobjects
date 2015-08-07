@@ -8,11 +8,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.util.Log;
 import android.widget.Toast;
-
-import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
 
@@ -24,19 +21,16 @@ import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 /**
  * Created by arata on 8/7/15.
  */
-public class BluetoothNotifier implements  LiveObjectNotifier {
-    private static final String LOG_TAG = LiveObjectNotifier.class.getSimpleName();
+public class BluetoothNotifier extends LiveObjectNotifier {
+    private static final String LOG_TAG = BluetoothNotifier.class.getSimpleName();
 
-    private BluetoothAdapter mBluetoothAdapter = null;
+    @Inject BluetoothAdapter mBluetoothAdapter;
     private BluetoothDetectionReceiver mBroadcastReceiver = null;
 
-    private Context mContext;
-
-    @Inject
-    Bus mBus;
-
     public BluetoothNotifier(Context appContext) {
-        LiveObjectsApplication app = (LiveObjectsApplication) appContext;
+        super(appContext);
+
+        LiveObjectsApplication app = (LiveObjectsApplication) mContext;
         app.injectObjectGraph(this);
 
         mContext = appContext;
@@ -86,18 +80,6 @@ public class BluetoothNotifier implements  LiveObjectNotifier {
             mContext.unregisterReceiver(mBroadcastReceiver);
             mBroadcastReceiver = null;
         }
-    }
-
-    private boolean isBleSupported() {
-        PackageManager packageManager = mContext.getPackageManager();
-
-        return packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
-    }
-
-    private void promptEnablingBluetooth() {
-        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        enableBtIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startActivity(enableBtIntent);
     }
 
     private class BluetoothDetectionReceiver extends BroadcastReceiver {

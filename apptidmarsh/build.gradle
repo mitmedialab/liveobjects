@@ -36,6 +36,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.1'
     compile 'com.pkmmte.view:circularimageview:1.1'
     compile 'com.sothree.slidinguppanel:library:3.0.0'
+    compile 'org.altbeacon:android-beacon-library:2.5.1'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.squareup.dagger:dagger:1.2.2'
     compile 'com.squareup.dagger:dagger-compiler:1.2.2'

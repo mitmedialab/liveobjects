@@ -1,5 +1,7 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.module;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.MediaController;
@@ -35,5 +37,9 @@ public class SystemModule {
 
     @Provides MediaController provideMediaController(Context context) {
         return new MediaController(context);
+    }
+
+    @Provides BluetoothAdapter provideBluetoothAdapter() {
+        return BluetoothAdapter.getDefaultAdapter();
     }
 }
