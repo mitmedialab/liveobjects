@@ -6,6 +6,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.MediaController;
 
+import org.altbeacon.beacon.BeaconManager;
+
 import dagger.Module;
 import dagger.Provides;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.VideoViewFragment;

@@ -33,9 +33,6 @@ public class BluetoothNotifier extends LiveObjectNotifier {
         LiveObjectsApplication app = (LiveObjectsApplication) mContext;
         app.injectObjectGraph(this);
 
-        mContext = appContext;
-
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
             throw new RuntimeException("Failed to get default Bluetooth Adapter");
         }
