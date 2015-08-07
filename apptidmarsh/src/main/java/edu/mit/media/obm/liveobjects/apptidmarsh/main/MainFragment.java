@@ -36,7 +36,7 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.profile.ProfileActivity;
-import edu.mit.media.obm.liveobjects.apptidmarsh.utils.ServerWakeup;
+import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.AnimationArrayAdapter;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.ExpandIconAnimation;
@@ -68,7 +68,8 @@ public class MainFragment extends Fragment {
     private ProgressDialog mConnectingDialog;
 
     @Inject NetworkController mNetworkController;
-    @Inject ServerWakeup mServerWakeup;
+    @Inject
+    LiveObjectNotifier mLiveObjectNotifier;
     @Inject Bus mBus;
 
     @Bind(R.id.swipe_container) SwipeRefreshLayout mSwipeLayout;
@@ -163,7 +164,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onRefresh() {
                 mNetworkController.startDiscovery();
-                mServerWakeup.wakeUp();
+                mLiveObjectNotifier.wakeUp();
             }
         });
     }
@@ -299,7 +300,7 @@ public class MainFragment extends Fragment {
         mNetworkController.startDiscovery();
 
         mSleepingLiveObjectNamesList.clear();
-        mServerWakeup.wakeUp();
+        mLiveObjectNotifier.wakeUp();
     }
 
     @Override
@@ -310,7 +311,7 @@ public class MainFragment extends Fragment {
 
         mBus.unregister(this);
 
-        mServerWakeup.cancelWakeUp();
+        mLiveObjectNotifier.cancelWakeUp();
     }
 
     @Override
@@ -346,7 +347,7 @@ public class MainFragment extends Fragment {
     }
 
     @Subscribe
-    public void addDetectedBluetoothDevice(ServerWakeup.DeviceDetectedEvent event) {
+    public void addDetectedBluetoothDevice(LiveObjectNotifier.DeviceDetectedEvent event) {
         Log.v(LOG_TAG, "addDetectedBluetoothDevice()");
         LiveObject liveObject = new LiveObject(event.mDeviceName);
         liveObject.setActive(false);

@@ -1,8 +1,6 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.utils;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -22,13 +20,12 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiLocationUtil;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiUtil;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
-import edu.mit.media.obm.liveobjects.middleware.net.NetworkUtil;
 
 /**
  * Created by arata on 7/14/15.
  */
-public class ServerWakeup {
-    private static final String LOG_TAG = ServerWakeup.class.getSimpleName();
+public class LiveObjectNotifier {
+    private static final String LOG_TAG = LiveObjectNotifier.class.getSimpleName();
 
     private BluetoothAdapter mBluetoothAdapter = null;
     private BluetoothDetectionReceiver mBroadcastReceiver = null;
@@ -37,7 +34,7 @@ public class ServerWakeup {
 
     @Inject Bus mBus;
 
-    public ServerWakeup(Context appContext) {
+    public LiveObjectNotifier(Context appContext) {
         LiveObjectsApplication app = (LiveObjectsApplication) appContext;
         app.injectObjectGraph(this);
 
