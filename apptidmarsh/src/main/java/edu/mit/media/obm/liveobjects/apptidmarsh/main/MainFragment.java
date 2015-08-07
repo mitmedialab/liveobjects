@@ -36,6 +36,7 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.profile.ProfileActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.utils.InactiveLiveObjectDetectionEvent;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.AnimationArrayAdapter;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
@@ -68,8 +69,7 @@ public class MainFragment extends Fragment {
     private ProgressDialog mConnectingDialog;
 
     @Inject NetworkController mNetworkController;
-    @Inject
-    LiveObjectNotifier mLiveObjectNotifier;
+    @Inject LiveObjectNotifier mLiveObjectNotifier;
     @Inject Bus mBus;
 
     @Bind(R.id.swipe_container) SwipeRefreshLayout mSwipeLayout;
@@ -347,7 +347,7 @@ public class MainFragment extends Fragment {
     }
 
     @Subscribe
-    public void addDetectedBluetoothDevice(LiveObjectNotifier.DeviceDetectedEvent event) {
+    public void addDetectedBluetoothDevice(InactiveLiveObjectDetectionEvent event) {
         Log.v(LOG_TAG, "addDetectedBluetoothDevice()");
         LiveObject liveObject = new LiveObject(event.mDeviceName);
         liveObject.setActive(false);

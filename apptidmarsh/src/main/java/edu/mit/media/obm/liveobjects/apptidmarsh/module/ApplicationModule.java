@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import edu.mit.media.obm.liveobjects.apptidmarsh.utils.BluetoothNotifier;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
 
 /**
@@ -18,7 +19,7 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
         complete = false,
         includes = SystemModule.class,
         injects = {
-                LiveObjectNotifier.class
+                BluetoothNotifier.class
         }
 )
 public class ApplicationModule {
@@ -26,8 +27,8 @@ public class ApplicationModule {
     }
 
     @Provides
-    LiveObjectNotifier provideServerWakeup(Context context) {
-        return new LiveObjectNotifier(context);
+    LiveObjectNotifier provideLiveObjectNotifier(Context context) {
+        return new BluetoothNotifier(context);
     }
 
     @Provides @Singleton Bus provideBus() {
