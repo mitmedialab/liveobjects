@@ -44,4 +44,8 @@ public class SystemModule {
     @Provides BluetoothAdapter provideBluetoothAdapter() {
         return BluetoothAdapter.getDefaultAdapter();
     }
+
+    @Provides BeaconManager provideBeaconManager(Context context) {
+        return BeaconManager.getInstanceForApplication(context);
+    }
 }
