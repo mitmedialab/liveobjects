@@ -13,90 +13,96 @@
         android:layout_gravity="center"
         android:indeterminate="true" />
 
-    <LinearLayout
-        android:id="@+id/detail_info_layout"
+    <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:visibility="invisible">
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:background="@drawable/bg_oval">
-
-            <ImageView
-                android:id="@+id/object_image_view"
-                android:layout_centerHorizontal="true"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_margin="10dp"
-                android:clickable="true"
-                android:background="@drawable/play"
-                android:layout_gravity="center" />
-
-        </RelativeLayout>
+        android:layout_height="fill_parent">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/detail_info_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:orientation="vertical"
-            android:layout_margin="8dp"
-            android:padding="4dp"
-            android:background="@color/theme_transparent_dark_background">
+            android:gravity="center"
+            android:visibility="invisible">
 
-            <TextView
+            <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="28sp"
-                android:textColor="@color/theme_icon_text"
-                android:shadowColor="@color/theme_icon_text_shadow"
-                android:shadowDx="1"
-                android:shadowDy="1"
-                android:shadowRadius="4"
-                android:id="@+id/object_title_textview" />
+                android:layout_margin="8dp"
+                android:background="@drawable/bg_oval">
 
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray" />
+                <ImageView
+                    android:id="@+id/object_image_view"
+                    android:layout_centerHorizontal="true"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_margin="10dp"
+                    android:clickable="true"
+                    android:background="@drawable/play"
+                    android:layout_gravity="center" />
 
-            <TextView
+            </RelativeLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp"
-                android:textColor="@color/theme_icon_text"
-                android:shadowColor="@color/theme_icon_text_shadow"
-                android:shadowDx="1"
-                android:shadowDy="1"
-                android:shadowRadius="4"
-                android:layout_marginBottom="4dp"
-                android:id="@+id/object_group_textview" />
-
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="3dp"
-                android:background="@android:color/darker_gray" />
-
-            <ScrollView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp">
+                android:orientation="vertical"
+                android:layout_margin="8dp"
+                android:padding="4dp"
+                android:background="@color/theme_transparent_dark_background">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="22sp"
+                    android:textSize="28sp"
                     android:textColor="@color/theme_icon_text"
                     android:shadowColor="@color/theme_icon_text_shadow"
                     android:shadowDx="1"
                     android:shadowDy="1"
                     android:shadowRadius="4"
-                    android:singleLine="false"
-                    android:id="@+id/object_description_textview" />
-            </ScrollView>
+                    android:id="@+id/object_title_textview" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="24sp"
+                    android:textColor="@color/theme_icon_text"
+                    android:shadowColor="@color/theme_icon_text_shadow"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="4"
+                    android:layout_marginBottom="4dp"
+                    android:id="@+id/object_group_textview" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="3dp"
+                    android:background="@android:color/darker_gray" />
+
+                <ScrollView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="22sp"
+                        android:textColor="@color/theme_icon_text"
+                        android:shadowColor="@color/theme_icon_text_shadow"
+                        android:shadowDx="1"
+                        android:shadowDy="1"
+                        android:shadowRadius="4"
+                        android:singleLine="false"
+                        android:id="@+id/object_description_textview" />
+                </ScrollView>
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -104,6 +110,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0"
+            android:layout_alignParentBottom="true"
             android:orientation="vertical"
             android:background="@color/theme_transparent_background">
 
@@ -167,7 +174,7 @@
             </LinearLayout>
         </LinearLayout>
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </FrameLayout>
 
