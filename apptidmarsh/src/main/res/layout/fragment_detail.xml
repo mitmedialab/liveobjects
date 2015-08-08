@@ -143,7 +143,7 @@
 
                 <LinearLayout
                     style="@android:style/Widget.Button"
-                    android:id="@+id/replay_button"
+                    android:id="@+id/addCommentButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -153,43 +153,18 @@
                     <ImageView
                         android:layout_width="48dp"
                         android:layout_height="48dp"
-                        android:src="@drawable/replay" />
+                        android:src="@drawable/favorite" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
-                        android:text="Replay"
+                        android:text="Add comment"
                         android:textSize="28sp"
                         android:gravity="center" />
 
                 </LinearLayout>
-            </LinearLayout>
-
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="2dp"
-                android:background="@android:color/darker_gray" />
-
-            <LinearLayout
-                style="@android:style/Widget.Button"
-                android:id="@+id/addCommentButton"
-                android:layout_width="fill_parent"
-                android:layout_height="50dp"
-                android:orientation="horizontal"
-                android:layout_alignParentBottom="true"
-                android:background="@drawable/bg_button">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:padding="4dp"
-                    android:text="Add comment"
-                    android:textSize="28sp"
-                    android:gravity="center" />
 
             </LinearLayout>
-
         </LinearLayout>
 
     </LinearLayout>
