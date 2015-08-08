@@ -202,7 +202,6 @@ public class WrapUpFragment extends Fragment {
         Calendar rightNow = Calendar.getInstance();
         String commentName = String.format("%1$td%1$tk%1$tM%1$tS.TXT", rightNow);
 
-
         return commentName;
     }
 

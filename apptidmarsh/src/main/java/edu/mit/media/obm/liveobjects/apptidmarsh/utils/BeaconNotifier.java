@@ -1,6 +1,8 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.utils;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.util.Log;
 
 import org.altbeacon.beacon.BeaconConsumer;
@@ -54,6 +56,21 @@ public class BeaconNotifier extends LiveObjectNotifier implements BeaconConsumer
 
             }
         });
+    }
+
+    @Override
+    public Context getApplicationContext() {
+        return null;
+    }
+
+    @Override
+    public void unbindService(ServiceConnection serviceConnection) {
+
+    }
+
+    @Override
+    public boolean bindService(Intent intent, ServiceConnection serviceConnection, int i) {
+        return false;
     }
 
     private void debug(String message) {
