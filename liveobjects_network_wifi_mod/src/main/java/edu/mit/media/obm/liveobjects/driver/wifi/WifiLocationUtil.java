@@ -46,7 +46,7 @@ public enum WifiLocationUtil implements NetworkUtil {
     }
 
     @Override
-    public String convertLiveObjectToDeviceId(LiveObject liveObject){
+    public String convertLiveObjectToDeviceId(LiveObject liveObject) {
         MapLocation mapLocation = liveObject.getMapLocation();
         String locationX = Integer.toHexString(mapLocation.getCoordinateX());
         String locationY = Integer.toHexString(mapLocation.getCoordinateY());

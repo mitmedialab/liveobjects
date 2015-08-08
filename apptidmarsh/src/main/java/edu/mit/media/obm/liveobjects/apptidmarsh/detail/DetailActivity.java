@@ -18,6 +18,7 @@ public class DetailActivity extends ActionBarActivity {
     private static final String LOG_TAG = DetailActivity.class.getSimpleName();
 
     public static String EXTRA_LIVE_OBJ_NAME_ID = "live_obj_name_id";
+    public static String EXTRA_SHOW_ADD_COMMENT = "show_add_comment";
 
     public static int RESULT_CONNECTION_ERROR = RESULT_FIRST_USER;
     public static int RESULT_JSON_ERROR = RESULT_FIRST_USER + 1;

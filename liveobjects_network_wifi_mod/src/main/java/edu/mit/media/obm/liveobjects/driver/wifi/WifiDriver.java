@@ -103,22 +103,22 @@ public class WifiDriver implements NetworkDriver {
     }
 
     @Override
-    synchronized public void connect(String liveObjectName) throws IllegalStateException {
+    synchronized public void connect(LiveObject liveObject) throws IllegalStateException {
         if (isConnecting()) {
             throw new IllegalStateException("Must not try to connect when it's already connecting");
         }
 
         mConnecting = true;
 
+        String deviceId = mNetworkUtil.convertLiveObjectToDeviceId(liveObject);
+
         // executes as an asynchronous task because WifiManager.getConfiguredNetwork() may block.
         new AsyncTask<String, Void, Void>() {
             @Override
             protected Void doInBackground(String... params) {
-                String liveObjectName = params[0];
-                LiveObject liveObject = new LiveObject(liveObjectName);
-                String ssid = mNetworkUtil.convertLiveObjectToDeviceId(liveObject);
+                String deviceId = params[0];
 
-                WifiConfiguration config = WifiManagerWrapper.addNewNetwork(mWifiManager, ssid, NETWORK_PASSWORD);
+                WifiConfiguration config = WifiManagerWrapper.addNewNetwork(mWifiManager, deviceId, NETWORK_PASSWORD);
                 WifiManagerWrapper.connectToConfiguredNetwork(mContext, mWifiManager, config, true);
 
                 mConnectingNetworkId = config.networkId;
@@ -126,7 +126,7 @@ public class WifiDriver implements NetworkDriver {
                 mWifiManager.enableNetwork(mConnectingNetworkId, true);
                 return null;
             }
-        }.execute(liveObjectName);
+        }.execute(deviceId);
     }
 
     @Override

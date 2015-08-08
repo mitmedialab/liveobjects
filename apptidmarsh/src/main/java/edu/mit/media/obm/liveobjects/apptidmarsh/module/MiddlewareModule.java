@@ -6,7 +6,6 @@ import dagger.Module;
 import dagger.Provides;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailFragment;
-import edu.mit.media.obm.liveobjects.apptidmarsh.detail.WrapUpFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainFragment;
@@ -29,8 +28,7 @@ import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
                 AnimationArrayAdapter.class,
                 SavedLiveObjectsFragment.class,
                 DetailFragment.class,
-                MediaViewActivity.class,
-                WrapUpFragment.class
+                MediaViewActivity.class
         }
 )
 public class MiddlewareModule {

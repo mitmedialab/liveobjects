@@ -1,5 +1,6 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.media;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -26,7 +27,7 @@ import butterknife.BindString;
 import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
-import edu.mit.media.obm.liveobjects.apptidmarsh.detail.WrapUpActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
@@ -247,11 +248,14 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
     @Override
     public void onCompletion(MediaPlayer mp) {
         cancelTask();
-        // when media is completed go to the wrap up activity
-        Intent intent = new Intent(this, WrapUpActivity.class);
-        intent.putExtra(WrapUpActivity.EXTRA_LIVE_OBJ_NAME_ID, mLiveObjNameId);
-        intent.putExtra(WrapUpActivity.EXTRA_SHOW_ADD_COMMENT, true);
-        startActivity(intent);
+
+        // when media is completed, return to detail activity
+        Intent intent = new Intent();
+        intent.putExtra(DetailActivity.EXTRA_LIVE_OBJ_NAME_ID, mLiveObjNameId);
+        intent.putExtra(DetailActivity.EXTRA_SHOW_ADD_COMMENT, true);
+        setResult(Activity.RESULT_OK, intent);
+
+        finish();
     }
 
     @Override

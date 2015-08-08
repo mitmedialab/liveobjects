@@ -29,9 +29,6 @@
             android:name="edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity"
             android:label="Detail"></activity>
         <activity
-            android:name="edu.mit.media.obm.liveobjects.apptidmarsh.detail.WrapUpActivity"
-            android:label="Wrap Up"></activity>
-        <activity
             android:name="edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsActivity"
             android:label="@string/app_name"></activity>
 

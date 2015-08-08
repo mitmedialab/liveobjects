@@ -19,7 +19,7 @@ import butterknife.ButterKnife;
 import butterknife.OnItemClick;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
-import edu.mit.media.obm.liveobjects.apptidmarsh.detail.WrapUpActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.shair.liveobjects.R;
@@ -48,9 +48,9 @@ public class SavedLiveObjectsFragment extends Fragment {
                 new MLProjectPropertyProvider(mLiveObjectsPropertiesList.get(position));
         String liveObjNameId = provider.getId();
 
-        Intent intent = new Intent(getActivity(), WrapUpActivity.class);
-        intent.putExtra(WrapUpActivity.EXTRA_SHOW_ADD_COMMENT, false);
-        intent.putExtra(WrapUpActivity.EXTRA_LIVE_OBJ_NAME_ID, liveObjNameId);
+        Intent intent = new Intent(getActivity(), DetailActivity.class);
+        intent.putExtra(DetailActivity.EXTRA_SHOW_ADD_COMMENT, false);
+        intent.putExtra(DetailActivity.EXTRA_LIVE_OBJ_NAME_ID, liveObjNameId);
         startActivity(intent);
     }
 
