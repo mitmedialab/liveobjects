@@ -13,6 +13,7 @@ import org.altbeacon.beacon.Region;
 import javax.inject.Inject;
 
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 
 /**
  * Created by arata on 8/7/15.
@@ -25,8 +26,7 @@ public class BeaconNotifier extends LiveObjectNotifier implements BeaconConsumer
     public BeaconNotifier(Context appContext) {
         super(appContext);
 
-        LiveObjectsApplication app = (LiveObjectsApplication) mContext;
-        app.injectObjectGraph(this);
+        DependencyInjector.inject(this, appContext);
     }
 
     @Override

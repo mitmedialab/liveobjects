@@ -27,19 +27,12 @@ import edu.mit.media.obm.liveobjects.storage.wifi.WifiStorageDriver;
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public class LiveObjectsApplication extends Application {
-
     private MiddlewareInterface middleware;
-
-    private ObjectGraph mObjectGraph;
 
     @Override
     public void onCreate() {
         super.onCreate();
         middleware = createMiddleware();
-
-        // create object class for dependency injection
-        mObjectGraph = ObjectGraph.create(
-                new MiddlewareModule(), new ApplicationModule(), new SystemModule(this));
     }
 
     public final MiddlewareInterface getMiddleware() {
@@ -58,9 +51,5 @@ public class LiveObjectsApplication extends Application {
         DbController dbController = new CouchDbController(this);
 
         return new LiveObjectsMiddleware(networkController, contentController, dbController);
-    }
-
-    public void injectObjectGraph(Object object) {
-        mObjectGraph.inject(object);
     }
 }

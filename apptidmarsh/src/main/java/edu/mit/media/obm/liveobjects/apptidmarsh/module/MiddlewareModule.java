@@ -25,7 +25,6 @@ import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
         injects = {
                 MainActivity.class,
                 MainFragment.class,
-                AnimationArrayAdapter.class,
                 SavedLiveObjectsFragment.class,
                 DetailFragment.class,
                 MediaViewActivity.class
@@ -36,8 +35,8 @@ public class MiddlewareModule {
     }
 
     @Provides
-    MiddlewareInterface provideMiddlewareInterface(Context appContext) {
-        LiveObjectsApplication application = (LiveObjectsApplication) appContext;
+    MiddlewareInterface provideMiddlewareInterface(Context context) {
+        LiveObjectsApplication application = (LiveObjectsApplication) context.getApplicationContext();
         return application.getMiddleware();
     }
 

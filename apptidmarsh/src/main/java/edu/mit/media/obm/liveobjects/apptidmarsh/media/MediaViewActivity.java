@@ -28,6 +28,7 @@ import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
@@ -70,8 +71,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
         setContentView(R.layout.activity_media_view);
         ButterKnife.bind(this);
 
-        LiveObjectsApplication app = (LiveObjectsApplication) getApplication();
-        app.injectObjectGraph(this);
+        DependencyInjector.inject(this, this);
 
         mDownloadProgressDialog = new ProgressDialog(this);
 // TODO to reintroduce

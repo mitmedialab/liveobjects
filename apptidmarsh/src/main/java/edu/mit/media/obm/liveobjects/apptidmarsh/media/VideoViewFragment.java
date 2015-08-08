@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
@@ -81,8 +82,7 @@ public class VideoViewFragment extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_video_view, container, false);
         ButterKnife.bind(this, rootView);
 
-        LiveObjectsApplication app = (LiveObjectsApplication) getActivity().getApplication();
-        app.injectObjectGraph(this);
+        DependencyInjector.inject(this, getActivity());
 
         mVideoControl.setAnchorView(mVideoView);
         mVideoView.setMediaController(mVideoControl);

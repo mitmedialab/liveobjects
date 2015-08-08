@@ -44,6 +44,7 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.ProfilePreference;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.MediaViewActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.Util;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.ZoomInOutAnimation;
@@ -164,8 +165,7 @@ public class DetailFragment extends Fragment {
         mRootView = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, mRootView);
 
-        LiveObjectsApplication app = (LiveObjectsApplication) getActivity().getApplication();
-        app.injectObjectGraph(this);
+        DependencyInjector.inject(this, getActivity());
 
         Map<String, Object> liveObjectProperties = getLiveObjectProperties(mLiveObjectName);
 

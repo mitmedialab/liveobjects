@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import javax.inject.Inject;
 
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
 import edu.mit.media.obm.shair.liveobjects.R;
 
@@ -20,8 +21,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        LiveObjectsApplication app = (LiveObjectsApplication) getApplication();
-        app.injectObjectGraph(this);
+        DependencyInjector.inject(this, this);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()

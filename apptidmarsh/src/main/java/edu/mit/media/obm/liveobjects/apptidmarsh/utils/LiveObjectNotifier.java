@@ -17,6 +17,7 @@ import com.squareup.otto.Bus;
 import javax.inject.Inject;
 
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiLocationUtil;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiUtil;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
@@ -32,8 +33,7 @@ public abstract class LiveObjectNotifier {
     LiveObjectNotifier(Context appContext) {
         mContext = appContext;
 
-        LiveObjectsApplication app = (LiveObjectsApplication) mContext;
-        app.injectObjectGraph(this);
+        DependencyInjector.inject(this, mContext);
     }
 
     abstract public void wakeUp();

@@ -20,6 +20,7 @@ import butterknife.OnItemClick;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.shair.liveobjects.R;
@@ -77,8 +78,7 @@ public class SavedLiveObjectsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        LiveObjectsApplication app = (LiveObjectsApplication) getActivity().getApplication();
-        app.injectObjectGraph(this);
+        DependencyInjector.inject(this, getActivity());
 
         if (getArguments() != null) {
             mTabId = getArguments().getInt(ARG_TAB_ID);

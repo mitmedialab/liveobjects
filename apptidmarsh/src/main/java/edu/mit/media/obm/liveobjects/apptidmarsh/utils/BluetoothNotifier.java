@@ -14,6 +14,7 @@ import android.widget.Toast;
 import javax.inject.Inject;
 
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiLocationUtil;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiUtil;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
@@ -30,8 +31,7 @@ public class BluetoothNotifier extends LiveObjectNotifier {
     public BluetoothNotifier(Context appContext) {
         super(appContext);
 
-        LiveObjectsApplication app = (LiveObjectsApplication) mContext;
-        app.injectObjectGraph(this);
+        DependencyInjector.inject(this, appContext);
 
         if (mBluetoothAdapter == null) {
             throw new RuntimeException("Failed to get default Bluetooth Adapter");

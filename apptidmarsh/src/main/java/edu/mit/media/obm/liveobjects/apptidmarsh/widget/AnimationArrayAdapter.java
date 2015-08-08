@@ -26,6 +26,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.Util;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
@@ -39,7 +40,6 @@ import edu.mit.media.obm.shair.liveobjects.R;
 public class AnimationArrayAdapter extends ArrayAdapter<LiveObject> {
     private static final String LOG_TAG = AnimationArrayAdapter.class.getSimpleName();
 
-    private Context mContext;
     private int mResource;
     private List<LiveObject> mLiveObjects;
 
@@ -48,6 +48,7 @@ public class AnimationArrayAdapter extends ArrayAdapter<LiveObject> {
 
     private RandomColorGenerator mRandomColorGenerator;
 
+    @Inject Context mContext;
     @Inject DbController mDbController;
     @Inject ContentController mContentController;
     @Inject LayoutInflater mInflater;
@@ -58,9 +59,7 @@ public class AnimationArrayAdapter extends ArrayAdapter<LiveObject> {
     public AnimationArrayAdapter(Context context, int resource, List<LiveObject> liveObjects) {
         super(context, resource, liveObjects);
 
-        Activity activity = (Activity) context;
-        LiveObjectsApplication app = (LiveObjectsApplication) activity.getApplication();
-        app.injectObjectGraph(this);
+        DependencyInjector.inject(this, context);
 
         mContext = context;
         mResource = resource;

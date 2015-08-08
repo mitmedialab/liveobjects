@@ -35,6 +35,7 @@ import butterknife.OnItemClick;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.apptidmarsh.profile.ProfileActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.InactiveLiveObjectDetectionEvent;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
@@ -111,8 +112,7 @@ public class MainFragment extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, rootView);
 
-        LiveObjectsApplication app = (LiveObjectsApplication) getActivity().getApplication();
-        app.injectObjectGraph(this);
+        DependencyInjector.inject(this, getActivity());
 
         setupUIElements();
         setupUIListeners();

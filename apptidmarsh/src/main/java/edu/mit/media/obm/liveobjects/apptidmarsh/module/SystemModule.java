@@ -10,7 +10,10 @@ import org.altbeacon.beacon.BeaconManager;
 
 import dagger.Module;
 import dagger.Provides;
+import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.VideoViewFragment;
+import edu.mit.media.obm.liveobjects.apptidmarsh.utils.BluetoothNotifier;
+import edu.mit.media.obm.liveobjects.apptidmarsh.widget.AnimationArrayAdapter;
 
 /**
  * Created by arata on 8/3/15.
@@ -20,6 +23,8 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.media.VideoViewFragment;
         complete = false,
         injects = {
                 VideoViewFragment.class,
+                AnimationArrayAdapter.class,
+                BluetoothNotifier.class
         }
 )
 public class SystemModule {
