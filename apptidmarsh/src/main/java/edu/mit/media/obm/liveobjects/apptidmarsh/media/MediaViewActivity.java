@@ -248,13 +248,6 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
     @Override
     public void onCompletion(MediaPlayer mp) {
         cancelTask();
-
-        // when media is completed, return to detail activity
-        Intent intent = new Intent();
-        intent.putExtra(DetailActivity.EXTRA_LIVE_OBJ_NAME_ID, mLiveObjNameId);
-        intent.putExtra(DetailActivity.EXTRA_SHOW_ADD_COMMENT, true);
-        setResult(Activity.RESULT_OK, intent);
-
         finish();
     }
 

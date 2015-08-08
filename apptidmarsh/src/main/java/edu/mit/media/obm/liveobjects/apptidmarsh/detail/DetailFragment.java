@@ -39,7 +39,6 @@ import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.ProfilePreference;
@@ -65,6 +64,7 @@ public class DetailFragment extends Fragment {
     //TODO make the directory name parametrizable
     private static final String DIRECTORY_NAME = "DCIM";
     private static final String ARG_LIVE_OBJ_NAME_ID = "live_obj_name_id";
+    private static final String ARG_SHOW_ADD_COMMENT = "show_add_comment";
     private static final String COMMENT_DIRECTORY_NAME = "COMMENTS";
 
     private String mLiveObjectName;
@@ -139,10 +139,11 @@ public class DetailFragment extends Fragment {
      * @param liveObjectNameID the name_id of the live object obtained during discovery.
      * @return A new instance of fragment DetailFragment
      */
-    public static DetailFragment newInstance(String liveObjectNameID) {
+    public static DetailFragment newInstance(String liveObjectNameID, boolean showAddComment) {
         DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
         args.putString(ARG_LIVE_OBJ_NAME_ID, liveObjectNameID);
+        args.putBoolean(ARG_SHOW_ADD_COMMENT, showAddComment);
         fragment.setArguments(args);
 
         return fragment;
@@ -155,8 +156,11 @@ public class DetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mLiveObjectName = getArguments().getString(ARG_LIVE_OBJ_NAME_ID);
+
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            mLiveObjectName = arguments.getString(ARG_LIVE_OBJ_NAME_ID);
+            mShowAddComment = arguments.getBoolean(ARG_SHOW_ADD_COMMENT);
         }
     }
 

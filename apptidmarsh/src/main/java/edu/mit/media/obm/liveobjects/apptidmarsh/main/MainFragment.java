@@ -262,6 +262,7 @@ public class MainFragment extends Fragment {
                             detailIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 
                             detailIntent.putExtra(DetailActivity.EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
+                            detailIntent.putExtra(DetailActivity.EXTRA_SHOW_ADD_COMMENT, true);
                             startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
                             mSelectedLiveObject = null;
                         }

@@ -31,8 +31,9 @@ public class DetailActivity extends ActionBarActivity {
         setContentView(R.layout.activity_detail);
         if (savedInstanceState == null) {
             String liveObjNameId = getIntent().getStringExtra(EXTRA_LIVE_OBJ_NAME_ID);
+            boolean showAddComment = getIntent().getBooleanExtra(EXTRA_SHOW_ADD_COMMENT, false);
 
-            mDetailFragment = DetailFragment.newInstance(liveObjNameId);
+            mDetailFragment = DetailFragment.newInstance(liveObjNameId, showAddComment);
             mDetailFragment.setOnCancelListener(new DetailFragment.OnErrorListener() {
                 @Override
                 public void onError(Exception exception) {
