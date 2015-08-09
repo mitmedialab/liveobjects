@@ -1,16 +1,18 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.google.android.gms.maps.SupportMapFragment;
-
 import javax.inject.Inject;
 
-import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
+import butterknife.OnClick;
+import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
+import edu.mit.media.obm.liveobjects.apptidmarsh.profile.ProfileActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
 import edu.mit.media.obm.shair.liveobjects.R;
 
@@ -37,7 +39,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_empty, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -46,6 +48,20 @@ public class MainActivity extends ActionBarActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_goto_profile) {
+            Intent intent = new Intent(this, SavedLiveObjectsActivity.class);
+            startActivity(intent);
+
+            return true;
+        } else if (id == R.id.action_goto_history) {
+            Intent intent = new Intent(this, ProfileActivity.class);
+            startActivity(intent);
+
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }

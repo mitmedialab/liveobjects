@@ -92,18 +92,6 @@ public class MainFragment extends Fragment {
         mClickedView = view;
     }
 
-    @OnClick(R.id.historyButton)
-    void onClickHistoryButton() {
-        Intent intent = new Intent(getActivity(), SavedLiveObjectsActivity.class);
-        startActivity(intent);
-    }
-
-    @OnClick(R.id.profileButton)
-    void onClickProfileButton() {
-        Intent intent = new Intent(getActivity(), ProfileActivity.class);
-        startActivity(intent);
-    }
-
     public MainFragment() {
         super();
     }
