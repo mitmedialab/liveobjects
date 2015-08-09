@@ -37,4 +37,7 @@
     <string name="state_live_object_name_id">state_live_obj_name_id</string>
     <string name="state_play_position">state_play_position</string>
 
+    <string name="google_maps_key" translatable="false" templateMergeStrategy="preserve">
+        AIzaSyCYt2Hb7hdLlW60mZQnxLJfrquhjx9q9vo
+    </string>
 </resources>

@@ -5,6 +5,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.maps.SupportMapFragment;
+
 import javax.inject.Inject;
 
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
