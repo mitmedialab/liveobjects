@@ -15,6 +15,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import butterknife.Bind;
+import butterknife.BindString;
 import butterknife.ButterKnife;
 import butterknife.OnItemClick;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
@@ -39,6 +40,8 @@ public class SavedLiveObjectsFragment extends Fragment {
     private int mTabId;
 
     @Bind(R.id.saved_liveobjs_listview) ListView mListView;
+    @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.arg_connected_to_live_object) String EXTRA_CONNECTED_TO_LIVE_OBJ;
 
     @Inject MiddlewareInterface mMiddleware;
     @Inject DbController mDbController;
@@ -50,8 +53,8 @@ public class SavedLiveObjectsFragment extends Fragment {
         String liveObjNameId = provider.getId();
 
         Intent intent = new Intent(getActivity(), DetailActivity.class);
-        intent.putExtra(DetailActivity.EXTRA_CONNECTED_TO_LIVE_OBJ, false);
-        intent.putExtra(DetailActivity.EXTRA_LIVE_OBJ_NAME_ID, liveObjNameId);
+        intent.putExtra(EXTRA_CONNECTED_TO_LIVE_OBJ, false);
+        intent.putExtra(EXTRA_LIVE_OBJ_NAME_ID, liveObjNameId);
         startActivity(intent);
     }
 

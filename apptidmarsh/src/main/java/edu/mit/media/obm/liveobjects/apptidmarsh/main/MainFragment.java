@@ -29,6 +29,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.Bind;
+import butterknife.BindString;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
@@ -75,6 +76,8 @@ public class MainFragment extends Fragment {
     @Bind(R.id.swipe_container) SwipeRefreshLayout mSwipeLayout;
     @Bind(R.id.live_objects_list_view) GridView mLiveObjectsGridView;
     @Bind(R.id.root_layout) LinearLayout mRootLayout;
+    @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.arg_connected_to_live_object) String EXTRA_CONNECTED_TO_LIVE_OBJ;
 
     @OnItemClick(R.id.live_objects_list_view)
     void onLiveObjectsListViewItemClick(View view, int position) {
@@ -260,8 +263,8 @@ public class MainFragment extends Fragment {
                             Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
                             detailIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 
-                            detailIntent.putExtra(DetailActivity.EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
-                            detailIntent.putExtra(DetailActivity.EXTRA_CONNECTED_TO_LIVE_OBJ, true);
+                            detailIntent.putExtra(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
+                            detailIntent.putExtra(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
                             startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
                             mSelectedLiveObject = null;
                         }

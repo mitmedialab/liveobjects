@@ -3,6 +3,7 @@ package edu.mit.media.obm.liveobjects.apptidmarsh.detail;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -62,10 +63,11 @@ public class DetailFragment extends Fragment {
 
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
     //TODO make the directory name parametrizable
-    private static final String DIRECTORY_NAME = "DCIM";
-    private static final String ARG_LIVE_OBJ_NAME_ID = "live_obj_name_id";
-    private static final String ARG_CONNECTED_TO_LIVE_OBJ = "connected_to_live_obj";
-    private static final String COMMENT_DIRECTORY_NAME = "COMMENTS";
+    @BindString(R.string.arg_live_object_name_id) String ARG_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.arg_connected_to_live_object) String ARG_CONNECTED_TO_LIVE_OBJ;
+    @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.dir_contents) String DIRECTORY_NAME;
+    @BindString(R.string.dir_comments) String COMMENT_DIRECTORY_NAME;
 
     private String mLiveObjectName;
 
@@ -101,7 +103,7 @@ public class DetailFragment extends Fragment {
         cancelAsyncTasks();
         // launch the media associated to the object
         Intent viewIntent = new Intent(getActivity(), MediaViewActivity.class);
-        viewIntent.putExtra(MediaViewActivity.EXTRA_LIVE_OBJ_NAME_ID, mLiveObjectName);
+        viewIntent.putExtra(EXTRA_LIVE_OBJ_NAME_ID, mLiveObjectName);
         getActivity().startActivity(viewIntent);
     }
 
@@ -139,11 +141,15 @@ public class DetailFragment extends Fragment {
      * @param liveObjectNameID the name_id of the live object obtained during discovery.
      * @return A new instance of fragment DetailFragment
      */
-    public static DetailFragment newInstance(String liveObjectNameID, boolean showAddComment) {
+    public static DetailFragment newInstance(Activity activity, String liveObjectNameID, boolean showAddComment) {
         DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_LIVE_OBJ_NAME_ID, liveObjectNameID);
-        args.putBoolean(ARG_CONNECTED_TO_LIVE_OBJ, showAddComment);
+
+        String argLiveObjectNameId = activity.getString(R.string.arg_live_object_name_id);
+        String argConnectedToLiveObject = activity.getString(R.string.arg_connected_to_live_object);
+
+        args.putString(argLiveObjectNameId, liveObjectNameID);
+        args.putBoolean(argConnectedToLiveObject, showAddComment);
         fragment.setArguments(args);
 
         return fragment;
