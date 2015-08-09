@@ -14,6 +14,7 @@ import android.widget.VideoView;
 import javax.inject.Inject;
 
 import butterknife.Bind;
+import butterknife.BindString;
 import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
@@ -31,8 +32,8 @@ public class VideoViewFragment extends Fragment {
     private static final String LOG_TAG = VideoViewFragment.class.getSimpleName();
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_FILE_URL = "fileurl";
-    private static final String STATE_PLAY_POSITION = "state_play_position";
+    @BindString(R.string.arg_file_url) String ARG_FILE_URL;
+    @BindString(R.string.state_play_position) String STATE_PLAY_POSITION;
 
     private String mFileUrl;
 
@@ -54,10 +55,13 @@ public class VideoViewFragment extends Fragment {
      * @param fileUrl Parameter 1.
      * @return A new instance of fragment VideoViewFragment.
      */
-    public static VideoViewFragment newInstance(String fileUrl) {
+    public static VideoViewFragment newInstance(Activity activity, String fileUrl) {
         VideoViewFragment fragment = new VideoViewFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_FILE_URL, fileUrl);
+
+        String argFileUrl = activity.getString(R.string.arg_file_url);
+        args.putString(argFileUrl, fileUrl);
+
         fragment.setArguments(args);
         return fragment;
     }

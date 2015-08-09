@@ -43,11 +43,9 @@ import edu.mit.media.obm.shair.liveobjects.R;
 public class MediaViewActivity extends ActionBarActivity implements OnMediaViewListener {
     private static final String LOG_TAG = MediaViewActivity.class.getSimpleName();
 
-    public static String EXTRA_LIVE_OBJ_NAME_ID = "live_obj_name_id";
-    public static String STATE_LIVE_OBJ_NAME_ID = "state_live_obj_name_id";
-
-    //TODO makes the media directory name parametrizable
-    private static final String MEDIA_DIRECTORY_NAME = "DCIM";
+    @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.state_live_object_name_id) String STATE_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.dir_contents) String MEDIA_DIRECTORY_NAME;
 
     private String mContentType;
     private String mFileName;
@@ -125,14 +123,13 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
         try {
             fileUrl = mContentController.getFileUrl(mediaContentId);
             if (mContentType.equals(mContentTypeVideo)) {
-
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.activity_media_container, VideoViewFragment.newInstance(fileUrl))
+                        .add(R.id.activity_media_container, VideoViewFragment.newInstance(this, fileUrl))
                         .commit();
             } else if (mContentType.equals(mContentTypeAudio)) {
-                getSupportFragmentManager().beginTransaction().
-                        add(R.id.activity_media_container, VideoViewFragment.newInstance(fileUrl)).
-                        commit();
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.activity_media_container, VideoViewFragment.newInstance(this, fileUrl))
+                        .commit();
             } else if (mContentType.equals(mContentTypeGallery)) {
                 //TODO launch gallery
             }

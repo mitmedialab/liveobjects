@@ -10,6 +10,8 @@ import org.json.JSONException;
 
 import java.net.ConnectException;
 
+import butterknife.BindString;
+import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
 import edu.mit.media.obm.shair.liveobjects.R;
 
@@ -17,8 +19,8 @@ import edu.mit.media.obm.shair.liveobjects.R;
 public class DetailActivity extends ActionBarActivity {
     private static final String LOG_TAG = DetailActivity.class.getSimpleName();
 
-    public static String EXTRA_LIVE_OBJ_NAME_ID = "live_obj_name_id";
-    public static String EXTRA_CONNECTED_TO_LIVE_OBJ = "connected_to_live_obj";
+    @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.arg_connected_to_live_object) String EXTRA_CONNECTED_TO_LIVE_OBJ;
 
     public static int RESULT_CONNECTION_ERROR = RESULT_FIRST_USER;
     public static int RESULT_JSON_ERROR = RESULT_FIRST_USER + 1;
@@ -29,11 +31,13 @@ public class DetailActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        ButterKnife.bind(this);
+
         if (savedInstanceState == null) {
             String liveObjNameId = getIntent().getStringExtra(EXTRA_LIVE_OBJ_NAME_ID);
             boolean showAddComment = getIntent().getBooleanExtra(EXTRA_CONNECTED_TO_LIVE_OBJ, false);
 
-            mDetailFragment = DetailFragment.newInstance(liveObjNameId, showAddComment);
+            mDetailFragment = DetailFragment.newInstance(this, liveObjNameId, showAddComment);
             mDetailFragment.setOnCancelListener(new DetailFragment.OnErrorListener() {
                 @Override
                 public void onError(Exception exception) {
