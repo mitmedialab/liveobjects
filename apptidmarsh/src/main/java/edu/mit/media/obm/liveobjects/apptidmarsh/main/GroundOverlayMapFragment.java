@@ -23,6 +23,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.common.eventbus.Subscribe;
 import com.squareup.otto.Bus;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.utils.InactiveLiveObjectDetecti
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
+import edu.mit.media.obm.liveobjects.middleware.common.MapLocation;
 import edu.mit.media.obm.liveobjects.middleware.control.ConnectionListener;
 import edu.mit.media.obm.liveobjects.middleware.control.DiscoveryListener;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
@@ -79,6 +81,8 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         DependencyInjector.inject(this, getActivity());
 
         setupUIElements();
+        initNetworkListeners();
+
         setUpMap();
 
         return rootView;
@@ -106,7 +110,13 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         mMap.setOnCameraChangeListener(customCameraChangeListener);
     }
 
-    public void addLiveObjectMarker(String liveObjectName, int gridX, int gridY, int mapId) {
+    public void addLiveObjectMarker(LiveObject liveObject) {
+        String liveObjectName = liveObject.getLiveObjectName();
+        MapLocation mapLocation = liveObject.getMapLocation();
+        int gridX = mapLocation.getCoordinateX();
+        int gridY = mapLocation.getCoordinateY();
+        int mapId = mapLocation.getMapId();
+
         checkArgumentRange("gridX", gridX, 0, NUM_GRID_X - 1);
         checkArgumentRange("gridY", gridY, 0, NUM_GRID_Y - 1);
         checkArgumentRange("mapId", mapId, 0, NUM_MAP_ID - 1);
@@ -256,6 +266,10 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
                 }
 
                 updateLiveObjectsList();
+
+                for (LiveObject liveObject : mLiveObjectList) {
+                    addLiveObjectMarker(liveObject);
+                }
             }
         });
     }
@@ -281,11 +295,6 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
                 mLiveObjectList.add(liveObject);
             }
         }
-
-        /*
-        mAdapter.notifyDataSetChanged();
-        mSwipeLayout.setRefreshing(false);
-        */
     }
 
     private void initConnectionListener() {
