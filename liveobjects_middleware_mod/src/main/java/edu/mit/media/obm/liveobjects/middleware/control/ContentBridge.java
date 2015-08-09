@@ -127,4 +127,10 @@ public class ContentBridge implements ContentController {
 
         }
     }
+
+    @Override
+    public boolean isContentLocallyAvailable(ContentId contentId) {
+        String filePath = contentId.getRelativePath();
+        return mLocalStorageDriver.isFileExisting(filePath);
+    }
 }

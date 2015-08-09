@@ -32,7 +32,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
-import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
@@ -262,7 +261,7 @@ public class MainFragment extends Fragment {
                             detailIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 
                             detailIntent.putExtra(DetailActivity.EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
-                            detailIntent.putExtra(DetailActivity.EXTRA_SHOW_ADD_COMMENT, true);
+                            detailIntent.putExtra(DetailActivity.EXTRA_CONNECTED_TO_LIVE_OBJ, true);
                             startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
                             mSelectedLiveObject = null;
                         }

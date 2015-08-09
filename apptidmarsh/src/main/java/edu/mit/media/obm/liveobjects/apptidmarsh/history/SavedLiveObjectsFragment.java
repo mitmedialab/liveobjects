@@ -50,7 +50,7 @@ public class SavedLiveObjectsFragment extends Fragment {
         String liveObjNameId = provider.getId();
 
         Intent intent = new Intent(getActivity(), DetailActivity.class);
-        intent.putExtra(DetailActivity.EXTRA_SHOW_ADD_COMMENT, false);
+        intent.putExtra(DetailActivity.EXTRA_CONNECTED_TO_LIVE_OBJ, false);
         intent.putExtra(DetailActivity.EXTRA_LIVE_OBJ_NAME_ID, liveObjNameId);
         startActivity(intent);
     }

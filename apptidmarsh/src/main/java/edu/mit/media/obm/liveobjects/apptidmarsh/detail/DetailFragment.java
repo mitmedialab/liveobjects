@@ -64,7 +64,7 @@ public class DetailFragment extends Fragment {
     //TODO make the directory name parametrizable
     private static final String DIRECTORY_NAME = "DCIM";
     private static final String ARG_LIVE_OBJ_NAME_ID = "live_obj_name_id";
-    private static final String ARG_SHOW_ADD_COMMENT = "show_add_comment";
+    private static final String ARG_CONNECTED_TO_LIVE_OBJ = "connected_to_live_obj";
     private static final String COMMENT_DIRECTORY_NAME = "COMMENTS";
 
     private String mLiveObjectName;
@@ -81,7 +81,7 @@ public class DetailFragment extends Fragment {
 
     private AlertDialog mAddCommentAlert;
     private boolean mIsFavorite;
-    private boolean mShowAddComment = false;
+    private boolean mConnectedToLiveObject = false;
 
     @Bind(R.id.object_image_view) ImageView mIconView;
     @Bind(R.id.object_title_textview) TextView mObjectTitleTextView;
@@ -143,7 +143,7 @@ public class DetailFragment extends Fragment {
         DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
         args.putString(ARG_LIVE_OBJ_NAME_ID, liveObjectNameID);
-        args.putBoolean(ARG_SHOW_ADD_COMMENT, showAddComment);
+        args.putBoolean(ARG_CONNECTED_TO_LIVE_OBJ, showAddComment);
         fragment.setArguments(args);
 
         return fragment;
@@ -160,7 +160,7 @@ public class DetailFragment extends Fragment {
         Bundle arguments = getArguments();
         if (arguments != null) {
             mLiveObjectName = arguments.getString(ARG_LIVE_OBJ_NAME_ID);
-            mShowAddComment = arguments.getBoolean(ARG_SHOW_ADD_COMMENT);
+            mConnectedToLiveObject = arguments.getBoolean(ARG_CONNECTED_TO_LIVE_OBJ);
         }
     }
 
@@ -251,6 +251,7 @@ public class DetailFragment extends Fragment {
         String title = propertyProvider.getProjectTitle();
         String group = propertyProvider.getProjectGroup();
         String description = propertyProvider.getProjectDescription();
+        String mediaFileName = propertyProvider.getMediaFileName();
 
         mObjectTitleTextView.setText(title);
         mObjectGroupTextView.setText(group);
@@ -262,7 +263,13 @@ public class DetailFragment extends Fragment {
         mIsFavorite = setFavoriteButtonState(mFavoriteButtonLayout, propertyProvider);
         mAddCommentAlert = initAddCommentAlert();
 
-        mAddCommentLayout.setEnabled(mShowAddComment);
+        mAddCommentLayout.setEnabled(mConnectedToLiveObject);
+
+        // check if the media content of the target live object is locally available or downloadable
+        ContentId mediaContentId = new ContentId(mLiveObjectName, DIRECTORY_NAME, mediaFileName);
+        boolean contentReachable =
+                mContentController.isContentLocallyAvailable(mediaContentId) || mConnectedToLiveObject;
+        mIconView.setEnabled(contentReachable);
     }
 
     private boolean setFavoriteButtonState(LinearLayout favouriteButtonLayout, MLProjectPropertyProvider propertyProvider) {
@@ -349,6 +356,7 @@ public class DetailFragment extends Fragment {
         mSetBackgroundImageTask = new AsyncTask<String, Void, InputStream>() {
             @Override
             protected InputStream doInBackground(String... params) {
+                Log.v(LOG_TAG, "doInBackground()");
                 String imageFileName = params[0];
                 ContentId imageContentId = new ContentId(mLiveObjectName, DIRECTORY_NAME, imageFileName);
 
@@ -364,6 +372,7 @@ public class DetailFragment extends Fragment {
 
             @Override
             protected void onPostExecute(InputStream imageInputStream) {
+                Log.v(LOG_TAG, "onPostExecute()");
 
                 try {
                     Bitmap bitmap = Util.getBitmap(imageInputStream);
