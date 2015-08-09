@@ -269,7 +269,13 @@ public class DetailFragment extends Fragment {
         ContentId mediaContentId = new ContentId(mLiveObjectName, DIRECTORY_NAME, mediaFileName);
         boolean contentReachable =
                 mContentController.isContentLocallyAvailable(mediaContentId) || mConnectedToLiveObject;
-        mIconView.setEnabled(contentReachable);
+        if (contentReachable) {
+            mIconView.setEnabled(true);
+            mIconView.setVisibility(View.VISIBLE);
+        } else {
+            mIconView.setEnabled(false);
+            mIconView.setVisibility(View.GONE);
+        }
     }
 
     private boolean setFavoriteButtonState(LinearLayout favouriteButtonLayout, MLProjectPropertyProvider propertyProvider) {
