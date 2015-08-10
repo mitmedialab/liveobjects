@@ -50,12 +50,12 @@ public class MainActivity extends SingleFragmentActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_goto_profile) {
-            Intent intent = new Intent(this, SavedLiveObjectsActivity.class);
+            Intent intent = new Intent(this, ProfileActivity.class);
             startActivity(intent);
 
             return true;
         } else if (id == R.id.action_goto_history) {
-            Intent intent = new Intent(this, ProfileActivity.class);
+            Intent intent = new Intent(this, SavedLiveObjectsActivity.class);
             startActivity(intent);
 
             return true;
