@@ -160,25 +160,19 @@ public class DetailFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mRootView = inflater.inflate(R.layout.fragment_detail, container, false);
+
+        ButterKnife.bind(this, mRootView);
+        DependencyInjector.inject(this, getActivity());
 
         Bundle arguments = getArguments();
         if (arguments != null) {
             mLiveObjectName = arguments.getString(ARG_LIVE_OBJ_NAME_ID);
             mConnectedToLiveObject = arguments.getBoolean(ARG_CONNECTED_TO_LIVE_OBJ);
         }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mRootView = inflater.inflate(R.layout.fragment_detail, container, false);
-        ButterKnife.bind(this, mRootView);
-
-        DependencyInjector.inject(this, getActivity());
 
         Map<String, Object> liveObjectProperties = getLiveObjectProperties(mLiveObjectName);
-
         setUIContent(liveObjectProperties);
 
         return mRootView;

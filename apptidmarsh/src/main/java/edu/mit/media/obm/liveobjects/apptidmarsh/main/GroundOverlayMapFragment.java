@@ -93,11 +93,6 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     private void setUpMap() {
         mMap = getMap();
 
-        MarkerOptions markerOptions = new MarkerOptions()
-                .position(new LatLng(0, 0))
-                .title("Marker");
-        mMap.addMarker(markerOptions);
-
         final LatLng overlayPosition = new LatLng(0, 0);
         BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.main_map);
 
