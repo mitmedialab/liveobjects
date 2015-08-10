@@ -19,10 +19,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.common.eventbus.Subscribe;
 import com.squareup.otto.Bus;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +39,7 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.utils.InactiveLiveObjectDetecti
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
+import edu.mit.media.obm.liveobjects.middleware.common.MapLocation;
 import edu.mit.media.obm.liveobjects.middleware.control.ConnectionListener;
 import edu.mit.media.obm.liveobjects.middleware.control.DiscoveryListener;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
@@ -69,6 +72,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     private ArrayList<LiveObject> mActiveLiveObjectList = new ArrayList<>();
     private ArrayList<LiveObject> mSleepingLiveObjectList = new ArrayList<>();
     private LiveObject mSelectedLiveObject;
+    private Marker mClickedMarker;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -79,6 +83,8 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         DependencyInjector.inject(this, getActivity());
 
         setupUIElements();
+        initNetworkListeners();
+
         setUpMap();
 
         return rootView;
@@ -104,9 +110,47 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         CustomCameraChangeListener customCameraChangeListener =
                 new CustomCameraChangeListener(mMap, 16, 18, new LatLng(-0.005, -0.005), new LatLng(0.005, 0.005));
         mMap.setOnCameraChangeListener(customCameraChangeListener);
+
+        mMap.setOnMarkerClickListener(new LiveObjectMarkerClickListener());
     }
 
-    public void addLiveObjectMarker(String liveObjectName, int gridX, int gridY, int mapId) {
+    private class LiveObjectMarkerClickListener implements GoogleMap.OnMarkerClickListener {
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            // when a live object appearing in the list is clicked, connect to it
+            mSelectedLiveObject = null;
+            for (LiveObject liveObject : mLiveObjectList) {
+                String markerTitle = marker.getTitle();
+                String liveObjectName = liveObject.getLiveObjectName();
+
+                if (markerTitle.equals(liveObjectName)) {
+                    mSelectedLiveObject = liveObject;
+                }
+            }
+
+            if (mSelectedLiveObject == null) {
+                throw new IllegalStateException(
+                        "clicked live object was not found in the list of detected live objects");
+            }
+
+            mConnectingDialog.setMessage("Connecting to " + mSelectedLiveObject.getLiveObjectName());
+            mConnectingDialog.show();
+
+            mNetworkController.connect(mSelectedLiveObject);
+
+            mClickedMarker = marker;
+
+            return true;
+        }
+    }
+
+    public void addLiveObjectMarker(LiveObject liveObject) {
+        String liveObjectName = liveObject.getLiveObjectName();
+        MapLocation mapLocation = liveObject.getMapLocation();
+        int gridX = mapLocation.getCoordinateX();
+        int gridY = mapLocation.getCoordinateY();
+        int mapId = mapLocation.getMapId();
+
         checkArgumentRange("gridX", gridX, 0, NUM_GRID_X - 1);
         checkArgumentRange("gridY", gridY, 0, NUM_GRID_Y - 1);
         checkArgumentRange("mapId", mapId, 0, NUM_MAP_ID - 1);
@@ -229,8 +273,8 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
 
     private void initNetworkListeners() {
-        initDiscoveryListener();
-        initConnectionListener();
+        mNetworkController.setDiscoveryListener(new LiveObjectDiscoveryListener());
+        mNetworkController.setConnectionListener(new LiveObjectConnectionListener());
 
         Log.v(LOG_TAG, "deleting all the network configuration related to live objects");
         if (!mNetworkController.isConnecting()) {
@@ -240,24 +284,46 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 //        mAdapter.notifyDataSetChanged();
     }
 
-    private void initDiscoveryListener() {
-        mNetworkController.setDiscoveryListener(new DiscoveryListener() {
-            @Override
-            public void onDiscoveryStarted() {
-                Log.d(LOG_TAG, "discovery started");
+    private class LiveObjectDiscoveryListener implements DiscoveryListener {
+        @Override
+        public void onDiscoveryStarted() {
+            Log.d(LOG_TAG, "discovery started");
+        }
+
+        @Override
+        public void onLiveObjectsDiscovered(List<LiveObject> liveObjectList) {
+            Log.d(LOG_TAG, "discovery successfully completed");
+            mActiveLiveObjectList.clear();
+            for (LiveObject liveObject : liveObjectList) {
+                mActiveLiveObjectList.add(liveObject);
             }
 
-            @Override
-            public void onLiveObjectsDiscovered(List<LiveObject> liveObjectList) {
-                Log.d(LOG_TAG, "discovery successfully completed");
-                mActiveLiveObjectList.clear();
-                for (LiveObject liveObject : liveObjectList) {
-                    mActiveLiveObjectList.add(liveObject);
-                }
+            updateLiveObjectsList();
 
-                updateLiveObjectsList();
+            for (LiveObject liveObject : mLiveObjectList) {
+                addLiveObjectMarker(liveObject);
             }
-        });
+        }
+    }
+
+    class LiveObjectConnectionListener implements ConnectionListener {
+        @Override
+        public void onConnected(LiveObject connectedLiveObject) {
+            Log.v(LOG_TAG, String.format("onConnected(%s)", connectedLiveObject));
+            if (connectedLiveObject.equals(mSelectedLiveObject)) {
+                mConnectingDialog.dismiss();
+
+                // when the selected live objected is connected
+                // start the corresponding detail activity
+                Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
+                detailIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+
+                detailIntent.putExtra(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
+                detailIntent.putExtra(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
+                startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
+                mSelectedLiveObject = null;
+            }
+        }
     }
 
     private void updateLiveObjectsList() {
@@ -281,76 +347,6 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
                 mLiveObjectList.add(liveObject);
             }
         }
-
-        /*
-        mAdapter.notifyDataSetChanged();
-        mSwipeLayout.setRefreshing(false);
-        */
-    }
-
-    private void initConnectionListener() {
-        /*
-        mNetworkController.setConnectionListener(new ConnectionListener() {
-            @Override
-            public void onConnected(LiveObject connectedLiveObject) {
-                Log.v(LOG_TAG, String.format("onConnected(%s)", connectedLiveObject));
-                if (connectedLiveObject.equals(mSelectedLiveObject)) {
-                    mConnectingDialog.dismiss();
-
-                    final TextView liveObjectTitleTextView =
-                            ButterKnife.findById(mClickedView, R.id.grid_item_title_textview);
-
-                    Animation animation = new ExpandIconAnimation(
-                            getActivity().getWindowManager(), mClickedView).getAnimation();
-                    animation.setFillAfter(true);
-                    animation.setAnimationListener(new Animation.AnimationListener() {
-                        @Override
-                        public void onAnimationStart(Animation animation) {
-                            // doesn't show the title of a live object to prevent a strange error
-                            // regarding too huge texts when the icon is expanding on an emulator.
-                            Log.v(LOG_TAG, "onAnimationStart()");
-                            liveObjectTitleTextView.setVisibility(View.GONE);
-
-                            mSwipeLayout.setClipChildren(false);
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animation animation) {
-                            Log.v(LOG_TAG, "onAnimationEnd()");
-
-                            // when the selected live objected is connected
-                            // start the corresponding detail activity
-                            Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
-                            detailIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-
-                            detailIntent.putExtra(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
-                            detailIntent.putExtra(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
-                            startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
-                            mSelectedLiveObject = null;
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animation animation) {
-
-                        }
-                    });
-
-                    // make views other than the clicked one invisible for z-ordering problems
-                    ViewGroup viewGroup = ((ViewGroup) mClickedView.getParent());
-                    int clickedIndex = viewGroup.indexOfChild(mClickedView);
-                    for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                        if (i != clickedIndex) {
-                            viewGroup.getChildAt(i).setVisibility(View.INVISIBLE);
-                        }
-                    }
-
-                    mClickedView.startAnimation(animation);
-                    Log.v(LOG_TAG, "starting an animation");
-                }
-
-            }
-        });
-        */
     }
 
     @Override
