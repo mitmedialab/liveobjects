@@ -28,6 +28,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.Inflater;
 
 import javax.inject.Inject;
 
@@ -75,8 +76,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     private Marker mClickedMarker;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
 
         ButterKnife.bind(this, rootView);

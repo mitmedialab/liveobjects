@@ -7,6 +7,7 @@ import dagger.Provides;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsFragment;
+import edu.mit.media.obm.liveobjects.apptidmarsh.main.GroundOverlayMapFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.MediaViewActivity;
@@ -25,6 +26,7 @@ import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
         injects = {
                 MainActivity.class,
                 MainFragment.class,
+                GroundOverlayMapFragment.class,
                 SavedLiveObjectsFragment.class,
                 DetailFragment.class,
                 MediaViewActivity.class

@@ -6,6 +6,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.maps.SupportMapFragment;
+
 import javax.inject.Inject;
 
 import butterknife.OnClick;
@@ -29,8 +31,7 @@ public class MainActivity extends ActionBarActivity {
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new MainFragment())
-//                    .add(R.id.container, new SupportMapFragment())
+                    .add(R.id.container, new GroundOverlayMapFragment())
                     .commit();
         }
     }
