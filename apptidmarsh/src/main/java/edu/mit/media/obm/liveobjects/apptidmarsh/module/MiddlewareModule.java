@@ -12,6 +12,7 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.main.GroundOverlayMapFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.MediaViewActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.profile.ProfileActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.AnimationArrayAdapter;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.SingleFragmentActivity;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
@@ -28,6 +29,7 @@ import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
         injects = {
                 MainActivity.class,
                 MainFragment.class,
+                ProfileActivity.class,
                 GroundOverlayMapFragment.class,
                 SavedLiveObjectsFragment.class,
                 DetailActivity.class,

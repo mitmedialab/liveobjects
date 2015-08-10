@@ -17,7 +17,7 @@ public abstract class SingleFragmentActivity extends ActionBarActivity {
     protected abstract int getLayoutResId();
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(getLayoutResId());

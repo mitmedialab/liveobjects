@@ -54,9 +54,15 @@ public class DetailActivity extends SingleFragmentActivity {
             }
         });
 
-        getSupportActionBar().setTitle(liveObjNameId);
-
         return mDetailFragment;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        String liveObjNameId = getIntent().getStringExtra(EXTRA_LIVE_OBJ_NAME_ID);
+        getSupportActionBar().setTitle(liveObjNameId);
     }
 
     @Override
