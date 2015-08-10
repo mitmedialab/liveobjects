@@ -2,6 +2,7 @@ package edu.mit.media.obm.liveobjects.apptidmarsh.detail;
 
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,11 +13,13 @@ import java.net.ConnectException;
 
 import butterknife.BindString;
 import butterknife.ButterKnife;
+import edu.mit.media.obm.liveobjects.apptidmarsh.main.GroundOverlayMapFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
+import edu.mit.media.obm.liveobjects.apptidmarsh.widget.SingleFragmentActivity;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 
-public class DetailActivity extends ActionBarActivity {
+public class DetailActivity extends SingleFragmentActivity {
     private static final String LOG_TAG = DetailActivity.class.getSimpleName();
 
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
@@ -28,40 +31,37 @@ public class DetailActivity extends ActionBarActivity {
     private DetailFragment mDetailFragment;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
-        ButterKnife.bind(this);
+    protected Fragment createFragment() {
+        String liveObjNameId = getIntent().getStringExtra(EXTRA_LIVE_OBJ_NAME_ID);
+        boolean showAddComment = getIntent().getBooleanExtra(EXTRA_CONNECTED_TO_LIVE_OBJ, false);
 
-        if (savedInstanceState == null) {
-            String liveObjNameId = getIntent().getStringExtra(EXTRA_LIVE_OBJ_NAME_ID);
-            boolean showAddComment = getIntent().getBooleanExtra(EXTRA_CONNECTED_TO_LIVE_OBJ, false);
+        mDetailFragment = DetailFragment.newInstance(this, liveObjNameId, showAddComment);
+        mDetailFragment.setOnCancelListener(new DetailFragment.OnErrorListener() {
+            @Override
+            public void onError(Exception exception) {
+                Class exceptionClass = exception.getClass();
+                int result = RESULT_OK;
 
-            mDetailFragment = DetailFragment.newInstance(this, liveObjNameId, showAddComment);
-            mDetailFragment.setOnCancelListener(new DetailFragment.OnErrorListener() {
-                @Override
-                public void onError(Exception exception) {
-                    Class exceptionClass = exception.getClass();
-                    int result = RESULT_OK;
-
-                    if (ConnectException.class.equals(exceptionClass)) {
-                        result = RESULT_CONNECTION_ERROR;
-                    } else if (JSONException.class.equals(exceptionClass)) {
-                        result = RESULT_JSON_ERROR;
-                    }
-
-                    mDetailFragment.cancelAsyncTasks();
-                    setResult(result);
-                    finish();
+                if (ConnectException.class.equals(exceptionClass)) {
+                    result = RESULT_CONNECTION_ERROR;
+                } else if (JSONException.class.equals(exceptionClass)) {
+                    result = RESULT_JSON_ERROR;
                 }
-            });
 
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, mDetailFragment)
-                    .commit();
+                mDetailFragment.cancelAsyncTasks();
+                setResult(result);
+                finish();
+            }
+        });
 
-            getSupportActionBar().setTitle(liveObjNameId);
-        }
+        getSupportActionBar().setTitle(liveObjNameId);
+
+        return mDetailFragment;
+    }
+
+    @Override
+    protected int getLayoutResId() {
+        return R.layout.activity_detail;
     }
 
     @Override

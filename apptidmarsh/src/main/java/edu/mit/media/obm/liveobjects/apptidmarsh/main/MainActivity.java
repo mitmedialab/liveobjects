@@ -2,6 +2,7 @@ package edu.mit.media.obm.liveobjects.apptidmarsh.main;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,27 +16,23 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsActivit
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.apptidmarsh.profile.ProfileActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
+import edu.mit.media.obm.liveobjects.apptidmarsh.widget.SingleFragmentActivity;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends SingleFragmentActivity {
     @Inject NetworkController mNetWorkController;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        DependencyInjector.inject(this, this);
-
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new GroundOverlayMapFragment())
-                    .commit();
-        }
+    protected Fragment createFragment() {
+        return new GroundOverlayMapFragment();
     }
 
+    @Override
+    protected int getLayoutResId() {
+        return R.layout.activity_main;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

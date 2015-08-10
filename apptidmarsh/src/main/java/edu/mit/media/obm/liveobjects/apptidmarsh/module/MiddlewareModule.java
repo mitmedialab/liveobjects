@@ -5,6 +5,7 @@ import android.content.Context;
 import dagger.Module;
 import dagger.Provides;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.GroundOverlayMapFragment;
@@ -12,6 +13,7 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.MediaViewActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.AnimationArrayAdapter;
+import edu.mit.media.obm.liveobjects.apptidmarsh.widget.SingleFragmentActivity;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
@@ -28,8 +30,9 @@ import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
                 MainFragment.class,
                 GroundOverlayMapFragment.class,
                 SavedLiveObjectsFragment.class,
+                DetailActivity.class,
                 DetailFragment.class,
-                MediaViewActivity.class
+                MediaViewActivity.class,
         }
 )
 public class MiddlewareModule {
