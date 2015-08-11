@@ -55,8 +55,6 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 
     private AsyncTask<Void, Integer, Void> mSavingFileTask = null;
 
-    private ProgressDialog mDownloadProgressDialog;
-
     @BindString(R.string.content_type_video) String mContentTypeVideo;
     @BindString(R.string.content_type_audio) String mContentTypeAudio;
     @BindString(R.string.content_type_gallery) String mContentTypeGallery;
@@ -72,7 +70,6 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 
         DependencyInjector.inject(this, this);
 
-        mDownloadProgressDialog = new ProgressDialog(this);
 // TODO to reintroduce
 //        initProgressDialog(mDownloadProgressDialog);
 
