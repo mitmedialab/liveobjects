@@ -1,6 +1,11 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.main;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,10 +23,24 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.common.collect.Range;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import butterknife.BindString;
 import butterknife.ButterKnife;
+import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
+import edu.mit.media.obm.liveobjects.apptidmarsh.utils.Util;
+import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
+import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.common.MapLocation;
+import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
+import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
@@ -34,14 +53,25 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     private final int NUM_GRID_Y = 256;
     private final int NUM_MAP_ID = 16;
 
+    private final int MARKER_ICON_WIDTH = 128;
+    private final int MARKER_ICON_HEIGHT = 128;
+
     private final LatLng SOUTH_WEST_BOUND = new LatLng(-0.005, -0.005);
     private final LatLng NORTH_EAST_BOUND = new LatLng(0.005, 0.005);
 
     private GoogleMap mMap;
+    private RandomColorGenerator mRandomColorGenerator;
+
+    @Inject DbController mDbController;
+    @Inject ContentController mContentController;
+    @BindString(R.string.dir_contents) String DIR_CONTENTS;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
+        DependencyInjector.inject(this, getActivity());
+        ButterKnife.bind(this, getActivity());
+
         setUpMap();
 
         return rootView;
@@ -62,6 +92,8 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         CustomCameraChangeListener customCameraChangeListener = new CustomCameraChangeListener(
                 mMap, SOUTH_WEST_BOUND, NORTH_EAST_BOUND, 16, 18, 0f, 0f, 0f, 0f);
         mMap.setOnCameraChangeListener(customCameraChangeListener);
+
+        mRandomColorGenerator = new RandomColorGenerator();
     }
 
     public void setOnMarkerClickListener(GoogleMap.OnMarkerClickListener listener) {
@@ -78,12 +110,78 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         checkArgumentRange("gridX", gridX, 0, NUM_GRID_X - 1);
         checkArgumentRange("gridY", gridY, 0, NUM_GRID_Y - 1);
         checkArgumentRange("mapId", mapId, 0, NUM_MAP_ID - 1);
-
         LatLng gridLocationInLagLng = gridToLatLng(gridX, gridY);
-        MarkerOptions markerOptions = new MarkerOptions()
-                .position(gridLocationInLagLng)
-                .title(liveObjectName);
-        mMap.addMarker(markerOptions);
+
+        try {
+            BitmapDescriptor iconBitmapDescriptor =
+                    BitmapDescriptorFactory.fromBitmap(createMarkerIcon(liveObjectName));
+            MarkerOptions markerOptions = new MarkerOptions()
+                    .position(gridLocationInLagLng)
+                    .icon(iconBitmapDescriptor)
+                    .title(liveObjectName);
+            mMap.addMarker(markerOptions);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "failed to add a marker for the live object '" + liveObjectName + "'");
+        }
+    }
+
+    private Bitmap createMarkerIcon(String liveObjectName) throws IOException, RemoteException {
+        Bitmap iconBitmap;
+
+        if (!mDbController.isLiveObjectEmpty(liveObjectName)) {
+            iconBitmap = getLiveObjectIcon(liveObjectName);
+            iconBitmap = iconBitmap.createScaledBitmap(iconBitmap, MARKER_ICON_WIDTH, MARKER_ICON_HEIGHT, true);
+
+            BitmapEditor bitmapEditor = new BitmapEditor(getActivity());
+            bitmapEditor.blurBitmap(iconBitmap, 2);
+        }
+        else {
+            int color = mRandomColorGenerator.generateColor(liveObjectName);
+            iconBitmap = Bitmap.createBitmap(
+                    MARKER_ICON_WIDTH, MARKER_ICON_HEIGHT, Bitmap.Config.ARGB_8888);
+            iconBitmap.eraseColor(color);
+        }
+
+        return iconBitmap;
+    }
+
+    private Bitmap getLiveObjectIcon(String liveObjectName) throws IOException, RemoteException {
+        Map<String, Object> liveObjectProperties = mDbController.getProperties(liveObjectName);
+        MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
+        String iconFileName = provider.getIconFileName();
+        ContentId iconContentId = new ContentId(liveObjectName, DIR_CONTENTS, iconFileName);
+        InputStream imageInputStream = mContentController.getInputStreamContent(iconContentId);
+
+        return Util.getBitmap(imageInputStream);
+    }
+
+    private static class RandomColorGenerator {
+        private final static int HUE_OFFSET = 150;
+        private int mCurrentHue;
+        private Map<String, Integer> colorMap;
+
+        public RandomColorGenerator() {
+            mCurrentHue = 0;
+            colorMap = new HashMap<>();
+        }
+
+        public int generateColor(String id) {
+            if (colorMap.containsKey(id)) {
+                return colorMap.get(id);
+            }
+
+            float[] hsv = new float[3];
+            hsv[0] = (float) mCurrentHue;
+            hsv[1] = 1.0f;
+            hsv[2] = 0.75f;
+
+            mCurrentHue = (mCurrentHue + HUE_OFFSET) % 360;
+            int color = Color.HSVToColor(hsv);
+
+            colorMap.put(id, color);
+
+            return color;
+        }
     }
 
     private void checkArgumentRange(String argName, int argValue, int minVaue, int maxValue) {
