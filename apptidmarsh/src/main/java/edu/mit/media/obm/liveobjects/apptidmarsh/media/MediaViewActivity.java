@@ -31,6 +31,7 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
+import edu.mit.media.obm.liveobjects.apptidmarsh.widget.SingleFragmentActivity;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
@@ -41,7 +42,7 @@ import edu.mit.media.obm.shair.liveobjects.R;
 /**
  * Created by Valerio Panzica La Manna on 08/12/14.
  */
-public class MediaViewActivity extends ActionBarActivity implements OnMediaViewListener {
+public class MediaViewActivity extends SingleFragmentActivity implements OnMediaViewListener {
     private static final String LOG_TAG = MediaViewActivity.class.getSimpleName();
 
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
@@ -63,27 +64,22 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
     @Inject DbController mDbController;
 
     @Override
+    protected Fragment createFragment() {
+        mLiveObjNameId = getIntent().getStringExtra(EXTRA_LIVE_OBJ_NAME_ID);
+        initContent(mLiveObjNameId);
+        return createMediaFragment();
+    }
+
+    @Override
+    protected int getLayoutResId() {
+        return R.layout.activity_media_view;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_media_view);
-        ButterKnife.bind(this);
-
-        DependencyInjector.inject(this, this);
-
-// TODO to reintroduce
-//        initProgressDialog(mDownloadProgressDialog);
 
         if (savedInstanceState == null) {
-            mLiveObjNameId = getIntent().getStringExtra(EXTRA_LIVE_OBJ_NAME_ID);
-            if (mLiveObjNameId != null) {
-                initContent(mLiveObjNameId);
-                launchMediaFragment();
-
-//                //TODO to improve: for now we first download all the file and the open the fragment
-//                initSavingFileTask();
-//                mSavingFileTask.execute();
-            }
-
             getSupportActionBar().setTitle(mLiveObjNameId);
         } else {
             mLiveObjNameId = savedInstanceState.getString(STATE_LIVE_OBJ_NAME_ID);
@@ -97,7 +93,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
         mFileName = propertyProvider.getMediaFileName();
     }
 
-    private void launchMediaFragment() {
+    private Fragment createMediaFragment() {
         ContentId mediaContentId = new ContentId(mLiveObjNameId, MEDIA_DIRECTORY_NAME, mFileName);
         String fileUrl;
         try {
@@ -122,9 +118,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
             throw new IllegalStateException("invalid content type");
         }
 
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.activity_media_container, fragment)
-                .commit();
+        return fragment;
     }
 
     @Override
