@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
@@ -36,6 +37,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import butterknife.BindColor;
 import butterknife.BindDimen;
 import butterknife.BindString;
 import butterknife.ButterKnife;
@@ -60,6 +62,13 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     private final int NUM_GRID_Y = 256;
     private final int NUM_MAP_ID = 16;
 
+    private final float MIN_ZOOM = 16f;
+    private final float MAX_ZOOM = 18f;
+    private final float MIN_TILT = 0f;
+    private final float MAX_TILT = 0f;
+    private final float MIN_BEARING = 0f;
+    private final float MAX_BEARING = 0f;
+
     private final LatLng SOUTH_WEST_BOUND = new LatLng(-0.005, -0.005);
     private final LatLng NORTH_EAST_BOUND = new LatLng(0.005, 0.005);
 
@@ -71,6 +80,8 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     @BindString(R.string.dir_contents) String DIR_CONTENTS;
     @BindDimen(R.dimen.map_marker_icon_size) int MAP_MARKER_ICON_SIZE;
     @BindDimen(R.dimen.map_marker_font_size) int MAP_MARKER_FONT_SIZE;
+    @BindDimen(R.dimen.map_marker_arrow_size) int MAP_MARKER_ARROW_SIZE;
+    @BindColor(R.color.theme_transparent_background) int MAP_MARKER_ARROW_COLOR;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -96,8 +107,17 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         mMap.addGroundOverlay(newarkMap);
 
         CustomCameraChangeListener customCameraChangeListener = new CustomCameraChangeListener(
-                mMap, SOUTH_WEST_BOUND, NORTH_EAST_BOUND, 16, 18, 0f, 0f, 0f, 0f);
+                mMap, SOUTH_WEST_BOUND, NORTH_EAST_BOUND, MIN_ZOOM, MAX_ZOOM, MIN_TILT, MAX_TILT,
+                MIN_BEARING, MAX_BEARING);
         mMap.setOnCameraChangeListener(customCameraChangeListener);
+
+        LatLng defaultTarget = new LatLng(
+                (SOUTH_WEST_BOUND.latitude + NORTH_EAST_BOUND.latitude) / 2,
+                (SOUTH_WEST_BOUND.longitude + NORTH_EAST_BOUND.longitude) / 2);
+        float defaultZoom = (MIN_ZOOM + MAX_ZOOM) / 2;
+        CameraUpdate updateToDefault =
+                CameraUpdateFactory.newLatLngZoom(defaultTarget, defaultZoom);
+        mMap.moveCamera(updateToDefault);
 
         mRandomColorGenerator = new RandomColorGenerator();
     }
@@ -124,6 +144,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(gridLocationInLagLng)
                     .icon(iconBitmapDescriptor)
+                    .anchor(0.5f, 1.0f)
                     .title(liveObjectName);
             mMap.addMarker(markerOptions);
         } catch (Exception e) {
@@ -151,6 +172,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
         iconBitmap = roundBitmap(iconBitmap, MAP_MARKER_ICON_SIZE);
         printTitleOnBitmap(iconBitmap, liveObjectName);
+        iconBitmap = addArrowToBitmap(iconBitmap);
 
         return iconBitmap;
     }
@@ -208,8 +230,6 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     }
 
     private void printTitleOnBitmap(Bitmap bitmap, String title) {
-        Canvas canvas = new Canvas(bitmap);
-
         Paint paint = new Paint();
         paint.setColor(Color.WHITE);
         paint.setTextSize(MAP_MARKER_FONT_SIZE);
@@ -220,7 +240,35 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         paint.setAntiAlias(true);
         paint.setShadowLayer(2f, 4f, 4f, Color.BLACK);
 
+        Canvas canvas = new Canvas(bitmap);
         canvas.drawText(title, MAP_MARKER_ICON_SIZE / 2, MAP_MARKER_ICON_SIZE / 2, paint);
+    }
+
+    private Bitmap addArrowToBitmap(Bitmap bitmap) {
+        int size_including_arrow = MAP_MARKER_ICON_SIZE + MAP_MARKER_ARROW_SIZE;
+
+        Bitmap bitmapWithArrow = Bitmap.createBitmap(
+                MAP_MARKER_ICON_SIZE, size_including_arrow, Bitmap.Config.ARGB_8888);
+
+
+        Path arrowPath = new Path();
+        arrowPath.moveTo(0.5f * MAP_MARKER_ICON_SIZE, size_including_arrow);
+        arrowPath.lineTo(0.55f * MAP_MARKER_ICON_SIZE, 0.8f * MAP_MARKER_ICON_SIZE);
+        arrowPath.lineTo(0.45f * MAP_MARKER_ICON_SIZE, 0.8f * MAP_MARKER_ICON_SIZE);
+        arrowPath.close();
+
+        Paint iconPaint = new Paint();
+        Paint arrowPaint = new Paint();
+        arrowPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        arrowPaint.setColor(MAP_MARKER_ARROW_COLOR);
+        arrowPaint.setAntiAlias(true);
+        arrowPaint.setShadowLayer(2f, 4f, 4f, Color.BLACK);
+
+        Canvas canvas = new Canvas(bitmapWithArrow);
+        canvas.drawPath(arrowPath, arrowPaint);
+        canvas.drawBitmap(bitmap, 0, 0, iconPaint);
+
+        return bitmapWithArrow;
     }
 
     private static class RandomColorGenerator {

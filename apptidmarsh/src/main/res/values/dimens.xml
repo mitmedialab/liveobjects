@@ -5,4 +5,5 @@
 
     <dimen name="map_marker_icon_size">120dp</dimen>
     <dimen name="map_marker_font_size">22sp</dimen>
+    <dimen name="map_marker_arrow_size">30dp</dimen>
 </resources>
