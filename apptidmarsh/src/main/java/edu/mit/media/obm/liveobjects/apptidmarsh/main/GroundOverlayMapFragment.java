@@ -87,30 +87,20 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     }
 
     private void checkArgumentRange(String argName, int argValue, int minVaue, int maxValue) {
-        if (argValue < minVaue || argValue > maxValue) {
+        if (!Range.closed(minVaue, maxValue).contains(argValue)) {
             String errorMessage = String.format("arg %s (%d) is out of the range '%d <= %s <= %d'",
                     argName, argValue, minVaue, argName, maxValue);
             throw new IllegalArgumentException(errorMessage);
         }
     }
 
-    private LatLng gridToLatLng(int grid_x, int grid_y) {
-        if (grid_x < 0 || grid_x > NUM_GRID_X - 1) {
-            throw new IllegalArgumentException(
-                    String.format("grid_x (%d) is out of range", grid_x));
-        }
-
-        if (grid_y < 0 || grid_y > NUM_GRID_Y - 1) {
-            throw new IllegalArgumentException(
-                    String.format("grid_y (%d) is out of range", grid_y));
-        }
-
+    private LatLng gridToLatLng(int gridX, int gridY) {
         double latitudeScale = NORTH_EAST_BOUND.latitude - SOUTH_WEST_BOUND.latitude;
         double longitudeScale = NORTH_EAST_BOUND.longitude - SOUTH_WEST_BOUND.longitude;
         double latitudeStep = latitudeScale / (NUM_GRID_X - 1);
         double longitudeStep = longitudeScale / (NUM_GRID_Y - 1);
-        double latitude = grid_x * latitudeStep + SOUTH_WEST_BOUND.latitude;
-        double longitude = grid_x * longitudeStep + SOUTH_WEST_BOUND.longitude;
+        double latitude = gridX * latitudeStep + SOUTH_WEST_BOUND.latitude;
+        double longitude = gridY * longitudeStep + SOUTH_WEST_BOUND.longitude;
 
         return new LatLng(latitude, longitude);
     }
