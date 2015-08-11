@@ -16,6 +16,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.common.collect.Range;
 
 import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
@@ -94,12 +95,24 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     }
 
     private LatLng gridToLatLng(int grid_x, int grid_y) {
+        if (grid_x < 0 || grid_x > NUM_GRID_X - 1) {
+            throw new IllegalArgumentException(
+                    String.format("grid_x (%d) is out of range", grid_x));
+        }
+
+        if (grid_y < 0 || grid_y > NUM_GRID_Y - 1) {
+            throw new IllegalArgumentException(
+                    String.format("grid_y (%d) is out of range", grid_y));
+        }
+
         double latitudeScale = NORTH_EAST_BOUND.latitude - SOUTH_WEST_BOUND.latitude;
         double longitudeScale = NORTH_EAST_BOUND.longitude - SOUTH_WEST_BOUND.longitude;
         double latitudeStep = latitudeScale / (NUM_GRID_X - 1);
         double longitudeStep = longitudeScale / (NUM_GRID_Y - 1);
+        double latitude = grid_x * latitudeStep + SOUTH_WEST_BOUND.latitude;
+        double longitude = grid_x * longitudeStep + SOUTH_WEST_BOUND.longitude;
 
-        return new LatLng(0.0f, 0.0f);
+        return new LatLng(latitude, longitude);
     }
 
     private static class CustomCameraChangeListener implements GoogleMap.OnCameraChangeListener {
@@ -136,27 +149,25 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
         @Override
         public void onCameraChange(CameraPosition cameraPosition) {
-            SaturationResult<Float> zoomSaturation =
-                    saturate(cameraPosition.zoom, mMinZoom, mMaxZoom);
-            SaturationResult<Double> latitudeSaturation =
-                    saturate(cameraPosition.target.latitude,
-                            mSouthWestBound.latitude, mNorthEastBound.latitude);
-            SaturationResult<Double> longitudeSaturation =
-                    saturate(cameraPosition.target.longitude,
-                            mSouthWestBound.longitude, mNorthEastBound.longitude);
-            SaturationResult<Float> tiltSaturation =
-                    saturate(cameraPosition.tilt, mMinTilt, mMaxTilt);
-            SaturationResult<Float> bearingSaturation =
-                    saturate(cameraPosition.bearing, mMinBearing, mMaxBearing);
+            Range<Float> zoomRange = Range.closed(mMinZoom, mMaxZoom);
+            Range<Double> latitudeRange = Range.closed(mSouthWestBound.latitude, mNorthEastBound.latitude);
+            Range<Double> longitudeRange = Range.closed(mSouthWestBound.longitude, mNorthEastBound.longitude);
+            Range<Float> tiltRange = Range.closed(mMinTilt, mMaxTilt);
+            Range<Float> bearingRange = Range.closed(mMinBearing, mMaxBearing);
 
-            if (zoomSaturation.mIsSaturated || latitudeSaturation.mIsSaturated ||
-                    longitudeSaturation.mIsSaturated || tiltSaturation.mIsSaturated ||
-                    bearingSaturation.mIsSaturated) {
-                float zoom = zoomSaturation.mSaturatedValue;
-                LatLng latLng = new LatLng(
-                        latitudeSaturation.mSaturatedValue, longitudeSaturation.mSaturatedValue);
-                float tilt = tiltSaturation.mSaturatedValue;
-                float bearing = bearingSaturation.mSaturatedValue;
+            if (!zoomRange.contains(cameraPosition.zoom) ||
+                    !latitudeRange.contains(cameraPosition.target.latitude) ||
+                    !longitudeRange.contains(cameraPosition.target.longitude) ||
+                    !tiltRange.contains(cameraPosition.tilt) ||
+                    !bearingRange.contains(cameraPosition.bearing)) {
+
+                float zoom = saturate(cameraPosition.zoom, zoomRange);
+                double latitude = saturate(cameraPosition.target.latitude, latitudeRange);
+                double longitude = saturate(cameraPosition.target.longitude, longitudeRange);
+                float tilt = saturate(cameraPosition.tilt, tiltRange);
+                float bearing = saturate(cameraPosition.bearing, bearingRange);
+
+                LatLng latLng = new LatLng(latitude, longitude);
 
                 CameraPosition newCameraPosition = CameraPosition.builder()
                         .target(latLng).zoom(zoom).tilt(tilt).bearing(bearing)
@@ -169,29 +180,19 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
             Log.v(LOG_TAG, cameraPosition.toString());
         }
 
-        private static <T extends Comparable<T>>
-        SaturationResult<T> saturate(T value, T minValue, T maxValue) {
-            SaturationResult saturationResult;
+        <T extends Comparable<T>> T saturate(T value, Range<T> range) {
+            T saturatedValue;
 
-            if (value.compareTo(minValue) < 0) {
-                saturationResult = new SaturationResult(minValue, true);
-            } else if (value.compareTo(maxValue) > 0) {
-                saturationResult = new SaturationResult(maxValue, true);
+            if (value.compareTo(range.lowerEndpoint()) < 0) {
+                saturatedValue = range.lowerEndpoint();
+            } else if (value.compareTo(range.upperEndpoint()) > 0) {
+                saturatedValue = range.upperEndpoint();
             } else {
-                saturationResult = new SaturationResult(value, false);
+                saturatedValue = value;
             }
 
-            return saturationResult;
+            return saturatedValue;
         }
 
-        private static class SaturationResult<T extends Comparable<T>> {
-            public T mSaturatedValue;
-            public boolean mIsSaturated;
-
-            public SaturationResult(T saturatedValue, boolean isSaturated) {
-                mSaturatedValue = saturatedValue;
-                mIsSaturated = isSaturated;
-            }
-        }
     }
 }
