@@ -92,24 +92,6 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
         }
     }
 
-    private void initProgressDialog(ProgressDialog progressDialog) {
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setTitle("Downloading content ...");
-        progressDialog.setMax(100);
-        progressDialog.setProgressNumberFormat(null);
-        progressDialog.setCancelable(false);
-    }
-
-
-//    private void initContent(String liveObjNameId) {
-//        Cursor cursor = LObjContentProvider.getLocalLiveObject(liveObjNameId, this);
-//        cursor.moveToFirst();
-//        mContentType = cursor.getString(cursor.getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_TYPE));
-//        mFilePath = cursor.getString(cursor.getColumnIndex(LObjContract.LiveObjectEntry.COLUMN_NAME_MEDIA_FILEPATH));
-//        mFileName = mFilePath.substring(mFilePath.lastIndexOf(File.separator) + 1);
-//        cursor.close();
-//    }
-
     private void initContent(String liveObjectId) {
         Map<String, Object> properties = mDbController.getProperties(liveObjectId);
         MLProjectPropertyProvider propertyProvider = new MLProjectPropertyProvider(properties);
@@ -139,94 +121,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-//        if (isLocallyAvailable(mFilePath, mFileName, MEDIA_DIRECTORY_NAME)) {
-//            Log.d(LOG_TAG, "media file locally available ");
-//            fileUrl = mFilePath;
-//        }
-//        else {
-//            Log.d(LOG_TAG, "media file taken from live object ");
-//            Log.e(LOG_TAG, "filename: " + mFileName);
-//            Log.e(LOG_TAG, "filePath: " + mFilePath);
-//            fileUrl = getFileUrl(mFileName);
-//
-//            Log.e(LOG_TAG, "fileUrl: " + fileUrl);
-//        }
-
-
     }
-
-
-    private String getFileUrl(String filename) {
-        String fileUrl;
-
-        try {
-            //TODO to change: the app cannot directly talk with the driver
-            fileUrl = WifiStorageConfig.getMediaFolderPath(this) + "/" + filename;
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            throw new RuntimeException("An unrecoverable error was thrown");
-        }
-        return fileUrl;
-    }
-
-//    private boolean isLocallyAvailable(String localPath, String remoteFileName, String remoteDirName) {
-//        File sizeFile = new File(localPath + ".size");
-//
-//        if (!sizeFile.exists()) {
-//            Log.v(LOG_TAG, "file doesn't exist in local");
-//            return false;
-//        }
-//
-//        int fileSize = getFileSize(localPath, remoteFileName, remoteDirName);
-//        File file = new File(localPath);
-//
-//        Log.v(LOG_TAG, String.format("file size in local (%d), in remote (%d)", file.length(), fileSize));
-//
-//        return (fileSize == file.length());
-//    }
-
-    private void storeFileSize(String localPath, String remoteFileName, String remoteDirName) {
-        File sizeFile = new File(localPath + ".size");
-
-        if (sizeFile.exists()) {
-            return;
-        }
-
-        try {
-            ContentId remoteContentId = new ContentId(mLiveObjNameId, remoteDirName, remoteFileName);
-            int fileSize = mContentController.getContentSize(remoteContentId);
-            PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(sizeFile)));
-            Log.v(LOG_TAG, "file_size = " + fileSize);
-            writer.print(fileSize);
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
-
-//    private int getFileSize(String localPath, String remoteFileName, String remoteDirName) {
-//        File sizeFile = new File(localPath + ".size");
-//
-//        int fileSize = -1;
-//
-//        try {
-//            if (sizeFile.exists()) {
-//                BufferedReader reader = new BufferedReader(new FileReader(sizeFile));
-//                fileSize = Integer.valueOf(reader.readLine());
-//            } else {
-//                ContentId remoteContentId = new ContentId(mLiveObjNameId, remoteDirName, remoteFileName);
-//                fileSize = mContentController.getContentSize(remoteContentId);
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return fileSize;
-//    }
 
     @Override
     public void onDestroy() {
@@ -298,74 +193,6 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
     public void onBufferingUpdate(MediaPlayer mp, int percent) {
         Toast.makeText(this, "onBufferingUpdate " + percent, Toast.LENGTH_SHORT).show();
     }
-
-//    private void initSavingFileTask() {
-//        mSavingFileTask = new AsyncTask<Void, Integer, Void>() {
-//            @Override
-//            protected void onPreExecute() {
-//                mDownloadProgressDialog.show();
-//            }
-//
-//            @Override
-//            protected Void doInBackground(Void... params) {
-//
-//
-//                if (!isLocallyAvailable(mFilePath, mFileName, MEDIA_DIRECTORY_NAME)) {
-//                    try {
-//                        Log.d(LOG_TAG, "starting saving media file " + mFileName + " into " + mFilePath);
-//
-//                        storeFileSize(mFilePath, mFileName, MEDIA_DIRECTORY_NAME);
-//                        int fileSize = getFileSize(mFilePath, mFileName, MEDIA_DIRECTORY_NAME);
-//
-//                        ContentId mediaContentId = new ContentId(mLiveObjNameId, MEDIA_DIRECTORY_NAME, mFileName);
-//                        InputStream inputStream = mContentController.getInputStreamContent(mediaContentId);
-//                        inputStream.available();
-//                        File file = new File(mFilePath);
-//                        OutputStream outputStream = new FileOutputStream(file);
-//                        byte[] buffer = new byte[8192];
-//                        int len = inputStream.read(buffer);
-//                        int totalLen = 0;
-//                        int progress;
-//                        while (len != -1) {
-//                            outputStream.write(buffer, 0, len);
-//                            len = inputStream.read(buffer);
-//                            totalLen += len;
-//
-//                            progress = (int)(100L * totalLen / fileSize);
-//                            publishProgress(progress);
-//
-//                            if (isCancelled()) {
-//                                break;
-//                            }
-//                        }
-//                        progress = (int)(100L * totalLen / fileSize);
-//                        publishProgress(progress);
-//                        inputStream.close();
-//                        outputStream.close();
-//                    } catch (Exception e) {
-//                        Log.e(LOG_TAG, "Error saving media file", e);
-//                    }
-//                }
-//
-//                return null;
-//            }
-//
-//            @Override
-//            protected void onProgressUpdate(Integer... progress) {
-//                mDownloadProgressDialog.setProgress(progress[0]);
-//            }
-//
-//            @Override
-//            protected void onPostExecute(Void aVoid) {
-//                super.onPostExecute(aVoid);
-//
-//                mDownloadProgressDialog.dismiss();
-//
-//                Log.d(LOG_TAG, "file saving completed");
-//                launchMediaFragment();
-//            }
-//        };
-//    }
 
     @Override
     public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
