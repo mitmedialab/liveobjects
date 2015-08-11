@@ -8,25 +8,31 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.util.Log;
 import android.widget.Toast;
 
-/**
- * Created by arata on 7/14/15.
- */
-public class ServerAwakener {
-    private static final String LOG_TAG = ServerAwakener.class.getSimpleName();
+import javax.inject.Inject;
 
-    private BluetoothAdapter mBluetoothAdapter = null;
+import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
+import edu.mit.media.obm.liveobjects.driver.wifi.WifiLocationUtil;
+import edu.mit.media.obm.liveobjects.driver.wifi.WifiUtil;
+import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
+
+/**
+ * Created by arata on 8/7/15.
+ */
+public class BluetoothNotifier extends LiveObjectNotifier {
+    private static final String LOG_TAG = BluetoothNotifier.class.getSimpleName();
+
+    @Inject BluetoothAdapter mBluetoothAdapter;
     private BluetoothDetectionReceiver mBroadcastReceiver = null;
 
-    private Context mContext;
+    public BluetoothNotifier(Context appContext) {
+        super(appContext);
 
-    public ServerAwakener(Context appContext) {
-        mContext = appContext;
+        DependencyInjector.inject(this, appContext);
 
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
             throw new RuntimeException("Failed to get default Bluetooth Adapter");
         }
@@ -40,8 +46,9 @@ public class ServerAwakener {
         }
     }
 
-    public synchronized void awaken() {
-        cancel();
+    @Override
+    public synchronized void wakeUp() {
+        cancelWakeUp();
 
         debug("start awakening...");
 
@@ -61,7 +68,8 @@ public class ServerAwakener {
         }
     }
 
-    public synchronized void cancel() {
+    @Override
+    public synchronized void cancelWakeUp() {
         debug("cancel awakening...");
 
         if (mBroadcastReceiver != null) {
@@ -69,17 +77,6 @@ public class ServerAwakener {
             mContext.unregisterReceiver(mBroadcastReceiver);
             mBroadcastReceiver = null;
         }
-    }
-
-    private boolean isBleSupported() {
-        PackageManager packageManager = mContext.getPackageManager();
-
-        return packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
-    }
-
-    private void promptEnablingBluetooth() {
-        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        mContext.startActivity(enableBtIntent);
     }
 
     private class BluetoothDetectionReceiver extends BroadcastReceiver {
@@ -97,15 +94,20 @@ public class ServerAwakener {
                     debug("detected device: " + deviceName);
                 }
 
-                if (deviceName != null && deviceName.startsWith("liveobj-")) {
+                // ToDo; shouldn't use WiFiUtil directly
+                if (deviceName != null && WifiLocationUtil.INSTANCE.isLiveObject(deviceName)) {
                     debug(String.format("trying to connect to BLE device '%s'", deviceName));
                     mBluetoothGatt = device.connectGatt(mContext, true, mGattCallback);
 
                     Toast.makeText(mContext, String.format("Awakening '%s'", deviceName), Toast.LENGTH_SHORT).show();
+
+                    // ToDo; shouldn't use WiFiUtil directly
+                    LiveObject liveObject = WifiUtil.INSTANCE.convertDeviceIdToLiveObject(deviceName);
+                    mBus.post(new InactiveLiveObjectDetectionEvent(liveObject.getLiveObjectName()));
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 debug("finished BLE discovery");
-                cancel();
+                cancelWakeUp();
             }
         }
 

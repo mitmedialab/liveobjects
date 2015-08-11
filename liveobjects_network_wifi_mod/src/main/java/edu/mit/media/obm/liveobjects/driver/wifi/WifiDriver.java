@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
@@ -17,6 +18,7 @@ import java.util.List;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkDriver;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
+import edu.mit.media.obm.liveobjects.middleware.net.NetworkUtil;
 
 /**
  * This class implements a concrete driver for wifi network
@@ -27,8 +29,8 @@ public class WifiDriver implements NetworkDriver {
     private final static String LOG_TAG = WifiDriver.class.getSimpleName();
 
     private final String NETWORK_PASSWORD;
-
     protected final String SSID_PREFIX;
+    private final char SSID_DELIMITER;
 
 
     private NetworkListener mNetworkListener;
@@ -45,12 +47,25 @@ public class WifiDriver implements NetworkDriver {
     private boolean mConnecting;
     private int mConnectingNetworkId;
 
+    private NetworkUtil mNetworkUtil;
+
     public WifiDriver(Context context) {
         mContext = context;
-        NETWORK_PASSWORD = mContext.getResources().getString(R.string.network_password);
-        SSID_PREFIX = mContext.getResources().getString(R.string.ssid_prefix);
-        WifiUtil.INSTANCE.setSsidPrefix(SSID_PREFIX);
 
+        Resources resources = mContext.getResources();
+        NETWORK_PASSWORD = resources.getString(R.string.network_password);
+        SSID_PREFIX = resources.getString(R.string.ssid_prefix);
+        // use only the first char as a delimiter
+        // (ssid_delimiter should be 1 byte long string, though)
+        SSID_DELIMITER = resources.getString(R.string.ssid_delimiter).charAt(0);
+
+        int locationXLength = resources.getInteger(R.integer.map_location_coordinate_x_length);
+        int locationYLength = resources.getInteger(R.integer.map_location_coordinate_y_length);
+        int mapIdLength = resources.getInteger(R.integer.map_location_map_id_length);
+
+        WifiLocationUtil.INSTANCE.setSsidFormat(
+                SSID_PREFIX, SSID_DELIMITER, locationXLength, locationYLength, mapIdLength);
+        mNetworkUtil = WifiLocationUtil.INSTANCE;
     }
 
     @Override
@@ -88,21 +103,22 @@ public class WifiDriver implements NetworkDriver {
     }
 
     @Override
-    synchronized public void connect(String liveObjectName) throws IllegalStateException {
+    synchronized public void connect(LiveObject liveObject) throws IllegalStateException {
         if (isConnecting()) {
             throw new IllegalStateException("Must not try to connect when it's already connecting");
         }
 
         mConnecting = true;
 
+        String deviceId = mNetworkUtil.convertLiveObjectToDeviceId(liveObject);
+
         // executes as an asynchronous task because WifiManager.getConfiguredNetwork() may block.
         new AsyncTask<String, Void, Void>() {
             @Override
             protected Void doInBackground(String... params) {
-                String liveObjectName = params[0];
-                String ssid = WifiUtil.INSTANCE.convertLiveObjectNameToDeviceId(liveObjectName);
+                String deviceId = params[0];
 
-                WifiConfiguration config = WifiManagerWrapper.addNewNetwork(mWifiManager, ssid, NETWORK_PASSWORD);
+                WifiConfiguration config = WifiManagerWrapper.addNewNetwork(mWifiManager, deviceId, NETWORK_PASSWORD);
                 WifiManagerWrapper.connectToConfiguredNetwork(mContext, mWifiManager, config, true);
 
                 mConnectingNetworkId = config.networkId;
@@ -110,7 +126,7 @@ public class WifiDriver implements NetworkDriver {
                 mWifiManager.enableNetwork(mConnectingNetworkId, true);
                 return null;
             }
-        }.execute(liveObjectName);
+        }.execute(deviceId);
     }
 
     @Override
@@ -149,7 +165,7 @@ public class WifiDriver implements NetworkDriver {
                     String ssid = WifiManagerWrapper.unQuoteString(configuration.SSID);
 
                     Log.v(LOG_TAG, "found a network configuration for '" + ssid + "'");
-                    if (WifiUtil.INSTANCE.isLiveObject(ssid)) {
+                    if (mNetworkUtil.isLiveObject(ssid)) {
                         Log.v(LOG_TAG, "deleting a network configuration for live object '" + ssid + "'");
                         WifiManagerWrapper.removeNetwork(mWifiManager, ssid);
                     }
@@ -186,9 +202,9 @@ public class WifiDriver implements NetworkDriver {
                 String deviceId = scanResult.SSID.toString();
                 Log.v(LOG_TAG, "scanResult: " +  deviceId);
 
-                if (WifiUtil.INSTANCE.isLiveObject(deviceId)){
-                    String liveObjectName = WifiUtil.INSTANCE.convertDeviceIdToLiveObjectName(deviceId);
-                            LiveObject liveObject = new LiveObject(liveObjectName);
+                if (mNetworkUtil.isLiveObject(deviceId)){
+                    LiveObject liveObject = mNetworkUtil.convertDeviceIdToLiveObject(deviceId);
+                    liveObject.setActive(true);
 
                     //network device representing a live object found
                     // add it to the list
@@ -215,10 +231,10 @@ public class WifiDriver implements NetworkDriver {
                     }
 
                     ssid = WifiManagerWrapper.unQuoteString(ssid);
-                    if (WifiUtil.INSTANCE.isLiveObject(ssid)) {
-                        String connectedLiveObjectName = WifiUtil.INSTANCE.convertDeviceIdToLiveObjectName(ssid);
-                        Log.d(LOG_TAG, "connectedLiveObjectName = " + connectedLiveObjectName);
-                        mNetworkListener.onConnected(connectedLiveObjectName);
+                    if (mNetworkUtil.isLiveObject(ssid)) {
+                        LiveObject connectedLiveObject = mNetworkUtil.convertDeviceIdToLiveObject(ssid);
+                        Log.d(LOG_TAG, "connectedLiveObject = " + connectedLiveObject);
+                        mNetworkListener.onConnected(connectedLiveObject.getLiveObjectName());
 
                         mConnecting = false;
                     }

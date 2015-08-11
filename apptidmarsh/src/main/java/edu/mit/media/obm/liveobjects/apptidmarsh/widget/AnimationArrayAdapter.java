@@ -20,11 +20,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.Util;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
-import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
+import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.shair.liveobjects.R;
@@ -32,50 +37,35 @@ import edu.mit.media.obm.shair.liveobjects.R;
 /**
  * Created by arata on 3/13/15.
  */
-public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
+public class AnimationArrayAdapter extends ArrayAdapter<LiveObject> {
     private static final String LOG_TAG = AnimationArrayAdapter.class.getSimpleName();
 
-    private Context mContext;
-    private LayoutInflater mInflater;
     private int mResource;
-    private int mTextViewResourceId;
-    private List<T> mObjects;
+    private List<LiveObject> mLiveObjects;
 
-    private List<String> mNewObjects;
-    private List<String> mOldObjects;
+    private List<LiveObject> mNewObjects;
+    private List<LiveObject> mOldObjects;
 
     private RandomColorGenerator mRandomColorGenerator;
 
-    private MiddlewareInterface mMiddleware;
-    private DbController mDbController;
-    private ContentController mContentController;
+    @Inject Context mContext;
+    @Inject DbController mDbController;
+    @Inject ContentController mContentController;
+    @Inject LayoutInflater mInflater;
 
     //TODO to incorporate in the live object
     private static final String ICON_FOLDER = "DCIM";
 
-    private class Holder {
-        public RoundedImageView mImageView;
-        public TextView mTextView;
-    }
+    public AnimationArrayAdapter(Context context, int resource, List<LiveObject> liveObjects) {
+        super(context, resource, liveObjects);
 
-    public AnimationArrayAdapter(Context context, int resource, int textViewResourceId, List<T> objects) {
-        super(context, resource, textViewResourceId, objects);
+        DependencyInjector.inject(this, context);
 
         mContext = context;
-        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mResource = resource;
-        mTextViewResourceId = textViewResourceId;
-        mObjects = objects;
+        mLiveObjects = liveObjects;
 
-        mMiddleware = ((LiveObjectsApplication) ((Activity) mContext).getApplication()).getMiddleware();
-        mContentController = mMiddleware.getContentController();
-        mDbController = mMiddleware.getDbController();
-
-        mNewObjects = new ArrayList<>();
-        for (T object : mObjects) {
-            String text = object.toString();
-            mNewObjects.add(text);
-        }
+        mNewObjects = new ArrayList<>(mLiveObjects);
         mOldObjects = new ArrayList<>();
 
         mRandomColorGenerator = new RandomColorGenerator();
@@ -83,27 +73,30 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final Holder holder;
+        final ViewHolder holder;
 
-        if (convertView == null) {
+        if (convertView != null) {
+            holder = (ViewHolder) convertView.getTag();
+        } else {
             convertView = mInflater.inflate(mResource, null);
 
-            holder = new Holder();
-            holder.mTextView = (TextView) convertView.findViewById(mTextViewResourceId);
-            holder.mImageView = (RoundedImageView) convertView.findViewById(R.id.grid_item_icon);
+            holder = new ViewHolder(convertView);
 
             convertView.setTag(holder);
-        } else {
-            holder = (Holder) convertView.getTag();
         }
 
-        final String text = mObjects.get(position).toString();
-        holder.mTextView.setText(text);
+        LiveObject liveObject = mLiveObjects.get(position);
+        holder.mTextView.setText(liveObject.getLiveObjectName());
         addLineBreakIfNecessary(holder.mTextView);
 
-        setImage(holder.mImageView, text);
+        setImage(holder.mImageView, liveObject);
 
-        if (mNewObjects.contains(text)) {
+        // make sleeping live objects transparent
+        float alpha = (liveObject.isActive() ? 1.0f : 0.5f);
+        holder.mImageView.setAlpha(alpha);
+        holder.mTextView.setAlpha(alpha);
+
+        if (mNewObjects.contains(liveObject)) {
             Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.bounce_scale);
             animation.setInterpolator(new SpringInterpolator());
             convertView.startAnimation(animation);
@@ -112,26 +105,33 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
         return convertView;
     }
 
+    static class ViewHolder {
+        @Bind(R.id.grid_item_icon) RoundedImageView mImageView;
+        @Bind(R.id.grid_item_title_textview) TextView mTextView;
+
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
+    }
+
     @Override
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
 
         mNewObjects.clear();
-        for (T object : mObjects) {
-            String text = object.toString();
-            if (!mOldObjects.contains(text)) {
-                mNewObjects.add(text);
+        for (LiveObject liveObject : mLiveObjects) {
+            if (!mOldObjects.contains(liveObject)) {
+                mNewObjects.add(liveObject);
             }
         }
 
         mOldObjects.clear();
-        for (T object : mObjects) {
-            String text = object.toString();
-            mOldObjects.add(text);
-        }
+        mOldObjects.addAll(mLiveObjects);
     }
 
-    private void setImage(RoundedImageView imageView, String liveObjectName) {
+    private void setImage(RoundedImageView imageView, LiveObject liveObject) {
+        String liveObjectName = liveObject.getLiveObjectName();
+
         if (!mDbController.isLiveObjectEmpty(liveObjectName)) {
             Map<String, Object> liveObjectProperties = mDbController.getProperties(liveObjectName);
             MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
@@ -151,11 +151,9 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
             } catch (Exception e) {
                 Log.e(LOG_TAG, "error setting icon image", e);
             }
-
         } else {
             imageView.setFillColor(mRandomColorGenerator.generateColor(liveObjectName));
         }
-
     }
 
     private void addLineBreakIfNecessary(final TextView textView) {

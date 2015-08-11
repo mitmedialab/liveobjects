@@ -15,6 +15,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.Util;
@@ -59,27 +61,38 @@ public class SavedLiveObjectsAdapter extends ArrayAdapter<Map<String, Object>> {
 
         final ContentId iconContentId = new ContentId(liveObjectId, IMAGE_FOLDER, iconFileName);
 
+        ViewHolder holder;
+        if (convertView != null) {
+            holder = (ViewHolder) convertView.getTag();
+        } else {
+            LayoutInflater inflater = (LayoutInflater) mContext
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.saved_live_object_row, parent, false);
+            holder = new ViewHolder(convertView);
+            convertView.setTag(holder);
+        }
 
-        LayoutInflater inflater = (LayoutInflater) mContext
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.saved_live_object_row, parent, false);
-
-        final ImageView iconView = (ImageView) rowView.findViewById(R.id.row_item_icon_imageview);
-        TextView titleView = (TextView) rowView.findViewById(R.id.row_item_title_textview);
-        titleView.setText(title);
+        holder.mTitleView.setText(title);
         try {
             InputStream imageInputStream = mContentController.getInputStreamContent(iconContentId);
             Bitmap bitmap = Util.getBitmap(imageInputStream);
             BitmapEditor bitmapEditor = new BitmapEditor(mContext);
             Bitmap croppedBitmap = bitmapEditor.cropToAspectRatio(bitmap, 1.0F);
-            iconView.setImageBitmap(croppedBitmap);
+            holder.mIconView.setImageBitmap(croppedBitmap);
         } catch (Exception e) {
             Log.e(LOG_TAG, "error setting icon image", e);
         }
 
+        return convertView;
+    }
 
-        return rowView;
+    static class ViewHolder {
+        @Bind(R.id.row_item_icon_imageview) ImageView mIconView;
+        @Bind(R.id.row_item_title_textview) TextView mTitleView;
 
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
     }
 
     @Override

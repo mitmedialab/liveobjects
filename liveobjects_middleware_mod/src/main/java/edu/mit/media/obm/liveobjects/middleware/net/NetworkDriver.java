@@ -1,5 +1,7 @@
 package edu.mit.media.obm.liveobjects.middleware.net;
 
+import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
+
 /**
  * This interface defines the interaction between the middleware and
  * low-level network drivers
@@ -36,9 +38,9 @@ public interface NetworkDriver {
 
     /**
      * Starts a connection with a live object
-     * @param liveObjectName the name of the live object to connect with
+     * @param liveObject the live object to connect with
      */
-    void connect(String liveObjectName);
+    void connect(LiveObject liveObject);
 
     /**
      * Cancel currently running trial to establish a connection with a live object

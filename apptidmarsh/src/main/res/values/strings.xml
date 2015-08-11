@@ -29,5 +29,15 @@
 
     <string name="title_activity_splash">SplashActivity</string>
 
+    <string name="dir_contents">DCIM</string>
+    <string name="dir_comments">COMMENTS</string>
+    <string name="arg_live_object_name_id">live_obj_name_id</string>
+    <string name="arg_connected_to_live_object">connected_to_live_obj</string>
+    <string name="arg_file_url">fileurl</string>
+    <string name="state_live_object_name_id">state_live_obj_name_id</string>
+    <string name="state_play_position">state_play_position</string>
 
+    <string name="google_maps_key" translatable="false" templateMergeStrategy="preserve">
+        AIzaSyCYt2Hb7hdLlW60mZQnxLJfrquhjx9q9vo
+    </string>
 </resources>

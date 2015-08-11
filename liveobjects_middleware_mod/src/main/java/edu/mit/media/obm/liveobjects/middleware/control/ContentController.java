@@ -53,5 +53,10 @@ public interface ContentController extends Controller{
      */
     String getFileUrl(ContentId contentId) throws IOException, RemoteException;
 
-
+    /**
+     * Checks if a content is locally stored and is available without a network connection
+     * @param contentId the id of the content
+     * @return true if the content is locally available
+     */
+    boolean isContentLocallyAvailable(ContentId contentId);
 }

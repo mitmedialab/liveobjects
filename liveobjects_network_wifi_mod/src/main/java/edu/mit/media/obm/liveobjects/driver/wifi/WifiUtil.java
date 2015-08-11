@@ -1,5 +1,6 @@
 package edu.mit.media.obm.liveobjects.driver.wifi;
 
+import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkUtil;
 
 /**
@@ -17,22 +18,16 @@ public enum  WifiUtil implements NetworkUtil {
     }
 
     @Override
-    public String convertDeviceIdToLiveObjectName(String deviceId) {
-        return convertSSIDToLiveObjectName(deviceId);
+    public LiveObject convertDeviceIdToLiveObject(String deviceId) {
+        int prefixLength = SSID_PREFIX.length();
+        String liveObjectName = deviceId.substring(prefixLength);
+
+        return new LiveObject(liveObjectName);
     }
 
     @Override
-    public String convertLiveObjectNameToDeviceId(String liveObjectName){
-        return convertLiveObjectNameToSSID(liveObjectName);
-    }
-
-    private String convertSSIDToLiveObjectName(String ssid) {
-        int prefixLength = SSID_PREFIX.length();
-        return  ssid.substring(prefixLength);
-    }
-
-    private String convertLiveObjectNameToSSID(String liveObjectName) {
-        return SSID_PREFIX + liveObjectName;
+    public String convertLiveObjectToDeviceId(LiveObject liveObject){
+        return SSID_PREFIX + liveObject.getLiveObjectName();
     }
 
     protected final void setSsidPrefix(String ssidPrefix) {

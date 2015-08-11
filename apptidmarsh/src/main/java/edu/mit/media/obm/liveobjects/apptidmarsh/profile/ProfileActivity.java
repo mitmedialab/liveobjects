@@ -3,35 +3,41 @@ package edu.mit.media.obm.liveobjects.apptidmarsh.profile;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.ProfilePreference;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
+import edu.mit.media.obm.liveobjects.apptidmarsh.widget.SingleFragmentActivity;
 import edu.mit.media.obm.shair.liveobjects.R;
 
-public class ProfileActivity extends ActionBarActivity {
+public class ProfileActivity extends SingleFragmentActivity {
 
     private ProfileFragment mProfileFragment;
 
     @Override
+    protected Fragment createFragment() {
+        return ProfileFragment.newInstance();
+    }
+
+    @Override
+    protected int getLayoutResId() {
+        return R.layout.activity_profile;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+
         if (savedInstanceState == null) {
-            mProfileFragment = ProfileFragment.newInstance();
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, mProfileFragment)
-                    .commit();
             SharedPreferences pref = ProfilePreference.getInstance(this);
             if (!ProfilePreference.isProfileCompleted(pref, this)) {
                 launchProfileEdit();
             }
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
