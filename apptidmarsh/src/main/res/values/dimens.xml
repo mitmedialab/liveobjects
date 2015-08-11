@@ -2,4 +2,8 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="map_marker_icon_size">120dp</dimen>
+    <dimen name="map_marker_font_size">22sp</dimen>
+    <dimen name="map_marker_arrow_size">30dp</dimen>
 </resources>
