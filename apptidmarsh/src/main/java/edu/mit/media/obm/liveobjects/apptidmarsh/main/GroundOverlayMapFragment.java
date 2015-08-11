@@ -97,13 +97,19 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     private void setUpMap() {
         mMap = getMap();
 
-        final LatLng overlayPosition = new LatLng(0, 0);
+        LatLng defaultTarget = new LatLng(
+                (SOUTH_WEST_BOUND.latitude + NORTH_EAST_BOUND.latitude) / 2,
+                (SOUTH_WEST_BOUND.longitude + NORTH_EAST_BOUND.longitude) / 2);
+        float defaultZoom = (MIN_ZOOM + MAX_ZOOM) / 2;
+        float overlayHeight = (float)(NORTH_EAST_BOUND.latitude - SOUTH_WEST_BOUND.latitude) * 110574;
+        float overlayWidth = (float)(NORTH_EAST_BOUND.longitude - SOUTH_WEST_BOUND.longitude) * 111320;
+
         BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.main_map);
 
         mMap.setMapType(GoogleMap.MAP_TYPE_NONE);
         GroundOverlayOptions newarkMap = new GroundOverlayOptions()
                 .image(bitmapDescriptor)
-                .position(overlayPosition, 1000f, 1000f);
+                .position(defaultTarget, overlayWidth, overlayHeight);
         mMap.addGroundOverlay(newarkMap);
 
         CustomCameraChangeListener customCameraChangeListener = new CustomCameraChangeListener(
@@ -111,10 +117,6 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
                 MIN_BEARING, MAX_BEARING);
         mMap.setOnCameraChangeListener(customCameraChangeListener);
 
-        LatLng defaultTarget = new LatLng(
-                (SOUTH_WEST_BOUND.latitude + NORTH_EAST_BOUND.latitude) / 2,
-                (SOUTH_WEST_BOUND.longitude + NORTH_EAST_BOUND.longitude) / 2);
-        float defaultZoom = (MIN_ZOOM + MAX_ZOOM) / 2;
         CameraUpdate updateToDefault =
                 CameraUpdateFactory.newLatLngZoom(defaultTarget, defaultZoom);
         mMap.moveCamera(updateToDefault);
