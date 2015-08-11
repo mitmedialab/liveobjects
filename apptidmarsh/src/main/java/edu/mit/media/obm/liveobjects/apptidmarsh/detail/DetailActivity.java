@@ -3,7 +3,6 @@ package edu.mit.media.obm.liveobjects.apptidmarsh.detail;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -12,8 +11,6 @@ import org.json.JSONException;
 import java.net.ConnectException;
 
 import butterknife.BindString;
-import butterknife.ButterKnife;
-import edu.mit.media.obm.liveobjects.apptidmarsh.main.GroundOverlayMapFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.SingleFragmentActivity;
 import edu.mit.media.obm.shair.liveobjects.R;

@@ -3,117 +3,84 @@ package edu.mit.media.obm.liveobjects.apptidmarsh.main;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.widget.ArrayAdapter;
-import android.widget.GridView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.common.eventbus.Subscribe;
 import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
-import butterknife.OnItemClick;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.InactiveLiveObjectDetectionEvent;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
-import edu.mit.media.obm.liveobjects.apptidmarsh.widget.AnimationArrayAdapter;
-import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
-import edu.mit.media.obm.liveobjects.apptidmarsh.widget.ExpandIconAnimation;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
+import edu.mit.media.obm.liveobjects.middleware.common.MapLocation;
 import edu.mit.media.obm.liveobjects.middleware.control.ConnectionListener;
 import edu.mit.media.obm.liveobjects.middleware.control.DiscoveryListener;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
- * Created by Valerio Panzica La Manna on 08/12/14.
+ * Created by artimo14 on 8/9/15.
  */
-public class MainFragment extends Fragment {
+public class MainFragment extends GroundOverlayMapFragment {
     private static final String LOG_TAG = MainFragment.class.getSimpleName();
 
     private static final int DETAIL_ACTIVITY_REQUEST_CODE = 1;
-
-    private ArrayAdapter<LiveObject> mAdapter;
-
-    private ArrayList<LiveObject> mLiveObjectNamesList;
-    private ArrayList<LiveObject> mActiveLiveObjectNamesList;
-    private ArrayList<LiveObject> mSleepingLiveObjectNamesList;
-
-    private View mClickedView;
-
-    private LiveObject mSelectedLiveObject;
-
-    private ProgressDialog mConnectingDialog;
 
     @Inject NetworkController mNetworkController;
     @Inject LiveObjectNotifier mLiveObjectNotifier;
     @Inject Bus mBus;
 
-    @Bind(R.id.swipe_container) SwipeRefreshLayout mSwipeLayout;
-    @Bind(R.id.live_objects_list_view) GridView mLiveObjectsGridView;
-    @Bind(R.id.root_layout) LinearLayout mRootLayout;
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
     @BindString(R.string.arg_connected_to_live_object) String EXTRA_CONNECTED_TO_LIVE_OBJ;
 
-    @OnItemClick(R.id.live_objects_list_view)
-    void onLiveObjectsListViewItemClick(View view, int position) {
-        // when a live object appearing in the list is clicked, connect to it
-        mSelectedLiveObject = mLiveObjectNamesList.get(position);
+    private ProgressDialog mConnectingDialog;
 
-        mConnectingDialog.setMessage("Connecting to " + mSelectedLiveObject.getLiveObjectName());
-        mConnectingDialog.show();
-
-        mNetworkController.connect(mSelectedLiveObject);
-
-        mClickedView = view;
-    }
-
-    public MainFragment() {
-        super();
-    }
+    private ArrayList<LiveObject> mLiveObjectList = new ArrayList<>();
+    private ArrayList<LiveObject> mActiveLiveObjectList = new ArrayList<>();
+    private ArrayList<LiveObject> mSleepingLiveObjectList = new ArrayList<>();
+    private LiveObject mSelectedLiveObject;
+    private Marker mClickedMarker;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        ButterKnife.bind(this, rootView);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = super.onCreateView(inflater, container, savedInstanceState);
 
+        ButterKnife.bind(this, rootView);
         DependencyInjector.inject(this, getActivity());
 
         setupUIElements();
-        setupUIListeners();
-
         initNetworkListeners();
 
         return rootView;
     }
 
     private void setupUIElements() {
-        mLiveObjectNamesList = new ArrayList<>();
-        mActiveLiveObjectNamesList = new ArrayList<>();
-        mSleepingLiveObjectNamesList = new ArrayList<>();
-
+        /*
         mAdapter = new AnimationArrayAdapter(getActivity(), R.layout.list_item_live_objects,
                 mLiveObjectNamesList);
         mLiveObjectsGridView.setAdapter(mAdapter);
@@ -121,7 +88,7 @@ public class MainFragment extends Fragment {
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
-
+        */
         mConnectingDialog = new ProgressDialog(getActivity());
         mConnectingDialog.setIndeterminate(true);
         mConnectingDialog.setCancelable(true);
@@ -132,149 +99,38 @@ public class MainFragment extends Fragment {
             }
         });
 
-        setBackgroundImage();
+        setOnMarkerClickListener(new ConnectToLiveObjectListener());
     }
 
-    private void setBackgroundImage() {
-        Bitmap background = BitmapFactory.decodeResource(getResources(), R.drawable.main_background);
-        BitmapEditor bitmapEditor = new BitmapEditor(getActivity());
-        background = bitmapEditor.cropToDisplayAspectRatio(background, getActivity().getWindowManager());
-        bitmapEditor.blurBitmap(background, 2);
 
-        BitmapDrawable drawableBackground = new BitmapDrawable(getResources(), background);
-        mRootLayout.setBackgroundDrawable(drawableBackground);
-    }
+    private class ConnectToLiveObjectListener implements GoogleMap.OnMarkerClickListener {
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            // when a live object appearing in the list is clicked, connect to it
+            mSelectedLiveObject = null;
+            for (LiveObject liveObject : mLiveObjectList) {
+                String markerTitle = marker.getTitle();
+                String liveObjectName = liveObject.getLiveObjectName();
 
-    private void setupUIListeners() {
-        // when refreshing start a new discovery
-        mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mNetworkController.startDiscovery();
-                mLiveObjectNotifier.wakeUp();
+                if (markerTitle.equals(liveObjectName)) {
+                    mSelectedLiveObject = liveObject;
+                }
             }
-        });
-    }
 
-    private void initNetworkListeners() {
-        initDiscoveryListener();
-        initConnectionListener();
+            if (mSelectedLiveObject == null) {
+                throw new IllegalStateException(
+                        "clicked live object was not found in the list of detected live objects");
+            }
 
-        Log.v(LOG_TAG, "deleting all the network configuration related to live objects");
-        if (!mNetworkController.isConnecting()) {
-            mNetworkController.forgetNetworkConfigurations();
+            mConnectingDialog.setMessage("Connecting to " + mSelectedLiveObject.getLiveObjectName());
+            mConnectingDialog.show();
+
+            mNetworkController.connect(mSelectedLiveObject);
+
+            mClickedMarker = marker;
+
+            return true;
         }
-
-        mAdapter.notifyDataSetChanged();
-    }
-
-    private void initDiscoveryListener() {
-        mNetworkController.setDiscoveryListener(new DiscoveryListener() {
-            @Override
-            public void onDiscoveryStarted() {
-                Log.d(LOG_TAG, "discovery started");
-            }
-
-            @Override
-            public void onLiveObjectsDiscovered(List<LiveObject> liveObjectList) {
-                Log.d(LOG_TAG, "discovery successfully completed");
-                mActiveLiveObjectNamesList.clear();
-                for (LiveObject liveObject : liveObjectList) {
-                    mActiveLiveObjectNamesList.add(liveObject);
-                }
-
-                updateLiveObjectsList();
-            }
-        });
-    }
-
-    private void updateLiveObjectsList() {
-        mLiveObjectNamesList.clear();
-        mLiveObjectNamesList.addAll(mActiveLiveObjectNamesList);
-
-        // add only ones in active list if the same live object exists both in active and in
-        // sleeping lists.
-        // ToDo: should use Set<T>
-        for (LiveObject liveObject : mSleepingLiveObjectNamesList) {
-            boolean inActiveList = false;
-
-            for (LiveObject activeLiveObject : mActiveLiveObjectNamesList) {
-                if (liveObject.getLiveObjectName().equals(activeLiveObject.getLiveObjectName())) {
-                    inActiveList = true;
-                    break;
-                }
-            }
-
-            if (!inActiveList) {
-                mLiveObjectNamesList.add(liveObject);
-            }
-        }
-
-        mAdapter.notifyDataSetChanged();
-        mSwipeLayout.setRefreshing(false);
-    }
-
-    private void initConnectionListener() {
-        mNetworkController.setConnectionListener(new ConnectionListener() {
-            @Override
-            public void onConnected(LiveObject connectedLiveObject) {
-                Log.v(LOG_TAG, String.format("onConnected(%s)", connectedLiveObject));
-                if (connectedLiveObject.equals(mSelectedLiveObject)) {
-                    mConnectingDialog.dismiss();
-
-                    final TextView liveObjectTitleTextView =
-                            ButterKnife.findById(mClickedView, R.id.grid_item_title_textview);
-
-                    Animation animation = new ExpandIconAnimation(
-                            getActivity().getWindowManager(), mClickedView).getAnimation();
-                    animation.setFillAfter(true);
-                    animation.setAnimationListener(new Animation.AnimationListener() {
-                        @Override
-                        public void onAnimationStart(Animation animation) {
-                            // doesn't show the title of a live object to prevent a strange error
-                            // regarding too huge texts when the icon is expanding on an emulator.
-                            Log.v(LOG_TAG, "onAnimationStart()");
-                            liveObjectTitleTextView.setVisibility(View.GONE);
-
-                            mSwipeLayout.setClipChildren(false);
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animation animation) {
-                            Log.v(LOG_TAG, "onAnimationEnd()");
-
-                            // when the selected live objected is connected
-                            // start the corresponding detail activity
-                            Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
-                            detailIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-
-                            detailIntent.putExtra(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
-                            detailIntent.putExtra(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
-                            startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
-                            mSelectedLiveObject = null;
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animation animation) {
-
-                        }
-                    });
-
-                    // make views other than the clicked one invisible for z-ordering problems
-                    ViewGroup viewGroup = ((ViewGroup) mClickedView.getParent());
-                    int clickedIndex = viewGroup.indexOfChild(mClickedView);
-                    for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                        if (i != clickedIndex) {
-                            viewGroup.getChildAt(i).setVisibility(View.INVISIBLE);
-                        }
-                    }
-
-                    mClickedView.startAnimation(animation);
-                    Log.v(LOG_TAG, "starting an animation");
-                }
-
-            }
-        });
     }
 
     @Override
@@ -287,7 +143,7 @@ public class MainFragment extends Fragment {
         mNetworkController.start();
         mNetworkController.startDiscovery();
 
-        mSleepingLiveObjectNamesList.clear();
+        mSleepingLiveObjectList.clear();
         mLiveObjectNotifier.wakeUp();
     }
 
@@ -300,6 +156,83 @@ public class MainFragment extends Fragment {
         mBus.unregister(this);
 
         mLiveObjectNotifier.cancelWakeUp();
+    }
+
+    private void initNetworkListeners() {
+        mNetworkController.setDiscoveryListener(new LiveObjectDiscoveryListener());
+        mNetworkController.setConnectionListener(new LiveObjectConnectionListener());
+
+        Log.v(LOG_TAG, "deleting all the network configuration related to live objects");
+        if (!mNetworkController.isConnecting()) {
+            mNetworkController.forgetNetworkConfigurations();
+        }
+
+//        mAdapter.notifyDataSetChanged();
+    }
+
+    private class LiveObjectDiscoveryListener implements DiscoveryListener {
+        @Override
+        public void onDiscoveryStarted() {
+            Log.d(LOG_TAG, "discovery started");
+        }
+
+        @Override
+        public void onLiveObjectsDiscovered(List<LiveObject> liveObjectList) {
+            Log.d(LOG_TAG, "discovery successfully completed");
+            mActiveLiveObjectList.clear();
+            for (LiveObject liveObject : liveObjectList) {
+                mActiveLiveObjectList.add(liveObject);
+            }
+
+            updateLiveObjectsList();
+
+            for (LiveObject liveObject : mLiveObjectList) {
+                addLiveObjectMarker(liveObject);
+            }
+        }
+    }
+
+    class LiveObjectConnectionListener implements ConnectionListener {
+        @Override
+        public void onConnected(LiveObject connectedLiveObject) {
+            Log.v(LOG_TAG, String.format("onConnected(%s)", connectedLiveObject));
+            if (connectedLiveObject.equals(mSelectedLiveObject)) {
+                mConnectingDialog.dismiss();
+
+                // when the selected live objected is connected
+                // start the corresponding detail activity
+                Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
+                detailIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+
+                detailIntent.putExtra(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
+                detailIntent.putExtra(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
+                startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
+                mSelectedLiveObject = null;
+            }
+        }
+    }
+
+    private void updateLiveObjectsList() {
+        mLiveObjectList.clear();
+        mLiveObjectList.addAll(mActiveLiveObjectList);
+
+        // add only ones in active list if the same live object exists both in active and in
+        // sleeping lists.
+        // ToDo: should use Set<T>
+        for (LiveObject liveObject : mSleepingLiveObjectList) {
+            boolean inActiveList = false;
+
+            for (LiveObject activeLiveObject : mActiveLiveObjectList) {
+                if (liveObject.getLiveObjectName().equals(activeLiveObject.getLiveObjectName())) {
+                    inActiveList = true;
+                    break;
+                }
+            }
+
+            if (!inActiveList) {
+                mLiveObjectList.add(liveObject);
+            }
+        }
     }
 
     @Override
@@ -339,7 +272,7 @@ public class MainFragment extends Fragment {
         Log.v(LOG_TAG, "addDetectedBluetoothDevice()");
         LiveObject liveObject = new LiveObject(event.mDeviceName);
         liveObject.setActive(false);
-        mSleepingLiveObjectNamesList.add(liveObject);
+        mSleepingLiveObjectList.add(liveObject);
 
         updateLiveObjectsList();
     }

@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 
 import butterknife.ButterKnife;
-import edu.mit.media.obm.liveobjects.apptidmarsh.main.GroundOverlayMapFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.shair.liveobjects.R;
 

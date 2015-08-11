@@ -7,7 +7,6 @@ import android.view.MenuItem;
 
 import javax.inject.Inject;
 
-import butterknife.OnClick;
 import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.profile.ProfileActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.SingleFragmentActivity;
@@ -20,7 +19,7 @@ public class MainActivity extends SingleFragmentActivity {
 
     @Override
     protected Fragment createFragment() {
-        return new GroundOverlayMapFragment();
+        return new MainFragment();
     }
 
     @Override

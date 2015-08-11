@@ -1,7 +1,6 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.module;
 
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.MediaController;
@@ -10,7 +9,6 @@ import org.altbeacon.beacon.BeaconManager;
 
 import dagger.Module;
 import dagger.Provides;
-import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.VideoViewFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.BluetoothNotifier;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.AnimationArrayAdapter;
