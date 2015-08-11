@@ -33,6 +33,9 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     private final int NUM_GRID_Y = 256;
     private final int NUM_MAP_ID = 16;
 
+    private final LatLng SOUTH_WEST_BOUND = new LatLng(-0.005, -0.005);
+    private final LatLng NORTH_EAST_BOUND = new LatLng(0.005, 0.005);
+
     private GoogleMap mMap;
 
     @Override
@@ -55,8 +58,8 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
                 .position(overlayPosition, 1000f, 1000f);
         mMap.addGroundOverlay(newarkMap);
 
-        CustomCameraChangeListener customCameraChangeListener = new CustomCameraChangeListener(mMap,
-                new LatLng(-0.005, -0.005), new LatLng(0.005, 0.005), 16, 18, 0f, 0f, 0f, 0f);
+        CustomCameraChangeListener customCameraChangeListener = new CustomCameraChangeListener(
+                mMap, SOUTH_WEST_BOUND, NORTH_EAST_BOUND, 16, 18, 0f, 0f, 0f, 0f);
         mMap.setOnCameraChangeListener(customCameraChangeListener);
     }
 
@@ -91,6 +94,11 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     }
 
     private LatLng gridToLatLng(int grid_x, int grid_y) {
+        double latitudeScale = NORTH_EAST_BOUND.latitude - SOUTH_WEST_BOUND.latitude;
+        double longitudeScale = NORTH_EAST_BOUND.longitude - SOUTH_WEST_BOUND.longitude;
+        double latitudeStep = latitudeScale / (NUM_GRID_X - 1);
+        double longitudeStep = longitudeScale / (NUM_GRID_Y - 1);
+
         return new LatLng(0.0f, 0.0f);
     }
 
