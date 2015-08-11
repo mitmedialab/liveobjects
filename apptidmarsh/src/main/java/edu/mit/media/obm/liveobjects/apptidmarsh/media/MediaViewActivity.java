@@ -29,7 +29,6 @@ import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
-import edu.mit.media.obm.liveobjects.apptidmarsh.main.GroundOverlayMapFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.SingleFragmentActivity;
@@ -66,38 +65,9 @@ public class MediaViewActivity extends SingleFragmentActivity implements OnMedia
 
     @Override
     protected Fragment createFragment() {
-        String liveObjectId = getIntent().getStringExtra(EXTRA_LIVE_OBJ_NAME_ID);
-
-        Map<String, Object> properties = mDbController.getProperties(liveObjectId);
-        MLProjectPropertyProvider propertyProvider = new MLProjectPropertyProvider(properties);
-        mContentType = propertyProvider.getMediaType();
-        mFileName = propertyProvider.getMediaFileName();
-
-        String fileUrl;
-        try {
-            ContentId mediaContentId = new ContentId(liveObjectId, MEDIA_DIRECTORY_NAME, mFileName);
-            fileUrl = mContentController.getFileUrl(mediaContentId);
-        } catch (IOException e) {
-            Log.e(LOG_TAG, e.toString());
-            throw new RuntimeException();
-        } catch (RemoteException e) {
-            Log.e(LOG_TAG, e.toString());
-            throw new RuntimeException();
-        }
-
-        Fragment fragment;
-        if (mContentType.equals(mContentTypeVideo)) {
-            fragment = VideoViewFragment.newInstance(this, fileUrl);
-        } else if (mContentType.equals(mContentTypeAudio)) {
-            fragment = VideoViewFragment.newInstance(this, fileUrl);
-        } else if (mContentType.equals(mContentTypeGallery)) {
-            //TODO launch gallery
-            fragment = null;
-        } else {
-            throw new IllegalStateException("Invalid content type");
-        }
-
-        return fragment;
+        mLiveObjNameId = getIntent().getStringExtra(EXTRA_LIVE_OBJ_NAME_ID);
+        initContent(mLiveObjNameId);
+        return createMediaFragment();
     }
 
     @Override
@@ -109,21 +79,46 @@ public class MediaViewActivity extends SingleFragmentActivity implements OnMedia
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-// TODO to reintroduce
-//        initProgressDialog(mDownloadProgressDialog);
-
         if (savedInstanceState == null) {
-            mLiveObjNameId = getIntent().getStringExtra(EXTRA_LIVE_OBJ_NAME_ID);
-            if (mLiveObjNameId != null) {
-//                //TODO to improve: for now we first download all the file and the open the fragment
-//                initSavingFileTask();
-//                mSavingFileTask.execute();
-            }
-
             getSupportActionBar().setTitle(mLiveObjNameId);
         } else {
             mLiveObjNameId = savedInstanceState.getString(STATE_LIVE_OBJ_NAME_ID);
         }
+    }
+
+    private void initContent(String liveObjectId) {
+        Map<String, Object> properties = mDbController.getProperties(liveObjectId);
+        MLProjectPropertyProvider propertyProvider = new MLProjectPropertyProvider(properties);
+        mContentType = propertyProvider.getMediaType();
+        mFileName = propertyProvider.getMediaFileName();
+    }
+
+    private Fragment createMediaFragment() {
+        ContentId mediaContentId = new ContentId(mLiveObjNameId, MEDIA_DIRECTORY_NAME, mFileName);
+        String fileUrl;
+        try {
+            fileUrl = mContentController.getFileUrl(mediaContentId);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, e.toString());
+            throw new IllegalStateException();
+        } catch (RemoteException e) {
+            Log.e(LOG_TAG, e.toString());
+            throw new IllegalStateException();
+        }
+
+        Fragment fragment;
+        if (mContentType.equals(mContentTypeVideo)) {
+            fragment = VideoViewFragment.newInstance(this, fileUrl);
+        } else if (mContentType.equals(mContentTypeAudio)) {
+            fragment = VideoViewFragment.newInstance(this, fileUrl);
+        } else if (mContentType.equals(mContentTypeGallery)) {
+            //TODO launch gallery
+            throw new IllegalStateException("Unimplemented content type");
+        } else {
+            throw new IllegalStateException("invalid content type");
+        }
+
+        return fragment;
     }
 
     @Override
