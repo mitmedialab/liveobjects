@@ -1,21 +1,15 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.main;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import com.google.android.gms.maps.SupportMapFragment;
 
 import javax.inject.Inject;
 
 import butterknife.OnClick;
 import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsActivity;
-import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.apptidmarsh.profile.ProfileActivity;
-import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.SingleFragmentActivity;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
 import edu.mit.media.obm.shair.liveobjects.R;
