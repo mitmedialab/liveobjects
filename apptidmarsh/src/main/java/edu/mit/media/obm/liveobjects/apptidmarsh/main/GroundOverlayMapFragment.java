@@ -104,8 +104,8 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
                 .position(overlayPosition, 1000f, 1000f);
         mMap.addGroundOverlay(newarkMap);
 
-        CustomCameraChangeListener customCameraChangeListener =
-                new CustomCameraChangeListener(mMap, 16, 18, new LatLng(-0.005, -0.005), new LatLng(0.005, 0.005));
+        CustomCameraChangeListener customCameraChangeListener = new CustomCameraChangeListener(mMap,
+                new LatLng(-0.005, -0.005), new LatLng(0.005, 0.005), 16, 18, 0f, 0f, 0f, 0f);
         mMap.setOnCameraChangeListener(customCameraChangeListener);
 
         mMap.setOnMarkerClickListener(new LiveObjectMarkerClickListener());
@@ -219,38 +219,64 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
     private static class CustomCameraChangeListener implements GoogleMap.OnCameraChangeListener {
         private GoogleMap mMap;
-        private float mMaxZoom;
-        private float mMinZoom;
 
         private LatLng mSouthWestBound;
         private LatLng mNorthEastBound;
+        private float mMinZoom;
+        private float mMaxZoom;
+        private float mMinTilt;
+        private float mMaxTilt;
+        private float mMinBearing;
+        private float mMaxBearing;
+
 
         int ANIMATION_DURATION_MS = 300;
 
-        public CustomCameraChangeListener(GoogleMap map, float minZoom, float maxZoom, LatLng southWestBound, LatLng northEastBound) {
+        public CustomCameraChangeListener(GoogleMap map,
+                                          LatLng southWestBound, LatLng northEastBound,
+                                          float minZoom, float maxZoom,
+                                          float minTilt, float maxTilt,
+                                          float minBearing, float maxBearing) {
             mMap = map;
 
-            mMaxZoom = maxZoom;
-            mMinZoom = minZoom;
             mSouthWestBound = southWestBound;
             mNorthEastBound = northEastBound;
+            mMinZoom = minZoom;
+            mMaxZoom = maxZoom;
+            mMinTilt = minTilt;
+            mMaxTilt = maxTilt;
+            mMinBearing = minBearing;
+            mMaxBearing = maxBearing;
         }
 
         @Override
         public void onCameraChange(CameraPosition cameraPosition) {
             SaturationResult<Float> zoomSaturation =
                     saturate(cameraPosition.zoom, mMinZoom, mMaxZoom);
-            SaturationResult<Double> latitudeSaturation = saturate(cameraPosition.target.latitude,
-                    mSouthWestBound.latitude, mNorthEastBound.latitude);
-            SaturationResult<Double> longitudeSaturation = saturate(cameraPosition.target.longitude,
-                    mSouthWestBound.longitude, mNorthEastBound.longitude);
+            SaturationResult<Double> latitudeSaturation =
+                    saturate(cameraPosition.target.latitude,
+                            mSouthWestBound.latitude, mNorthEastBound.latitude);
+            SaturationResult<Double> longitudeSaturation =
+                    saturate(cameraPosition.target.longitude,
+                            mSouthWestBound.longitude, mNorthEastBound.longitude);
+            SaturationResult<Float> tiltSaturation =
+                    saturate(cameraPosition.tilt, mMinTilt, mMaxTilt);
+            SaturationResult<Float> bearingSaturation =
+                    saturate(cameraPosition.bearing, mMinBearing, mMaxBearing);
 
             if (zoomSaturation.mIsSaturated || latitudeSaturation.mIsSaturated ||
-                    longitudeSaturation.mIsSaturated) {
+                    longitudeSaturation.mIsSaturated || tiltSaturation.mIsSaturated ||
+                    bearingSaturation.mIsSaturated) {
                 float zoom = zoomSaturation.mSaturatedValue;
                 LatLng latLng = new LatLng(
                         latitudeSaturation.mSaturatedValue, longitudeSaturation.mSaturatedValue);
-                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, zoom);
+                float tilt = tiltSaturation.mSaturatedValue;
+                float bearing = bearingSaturation.mSaturatedValue;
+
+                CameraPosition newCameraPosition = CameraPosition.builder()
+                        .target(latLng).zoom(zoom).tilt(tilt).bearing(bearing)
+                        .build();
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(newCameraPosition);
 
                 mMap.animateCamera(cameraUpdate, ANIMATION_DURATION_MS, null);
             }
