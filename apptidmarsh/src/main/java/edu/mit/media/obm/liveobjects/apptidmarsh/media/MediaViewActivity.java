@@ -8,6 +8,7 @@ import android.media.SoundPool;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -101,26 +102,32 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 
     private void launchMediaFragment() {
         ContentId mediaContentId = new ContentId(mLiveObjNameId, MEDIA_DIRECTORY_NAME, mFileName);
-        String fileUrl = null;
+        String fileUrl;
         try {
             fileUrl = mContentController.getFileUrl(mediaContentId);
-            if (mContentType.equals(mContentTypeVideo)) {
-                getSupportFragmentManager().beginTransaction()
-                        .add(R.id.activity_media_container, VideoViewFragment.newInstance(this, fileUrl))
-                        .commit();
-            } else if (mContentType.equals(mContentTypeAudio)) {
-                getSupportFragmentManager().beginTransaction()
-                        .add(R.id.activity_media_container, VideoViewFragment.newInstance(this, fileUrl))
-                        .commit();
-            } else if (mContentType.equals(mContentTypeGallery)) {
-                //TODO launch gallery
-            }
-
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(LOG_TAG, e.toString());
+            throw new IllegalStateException();
         } catch (RemoteException e) {
-            e.printStackTrace();
+            Log.e(LOG_TAG, e.toString());
+            throw new IllegalStateException();
         }
+
+        Fragment fragment;
+        if (mContentType.equals(mContentTypeVideo)) {
+            fragment = VideoViewFragment.newInstance(this, fileUrl);
+        } else if (mContentType.equals(mContentTypeAudio)) {
+            fragment = VideoViewFragment.newInstance(this, fileUrl);
+        } else if (mContentType.equals(mContentTypeGallery)) {
+            //TODO launch gallery
+            throw new IllegalStateException("Unimplemented content type");
+        } else {
+            throw new IllegalStateException("invalid content type");
+        }
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.activity_media_container, fragment)
+                .commit();
     }
 
     @Override
