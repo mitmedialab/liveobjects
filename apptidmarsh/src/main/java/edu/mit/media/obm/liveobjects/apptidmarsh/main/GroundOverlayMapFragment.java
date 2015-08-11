@@ -35,6 +35,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import butterknife.BindDimen;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
@@ -58,8 +59,6 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     private final int NUM_GRID_Y = 256;
     private final int NUM_MAP_ID = 16;
 
-    private final int MARKER_ICON_SIZE = 128;
-
     private final LatLng SOUTH_WEST_BOUND = new LatLng(-0.005, -0.005);
     private final LatLng NORTH_EAST_BOUND = new LatLng(0.005, 0.005);
 
@@ -69,6 +68,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     @Inject DbController mDbController;
     @Inject ContentController mContentController;
     @BindString(R.string.dir_contents) String DIR_CONTENTS;
+    @BindDimen(R.dimen.map_marker_icon_size) int MAP_MARKER_ICON_SIZE;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -134,7 +134,8 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
         if (!mDbController.isLiveObjectEmpty(liveObjectName)) {
             iconBitmap = getLiveObjectIcon(liveObjectName);
-            iconBitmap = iconBitmap.createScaledBitmap(iconBitmap, MARKER_ICON_SIZE, MARKER_ICON_SIZE, true);
+            iconBitmap = iconBitmap.createScaledBitmap(
+                    iconBitmap, MAP_MARKER_ICON_SIZE, MAP_MARKER_ICON_SIZE, true);
 
             BitmapEditor bitmapEditor = new BitmapEditor(getActivity());
             bitmapEditor.blurBitmap(iconBitmap, 2);
@@ -142,11 +143,11 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         else {
             int color = mRandomColorGenerator.generateColor(liveObjectName);
             iconBitmap = Bitmap.createBitmap(
-                    MARKER_ICON_SIZE, MARKER_ICON_SIZE, Bitmap.Config.ARGB_8888);
+                    MAP_MARKER_ICON_SIZE, MAP_MARKER_ICON_SIZE, Bitmap.Config.ARGB_8888);
             iconBitmap.eraseColor(color);
         }
 
-        iconBitmap = roundBitmap(iconBitmap, MARKER_ICON_SIZE);
+        iconBitmap = roundBitmap(iconBitmap, MAP_MARKER_ICON_SIZE);
 
         return iconBitmap;
     }
