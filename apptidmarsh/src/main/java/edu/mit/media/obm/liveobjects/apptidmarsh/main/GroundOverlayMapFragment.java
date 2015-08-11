@@ -225,6 +225,8 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         private LatLng mSouthWestBound;
         private LatLng mNorthEastBound;
 
+        int ANIMATION_DURATION_MS = 300;
+
         public CustomCameraChangeListener(GoogleMap map, float minZoom, float maxZoom, LatLng southWestBound, LatLng northEastBound) {
             mMap = map;
 
@@ -236,29 +238,49 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
         @Override
         public void onCameraChange(CameraPosition cameraPosition) {
-            float zoom = saturate(cameraPosition.zoom, mMinZoom, mMaxZoom);
-            double latitude = saturate(cameraPosition.target.latitude, mSouthWestBound.latitude, mNorthEastBound.latitude);
-            double longitude = saturate(cameraPosition.target.longitude, mSouthWestBound.longitude, mNorthEastBound.longitude);
+            SaturationResult<Float> zoomSaturation =
+                    saturate(cameraPosition.zoom, mMinZoom, mMaxZoom);
+            SaturationResult<Double> latitudeSaturation = saturate(cameraPosition.target.latitude,
+                    mSouthWestBound.latitude, mNorthEastBound.latitude);
+            SaturationResult<Double> longitudeSaturation = saturate(cameraPosition.target.longitude,
+                    mSouthWestBound.longitude, mNorthEastBound.longitude);
 
-            LatLng latLng = new LatLng(latitude, longitude);
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, zoom);
-            mMap.animateCamera(cameraUpdate);
+            if (zoomSaturation.mIsSaturated || latitudeSaturation.mIsSaturated ||
+                    longitudeSaturation.mIsSaturated) {
+                float zoom = zoomSaturation.mSaturatedValue;
+                LatLng latLng = new LatLng(
+                        latitudeSaturation.mSaturatedValue, longitudeSaturation.mSaturatedValue);
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, zoom);
+
+                mMap.animateCamera(cameraUpdate, ANIMATION_DURATION_MS, null);
+            }
 
             Log.v(LOG_TAG, cameraPosition.toString());
         }
 
-        private static <T extends Comparable<T>> T saturate(T value, T minValue, T maxValue) {
-            T saturatedValue;
+        private static <T extends Comparable<T>>
+        SaturationResult<T> saturate(T value, T minValue, T maxValue) {
+            SaturationResult saturationResult;
 
             if (value.compareTo(minValue) < 0) {
-                saturatedValue = minValue;
+                saturationResult = new SaturationResult(minValue, true);
             } else if (value.compareTo(maxValue) > 0) {
-                saturatedValue = maxValue;
+                saturationResult = new SaturationResult(maxValue, true);
             } else {
-                saturatedValue = value;
+                saturationResult = new SaturationResult(value, false);
             }
 
-            return saturatedValue;
+            return saturationResult;
+        }
+
+        private static class SaturationResult<T extends Comparable<T>> {
+            public T mSaturatedValue;
+            public boolean mIsSaturated;
+
+            public SaturationResult(T saturatedValue, boolean isSaturated) {
+                mSaturatedValue = saturatedValue;
+                mIsSaturated = isSaturated;
+            }
         }
     }
 
