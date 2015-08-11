@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -69,6 +70,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     @Inject ContentController mContentController;
     @BindString(R.string.dir_contents) String DIR_CONTENTS;
     @BindDimen(R.dimen.map_marker_icon_size) int MAP_MARKER_ICON_SIZE;
+    @BindDimen(R.dimen.map_marker_font_size) int MAP_MARKER_FONT_SIZE;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -148,6 +150,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         }
 
         iconBitmap = roundBitmap(iconBitmap, MAP_MARKER_ICON_SIZE);
+        printTitleOnBitmap(iconBitmap, liveObjectName);
 
         return iconBitmap;
     }
@@ -202,6 +205,22 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         shadowCanvas.drawBitmap(resultBitmap, rect, rect, paint);
 
         return shadowBitmap;
+    }
+
+    private void printTitleOnBitmap(Bitmap bitmap, String title) {
+        Canvas canvas = new Canvas(bitmap);
+
+        Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(MAP_MARKER_FONT_SIZE);
+        paint.setStrokeWidth(1f);
+        paint.setStyle(Paint.Style.FILL_AND_STROKE);
+        paint.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+        paint.setTextAlign(Paint.Align.CENTER);
+        paint.setAntiAlias(true);
+        paint.setShadowLayer(2f, 4f, 4f, Color.BLACK);
+
+        canvas.drawText(title, MAP_MARKER_ICON_SIZE / 2, MAP_MARKER_ICON_SIZE / 2, paint);
     }
 
     private static class RandomColorGenerator {
