@@ -3,6 +3,7 @@ package edu.mit.media.obm.liveobjects.apptidmarsh.main;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Camera;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -234,35 +236,29 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
         @Override
         public void onCameraChange(CameraPosition cameraPosition) {
-            if (cameraPosition.zoom > mMaxZoom) {
-                mMap.moveCamera(CameraUpdateFactory.zoomTo(mMaxZoom));
-            }
+            float zoom = saturate(cameraPosition.zoom, mMinZoom, mMaxZoom);
+            double latitude = saturate(cameraPosition.target.latitude, mSouthWestBound.latitude, mNorthEastBound.latitude);
+            double longitude = saturate(cameraPosition.target.longitude, mSouthWestBound.longitude, mNorthEastBound.longitude);
 
-            if (cameraPosition.zoom < mMinZoom) {
-                mMap.moveCamera(CameraUpdateFactory.zoomTo(mMinZoom));
-            }
-
-            if (cameraPosition.target.latitude < mSouthWestBound.latitude) {
-                LatLng latLng = new LatLng(mSouthWestBound.latitude, cameraPosition.target.longitude);
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            }
-
-            if (cameraPosition.target.longitude < mSouthWestBound.longitude) {
-                LatLng latLng = new LatLng(cameraPosition.target.latitude, mSouthWestBound.longitude);
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            }
-
-            if (cameraPosition.target.latitude > mNorthEastBound.latitude) {
-                LatLng latLng = new LatLng(mNorthEastBound.latitude, cameraPosition.target.longitude);
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            }
-
-            if (cameraPosition.target.longitude > mNorthEastBound.longitude) {
-                LatLng latLng = new LatLng(cameraPosition.target.latitude, mNorthEastBound.longitude);
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            }
+            LatLng latLng = new LatLng(latitude, longitude);
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, zoom);
+            mMap.animateCamera(cameraUpdate);
 
             Log.v(LOG_TAG, cameraPosition.toString());
+        }
+
+        private static <T extends Comparable<T>> T saturate(T value, T minValue, T maxValue) {
+            T saturatedValue;
+
+            if (value.compareTo(minValue) < 0) {
+                saturatedValue = minValue;
+            } else if (value.compareTo(maxValue) > 0) {
+                saturatedValue = maxValue;
+            } else {
+                saturatedValue = value;
+            }
+
+            return saturatedValue;
         }
     }
 
