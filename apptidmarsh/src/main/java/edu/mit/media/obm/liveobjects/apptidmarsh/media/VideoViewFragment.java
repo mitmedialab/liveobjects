@@ -67,8 +67,13 @@ public class VideoViewFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        final View rootView = inflater.inflate(R.layout.fragment_video_view, container, false);
+        ButterKnife.bind(this, rootView);
+
+        DependencyInjector.inject(this, getActivity());
 
         if (savedInstanceState != null) {
             mPlayPosition = savedInstanceState.getInt(STATE_PLAY_POSITION);
@@ -77,16 +82,6 @@ public class VideoViewFragment extends Fragment {
         if (getArguments() != null) {
             mFileUrl = getArguments().getString(ARG_FILE_URL);
         }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        final View rootView = inflater.inflate(R.layout.fragment_video_view, container, false);
-        ButterKnife.bind(this, rootView);
-
-        DependencyInjector.inject(this, getActivity());
 
         mVideoControl.setAnchorView(mVideoView);
         mVideoView.setMediaController(mVideoControl);
