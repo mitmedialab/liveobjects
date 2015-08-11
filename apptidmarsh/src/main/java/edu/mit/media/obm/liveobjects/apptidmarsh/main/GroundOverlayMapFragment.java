@@ -2,7 +2,12 @@ package edu.mit.media.obm.liveobjects.apptidmarsh.main;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -53,8 +58,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     private final int NUM_GRID_Y = 256;
     private final int NUM_MAP_ID = 16;
 
-    private final int MARKER_ICON_WIDTH = 128;
-    private final int MARKER_ICON_HEIGHT = 128;
+    private final int MARKER_ICON_SIZE = 128;
 
     private final LatLng SOUTH_WEST_BOUND = new LatLng(-0.005, -0.005);
     private final LatLng NORTH_EAST_BOUND = new LatLng(0.005, 0.005);
@@ -130,7 +134,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
         if (!mDbController.isLiveObjectEmpty(liveObjectName)) {
             iconBitmap = getLiveObjectIcon(liveObjectName);
-            iconBitmap = iconBitmap.createScaledBitmap(iconBitmap, MARKER_ICON_WIDTH, MARKER_ICON_HEIGHT, true);
+            iconBitmap = iconBitmap.createScaledBitmap(iconBitmap, MARKER_ICON_SIZE, MARKER_ICON_SIZE, true);
 
             BitmapEditor bitmapEditor = new BitmapEditor(getActivity());
             bitmapEditor.blurBitmap(iconBitmap, 2);
@@ -138,9 +142,11 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         else {
             int color = mRandomColorGenerator.generateColor(liveObjectName);
             iconBitmap = Bitmap.createBitmap(
-                    MARKER_ICON_WIDTH, MARKER_ICON_HEIGHT, Bitmap.Config.ARGB_8888);
+                    MARKER_ICON_SIZE, MARKER_ICON_SIZE, Bitmap.Config.ARGB_8888);
             iconBitmap.eraseColor(color);
         }
+
+        iconBitmap = roundBitmap(iconBitmap, MARKER_ICON_SIZE);
 
         return iconBitmap;
     }
@@ -153,6 +159,48 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         InputStream imageInputStream = mContentController.getInputStreamContent(iconContentId);
 
         return Util.getBitmap(imageInputStream);
+    }
+
+    private static Bitmap roundBitmap(Bitmap bitmap, int radius) {
+        Bitmap scaledBitmap = (bitmap.getWidth() != radius || bitmap.getHeight() != radius ?
+                Bitmap.createScaledBitmap(bitmap, radius, radius, false) : bitmap);
+
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight());
+        final float circleX = scaledBitmap.getWidth() / 2 + 0.7f;
+        final float circleY = scaledBitmap.getHeight() / 2 - 0.7f;
+        final float circleRadius = scaledBitmap.getWidth() / 2 * 0.86f;
+
+        paint.setAntiAlias(true);
+        paint.setFilterBitmap(true);
+        paint.setDither(true);
+        Bitmap resultBitmap = Bitmap.createBitmap(
+                scaledBitmap.getWidth(), scaledBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(resultBitmap);
+        Bitmap shadowBitmap = resultBitmap.copy(resultBitmap.getConfig(), true);
+        Canvas shadowCanvas = new Canvas(shadowBitmap);
+
+        Canvas scaledCanvas = new Canvas(scaledBitmap);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP));
+        paint.setColor(0x10000000);
+        scaledCanvas.drawRect(rect, paint);
+
+        paint.setColor(Color.parseColor("#BAB399"));
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
+        canvas.drawCircle(circleX, circleY, circleRadius, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(scaledBitmap, rect, rect, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP));
+
+        paint.setShadowLayer(6.0f, 0.0f, 4.0f, 0xff000000);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
+        shadowCanvas.drawCircle(circleX, circleY, circleRadius, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER));
+        shadowCanvas.drawBitmap(resultBitmap, rect, rect, paint);
+
+        return shadowBitmap;
     }
 
     private static class RandomColorGenerator {
