@@ -113,6 +113,9 @@ public class MainFragment extends GroundOverlayMapFragment {
             mConnectingDialog.setMessage("Connecting to " + mSelectedLiveObject.getLiveObjectName());
             mConnectingDialog.show();
 
+            // disable notification using Bluetooth for more stable connection to WiFi
+            mLiveObjectNotifier.cancelWakeUp();
+
             mNetworkController.connect(mSelectedLiveObject);
 
             mClickedMarker = marker;
