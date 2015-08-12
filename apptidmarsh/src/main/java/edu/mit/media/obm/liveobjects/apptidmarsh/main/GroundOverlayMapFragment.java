@@ -39,6 +39,7 @@ import javax.inject.Inject;
 
 import butterknife.BindColor;
 import butterknife.BindDimen;
+import butterknife.BindDrawable;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
@@ -142,7 +143,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
         try {
             BitmapDescriptor iconBitmapDescriptor =
-                    BitmapDescriptorFactory.fromBitmap(createMarkerIcon(liveObjectName));
+                    BitmapDescriptorFactory.fromBitmap(createMarkerIcon(liveObjectName, highlighed));
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(gridLocationInLagLng)
                     .icon(iconBitmapDescriptor)
@@ -155,7 +156,8 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         }
     }
 
-    private Bitmap createMarkerIcon(String liveObjectName) throws IOException, RemoteException {
+    private Bitmap createMarkerIcon(String liveObjectName, boolean highlighted)
+            throws IOException, RemoteException {
         Bitmap iconBitmap;
 
         if (!mDbController.isLiveObjectEmpty(liveObjectName)) {
@@ -176,6 +178,10 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         iconBitmap = roundBitmap(iconBitmap, MAP_MARKER_ICON_SIZE);
         printTitleOnBitmap(iconBitmap, liveObjectName);
         iconBitmap = addArrowToBitmap(iconBitmap);
+
+        if (highlighted) {
+            iconBitmap = addPersonIcon(iconBitmap);
+        }
 
         return iconBitmap;
     }
@@ -272,6 +278,21 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         canvas.drawBitmap(bitmap, 0, 0, iconPaint);
 
         return bitmapWithArrow;
+    }
+
+    private Bitmap addPersonIcon(Bitmap bitmap) {
+        Bitmap personBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.person);
+
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.FILL_AND_STROKE);
+        paint.setAntiAlias(true);
+        paint.setColor(Color.BLACK);
+        paint.setShadowLayer(2f, 4f, 4f, Color.BLACK);
+
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawBitmap(personBitmap, 0, bitmap.getHeight() - personBitmap.getHeight(), paint);
+
+        return bitmap;
     }
 
     private static class RandomColorGenerator {
