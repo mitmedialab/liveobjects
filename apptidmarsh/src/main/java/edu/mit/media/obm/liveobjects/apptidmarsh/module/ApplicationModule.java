@@ -4,10 +4,13 @@ import android.content.Context;
 
 import com.squareup.otto.Bus;
 
+import org.altbeacon.beacon.Beacon;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import edu.mit.media.obm.liveobjects.apptidmarsh.utils.BeaconNotifier;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.BluetoothNotifier;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
 
@@ -19,7 +22,8 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
         complete = false,
         includes = SystemModule.class,
         injects = {
-                BluetoothNotifier.class
+                BluetoothNotifier.class,
+                BeaconNotifier.class
         }
 )
 public class ApplicationModule {
@@ -28,7 +32,7 @@ public class ApplicationModule {
 
     @Provides
     LiveObjectNotifier provideLiveObjectNotifier(Context context) {
-        return new BluetoothNotifier(context);
+        return new BeaconNotifier(context);
     }
 
     @Provides @Singleton Bus provideBus() {

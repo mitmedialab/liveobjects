@@ -44,16 +44,20 @@ public class BeaconNotifier extends LiveObjectNotifier implements BeaconConsumer
         mBeaconManager.setMonitorNotifier(new MonitorNotifier() {
             @Override
             public void didEnterRegion(Region region) {
+                debug("didEnterRegion()");
+                debug(region.toString());
             }
 
             @Override
             public void didExitRegion(Region region) {
-
+                debug("didExitRegion()");
+                debug(region.toString());
             }
 
             @Override
             public void didDetermineStateForRegion(int i, Region region) {
-
+                debug("didDetermineStateForRegion()");
+                debug(region.toString());
             }
         });
     }
