@@ -140,8 +140,6 @@ public class MainFragment extends GroundOverlayMapFragment {
 
         mBus.register(this);
 
-
-
         mNetworkController.start();
         mNetworkController.startDiscovery();
 

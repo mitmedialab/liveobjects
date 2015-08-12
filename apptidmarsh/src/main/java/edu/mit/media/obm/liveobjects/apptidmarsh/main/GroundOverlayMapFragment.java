@@ -151,6 +151,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
             mMap.addMarker(markerOptions);
         } catch (Exception e) {
             Log.e(LOG_TAG, "failed to add a marker for the live object '" + liveObjectName + "'");
+            Log.e(LOG_TAG, e.toString());
         }
     }
 
