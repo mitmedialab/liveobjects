@@ -283,14 +283,8 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     private Bitmap addPersonIcon(Bitmap bitmap) {
         Bitmap personBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.person);
 
-        Paint paint = new Paint();
-        paint.setStyle(Paint.Style.FILL_AND_STROKE);
-        paint.setAntiAlias(true);
-        paint.setColor(Color.BLACK);
-        paint.setShadowLayer(2f, 4f, 4f, Color.BLACK);
-
         Canvas canvas = new Canvas(bitmap);
-        canvas.drawBitmap(personBitmap, 0, bitmap.getHeight() - personBitmap.getHeight(), paint);
+        canvas.drawBitmap(personBitmap, 0, bitmap.getHeight() - personBitmap.getHeight(), null);
 
         return bitmap;
     }
