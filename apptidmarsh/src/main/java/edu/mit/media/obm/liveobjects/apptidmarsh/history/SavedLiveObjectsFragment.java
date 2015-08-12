@@ -81,13 +81,9 @@ public class SavedLiveObjectsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        DependencyInjector.inject(this, getActivity());
-
         if (getArguments() != null) {
             mTabId = getArguments().getInt(ARG_TAB_ID);
         }
-        mMiddleware = ((LiveObjectsApplication) getActivity().getApplication()).getMiddleware();
-        mDbController = mMiddleware.getDbController();
     }
 
     @Override
@@ -95,7 +91,8 @@ public class SavedLiveObjectsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_saved_live_objects, container, false);
         ButterKnife.bind(this, rootView);
-
+        DependencyInjector.inject(this, getActivity());
+        
         return rootView;
     }
 
