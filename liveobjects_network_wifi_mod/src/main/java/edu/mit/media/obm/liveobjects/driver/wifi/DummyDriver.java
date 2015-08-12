@@ -35,9 +35,9 @@ public class DummyDriver implements NetworkDriver {
         int locationYLength = resources.getInteger(R.integer.map_location_coordinate_y_length);
         int mapIdLength = resources.getInteger(R.integer.map_location_map_id_length);
 
-        MAX_LOCATION_X = 16 << (locationXLength - 1);
-        MAX_LOCATION_Y = 16 << (locationYLength - 1);
-        MAX_MAP_ID = 16 << (mapIdLength - 1);
+        MAX_LOCATION_X = 16 << ((locationXLength - 1) * 4);
+        MAX_LOCATION_Y = 16 << ((locationYLength - 1) * 4);
+        MAX_MAP_ID = 16 << ((mapIdLength - 1) * 4);
 
         String ssidPrefix = resources.getString(R.string.ssid_prefix);
         // use only the first char as a delimiter
