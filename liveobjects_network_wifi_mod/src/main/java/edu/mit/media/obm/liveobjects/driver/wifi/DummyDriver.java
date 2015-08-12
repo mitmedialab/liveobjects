@@ -2,6 +2,8 @@ package edu.mit.media.obm.liveobjects.driver.wifi;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -92,9 +94,15 @@ public class DummyDriver implements NetworkDriver {
             LiveObject liveObject = new LiveObject(liveObjectName, mapLocation);
             mLiveObjectList.add(liveObject);
 
-            mNetworkListener.onNetworkDevicesAvailable(mLiveObjectList);
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mNetworkListener.onNetworkDevicesAvailable(mLiveObjectList);
+                }
+            });
 
-            if (++mCount < MAX_COUNT) {
+            if (++mCount >= MAX_COUNT) {
                 mTimer.cancel();
             }
         }
