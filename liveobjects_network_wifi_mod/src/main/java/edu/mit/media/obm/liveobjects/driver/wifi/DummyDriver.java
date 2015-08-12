@@ -1,26 +1,19 @@
 package edu.mit.media.obm.liveobjects.driver.wifi;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Resources;
-import android.net.NetworkInfo;
-import android.net.wifi.ScanResult;
-import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
+import edu.mit.media.obm.liveobjects.middleware.common.MapLocation;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkDriver;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
-import edu.mit.media.obm.liveobjects.middleware.net.NetworkUtil;
 
 /**
  * Created by arata on 8/11/15.
@@ -28,8 +21,30 @@ import edu.mit.media.obm.liveobjects.middleware.net.NetworkUtil;
 public class DummyDriver implements NetworkDriver {
     private final static String LOG_TAG = DummyDriver.class.getSimpleName();
 
+    private NetworkListener mNetworkListener = null;
+
+    private final int MAX_LOCATION_X;
+    private final int MAX_LOCATION_Y;
+    private final int MAX_MAP_ID;
+
     public DummyDriver(Context context) {
-        // do nothing
+        Resources resources = context.getResources();
+        int locationXLength = resources.getInteger(R.integer.map_location_coordinate_x_length);
+        int locationYLength = resources.getInteger(R.integer.map_location_coordinate_y_length);
+        int mapIdLength = resources.getInteger(R.integer.map_location_map_id_length);
+
+        MAX_LOCATION_X = 16 << (locationXLength - 1);
+        MAX_LOCATION_Y = 16 << (locationYLength - 1);
+        MAX_MAP_ID = 16 << (mapIdLength - 1);
+
+        String ssidPrefix = resources.getString(R.string.ssid_prefix);
+        // use only the first char as a delimiter
+        // (ssid_delimiter should be 1 byte long string, though)
+        char ssidDelimiter = resources.getString(R.string.ssid_delimiter).charAt(0);
+
+        // need to initialize WifiLocationUtil since BluetoothNotifier use this class
+        WifiLocationUtil.INSTANCE.setSsidFormat(
+                ssidPrefix, ssidDelimiter, locationXLength, locationYLength, mapIdLength);
     }
 
     @Override
@@ -47,11 +62,18 @@ public class DummyDriver implements NetworkDriver {
         final Timer timer = new Timer();
         final TimerTask timerTask = new CustomTimerTask(timer);
 
-        timer.schedule(timerTask, 10000);
+        timer.scheduleAtFixedRate(timerTask, 10000, 10000);
     }
 
     private class CustomTimerTask extends TimerTask {
-        private Timer mTimer;
+        private int mCount = 0;
+        private final int MAX_COUNT = 10;
+
+        Timer mTimer;
+
+        List<LiveObject> mLiveObjectList = new ArrayList<>();
+
+        Random mRandom = new Random();
 
         public CustomTimerTask(Timer timer) {
             mTimer = timer;
@@ -59,7 +81,22 @@ public class DummyDriver implements NetworkDriver {
 
         @Override
         public void run() {
-            mTimer.schedule(this, 10000);
+            Log.i(LOG_TAG, "running dummy task: " + mCount);
+
+            String liveObjectName = String.format("DummyObject%02d", mCount);
+            int locationX = mRandom.nextInt(MAX_LOCATION_X);
+            int locationY = mRandom.nextInt(MAX_LOCATION_Y);
+            int mapId = mRandom.nextInt(MAX_MAP_ID);
+
+            MapLocation mapLocation = new MapLocation(locationX, locationY, mapId);
+            LiveObject liveObject = new LiveObject(liveObjectName, mapLocation);
+            mLiveObjectList.add(liveObject);
+
+            mNetworkListener.onNetworkDevicesAvailable(mLiveObjectList);
+
+            if (++mCount < MAX_COUNT) {
+                mTimer.cancel();
+            }
         }
     }
 
