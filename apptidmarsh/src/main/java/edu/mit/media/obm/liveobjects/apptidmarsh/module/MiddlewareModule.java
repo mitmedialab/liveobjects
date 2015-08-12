@@ -2,9 +2,10 @@ package edu.mit.media.obm.liveobjects.apptidmarsh.module;
 
 import android.content.Context;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
-import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsFragment;
@@ -12,10 +13,20 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.MediaViewActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.profile.ProfileActivity;
+import edu.mit.media.obm.liveobjects.driver.wifi.WifiDriver;
+import edu.mit.media.obm.liveobjects.middleware.common.LiveObjectsMiddleware;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
+import edu.mit.media.obm.liveobjects.middleware.control.ContentBridge;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
+import edu.mit.media.obm.liveobjects.middleware.control.CouchDbController;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
+import edu.mit.media.obm.liveobjects.middleware.control.NetworkBridge;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
+import edu.mit.media.obm.liveobjects.middleware.net.NetworkDriver;
+import edu.mit.media.obm.liveobjects.middleware.storage.LocalStorageDriver;
+import edu.mit.media.obm.liveobjects.middleware.storage.RemoteStorageDriver;
+import edu.mit.media.obm.liveobjects.storage.local.FileLocalStorageDriver;
+import edu.mit.media.obm.liveobjects.storage.wifi.WifiStorageDriver;
 
 /**
  * Created by arata on 8/3/15.
@@ -37,10 +48,19 @@ public class MiddlewareModule {
     public MiddlewareModule() {
     }
 
-    @Provides
+    @Provides @Singleton
     MiddlewareInterface provideMiddlewareInterface(Context context) {
-        LiveObjectsApplication application = (LiveObjectsApplication) context.getApplicationContext();
-        return application.getMiddleware();
+        NetworkDriver networkDriver = new WifiDriver(context);
+        NetworkController networkController = new NetworkBridge(networkDriver);
+
+        LocalStorageDriver localStorageDriver = new FileLocalStorageDriver(context);
+        RemoteStorageDriver remoteStorageDriver = new WifiStorageDriver(context);
+
+        ContentController contentController = new ContentBridge(context, localStorageDriver, remoteStorageDriver);
+
+        DbController dbController = new CouchDbController(context);
+
+        return new LiveObjectsMiddleware(networkController, contentController, dbController);
     }
 
     @Provides
