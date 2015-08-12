@@ -8,6 +8,7 @@ import dagger.ObjectGraph;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.ApplicationModule;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.MiddlewareModule;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.SystemModule;
+import edu.mit.media.obm.liveobjects.driver.wifi.DummyDriver;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiDriver;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObjectsMiddleware;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;

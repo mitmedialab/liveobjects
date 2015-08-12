@@ -26,11 +26,13 @@ import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import butterknife.BindString;
 import butterknife.ButterKnife;
+import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.InactiveLiveObjectDetectionEvent;
@@ -56,6 +58,9 @@ public class MainFragment extends GroundOverlayMapFragment {
     @Inject Bus mBus;
 
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.arg_live_object_map_location_x) String EXTRA_LIVE_OBJ_MAP_LOCATION_X;
+    @BindString(R.string.arg_live_object_map_location_y) String EXTRA_LIVE_OBJ_MAP_LOCATION_Y;
+    @BindString(R.string.arg_live_object_map_id) String EXTRA_LIVE_OBJ_MAP_ID;
     @BindString(R.string.arg_connected_to_live_object) String EXTRA_CONNECTED_TO_LIVE_OBJ;
 
     private ProgressDialog mConnectingDialog;
@@ -63,6 +68,7 @@ public class MainFragment extends GroundOverlayMapFragment {
     private ArrayList<LiveObject> mLiveObjectList = new ArrayList<>();
     private ArrayList<LiveObject> mActiveLiveObjectList = new ArrayList<>();
     private ArrayList<LiveObject> mSleepingLiveObjectList = new ArrayList<>();
+    private ArrayList<LiveObject> mPreviouslyDetectedLiveObjectList = new ArrayList<>();
     private LiveObject mSelectedLiveObject;
     private Marker mClickedMarker;
 
@@ -101,7 +107,6 @@ public class MainFragment extends GroundOverlayMapFragment {
 
         setOnMarkerClickListener(new ConnectToLiveObjectListener());
     }
-
 
     private class ConnectToLiveObjectListener implements GoogleMap.OnMarkerClickListener {
         @Override
@@ -148,6 +153,28 @@ public class MainFragment extends GroundOverlayMapFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        mPreviouslyDetectedLiveObjectList.clear();
+
+        List<Map<String, Object>> allLiveObjects = mDbController.getAllLiveObjectsProperties();
+        for (Map<String, Object> liveObjectProperties : allLiveObjects) {
+            MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
+            String liveObjectName = provider.getId();
+            MapLocation mapLocation = new MapLocation(
+                    provider.getMapLocationX(), provider.getMapLocationY(), provider.getMapId());
+            LiveObject liveObject = new LiveObject(liveObjectName, mapLocation);
+            liveObject.setStatus(LiveObject.STATUS_CONNECTED_BEFORE);
+
+            mPreviouslyDetectedLiveObjectList.add(liveObject);
+        }
+
+        updateLiveObjectList();
+        updateLiveObjectMarkers();
+    }
+
+    @Override
     public void onStop() {
         Log.v(LOG_TAG, "onStop()");
 //        mNetworkController.stop();
@@ -184,11 +211,8 @@ public class MainFragment extends GroundOverlayMapFragment {
                 mActiveLiveObjectList.add(liveObject);
             }
 
-            updateLiveObjectsList();
-
-            for (LiveObject liveObject : mLiveObjectList) {
-                addLiveObjectMarker(liveObject);
-            }
+            updateLiveObjectList();
+            updateLiveObjectMarkers();
         }
     }
 
@@ -204,7 +228,11 @@ public class MainFragment extends GroundOverlayMapFragment {
                 Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
                 detailIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 
+                MapLocation mapLocation = mSelectedLiveObject.getMapLocation();
                 detailIntent.putExtra(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
+                detailIntent.putExtra(EXTRA_LIVE_OBJ_MAP_LOCATION_X, mapLocation.getCoordinateX());
+                detailIntent.putExtra(EXTRA_LIVE_OBJ_MAP_LOCATION_Y, mapLocation.getCoordinateY());
+                detailIntent.putExtra(EXTRA_LIVE_OBJ_MAP_ID, mapLocation.getMapId());
                 detailIntent.putExtra(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
                 startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
                 mSelectedLiveObject = null;
@@ -212,7 +240,7 @@ public class MainFragment extends GroundOverlayMapFragment {
         }
     }
 
-    private void updateLiveObjectsList() {
+    private void updateLiveObjectList() {
         mLiveObjectList.clear();
         mLiveObjectList.addAll(mActiveLiveObjectList);
 
@@ -232,6 +260,27 @@ public class MainFragment extends GroundOverlayMapFragment {
             if (!inActiveList) {
                 mLiveObjectList.add(liveObject);
             }
+        }
+
+        for (LiveObject liveObject : mPreviouslyDetectedLiveObjectList) {
+            boolean inActiveList = false;
+
+            for (LiveObject activeLiveObject : mActiveLiveObjectList) {
+                if (liveObject.getLiveObjectName().equals(activeLiveObject.getLiveObjectName())) {
+                    inActiveList = true;
+                    break;
+                }
+            }
+
+            if (!inActiveList) {
+                mLiveObjectList.add(liveObject);
+            }
+        }
+    }
+
+    private void updateLiveObjectMarkers() {
+        for (LiveObject liveObject : mLiveObjectList) {
+            addLiveObjectMarker(liveObject, true);
         }
     }
 
@@ -271,9 +320,10 @@ public class MainFragment extends GroundOverlayMapFragment {
     public void addDetectedBluetoothDevice(InactiveLiveObjectDetectionEvent event) {
         Log.v(LOG_TAG, "addDetectedBluetoothDevice()");
         LiveObject liveObject = new LiveObject(event.mDeviceName);
-        liveObject.setActive(false);
+        liveObject.setStatus(LiveObject.STATUS_SLEEPING);
         mSleepingLiveObjectList.add(liveObject);
 
-        updateLiveObjectsList();
+        updateLiveObjectList();
+        updateLiveObjectMarkers();
     }
 }

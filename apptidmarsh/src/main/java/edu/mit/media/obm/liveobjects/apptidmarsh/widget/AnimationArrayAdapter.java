@@ -92,7 +92,7 @@ public class AnimationArrayAdapter extends ArrayAdapter<LiveObject> {
         setImage(holder.mImageView, liveObject);
 
         // make sleeping live objects transparent
-        float alpha = (liveObject.isActive() ? 1.0f : 0.5f);
+        float alpha = (liveObject.getStatus() == LiveObject.STATUS_ACTIVE ? 1.0f : 0.5f);
         holder.mImageView.setAlpha(alpha);
         holder.mTextView.setAlpha(alpha);
 

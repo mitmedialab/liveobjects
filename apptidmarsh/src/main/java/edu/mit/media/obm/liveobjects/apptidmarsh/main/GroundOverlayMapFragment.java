@@ -128,7 +128,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         mMap.setOnMarkerClickListener(listener);
     }
 
-    public void addLiveObjectMarker(LiveObject liveObject) {
+    public void addLiveObjectMarker(LiveObject liveObject, boolean highlighed) {
         String liveObjectName = liveObject.getLiveObjectName();
         MapLocation mapLocation = liveObject.getMapLocation();
         int gridX = mapLocation.getCoordinateX();

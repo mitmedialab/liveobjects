@@ -204,7 +204,7 @@ public class WifiDriver implements NetworkDriver {
 
                 if (mNetworkUtil.isLiveObject(deviceId)){
                     LiveObject liveObject = mNetworkUtil.convertDeviceIdToLiveObject(deviceId);
-                    liveObject.setActive(true);
+                    liveObject.setStatus(LiveObject.STATUS_ACTIVE);
 
                     //network device representing a live object found
                     // add it to the list

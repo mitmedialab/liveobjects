@@ -49,6 +49,7 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.utils.Util;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.ZoomInOutAnimation;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
+import edu.mit.media.obm.liveobjects.middleware.common.MapLocation;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.liveobjects.middleware.util.JSONUtil;
@@ -64,12 +65,16 @@ public class DetailFragment extends Fragment {
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
     //TODO make the directory name parametrizable
     @BindString(R.string.arg_live_object_name_id) String ARG_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.arg_live_object_map_location_x) String ARG_LIVE_OBJ_MAP_LOCATION_X;
+    @BindString(R.string.arg_live_object_map_location_y) String ARG_LIVE_OBJ_MAP_LOCATION_Y;
+    @BindString(R.string.arg_live_object_map_id) String ARG_LIVE_OBJ_MAP_ID;
     @BindString(R.string.arg_connected_to_live_object) String ARG_CONNECTED_TO_LIVE_OBJ;
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
     @BindString(R.string.dir_contents) String DIRECTORY_NAME;
     @BindString(R.string.dir_comments) String COMMENT_DIRECTORY_NAME;
 
     private String mLiveObjectName;
+    private MapLocation mMapLocation;
 
     private View mRootView;
 
@@ -141,14 +146,22 @@ public class DetailFragment extends Fragment {
      * @param liveObjectNameID the name_id of the live object obtained during discovery.
      * @return A new instance of fragment DetailFragment
      */
-    public static DetailFragment newInstance(Activity activity, String liveObjectNameID, boolean showAddComment) {
+    public static DetailFragment newInstance(
+            Activity activity, String liveObjectNameID, boolean showAddComment,
+            int mapLocationX, int mapLocationY, int mapId) {
         DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
 
         String argLiveObjectNameId = activity.getString(R.string.arg_live_object_name_id);
+        String argLiveObjectMapLocationX = activity.getString(R.string.arg_live_object_map_location_x);
+        String argLiveObjectMapLocationY = activity.getString(R.string.arg_live_object_map_location_y);
+        String argLiveObjectMapId = activity.getString(R.string.arg_live_object_map_id);
         String argConnectedToLiveObject = activity.getString(R.string.arg_connected_to_live_object);
 
         args.putString(argLiveObjectNameId, liveObjectNameID);
+        args.putInt(argLiveObjectMapLocationX, mapLocationX);
+        args.putInt(argLiveObjectMapLocationY, mapLocationY);
+        args.putInt(argLiveObjectMapId, mapId);
         args.putBoolean(argConnectedToLiveObject, showAddComment);
         fragment.setArguments(args);
 
@@ -170,6 +183,10 @@ public class DetailFragment extends Fragment {
         if (arguments != null) {
             mLiveObjectName = arguments.getString(ARG_LIVE_OBJ_NAME_ID);
             mConnectedToLiveObject = arguments.getBoolean(ARG_CONNECTED_TO_LIVE_OBJ);
+            mMapLocation = new MapLocation(
+                    arguments.getInt(ARG_LIVE_OBJ_MAP_LOCATION_X),
+                    arguments.getInt(ARG_LIVE_OBJ_MAP_LOCATION_Y),
+                    arguments.getInt(ARG_LIVE_OBJ_MAP_ID));
         }
 
         Map<String, Object> liveObjectProperties = getLiveObjectProperties(mLiveObjectName);
@@ -229,6 +246,11 @@ public class DetailFragment extends Fragment {
             // add the isFavorite property, which is not present in the remote live-object,
             // and initialize it to false
             properties.put(MLProjectContract.IS_FAVORITE, MLProjectContract.IS_FAVORITE_FALSE);
+
+            // add map location to properties
+            properties.put(MLProjectContract.MAP_LOCATION_X, mMapLocation.getCoordinateX());
+            properties.put(MLProjectContract.MAP_LOCATION_Y, mMapLocation.getCoordinateY());
+            properties.put(MLProjectContract.MAP_ID, mMapLocation.getMapId());
         } catch (Exception e) {
             mOnErrorListener.onError(e);
         }

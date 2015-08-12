@@ -26,5 +26,8 @@ public class MLProjectContract implements LiveObjectContract {
     public static final Integer IS_FAVORITE_FALSE = 0;
     public static final Integer IS_FAVORITE_TRUE = 1;
 
+    public static final String MAP_LOCATION_X = "map_location_x";
+    public static final String MAP_LOCATION_Y = "map_location_y";
+    public static final String MAP_ID = "map_id";
 
 }
