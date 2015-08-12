@@ -46,6 +46,8 @@ public class MediaViewActivity extends SingleFragmentActivity implements OnMedia
     private static final String LOG_TAG = MediaViewActivity.class.getSimpleName();
 
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.arg_file_url) String ARG_FILE_URL;
+    @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
     @BindString(R.string.state_live_object_name_id) String STATE_LIVE_OBJ_NAME_ID;
     @BindString(R.string.dir_contents) String MEDIA_DIRECTORY_NAME;
 
@@ -65,7 +67,8 @@ public class MediaViewActivity extends SingleFragmentActivity implements OnMedia
 
     @Override
     protected Fragment createFragment() {
-        mLiveObjNameId = getIntent().getStringExtra(EXTRA_LIVE_OBJ_NAME_ID);
+        Bundle arguments = getIntent().getBundleExtra(EXTRA_ARGUMENTS);
+        mLiveObjNameId = arguments.getString(EXTRA_LIVE_OBJ_NAME_ID);
         initContent(mLiveObjNameId);
         return createMediaFragment();
     }
@@ -95,6 +98,17 @@ public class MediaViewActivity extends SingleFragmentActivity implements OnMedia
 
     private Fragment createMediaFragment() {
         ContentId mediaContentId = new ContentId(mLiveObjNameId, MEDIA_DIRECTORY_NAME, mFileName);
+
+        Fragment fragment;
+        if (mContentType.equals(mContentTypeVideo) || mContentType.equals(mContentTypeAudio)) {
+            fragment = new VideoViewFragment();
+        } else if (mContentType.equals(mContentTypeGallery)) {
+            //TODO launch gallery
+            throw new IllegalStateException("Unimplemented content type");
+        } else {
+            throw new IllegalStateException("invalid content type");
+        }
+
         String fileUrl;
         try {
             fileUrl = mContentController.getFileUrl(mediaContentId);
@@ -106,17 +120,9 @@ public class MediaViewActivity extends SingleFragmentActivity implements OnMedia
             throw new IllegalStateException();
         }
 
-        Fragment fragment;
-        if (mContentType.equals(mContentTypeVideo)) {
-            fragment = VideoViewFragment.newInstance(this, fileUrl);
-        } else if (mContentType.equals(mContentTypeAudio)) {
-            fragment = VideoViewFragment.newInstance(this, fileUrl);
-        } else if (mContentType.equals(mContentTypeGallery)) {
-            //TODO launch gallery
-            throw new IllegalStateException("Unimplemented content type");
-        } else {
-            throw new IllegalStateException("invalid content type");
-        }
+        Bundle arguments = getIntent().getBundleExtra(EXTRA_ARGUMENTS);
+        arguments.putString(ARG_FILE_URL, fileUrl);
+        fragment.setArguments(arguments);
 
         return fragment;
     }

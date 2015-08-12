@@ -37,6 +37,7 @@
     <string name="arg_live_object_map_id">map_id</string>
     <string name="arg_connected_to_live_object">connected_to_live_obj</string>
     <string name="arg_file_url">fileurl</string>
+    <string name="extra_arguments">extra_arguments</string>
     <string name="state_live_object_name_id">state_live_obj_name_id</string>
     <string name="state_play_position">state_play_position</string>
 

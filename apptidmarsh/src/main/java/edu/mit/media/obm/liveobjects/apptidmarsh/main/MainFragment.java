@@ -10,17 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.GroundOverlayOptions;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.common.eventbus.Subscribe;
 import com.squareup.otto.Bus;
 
@@ -62,6 +53,7 @@ public class MainFragment extends GroundOverlayMapFragment {
     @BindString(R.string.arg_live_object_map_location_y) String EXTRA_LIVE_OBJ_MAP_LOCATION_Y;
     @BindString(R.string.arg_live_object_map_id) String EXTRA_LIVE_OBJ_MAP_ID;
     @BindString(R.string.arg_connected_to_live_object) String EXTRA_CONNECTED_TO_LIVE_OBJ;
+    @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
 
     private ProgressDialog mConnectingDialog;
 
@@ -223,18 +215,22 @@ public class MainFragment extends GroundOverlayMapFragment {
             if (connectedLiveObject.equals(mSelectedLiveObject)) {
                 mConnectingDialog.dismiss();
 
+
+                Bundle arguments = new Bundle();
+                MapLocation mapLocation = mSelectedLiveObject.getMapLocation();
+                arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
+                arguments.putInt(EXTRA_LIVE_OBJ_MAP_LOCATION_X, mapLocation.getCoordinateX());
+                arguments.putInt(EXTRA_LIVE_OBJ_MAP_LOCATION_Y, mapLocation.getCoordinateY());
+                arguments.putInt(EXTRA_LIVE_OBJ_MAP_ID, mapLocation.getMapId());
+                arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
+
                 // when the selected live objected is connected
                 // start the corresponding detail activity
                 Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
                 detailIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-
-                MapLocation mapLocation = mSelectedLiveObject.getMapLocation();
-                detailIntent.putExtra(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
-                detailIntent.putExtra(EXTRA_LIVE_OBJ_MAP_LOCATION_X, mapLocation.getCoordinateX());
-                detailIntent.putExtra(EXTRA_LIVE_OBJ_MAP_LOCATION_Y, mapLocation.getCoordinateY());
-                detailIntent.putExtra(EXTRA_LIVE_OBJ_MAP_ID, mapLocation.getMapId());
-                detailIntent.putExtra(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
+                detailIntent.putExtra(EXTRA_ARGUMENTS, arguments);
                 startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
+
                 mSelectedLiveObject = null;
             }
         }

@@ -70,6 +70,7 @@ public class DetailFragment extends Fragment {
     @BindString(R.string.arg_live_object_map_id) String ARG_LIVE_OBJ_MAP_ID;
     @BindString(R.string.arg_connected_to_live_object) String ARG_CONNECTED_TO_LIVE_OBJ;
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
     @BindString(R.string.dir_contents) String DIRECTORY_NAME;
     @BindString(R.string.dir_comments) String COMMENT_DIRECTORY_NAME;
 
@@ -106,10 +107,14 @@ public class DetailFragment extends Fragment {
     void onClickIconView() {
         // wait asynchronous tasks finish before starting another activity
         cancelAsyncTasks();
+
+        Bundle arguments = new Bundle();
+        arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mLiveObjectName);
+
         // launch the media associated to the object
-        Intent viewIntent = new Intent(getActivity(), MediaViewActivity.class);
-        viewIntent.putExtra(EXTRA_LIVE_OBJ_NAME_ID, mLiveObjectName);
-        getActivity().startActivity(viewIntent);
+        Intent intent = new Intent(getActivity(), MediaViewActivity.class);
+        intent.putExtra(EXTRA_ARGUMENTS, arguments);
+        getActivity().startActivity(intent);
     }
 
     @OnClick(R.id.favorite_button)
@@ -137,35 +142,6 @@ public class DetailFragment extends Fragment {
 
     public interface OnErrorListener {
         void onError(Exception exception);
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameter.
-     *
-     * @param liveObjectNameID the name_id of the live object obtained during discovery.
-     * @return A new instance of fragment DetailFragment
-     */
-    public static DetailFragment newInstance(
-            Activity activity, String liveObjectNameID, boolean showAddComment,
-            int mapLocationX, int mapLocationY, int mapId) {
-        DetailFragment fragment = new DetailFragment();
-        Bundle args = new Bundle();
-
-        String argLiveObjectNameId = activity.getString(R.string.arg_live_object_name_id);
-        String argLiveObjectMapLocationX = activity.getString(R.string.arg_live_object_map_location_x);
-        String argLiveObjectMapLocationY = activity.getString(R.string.arg_live_object_map_location_y);
-        String argLiveObjectMapId = activity.getString(R.string.arg_live_object_map_id);
-        String argConnectedToLiveObject = activity.getString(R.string.arg_connected_to_live_object);
-
-        args.putString(argLiveObjectNameId, liveObjectNameID);
-        args.putInt(argLiveObjectMapLocationX, mapLocationX);
-        args.putInt(argLiveObjectMapLocationY, mapLocationY);
-        args.putInt(argLiveObjectMapId, mapId);
-        args.putBoolean(argConnectedToLiveObject, showAddComment);
-        fragment.setArguments(args);
-
-        return fragment;
     }
 
     // Required empty constructor

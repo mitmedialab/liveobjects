@@ -20,10 +20,7 @@ public class DetailActivity extends SingleFragmentActivity {
     private static final String LOG_TAG = DetailActivity.class.getSimpleName();
 
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
-    @BindString(R.string.arg_live_object_map_location_x) String EXTRA_LIVE_OBJ_MAP_LOCATION_X;
-    @BindString(R.string.arg_live_object_map_location_y) String EXTRA_LIVE_OBJ_MAP_LOCATION_Y;
-    @BindString(R.string.arg_live_object_map_id) String EXTRA_LIVE_OBJ_MAP_ID;
-    @BindString(R.string.arg_connected_to_live_object) String EXTRA_CONNECTED_TO_LIVE_OBJ;
+    @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
 
     public static int RESULT_CONNECTION_ERROR = RESULT_FIRST_USER;
     public static int RESULT_JSON_ERROR = RESULT_FIRST_USER + 1;
@@ -32,14 +29,8 @@ public class DetailActivity extends SingleFragmentActivity {
 
     @Override
     protected Fragment createFragment() {
-        String liveObjNameId = getIntent().getStringExtra(EXTRA_LIVE_OBJ_NAME_ID);
-        boolean showAddComment = getIntent().getBooleanExtra(EXTRA_CONNECTED_TO_LIVE_OBJ, false);
-        int mapLocationX = getIntent().getIntExtra(EXTRA_LIVE_OBJ_MAP_LOCATION_X, 0);
-        int mapLocationY = getIntent().getIntExtra(EXTRA_LIVE_OBJ_MAP_LOCATION_Y, 0);
-        int mapId = getIntent().getIntExtra(EXTRA_LIVE_OBJ_MAP_ID, 0);
+        mDetailFragment = new DetailFragment();
 
-        mDetailFragment = DetailFragment.newInstance(
-                this, liveObjNameId, showAddComment, mapLocationX, mapLocationY, mapId);
         mDetailFragment.setOnCancelListener(new DetailFragment.OnErrorListener() {
             @Override
             public void onError(Exception exception) {
@@ -57,6 +48,9 @@ public class DetailActivity extends SingleFragmentActivity {
                 finish();
             }
         });
+
+        Bundle arguments = getIntent().getBundleExtra(EXTRA_ARGUMENTS);
+        mDetailFragment.setArguments(arguments);
 
         return mDetailFragment;
     }

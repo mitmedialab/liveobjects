@@ -48,24 +48,6 @@ public class VideoViewFragment extends Fragment {
         mPlayPosition = null;
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param fileUrl Parameter 1.
-     * @return A new instance of fragment VideoViewFragment.
-     */
-    public static VideoViewFragment newInstance(Activity activity, String fileUrl) {
-        VideoViewFragment fragment = new VideoViewFragment();
-        Bundle args = new Bundle();
-
-        String argFileUrl = activity.getString(R.string.arg_file_url);
-        args.putString(argFileUrl, fileUrl);
-
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
