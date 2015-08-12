@@ -78,15 +78,6 @@ public class MainFragment extends GroundOverlayMapFragment {
     }
 
     private void setupUIElements() {
-        /*
-        mAdapter = new AnimationArrayAdapter(getActivity(), R.layout.list_item_live_objects,
-                mLiveObjectNamesList);
-        mLiveObjectsGridView.setAdapter(mAdapter);
-        mSwipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-        */
         mConnectingDialog = new ProgressDialog(getActivity());
         mConnectingDialog.setIndeterminate(true);
         mConnectingDialog.setCancelable(true);
