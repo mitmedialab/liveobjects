@@ -96,6 +96,11 @@ public class WifiManagerWrapper {
             return false;
         }
 
+        final List<WifiConfiguration> configurations = wifiMgr.getConfiguredNetworks();
+        for (final WifiConfiguration conf : configurations) {
+            Log.v(WifiManagerWrapper.class.getSimpleName(), String.format("%s: %d", conf.SSID, conf.priority));
+        }
+
         // Do not disable others
         if (!wifiMgr.enableNetwork(networkId, false)) {
             config.priority = oldPri;
@@ -128,11 +133,13 @@ public class WifiManagerWrapper {
             return false;
         }
 
+        // Commenting out these lines reduce the possiblity of wrongly connecting to the previously
+        // connected access point again.
         //final boolean connect = reassociate ? wifiMgr.reassociate() : wifiMgr.reconnect();
-        final boolean connect = wifiMgr.reconnect();
-        if (!connect) {
-            return false;
-        }
+        //final boolean connect = wifiMgr.reconnect();
+        //if (!connect) {
+        //    return false;
+        //}
 
         return true;
     }
