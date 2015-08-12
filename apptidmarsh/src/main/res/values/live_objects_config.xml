@@ -5,6 +5,4 @@
     <string name="content_type_video">video</string>
     <string name="content_type_audio">audio</string>
     <string name="content_type_gallery">gallery</string>
-
-    <integer name="total_number_of_objects">10</integer>
 </resources>
