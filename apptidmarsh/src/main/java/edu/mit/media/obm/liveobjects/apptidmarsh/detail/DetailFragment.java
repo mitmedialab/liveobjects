@@ -3,7 +3,6 @@ package edu.mit.media.obm.liveobjects.apptidmarsh.detail;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -63,7 +62,7 @@ import edu.mit.media.obm.shair.liveobjects.R;
 public class DetailFragment extends Fragment {
 
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
-    //TODO make the directory name parametrizable
+    //TODO make the directory name parameterizable
     @BindString(R.string.arg_live_object_name_id) String ARG_LIVE_OBJ_NAME_ID;
     @BindString(R.string.arg_live_object_map_location_x) String ARG_LIVE_OBJ_MAP_LOCATION_X;
     @BindString(R.string.arg_live_object_map_location_y) String ARG_LIVE_OBJ_MAP_LOCATION_Y;
@@ -172,12 +171,14 @@ public class DetailFragment extends Fragment {
     }
 
     private Map<String, Object> getLiveObjectProperties(String liveObjectId) {
-        Map<String, Object> properties = null;
+        Map<String, Object> properties;
 
         if (mDbController.isLiveObjectEmpty(liveObjectId)) {
             // live object empty, fill it with properties
             properties = fetchProperties(liveObjectId);
-            storeProperties(liveObjectId, properties);
+
+            Log.d(LOG_TAG, "storing properties " + properties);
+            mDbController.putLiveObject(liveObjectId, properties);
         } else {
             properties = mDbController.getProperties(liveObjectId);
         }
@@ -194,7 +195,7 @@ public class DetailFragment extends Fragment {
                     protected JSONObject doInBackground(String... params) {
                         String configFileName = params[0];
 
-                        InputStream inputStream = null;
+                        InputStream inputStream;
                         try {
 
                             ContentId configFileContentId = new ContentId(liveObjectId, DIRECTORY_NAME, configFileName);
@@ -234,12 +235,6 @@ public class DetailFragment extends Fragment {
         return properties;
 
     }
-
-    private void storeProperties(String liveObjectId, Map<String, Object> properties) {
-        Log.d(LOG_TAG, "storing properties " + properties);
-        mDbController.putLiveObject(liveObjectId, properties);
-    }
-
 
     private void setUIContent(Map<String, Object> liveObjectProperties) {
         Log.d(LOG_TAG, liveObjectProperties.toString());
@@ -296,7 +291,7 @@ public class DetailFragment extends Fragment {
         int isFavoriteInInt = isFavorite ? MLProjectContract.IS_FAVORITE_TRUE :
                 MLProjectContract.IS_FAVORITE_FALSE;
         Log.d(LOG_TAG, "update property is favorite to: " + isFavoriteInInt);
-        mDbController.putProperty(liveObjNameId, MLProjectContract.IS_FAVORITE, new Integer(isFavoriteInInt));
+        mDbController.putProperty(liveObjNameId, MLProjectContract.IS_FAVORITE, isFavoriteInInt);
         Log.d(LOG_TAG, "now favorite is: " + mDbController.getProperty(liveObjNameId, MLProjectContract.IS_FAVORITE));
     }
 
@@ -334,9 +329,7 @@ public class DetailFragment extends Fragment {
             }
         });
 
-        AlertDialog dialog = alert.create();
-
-        return dialog;
+        return alert.create();
     }
 
     private String makeComment(String text) {
@@ -345,15 +338,14 @@ public class DetailFragment extends Fragment {
         String company = "Organization: " + ProfilePreference.getString(pref, getActivity(), R.string.profile_company_key) + "\n";
         String email = "Email: " + ProfilePreference.getString(pref, getActivity(), R.string.profile_email_key) + "\n";
         String commentHeader = "Comment: \n";
-        String message = name + company + email + commentHeader + text;
-        return message;
+
+        return name + company + email + commentHeader + text;
     }
 
     private String generateCommentFileName() {
         Calendar rightNow = Calendar.getInstance();
-        String commentName = String.format("%1$td%1$tk%1$tM%1$tS.TXT", rightNow);
 
-        return commentName;
+        return String.format("%1$td%1$tk%1$tM%1$tS.TXT", rightNow);
     }
 
     private void setBackgroundImage(String imageFileName) {
@@ -365,8 +357,7 @@ public class DetailFragment extends Fragment {
                 ContentId imageContentId = new ContentId(mLiveObjectName, DIRECTORY_NAME, imageFileName);
 
                 try {
-                    InputStream imageInputStream = mContentController.getInputStreamContent(imageContentId);
-                    return imageInputStream;
+                    return mContentController.getInputStreamContent(imageContentId);
                 } catch (Exception e) {
                     e.printStackTrace();
                     mOnErrorListener.onError(e);
