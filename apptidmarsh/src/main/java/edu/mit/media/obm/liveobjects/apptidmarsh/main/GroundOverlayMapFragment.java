@@ -294,7 +294,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     }
 
     private Bitmap addCheckIcon(Bitmap bitmap) {
-        Bitmap personBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.person);
+        Bitmap personBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.check);
 
         Canvas canvas = new Canvas(bitmap);
         canvas.drawBitmap(personBitmap, bitmap.getWidth() - personBitmap.getWidth(),
