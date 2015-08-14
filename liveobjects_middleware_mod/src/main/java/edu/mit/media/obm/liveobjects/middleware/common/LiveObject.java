@@ -11,11 +11,11 @@ public final class LiveObject {
     private final String mLiveObjectName;
     private final MapLocation mMapLocation;
     private int mStatus = STATUS_ACTIVE;
+    private boolean mConnectedBefore = false;
 
     public static final int STATUS_ACTIVE = 1;
     public static final int STATUS_SLEEPING = 2;
-    public static final int STATUS_CONNECTED_BEFORE = 3;
-    public static final int STATUS_DETECTED_BEFORE = 4;
+    public static final int STATUS_OUT_OF_SITE = 3;
 
     /**
      * Creates a new network device with specified id
@@ -70,6 +70,15 @@ public final class LiveObject {
 
     public void setStatus(int status) {
         mStatus = status;
+    }
+
+
+    public boolean getConnectedBefore() {
+        return mConnectedBefore;
+    }
+
+    public void setConnectedBefore(boolean connectedBefore) {
+        mConnectedBefore = connectedBefore;
     }
 
     @Override

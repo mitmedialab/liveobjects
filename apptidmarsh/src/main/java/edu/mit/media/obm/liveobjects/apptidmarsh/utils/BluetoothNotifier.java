@@ -102,7 +102,7 @@ public class BluetoothNotifier extends LiveObjectNotifier {
 
                     // ToDo; shouldn't use WiFiUtil directly
                     LiveObject liveObject = WifiUtil.INSTANCE.convertDeviceIdToLiveObject(deviceName);
-                    mBus.post(new InactiveLiveObjectDetectionEvent(liveObject.getLiveObjectName()));
+                    mBus.post(new InactiveLiveObjectDetectionEvent(liveObject));
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 debug("finished BLE discovery");

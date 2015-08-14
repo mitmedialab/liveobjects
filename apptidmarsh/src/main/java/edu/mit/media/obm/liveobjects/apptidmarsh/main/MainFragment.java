@@ -151,7 +151,8 @@ public class MainFragment extends GroundOverlayMapFragment {
             MapLocation mapLocation = new MapLocation(
                     provider.getMapLocationX(), provider.getMapLocationY(), provider.getMapId());
             LiveObject liveObject = new LiveObject(liveObjectName, mapLocation);
-            liveObject.setStatus(LiveObject.STATUS_CONNECTED_BEFORE);
+            liveObject.setStatus(LiveObject.STATUS_OUT_OF_SITE);
+            liveObject.setConnectedBefore(true);
 
             mPreviouslyDetectedLiveObjectList.add(liveObject);
         }
@@ -194,6 +195,7 @@ public class MainFragment extends GroundOverlayMapFragment {
             Log.d(LOG_TAG, "discovery successfully completed");
             mActiveLiveObjectList.clear();
             for (LiveObject liveObject : liveObjectList) {
+                liveObject.setConnectedBefore(isConnectedBefore(liveObject));
                 mActiveLiveObjectList.add(liveObject);
             }
 
@@ -270,7 +272,9 @@ public class MainFragment extends GroundOverlayMapFragment {
 
     private void updateLiveObjectMarkers() {
         for (LiveObject liveObject : mLiveObjectList) {
-            addLiveObjectMarker(liveObject, true);
+            boolean currentLocation = (liveObject.getStatus() != LiveObject.STATUS_OUT_OF_SITE);
+            boolean connectedBefore = liveObject.getConnectedBefore();
+            addLiveObjectMarker(liveObject, currentLocation, connectedBefore);
         }
     }
 
@@ -309,11 +313,27 @@ public class MainFragment extends GroundOverlayMapFragment {
     @Subscribe
     public void addDetectedBluetoothDevice(InactiveLiveObjectDetectionEvent event) {
         Log.v(LOG_TAG, "addDetectedBluetoothDevice()");
-        LiveObject liveObject = new LiveObject(event.mDeviceName);
+        LiveObject liveObject = event.mLiveObject;
         liveObject.setStatus(LiveObject.STATUS_SLEEPING);
+        liveObject.setConnectedBefore(isConnectedBefore(liveObject));
         mSleepingLiveObjectList.add(liveObject);
 
         updateLiveObjectList();
         updateLiveObjectMarkers();
+    }
+
+    private boolean isConnectedBefore(LiveObject liveObject) {
+        Boolean found = false;
+
+        List<Map<String, Object>> allLiveObjects = mDbController.getAllLiveObjectsProperties();
+        for (Map<String, Object> liveObjectProperties : allLiveObjects) {
+            MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
+            String liveObjectName = provider.getId();
+            if (liveObject.getLiveObjectName().equals(liveObjectName)) {
+                found = true;
+            }
+        }
+
+        return found;
     }
 }

@@ -129,7 +129,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         mMap.setOnMarkerClickListener(listener);
     }
 
-    public void addLiveObjectMarker(LiveObject liveObject, boolean highlighed) {
+    public void addLiveObjectMarker(LiveObject liveObject, boolean currentLocation, boolean visited) {
         String liveObjectName = liveObject.getLiveObjectName();
         MapLocation mapLocation = liveObject.getMapLocation();
         int gridX = mapLocation.getCoordinateX();
@@ -143,7 +143,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
         try {
             BitmapDescriptor iconBitmapDescriptor =
-                    BitmapDescriptorFactory.fromBitmap(createMarkerIcon(liveObjectName, highlighed));
+                    BitmapDescriptorFactory.fromBitmap(createMarkerIcon(liveObjectName, currentLocation, visited));
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(gridLocationInLagLng)
                     .icon(iconBitmapDescriptor)
@@ -156,7 +156,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         }
     }
 
-    private Bitmap createMarkerIcon(String liveObjectName, boolean highlighted)
+    private Bitmap createMarkerIcon(String liveObjectName, boolean currentLocation, boolean visited)
             throws IOException, RemoteException {
         Bitmap iconBitmap;
 
@@ -179,8 +179,12 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         printTitleOnBitmap(iconBitmap, liveObjectName);
         iconBitmap = addArrowToBitmap(iconBitmap);
 
-        if (highlighted) {
+        if (currentLocation) {
             iconBitmap = addPersonIcon(iconBitmap);
+        }
+
+        if (visited) {
+            iconBitmap = addCheckIcon(iconBitmap);
         }
 
         return iconBitmap;
@@ -285,6 +289,16 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
         Canvas canvas = new Canvas(bitmap);
         canvas.drawBitmap(personBitmap, 0, bitmap.getHeight() - personBitmap.getHeight(), null);
+
+        return bitmap;
+    }
+
+    private Bitmap addCheckIcon(Bitmap bitmap) {
+        Bitmap personBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.person);
+
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawBitmap(personBitmap, bitmap.getWidth() - personBitmap.getWidth(),
+                bitmap.getHeight() - personBitmap.getHeight(), null);
 
         return bitmap;
     }
