@@ -99,10 +99,7 @@ public class MediaViewActivity extends SingleFragmentActivity implements OnMedia
         String fileUrl;
         try {
             fileUrl = mContentController.getFileUrl(mediaContentId);
-        } catch (IOException e) {
-            Log.e(LOG_TAG, e.toString());
-            throw new IllegalStateException();
-        } catch (RemoteException e) {
+        } catch (IOException | RemoteException e) {
             Log.e(LOG_TAG, e.toString());
             throw new IllegalStateException();
         }

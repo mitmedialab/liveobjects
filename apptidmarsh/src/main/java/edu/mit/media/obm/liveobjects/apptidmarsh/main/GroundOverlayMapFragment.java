@@ -162,7 +162,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
         if (!mDbController.isLiveObjectEmpty(liveObjectName)) {
             iconBitmap = getLiveObjectIcon(liveObjectName);
-            iconBitmap = iconBitmap.createScaledBitmap(
+            iconBitmap = Bitmap.createScaledBitmap(
                     iconBitmap, MAP_MARKER_ICON_SIZE, MAP_MARKER_ICON_SIZE, true);
 
             BitmapEditor bitmapEditor = new BitmapEditor(getActivity());
