@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.common.collect.Range;
 
@@ -75,6 +76,8 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
     private GoogleMap mMap;
     private RandomColorGenerator mRandomColorGenerator;
+
+    Map<String, Marker> mLiveObjectMarkers = new HashMap<>();
 
     @Inject DbController mDbController;
     @Inject ContentController mContentController;
@@ -129,7 +132,23 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         mMap.setOnMarkerClickListener(listener);
     }
 
-    public void addLiveObjectMarker(LiveObject liveObject, boolean currentLocation, boolean visited) {
+    public void updateLiveObjectMarker(LiveObject liveObject, boolean currentLocation, boolean visited) {
+        String liveObjectName = liveObject.getLiveObjectName();
+
+        // assumes that each live object has an identical name
+        if (mLiveObjectMarkers.containsKey(liveObjectName)) {
+            Marker oldMarker = mLiveObjectMarkers.remove(liveObjectName);
+            oldMarker.remove();
+        }
+
+        Marker marker = addLiveObjectMarker(liveObject, currentLocation, visited);
+
+        mLiveObjectMarkers.put(liveObject.getLiveObjectName(), marker);
+
+        Log.v(LOG_TAG, mLiveObjectMarkers.keySet().toString());
+    }
+
+    private Marker addLiveObjectMarker(LiveObject liveObject, boolean currentLocation, boolean visited) {
         String liveObjectName = liveObject.getLiveObjectName();
         MapLocation mapLocation = liveObject.getMapLocation();
         int gridX = mapLocation.getCoordinateX();
@@ -141,6 +160,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         checkArgumentRange("mapId", mapId, 0, NUM_MAP_ID - 1);
         LatLng gridLocationInLagLng = gridToLatLng(gridX, gridY);
 
+        Marker marker;
         try {
             BitmapDescriptor iconBitmapDescriptor =
                     BitmapDescriptorFactory.fromBitmap(createMarkerIcon(liveObjectName, currentLocation, visited));
@@ -149,11 +169,15 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
                     .icon(iconBitmapDescriptor)
                     .anchor(0.5f, 1.0f)
                     .title(liveObjectName);
-            mMap.addMarker(markerOptions);
+            marker = mMap.addMarker(markerOptions);
         } catch (Exception e) {
             Log.e(LOG_TAG, "failed to add a marker for the live object '" + liveObjectName + "'");
             Log.e(LOG_TAG, e.toString());
+
+            throw new RuntimeException();
         }
+
+        return marker;
     }
 
     private Bitmap createMarkerIcon(String liveObjectName, boolean currentLocation, boolean visited)

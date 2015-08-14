@@ -158,7 +158,7 @@ public class MainFragment extends GroundOverlayMapFragment {
         }
 
         updateLiveObjectList();
-        updateLiveObjectMarkers();
+        registerLiveObjectMarkers();
     }
 
     @Override
@@ -200,7 +200,7 @@ public class MainFragment extends GroundOverlayMapFragment {
             }
 
             updateLiveObjectList();
-            updateLiveObjectMarkers();
+            registerLiveObjectMarkers();
         }
     }
 
@@ -270,11 +270,11 @@ public class MainFragment extends GroundOverlayMapFragment {
         }
     }
 
-    private void updateLiveObjectMarkers() {
+    private void registerLiveObjectMarkers() {
         for (LiveObject liveObject : mLiveObjectList) {
             boolean currentLocation = (liveObject.getStatus() != LiveObject.STATUS_OUT_OF_SITE);
             boolean connectedBefore = liveObject.getConnectedBefore();
-            addLiveObjectMarker(liveObject, currentLocation, connectedBefore);
+            updateLiveObjectMarker(liveObject, currentLocation, connectedBefore);
         }
     }
 
@@ -334,6 +334,6 @@ public class MainFragment extends GroundOverlayMapFragment {
         mSleepingLiveObjectList.add(liveObject);
 
         updateLiveObjectList();
-        updateLiveObjectMarkers();
+        registerLiveObjectMarkers();
     }
 }
