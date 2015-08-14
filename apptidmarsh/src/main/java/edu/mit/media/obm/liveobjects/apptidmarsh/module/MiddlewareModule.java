@@ -8,6 +8,8 @@ import dagger.Module;
 import dagger.Provides;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailFragment;
+import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsAdapter;
 import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainActivity;
@@ -37,8 +39,10 @@ import edu.mit.media.obm.liveobjects.storage.wifi.WifiStorageDriver;
         injects = {
                 MainActivity.class,
                 ProfileActivity.class,
+                SavedLiveObjectsActivity.class,
                 MainFragment.class,
                 SavedLiveObjectsFragment.class,
+                SavedLiveObjectsAdapter.class,
                 DetailActivity.class,
                 DetailFragment.class,
                 MediaViewActivity.class,
