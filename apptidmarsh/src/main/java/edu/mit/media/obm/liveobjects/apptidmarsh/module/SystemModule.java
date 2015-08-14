@@ -52,7 +52,7 @@ public class SystemModule {
     @Provides BeaconManager provideBeaconManager(Context context) {
         BeaconManager beaconManager = BeaconManager.getInstanceForApplication(context);
         BeaconParser beaconParser = new BeaconParser().setBeaconLayout(
-                "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
+                "m:2-3=0215,i:4-23,p:24-24");
         beaconManager.getBeaconParsers().add(beaconParser);
 
         return beaconManager;

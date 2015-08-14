@@ -310,18 +310,6 @@ public class MainFragment extends GroundOverlayMapFragment {
         }
     }
 
-    @Subscribe
-    public void addDetectedBluetoothDevice(InactiveLiveObjectDetectionEvent event) {
-        Log.v(LOG_TAG, "addDetectedBluetoothDevice()");
-        LiveObject liveObject = event.mLiveObject;
-        liveObject.setStatus(LiveObject.STATUS_SLEEPING);
-        liveObject.setConnectedBefore(isConnectedBefore(liveObject));
-        mSleepingLiveObjectList.add(liveObject);
-
-        updateLiveObjectList();
-        updateLiveObjectMarkers();
-    }
-
     private boolean isConnectedBefore(LiveObject liveObject) {
         Boolean found = false;
 
@@ -335,5 +323,17 @@ public class MainFragment extends GroundOverlayMapFragment {
         }
 
         return found;
+    }
+
+    @Subscribe
+    public void addDetectedBluetoothDevice(InactiveLiveObjectDetectionEvent event) {
+        Log.v(LOG_TAG, "addDetectedBluetoothDevice()");
+        LiveObject liveObject = event.mLiveObject;
+        liveObject.setStatus(LiveObject.STATUS_SLEEPING);
+        liveObject.setConnectedBefore(isConnectedBefore(liveObject));
+        mSleepingLiveObjectList.add(liveObject);
+
+        updateLiveObjectList();
+        updateLiveObjectMarkers();
     }
 }

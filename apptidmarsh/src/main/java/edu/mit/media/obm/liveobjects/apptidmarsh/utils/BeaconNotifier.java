@@ -3,13 +3,13 @@ package edu.mit.media.obm.liveobjects.apptidmarsh.utils;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Handler;
 import android.os.RemoteException;
 import android.util.Log;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
-import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 
@@ -19,7 +19,6 @@ import javax.inject.Inject;
 
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiLocationUtil;
-import edu.mit.media.obm.liveobjects.driver.wifi.WifiUtil;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 
 /**
@@ -52,8 +51,6 @@ public class BeaconNotifier extends LiveObjectNotifier implements BeaconConsumer
     public void onBeaconServiceConnect() {
         debug("onBeaconServiceConnect()");
         mBeaconManager.setRangeNotifier(new RangeNotifier() {
-            1
-
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> collection, Region region) {
                 debug("didRangeBeaconsInRegion()");
@@ -62,13 +59,23 @@ public class BeaconNotifier extends LiveObjectNotifier implements BeaconConsumer
                     debug(beacon.toString());
 
                     String beaconId = beacon.getId1().toString();
-                    beaconId = "liveobj-" + beaconId;
+                    beaconId = "liveobj-" + hexStringToString(beaconId.trim());
                     if (WifiLocationUtil.INSTANCE.isLiveObject(beaconId)) {
                         debug("detected live object: " + beaconId);
 
                         // ToDo; shouldn't use WiFiUtil directly
-                        LiveObject liveObject = WifiUtil.INSTANCE.convertDeviceIdToLiveObject(beaconId);
-                        mBus.post(new InactiveLiveObjectDetectionEvent(liveObject));
+                        LiveObject liveObject = WifiLocationUtil.INSTANCE.convertDeviceIdToLiveObject(beaconId);
+
+                        final InactiveLiveObjectDetectionEvent event =
+                                new InactiveLiveObjectDetectionEvent(liveObject);
+                        Handler handler = new Handler(mContext.getMainLooper());
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                debug("posting an event to the event bus");
+                                mBus.post(event);
+                            }
+                        });
                     }
                 }
             }
@@ -95,6 +102,21 @@ public class BeaconNotifier extends LiveObjectNotifier implements BeaconConsumer
     @Override
     public boolean bindService(Intent intent, ServiceConnection serviceConnection, int i) {
         return mContext.bindService(intent, serviceConnection, i);
+    }
+
+    private String hexStringToString(String hexString) {
+        if (hexString.startsWith("0x")) {
+            hexString = hexString.substring(2);
+        }
+
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < hexString.length(); i += 2) {
+            String hexChar = hexString.substring(i, i + 2);
+            char charValue = (char)Integer.parseInt(hexChar, 16);
+            builder.append(charValue);
+        }
+
+        return builder.toString();
     }
 
     private void debug(String message) {
