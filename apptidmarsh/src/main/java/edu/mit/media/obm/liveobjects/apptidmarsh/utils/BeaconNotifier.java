@@ -6,14 +6,21 @@ import android.content.ServiceConnection;
 import android.os.RemoteException;
 import android.util.Log;
 
+import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.MonitorNotifier;
+import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
+
+import java.util.Collection;
 
 import javax.inject.Inject;
 
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
+import edu.mit.media.obm.liveobjects.driver.wifi.WifiLocationUtil;
+import edu.mit.media.obm.liveobjects.driver.wifi.WifiUtil;
+import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 
 /**
  * Created by arata on 8/7/15.
@@ -44,29 +51,32 @@ public class BeaconNotifier extends LiveObjectNotifier implements BeaconConsumer
     @Override
     public void onBeaconServiceConnect() {
         debug("onBeaconServiceConnect()");
-        mBeaconManager.setMonitorNotifier(new MonitorNotifier() {
-            @Override
-            public void didEnterRegion(Region region) {
-                debug("didEnterRegion()");
-                debug(region.toString());
-            }
+        mBeaconManager.setRangeNotifier(new RangeNotifier() {
+            1
 
             @Override
-            public void didExitRegion(Region region) {
-                debug("didExitRegion()");
+            public void didRangeBeaconsInRegion(Collection<Beacon> collection, Region region) {
+                debug("didRangeBeaconsInRegion()");
                 debug(region.toString());
-            }
+                for (Beacon beacon : collection) {
+                    debug(beacon.toString());
 
-            @Override
-            public void didDetermineStateForRegion(int i, Region region) {
-                debug("didDetermineStateForRegion()");
-                debug(region.toString());
+                    String beaconId = beacon.getId1().toString();
+                    beaconId = "liveobj-" + beaconId;
+                    if (WifiLocationUtil.INSTANCE.isLiveObject(beaconId)) {
+                        debug("detected live object: " + beaconId);
+
+                        // ToDo; shouldn't use WiFiUtil directly
+                        LiveObject liveObject = WifiUtil.INSTANCE.convertDeviceIdToLiveObject(beaconId);
+                        mBus.post(new InactiveLiveObjectDetectionEvent(liveObject));
+                    }
+                }
             }
         });
 
         try {
             Region region = new Region("myMonitoringUniqueId", null, null, null);
-            mBeaconManager.startMonitoringBeaconsInRegion(region);
+            mBeaconManager.startRangingBeaconsInRegion(region);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
