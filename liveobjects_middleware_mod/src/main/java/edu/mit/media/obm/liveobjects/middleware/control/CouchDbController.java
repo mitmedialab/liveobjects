@@ -154,7 +154,8 @@ public class CouchDbController implements DbController{
 
         // detected, but never connected live objects have empty properties
         Map<String, Object> properties = getProperties(liveObjectId);
-        if (properties.size() == 0) {
+        if (properties.size() == 2) {
+            // contains only "_rev" and "_id" entries
             return true;
         }
 
