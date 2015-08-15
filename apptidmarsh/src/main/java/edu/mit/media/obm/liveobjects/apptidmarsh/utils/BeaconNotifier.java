@@ -1,5 +1,9 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.utils;
 
+import android.bluetooth.le.AdvertiseCallback;
+import android.bluetooth.le.AdvertiseData;
+import android.bluetooth.le.AdvertiseSettings;
+import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -30,6 +34,24 @@ public class BeaconNotifier extends LiveObjectNotifier implements BeaconConsumer
     @Inject Context mContext;
     @Inject BeaconManager mBeaconManager;
 
+    @Inject BluetoothLeAdvertiser mBluetoothLeAdvertiser;
+    @Inject AdvertiseData mAdvertiseData;
+    @Inject AdvertiseSettings mAdvertiseSettings;
+
+    AdvertiseCallback mAdvertiseCallback = new AdvertiseCallback() {
+        @Override
+        public void onStartSuccess(AdvertiseSettings settingsInEffect) {
+            Log.d(LOG_TAG, "onStartSuccess()");
+            Log.d(LOG_TAG, settingsInEffect.toString());
+        }
+
+        @Override
+        public void onStartFailure(int errorCode) {
+            Log.d(LOG_TAG, "onStartFailure()");
+            Log.d(LOG_TAG, Integer.toString(errorCode));
+        }
+    };
+
     public BeaconNotifier(Context appContext) {
         super(appContext);
 
@@ -40,11 +62,15 @@ public class BeaconNotifier extends LiveObjectNotifier implements BeaconConsumer
     public synchronized void wakeUp() {
         debug("wakeUp()");
         mBeaconManager.bind(this);
+
+        mBluetoothLeAdvertiser.startAdvertising(
+                mAdvertiseSettings, mAdvertiseData, mAdvertiseCallback);
     }
 
     @Override
     public synchronized void cancelWakeUp() {
         mBeaconManager.unbind(this);
+        mBluetoothLeAdvertiser.stopAdvertising(mAdvertiseCallback);
     }
 
     @Override
