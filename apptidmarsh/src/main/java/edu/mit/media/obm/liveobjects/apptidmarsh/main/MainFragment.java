@@ -228,7 +228,6 @@ public class MainFragment extends GroundOverlayMapFragment {
                 // when the selected live objected is connected
                 // start the corresponding detail activity
                 Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
-                detailIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 detailIntent.putExtra(EXTRA_ARGUMENTS, arguments);
                 startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
 
