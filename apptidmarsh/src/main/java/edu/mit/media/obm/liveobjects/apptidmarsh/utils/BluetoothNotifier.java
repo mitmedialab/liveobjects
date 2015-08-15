@@ -107,6 +107,8 @@ public class BluetoothNotifier extends LiveObjectNotifier {
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 debug("finished BLE discovery");
                 cancelWakeUp();
+
+                mBus.post(new FinishedDetectingInactiveLiveObjectEvent());
             }
         }
 

@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Camera;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -29,6 +30,8 @@ import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
+import edu.mit.media.obm.liveobjects.apptidmarsh.utils.CameraChangeEvent;
+import edu.mit.media.obm.liveobjects.apptidmarsh.utils.FinishedDetectingInactiveLiveObjectEvent;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.InactiveLiveObjectDetectionEvent;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
@@ -66,6 +69,9 @@ public class MainFragment extends GroundOverlayMapFragment {
     private ArrayList<LiveObject> mPreviouslyDetectedLiveObjectList = new ArrayList<>();
     private LiveObject mSelectedLiveObject;
     private Marker mClickedMarker;
+
+    private boolean isWifiDiscoveryProcessRunning = false;
+    private boolean isBluetoothDiscoveryProcessRunning = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -137,10 +143,8 @@ public class MainFragment extends GroundOverlayMapFragment {
         enableWifi();
 
         mNetworkController.start();
-        mNetworkController.startDiscovery();
 
-        mSleepingLiveObjectList.clear();
-        mLiveObjectNotifier.wakeUp();
+        startDiscovery();
     }
 
     @Override
@@ -206,6 +210,8 @@ public class MainFragment extends GroundOverlayMapFragment {
 
             updateLiveObjectList();
             registerLiveObjectMarkers();
+
+            isWifiDiscoveryProcessRunning = false;
         }
     }
 
@@ -347,5 +353,33 @@ public class MainFragment extends GroundOverlayMapFragment {
 
         updateLiveObjectList();
         registerLiveObjectMarkers();
+    }
+
+    @Subscribe
+    public void triggerLiveObjectScan(CameraChangeEvent event) {
+        Log.v(LOG_TAG, "triggerLiveObjectScan()");
+
+        startDiscovery();
+    }
+
+    @Subscribe
+    public void finalizeBluetoothDetectionProcess(FinishedDetectingInactiveLiveObjectEvent event) {
+        Log.v(LOG_TAG, "finalizeBluetoothDetectionProcess()");
+        isBluetoothDiscoveryProcessRunning = false;
+    }
+
+    private void startDiscovery() {
+        if (!isWifiDiscoveryProcessRunning) {
+            Log.v(LOG_TAG, "starting WiFi discovery");
+            mNetworkController.startDiscovery();
+            isWifiDiscoveryProcessRunning = true;
+        }
+
+        if (!isBluetoothDiscoveryProcessRunning) {
+            Log.v(LOG_TAG, "starting Bluetooth discovery");
+            mSleepingLiveObjectList.clear();
+            mLiveObjectNotifier.wakeUp();
+            isBluetoothDiscoveryProcessRunning = true;
+        }
     }
 }

@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.common.collect.Range;
+import com.squareup.otto.Bus;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,6 +46,7 @@ import butterknife.BindString;
 import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
+import edu.mit.media.obm.liveobjects.apptidmarsh.utils.CameraChangeEvent;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.Util;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
@@ -81,6 +83,8 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
     @Inject DbController mDbController;
     @Inject ContentController mContentController;
+    @Inject Bus mBus;
+
     @BindString(R.string.dir_contents) String DIR_CONTENTS;
     @BindDimen(R.dimen.map_marker_icon_size) int MAP_MARKER_ICON_SIZE;
     @BindDimen(R.dimen.map_marker_font_size) int MAP_MARKER_FONT_SIZE;
@@ -375,7 +379,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         return new LatLng(latitude, longitude);
     }
 
-    private static class CustomCameraChangeListener implements GoogleMap.OnCameraChangeListener {
+    private class CustomCameraChangeListener implements GoogleMap.OnCameraChangeListener {
         private GoogleMap mMap;
 
         private LatLng mSouthWestBound;
@@ -438,6 +442,8 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
             }
 
             Log.v(LOG_TAG, cameraPosition.toString());
+
+            mBus.post(new CameraChangeEvent());
         }
 
         <T extends Comparable<T>> T saturate(T value, Range<T> range) {
@@ -453,6 +459,5 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
             return saturatedValue;
         }
-
     }
 }
