@@ -161,6 +161,12 @@ public class WifiDriver implements NetworkDriver {
             protected Void doInBackground(String... params) {
                 Log.v(LOG_TAG, "deletes network configurations for all live objects");
                 final List<WifiConfiguration> configurations = mWifiManager.getConfiguredNetworks();
+
+                // configurations can be null when WiFi is disabled
+                if (configurations == null) {
+                    return null;
+                }
+
                 for (WifiConfiguration configuration: configurations) {
                     String ssid = WifiManagerWrapper.unQuoteString(configuration.SSID);
 
