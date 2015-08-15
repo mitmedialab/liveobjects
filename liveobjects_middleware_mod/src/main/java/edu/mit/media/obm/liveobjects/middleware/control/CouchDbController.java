@@ -147,9 +147,18 @@ public class CouchDbController implements DbController{
     @Override
     public boolean isLiveObjectEmpty(String liveObjectId) {
         Document liveObjDocument = mDatabase.getDocument(liveObjectId);
-        return liveObjDocument.getCurrentRevision() == null;
-        // TODO review
 
+        if (liveObjDocument.getCurrentRevision() == null) {
+            return true;
+        }
+
+        // detected, but never connected live objects have empty properties
+        Map<String, Object> properties = getProperties(liveObjectId);
+        if (properties.size() == 0) {
+            return true;
+        }
+
+        return false;
     }
 
 

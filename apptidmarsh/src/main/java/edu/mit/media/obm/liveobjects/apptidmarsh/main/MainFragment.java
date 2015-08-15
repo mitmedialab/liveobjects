@@ -20,6 +20,7 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ import javax.inject.Inject;
 
 import butterknife.BindString;
 import butterknife.ButterKnife;
+import dagger.ObjectGraph;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
@@ -206,6 +208,10 @@ public class MainFragment extends GroundOverlayMapFragment {
             for (LiveObject liveObject : liveObjectList) {
                 liveObject.setConnectedBefore(isConnectedBefore(liveObject));
                 mActiveLiveObjectList.add(liveObject);
+
+                // register all the detected live objects with empty properties
+                Map<String, Object> emptyProperties = new HashMap<>();
+                mDbController.putLiveObject(liveObject.getLiveObjectName(), emptyProperties);
             }
 
             updateLiveObjectList();
