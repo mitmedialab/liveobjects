@@ -217,10 +217,10 @@ public class WifiDriver implements NetworkDriver {
                     liveObjectList.add(liveObject);
                 }
             }
-            if (!liveObjectList.isEmpty()) {
-                // notifies the middleware about the presence of live-object devices
-                mNetworkListener.onNetworkDevicesAvailable(liveObjectList);
-            }
+
+            // notifies the middleware about the presence of live-object devices
+            // notifies even if no live-objects are discovered
+            mNetworkListener.onNetworkDevicesAvailable(liveObjectList);
         }
 
         private void handleWifiConnection(Intent intent) {
