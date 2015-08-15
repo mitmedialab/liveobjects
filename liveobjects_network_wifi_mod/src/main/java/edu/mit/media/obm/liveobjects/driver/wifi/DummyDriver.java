@@ -29,6 +29,10 @@ public class DummyDriver implements NetworkDriver {
     private final int MAX_LOCATION_Y;
     private final int MAX_MAP_ID;
 
+    List<LiveObject> mLiveObjectList = new ArrayList<>();
+
+    Random mRandom = new Random();
+
     public DummyDriver(Context context) {
         Resources resources = context.getResources();
         int locationXLength = resources.getInteger(R.integer.map_location_coordinate_x_length);
@@ -61,51 +65,22 @@ public class DummyDriver implements NetworkDriver {
 
     @Override
     synchronized public void startScan() {
-        final Timer timer = new Timer();
-        final TimerTask timerTask = new CustomTimerTask(timer);
+        String liveObjectName = String.format("DummyObject%02d", mLiveObjectList.size());
+        int locationX = mRandom.nextInt(MAX_LOCATION_X);
+        int locationY = mRandom.nextInt(MAX_LOCATION_Y);
+        int mapId = mRandom.nextInt(MAX_MAP_ID);
 
-        timer.scheduleAtFixedRate(timerTask, 10000, 10000);
-    }
+        MapLocation mapLocation = new MapLocation(locationX, locationY, mapId);
+        LiveObject liveObject = new LiveObject(liveObjectName, mapLocation);
+        mLiveObjectList.add(liveObject);
 
-    private class CustomTimerTask extends TimerTask {
-        private int mCount = 0;
-        private final int MAX_COUNT = 10;
-
-        Timer mTimer;
-
-        List<LiveObject> mLiveObjectList = new ArrayList<>();
-
-        Random mRandom = new Random();
-
-        public CustomTimerTask(Timer timer) {
-            mTimer = timer;
-        }
-
-        @Override
-        public void run() {
-            Log.i(LOG_TAG, "running dummy task: " + mCount);
-
-            String liveObjectName = String.format("DummyObject%02d", mCount);
-            int locationX = mRandom.nextInt(MAX_LOCATION_X);
-            int locationY = mRandom.nextInt(MAX_LOCATION_Y);
-            int mapId = mRandom.nextInt(MAX_MAP_ID);
-
-            MapLocation mapLocation = new MapLocation(locationX, locationY, mapId);
-            LiveObject liveObject = new LiveObject(liveObjectName, mapLocation);
-            mLiveObjectList.add(liveObject);
-
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mNetworkListener.onNetworkDevicesAvailable(mLiveObjectList);
-                }
-            });
-
-            if (++mCount >= MAX_COUNT) {
-                mTimer.cancel();
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                mNetworkListener.onNetworkDevicesAvailable(mLiveObjectList);
             }
-        }
+        });
     }
 
     @Override

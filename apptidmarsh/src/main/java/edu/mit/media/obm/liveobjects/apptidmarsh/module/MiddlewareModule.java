@@ -15,6 +15,7 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.MediaViewActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.profile.ProfileActivity;
+import edu.mit.media.obm.liveobjects.driver.wifi.DummyDriver;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiDriver;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObjectsMiddleware;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
@@ -54,7 +55,7 @@ public class MiddlewareModule {
 
     @Provides @Singleton
     MiddlewareInterface provideMiddlewareInterface(Context context) {
-        NetworkDriver networkDriver = new WifiDriver(context);
+        NetworkDriver networkDriver = new DummyDriver(context);
         NetworkController networkController = new NetworkBridge(networkDriver);
 
         LocalStorageDriver localStorageDriver = new FileLocalStorageDriver(context);

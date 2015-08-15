@@ -26,4 +26,7 @@ public class MapLocation {
         return mMapId;
     }
 
+    public String toString() {
+        return String.format("(%d, %d, %d)", mCoordinateX, mCoordinateY, mMapId);
+    }
 }

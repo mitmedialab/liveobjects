@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import dagger.ObjectGraph;
+import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
@@ -205,12 +206,20 @@ public class MainFragment extends GroundOverlayMapFragment {
         public void onLiveObjectsDiscovered(List<LiveObject> liveObjectList) {
             Log.d(LOG_TAG, "discovery successfully completed");
             mActiveLiveObjectList.clear();
+            Log.v(LOG_TAG, "-==");
             for (LiveObject liveObject : liveObjectList) {
+                Log.v(LOG_TAG, liveObject.getLiveObjectName() + ", " + liveObject.getMapLocation().toString());
                 liveObject.setConnectedBefore(isConnectedBefore(liveObject));
                 mActiveLiveObjectList.add(liveObject);
 
                 // register all the detected live objects with empty properties
                 Map<String, Object> emptyProperties = new HashMap<>();
+                // add map location to properties
+                MapLocation mapLocation = liveObject.getMapLocation();
+                emptyProperties.put(MLProjectContract.MAP_LOCATION_X, mapLocation.getCoordinateX());
+                emptyProperties.put(MLProjectContract.MAP_LOCATION_Y, mapLocation.getCoordinateY());
+                emptyProperties.put(MLProjectContract.MAP_ID, mapLocation.getMapId());
+                emptyProperties.put(MLProjectContract.IS_FAVORITE, false);
                 mDbController.putLiveObject(liveObject.getLiveObjectName(), emptyProperties);
             }
 
