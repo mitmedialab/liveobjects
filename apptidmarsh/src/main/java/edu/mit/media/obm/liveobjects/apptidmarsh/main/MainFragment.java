@@ -219,7 +219,7 @@ public class MainFragment extends GroundOverlayMapFragment {
                 emptyProperties.put(MLProjectContract.MAP_LOCATION_X, mapLocation.getCoordinateX());
                 emptyProperties.put(MLProjectContract.MAP_LOCATION_Y, mapLocation.getCoordinateY());
                 emptyProperties.put(MLProjectContract.MAP_ID, mapLocation.getMapId());
-                emptyProperties.put(MLProjectContract.IS_FAVORITE, false);
+                emptyProperties.put(MLProjectContract.IS_FAVORITE, MLProjectContract.IS_FAVORITE_FALSE);
                 mDbController.putLiveObject(liveObject.getLiveObjectName(), emptyProperties);
             }
 
