@@ -18,6 +18,7 @@ import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import butterknife.OnItemClick;
+import dagger.ObjectGraph;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
@@ -117,25 +118,29 @@ public class SavedLiveObjectsFragment extends Fragment {
 
     private void fillData() {
         List<Map<String, Object>> allLiveObjects = mDbController.getAllLiveObjectsProperties();
+        List<Map<String, Object>> nonEmptyLiveObjects = new ArrayList<>();
+        for (Map<String, Object> liveObjectProperties : allLiveObjects) {
+            MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
+            if (!mDbController.isLiveObjectEmpty(provider.getId())) {
+                nonEmptyLiveObjects.add(liveObjectProperties);
+            }
+        }
+
         mLiveObjectsPropertiesList = new ArrayList<>();
         if (mTabId == SavedLiveObjectsActivity.FAVOURITE_TAB_ID) {
 
-            for (Map<String, Object> liveObjectProperties : allLiveObjects) {
+            for (Map<String, Object> liveObjectProperties : nonEmptyLiveObjects) {
                 MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
                 if (provider.isFavorite()) {
                     mLiveObjectsPropertiesList.add(liveObjectProperties);
                 }
             }
         } else {
-            mLiveObjectsPropertiesList = allLiveObjects;
+            mLiveObjectsPropertiesList = nonEmptyLiveObjects;
         }
 
         mAdapter = new SavedLiveObjectsAdapter(getActivity(), mLiveObjectsPropertiesList);
 
         mListView.setAdapter(mAdapter);
-
-
     }
-
-
 }
