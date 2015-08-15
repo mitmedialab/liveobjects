@@ -1,9 +1,12 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.main;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -130,6 +133,8 @@ public class MainFragment extends GroundOverlayMapFragment {
         super.onStart();
 
         mBus.register(this);
+
+        enableWifi();
 
         mNetworkController.start();
         mNetworkController.startDiscovery();
@@ -323,6 +328,14 @@ public class MainFragment extends GroundOverlayMapFragment {
         }
 
         return found;
+    }
+
+    private void enableWifi() {
+        WifiManager wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
+        if (!wifiManager.isWifiEnabled()) {
+            wifiManager.setWifiEnabled(true);
+            Toast.makeText(getActivity(), "Turning on WiFi", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Subscribe

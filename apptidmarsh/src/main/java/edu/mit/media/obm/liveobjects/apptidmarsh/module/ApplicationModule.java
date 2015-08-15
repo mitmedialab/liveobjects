@@ -33,7 +33,7 @@ public class ApplicationModule {
 
     @Provides
     LiveObjectNotifier provideLiveObjectNotifier(Context context) {
-        return new BeaconNotifier(context);
+        return new BluetoothNotifier(context);
     }
 
     @Provides @Singleton Bus provideBus() {
