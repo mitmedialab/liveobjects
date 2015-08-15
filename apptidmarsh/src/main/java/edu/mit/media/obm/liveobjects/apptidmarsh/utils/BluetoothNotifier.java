@@ -101,7 +101,7 @@ public class BluetoothNotifier extends LiveObjectNotifier {
                     Toast.makeText(mContext, String.format("Awakening '%s'", deviceName), Toast.LENGTH_SHORT).show();
 
                     // ToDo; shouldn't use WiFiUtil directly
-                    LiveObject liveObject = WifiUtil.INSTANCE.convertDeviceIdToLiveObject(deviceName);
+                    LiveObject liveObject = WifiLocationUtil.INSTANCE.convertDeviceIdToLiveObject(deviceName);
                     mBus.post(new InactiveLiveObjectDetectionEvent(liveObject));
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
