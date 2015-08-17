@@ -10,7 +10,12 @@ import java.util.Map;
 public final class LiveObject {
     private final String mLiveObjectName;
     private final MapLocation mMapLocation;
-    private boolean mIsActive = true;
+    private int mStatus = STATUS_ACTIVE;
+    private boolean mConnectedBefore = false;
+
+    public static final int STATUS_ACTIVE = 1;
+    public static final int STATUS_SLEEPING = 2;
+    public static final int STATUS_OUT_OF_SITE = 3;
 
     /**
      * Creates a new network device with specified id
@@ -55,16 +60,25 @@ public final class LiveObject {
     }
 
     /**
-     * Get a boolean value which indicates if the network device is active or sleeping.
+     * Get the status of this live object
      *
-     * @return true if the network device is not sleeping
+     * @return status (STATUS_XXX)
      */
-    public boolean isActive() {
-        return mIsActive;
+    public int getStatus() {
+        return mStatus;
     }
 
-    public void setActive(boolean active) {
-        mIsActive = active;
+    public void setStatus(int status) {
+        mStatus = status;
+    }
+
+
+    public boolean getConnectedBefore() {
+        return mConnectedBefore;
+    }
+
+    public void setConnectedBefore(boolean connectedBefore) {
+        mConnectedBefore = connectedBefore;
     }
 
     @Override

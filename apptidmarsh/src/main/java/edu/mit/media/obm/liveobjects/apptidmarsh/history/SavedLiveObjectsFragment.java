@@ -18,10 +18,11 @@ import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import butterknife.OnItemClick;
-import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
+import dagger.ObjectGraph;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
+import edu.mit.media.obm.liveobjects.middleware.common.MapLocation;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.shair.liveobjects.R;
@@ -41,7 +42,11 @@ public class SavedLiveObjectsFragment extends Fragment {
 
     @Bind(R.id.saved_liveobjs_listview) ListView mListView;
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.arg_live_object_map_location_x) String EXTRA_LIVE_OBJ_MAP_LOCATION_X;
+    @BindString(R.string.arg_live_object_map_location_y) String EXTRA_LIVE_OBJ_MAP_LOCATION_Y;
+    @BindString(R.string.arg_live_object_map_id) String EXTRA_LIVE_OBJ_MAP_ID;
     @BindString(R.string.arg_connected_to_live_object) String EXTRA_CONNECTED_TO_LIVE_OBJ;
+    @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
 
     @Inject MiddlewareInterface mMiddleware;
     @Inject DbController mDbController;
@@ -51,10 +56,19 @@ public class SavedLiveObjectsFragment extends Fragment {
         MLProjectPropertyProvider provider =
                 new MLProjectPropertyProvider(mLiveObjectsPropertiesList.get(position));
         String liveObjNameId = provider.getId();
+        int liveObjMapLocationX = provider.getMapLocationX();
+        int liveObjMapLocationY = provider.getMapLocationY();
+        int liveObjMapId = provider.getMapId();
+
+        Bundle arguments = new Bundle();
+        arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, liveObjNameId);
+        arguments.putInt(EXTRA_LIVE_OBJ_MAP_LOCATION_X, liveObjMapLocationX);
+        arguments.putInt(EXTRA_LIVE_OBJ_MAP_LOCATION_Y, liveObjMapLocationY);
+        arguments.putInt(EXTRA_LIVE_OBJ_MAP_ID, liveObjMapId);
+        arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, false);
 
         Intent intent = new Intent(getActivity(), DetailActivity.class);
-        intent.putExtra(EXTRA_CONNECTED_TO_LIVE_OBJ, false);
-        intent.putExtra(EXTRA_LIVE_OBJ_NAME_ID, liveObjNameId);
+        intent.putExtra(EXTRA_ARGUMENTS, arguments);
         startActivity(intent);
     }
 
@@ -81,13 +95,9 @@ public class SavedLiveObjectsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        DependencyInjector.inject(this, getActivity());
-
         if (getArguments() != null) {
             mTabId = getArguments().getInt(ARG_TAB_ID);
         }
-        mMiddleware = ((LiveObjectsApplication) getActivity().getApplication()).getMiddleware();
-        mDbController = mMiddleware.getDbController();
     }
 
     @Override
@@ -95,7 +105,8 @@ public class SavedLiveObjectsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_saved_live_objects, container, false);
         ButterKnife.bind(this, rootView);
-
+        DependencyInjector.inject(this, getActivity());
+        
         return rootView;
     }
 
@@ -107,25 +118,29 @@ public class SavedLiveObjectsFragment extends Fragment {
 
     private void fillData() {
         List<Map<String, Object>> allLiveObjects = mDbController.getAllLiveObjectsProperties();
+        List<Map<String, Object>> nonEmptyLiveObjects = new ArrayList<>();
+        for (Map<String, Object> liveObjectProperties : allLiveObjects) {
+            MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
+            if (!mDbController.isLiveObjectEmpty(provider.getId())) {
+                nonEmptyLiveObjects.add(liveObjectProperties);
+            }
+        }
+
         mLiveObjectsPropertiesList = new ArrayList<>();
         if (mTabId == SavedLiveObjectsActivity.FAVOURITE_TAB_ID) {
 
-            for (Map<String, Object> liveObjectProperties : allLiveObjects) {
+            for (Map<String, Object> liveObjectProperties : nonEmptyLiveObjects) {
                 MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
                 if (provider.isFavorite()) {
                     mLiveObjectsPropertiesList.add(liveObjectProperties);
                 }
             }
         } else {
-            mLiveObjectsPropertiesList = allLiveObjects;
+            mLiveObjectsPropertiesList = nonEmptyLiveObjects;
         }
 
         mAdapter = new SavedLiveObjectsAdapter(getActivity(), mLiveObjectsPropertiesList);
 
         mListView.setAdapter(mAdapter);
-
-
     }
-
-
 }

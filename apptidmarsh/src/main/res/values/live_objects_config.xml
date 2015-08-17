@@ -6,5 +6,9 @@
     <string name="content_type_audio">audio</string>
     <string name="content_type_gallery">gallery</string>
 
-    <integer name="total_number_of_objects">10</integer>
+    <string name="ibeacon_notification_uuid">98447aa4-7679-4d30-bd33-4f54634bc907</string>
+    <integer name="ibeacon_notification_major">0</integer>
+    <integer name="ibeacon_notification_minor">0</integer>
+    <integer name="ibeacon_notification_txpower">0</integer>
+
 </resources>

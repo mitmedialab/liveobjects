@@ -161,6 +161,12 @@ public class WifiDriver implements NetworkDriver {
             protected Void doInBackground(String... params) {
                 Log.v(LOG_TAG, "deletes network configurations for all live objects");
                 final List<WifiConfiguration> configurations = mWifiManager.getConfiguredNetworks();
+
+                // configurations can be null when WiFi is disabled
+                if (configurations == null) {
+                    return null;
+                }
+
                 for (WifiConfiguration configuration: configurations) {
                     String ssid = WifiManagerWrapper.unQuoteString(configuration.SSID);
 
@@ -204,17 +210,17 @@ public class WifiDriver implements NetworkDriver {
 
                 if (mNetworkUtil.isLiveObject(deviceId)){
                     LiveObject liveObject = mNetworkUtil.convertDeviceIdToLiveObject(deviceId);
-                    liveObject.setActive(true);
+                    liveObject.setStatus(LiveObject.STATUS_ACTIVE);
 
                     //network device representing a live object found
                     // add it to the list
                     liveObjectList.add(liveObject);
                 }
             }
-            if (!liveObjectList.isEmpty()) {
-                // notifies the middleware about the presence of live-object devices
-                mNetworkListener.onNetworkDevicesAvailable(liveObjectList);
-            }
+
+            // notifies the middleware about the presence of live-object devices
+            // notifies even if no live-objects are discovered
+            mNetworkListener.onNetworkDevicesAvailable(liveObjectList);
         }
 
         private void handleWifiConnection(Intent intent) {

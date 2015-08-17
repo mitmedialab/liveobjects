@@ -24,7 +24,6 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.Util;
@@ -92,7 +91,7 @@ public class AnimationArrayAdapter extends ArrayAdapter<LiveObject> {
         setImage(holder.mImageView, liveObject);
 
         // make sleeping live objects transparent
-        float alpha = (liveObject.isActive() ? 1.0f : 0.5f);
+        float alpha = (liveObject.getStatus() == LiveObject.STATUS_ACTIVE ? 1.0f : 0.5f);
         holder.mImageView.setAlpha(alpha);
         holder.mTextView.setAlpha(alpha);
 

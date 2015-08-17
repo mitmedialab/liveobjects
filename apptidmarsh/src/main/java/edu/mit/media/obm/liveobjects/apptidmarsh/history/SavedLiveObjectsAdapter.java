@@ -15,10 +15,12 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.Util;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
@@ -35,18 +37,17 @@ public class SavedLiveObjectsAdapter extends ArrayAdapter<Map<String, Object>> {
     private final Context mContext;
     private final List<Map<String, Object>> mLiveObjectsPropertiesList;
 
-    private final ContentController mContentController;
+    @Inject ContentController mContentController;
 
     // TODO to incorporate in the json file
     private static final String IMAGE_FOLDER = "DCIM";
 
     public SavedLiveObjectsAdapter(Context context, List<Map<String, Object>> liveObjectsPropertiesList) {
         super(context, R.layout.saved_live_object_row, liveObjectsPropertiesList);
+        DependencyInjector.inject(this, context);
+
         mContext = context;
         mLiveObjectsPropertiesList = liveObjectsPropertiesList;
-
-        mContentController = ((LiveObjectsApplication) ((Activity) mContext).getApplication()).getMiddleware().getContentController();
-
     }
 
     @Override

@@ -156,7 +156,6 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
         else {
             imageView.setFillColor(mRandomColorGenerator.generateColor(liveObjectName));
         }
-
     }
 
     private void addLineBreakIfNecessary(final TextView textView) {

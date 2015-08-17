@@ -1,41 +1,28 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.media;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Map;
 
 import javax.inject.Inject;
 
 import butterknife.BindString;
-import butterknife.ButterKnife;
-import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
-import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
-import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.SingleFragmentActivity;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
-import edu.mit.media.obm.liveobjects.storage.wifi.WifiStorageConfig;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 
@@ -46,6 +33,8 @@ public class MediaViewActivity extends SingleFragmentActivity implements OnMedia
     private static final String LOG_TAG = MediaViewActivity.class.getSimpleName();
 
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.arg_file_url) String ARG_FILE_URL;
+    @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
     @BindString(R.string.state_live_object_name_id) String STATE_LIVE_OBJ_NAME_ID;
     @BindString(R.string.dir_contents) String MEDIA_DIRECTORY_NAME;
 
@@ -65,7 +54,8 @@ public class MediaViewActivity extends SingleFragmentActivity implements OnMedia
 
     @Override
     protected Fragment createFragment() {
-        mLiveObjNameId = getIntent().getStringExtra(EXTRA_LIVE_OBJ_NAME_ID);
+        Bundle arguments = getIntent().getBundleExtra(EXTRA_ARGUMENTS);
+        mLiveObjNameId = arguments.getString(EXTRA_LIVE_OBJ_NAME_ID);
         initContent(mLiveObjNameId);
         return createMediaFragment();
     }
@@ -95,28 +85,28 @@ public class MediaViewActivity extends SingleFragmentActivity implements OnMedia
 
     private Fragment createMediaFragment() {
         ContentId mediaContentId = new ContentId(mLiveObjNameId, MEDIA_DIRECTORY_NAME, mFileName);
-        String fileUrl;
-        try {
-            fileUrl = mContentController.getFileUrl(mediaContentId);
-        } catch (IOException e) {
-            Log.e(LOG_TAG, e.toString());
-            throw new IllegalStateException();
-        } catch (RemoteException e) {
-            Log.e(LOG_TAG, e.toString());
-            throw new IllegalStateException();
-        }
 
         Fragment fragment;
-        if (mContentType.equals(mContentTypeVideo)) {
-            fragment = VideoViewFragment.newInstance(this, fileUrl);
-        } else if (mContentType.equals(mContentTypeAudio)) {
-            fragment = VideoViewFragment.newInstance(this, fileUrl);
+        if (mContentType.equals(mContentTypeVideo) || mContentType.equals(mContentTypeAudio)) {
+            fragment = new VideoViewFragment();
         } else if (mContentType.equals(mContentTypeGallery)) {
             //TODO launch gallery
             throw new IllegalStateException("Unimplemented content type");
         } else {
             throw new IllegalStateException("invalid content type");
         }
+
+        String fileUrl;
+        try {
+            fileUrl = mContentController.getFileUrl(mediaContentId);
+        } catch (IOException | RemoteException e) {
+            Log.e(LOG_TAG, e.toString());
+            throw new IllegalStateException();
+        }
+
+        Bundle arguments = getIntent().getBundleExtra(EXTRA_ARGUMENTS);
+        arguments.putString(ARG_FILE_URL, fileUrl);
+        fragment.setArguments(arguments);
 
         return fragment;
     }

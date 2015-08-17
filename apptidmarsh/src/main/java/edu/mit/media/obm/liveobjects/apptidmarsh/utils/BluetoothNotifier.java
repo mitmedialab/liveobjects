@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import javax.inject.Inject;
 
-import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiLocationUtil;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiUtil;
@@ -102,12 +101,14 @@ public class BluetoothNotifier extends LiveObjectNotifier {
                     Toast.makeText(mContext, String.format("Awakening '%s'", deviceName), Toast.LENGTH_SHORT).show();
 
                     // ToDo; shouldn't use WiFiUtil directly
-                    LiveObject liveObject = WifiUtil.INSTANCE.convertDeviceIdToLiveObject(deviceName);
-                    mBus.post(new InactiveLiveObjectDetectionEvent(liveObject.getLiveObjectName()));
+                    LiveObject liveObject = WifiLocationUtil.INSTANCE.convertDeviceIdToLiveObject(deviceName);
+                    mBus.post(new InactiveLiveObjectDetectionEvent(liveObject));
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 debug("finished BLE discovery");
                 cancelWakeUp();
+
+                mBus.post(new FinishedDetectingInactiveLiveObjectEvent());
             }
         }
 

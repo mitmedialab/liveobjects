@@ -16,7 +16,6 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
-import edu.mit.media.obm.liveobjects.apptidmarsh.LiveObjectsApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.shair.liveobjects.R;
 
@@ -46,24 +45,6 @@ public class VideoViewFragment extends Fragment {
 
     public VideoViewFragment() {
         mPlayPosition = null;
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param fileUrl Parameter 1.
-     * @return A new instance of fragment VideoViewFragment.
-     */
-    public static VideoViewFragment newInstance(Activity activity, String fileUrl) {
-        VideoViewFragment fragment = new VideoViewFragment();
-        Bundle args = new Bundle();
-
-        String argFileUrl = activity.getString(R.string.arg_file_url);
-        args.putString(argFileUrl, fileUrl);
-
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override

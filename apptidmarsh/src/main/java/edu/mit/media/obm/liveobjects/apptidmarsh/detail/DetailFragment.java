@@ -3,7 +3,6 @@ package edu.mit.media.obm.liveobjects.apptidmarsh.detail;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -49,6 +48,7 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.utils.Util;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.ZoomInOutAnimation;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
+import edu.mit.media.obm.liveobjects.middleware.common.MapLocation;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.liveobjects.middleware.util.JSONUtil;
@@ -62,14 +62,19 @@ import edu.mit.media.obm.shair.liveobjects.R;
 public class DetailFragment extends Fragment {
 
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
-    //TODO make the directory name parametrizable
+    //TODO make the directory name parameterizable
     @BindString(R.string.arg_live_object_name_id) String ARG_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.arg_live_object_map_location_x) String ARG_LIVE_OBJ_MAP_LOCATION_X;
+    @BindString(R.string.arg_live_object_map_location_y) String ARG_LIVE_OBJ_MAP_LOCATION_Y;
+    @BindString(R.string.arg_live_object_map_id) String ARG_LIVE_OBJ_MAP_ID;
     @BindString(R.string.arg_connected_to_live_object) String ARG_CONNECTED_TO_LIVE_OBJ;
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
     @BindString(R.string.dir_contents) String DIRECTORY_NAME;
     @BindString(R.string.dir_comments) String COMMENT_DIRECTORY_NAME;
 
     private String mLiveObjectName;
+    private MapLocation mMapLocation;
 
     private View mRootView;
 
@@ -101,10 +106,14 @@ public class DetailFragment extends Fragment {
     void onClickIconView() {
         // wait asynchronous tasks finish before starting another activity
         cancelAsyncTasks();
+
+        Bundle arguments = new Bundle();
+        arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mLiveObjectName);
+
         // launch the media associated to the object
-        Intent viewIntent = new Intent(getActivity(), MediaViewActivity.class);
-        viewIntent.putExtra(EXTRA_LIVE_OBJ_NAME_ID, mLiveObjectName);
-        getActivity().startActivity(viewIntent);
+        Intent intent = new Intent(getActivity(), MediaViewActivity.class);
+        intent.putExtra(EXTRA_ARGUMENTS, arguments);
+        getActivity().startActivity(intent);
     }
 
     @OnClick(R.id.favorite_button)
@@ -134,27 +143,6 @@ public class DetailFragment extends Fragment {
         void onError(Exception exception);
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameter.
-     *
-     * @param liveObjectNameID the name_id of the live object obtained during discovery.
-     * @return A new instance of fragment DetailFragment
-     */
-    public static DetailFragment newInstance(Activity activity, String liveObjectNameID, boolean showAddComment) {
-        DetailFragment fragment = new DetailFragment();
-        Bundle args = new Bundle();
-
-        String argLiveObjectNameId = activity.getString(R.string.arg_live_object_name_id);
-        String argConnectedToLiveObject = activity.getString(R.string.arg_connected_to_live_object);
-
-        args.putString(argLiveObjectNameId, liveObjectNameID);
-        args.putBoolean(argConnectedToLiveObject, showAddComment);
-        fragment.setArguments(args);
-
-        return fragment;
-    }
-
     // Required empty constructor
     public DetailFragment() {
     }
@@ -170,6 +158,10 @@ public class DetailFragment extends Fragment {
         if (arguments != null) {
             mLiveObjectName = arguments.getString(ARG_LIVE_OBJ_NAME_ID);
             mConnectedToLiveObject = arguments.getBoolean(ARG_CONNECTED_TO_LIVE_OBJ);
+            mMapLocation = new MapLocation(
+                    arguments.getInt(ARG_LIVE_OBJ_MAP_LOCATION_X),
+                    arguments.getInt(ARG_LIVE_OBJ_MAP_LOCATION_Y),
+                    arguments.getInt(ARG_LIVE_OBJ_MAP_ID));
         }
 
         Map<String, Object> liveObjectProperties = getLiveObjectProperties(mLiveObjectName);
@@ -179,12 +171,14 @@ public class DetailFragment extends Fragment {
     }
 
     private Map<String, Object> getLiveObjectProperties(String liveObjectId) {
-        Map<String, Object> properties = null;
+        Map<String, Object> properties;
 
         if (mDbController.isLiveObjectEmpty(liveObjectId)) {
             // live object empty, fill it with properties
             properties = fetchProperties(liveObjectId);
-            storeProperties(liveObjectId, properties);
+
+            Log.d(LOG_TAG, "storing properties " + properties);
+            mDbController.putLiveObject(liveObjectId, properties);
         } else {
             properties = mDbController.getProperties(liveObjectId);
         }
@@ -201,7 +195,7 @@ public class DetailFragment extends Fragment {
                     protected JSONObject doInBackground(String... params) {
                         String configFileName = params[0];
 
-                        InputStream inputStream = null;
+                        InputStream inputStream;
                         try {
 
                             ContentId configFileContentId = new ContentId(liveObjectId, DIRECTORY_NAME, configFileName);
@@ -229,6 +223,11 @@ public class DetailFragment extends Fragment {
             // add the isFavorite property, which is not present in the remote live-object,
             // and initialize it to false
             properties.put(MLProjectContract.IS_FAVORITE, MLProjectContract.IS_FAVORITE_FALSE);
+
+            // add map location to properties
+            properties.put(MLProjectContract.MAP_LOCATION_X, mMapLocation.getCoordinateX());
+            properties.put(MLProjectContract.MAP_LOCATION_Y, mMapLocation.getCoordinateY());
+            properties.put(MLProjectContract.MAP_ID, mMapLocation.getMapId());
         } catch (Exception e) {
             mOnErrorListener.onError(e);
         }
@@ -236,12 +235,6 @@ public class DetailFragment extends Fragment {
         return properties;
 
     }
-
-    private void storeProperties(String liveObjectId, Map<String, Object> properties) {
-        Log.d(LOG_TAG, "storing properties " + properties);
-        mDbController.putLiveObject(liveObjectId, properties);
-    }
-
 
     private void setUIContent(Map<String, Object> liveObjectProperties) {
         Log.d(LOG_TAG, liveObjectProperties.toString());
@@ -298,7 +291,7 @@ public class DetailFragment extends Fragment {
         int isFavoriteInInt = isFavorite ? MLProjectContract.IS_FAVORITE_TRUE :
                 MLProjectContract.IS_FAVORITE_FALSE;
         Log.d(LOG_TAG, "update property is favorite to: " + isFavoriteInInt);
-        mDbController.putProperty(liveObjNameId, MLProjectContract.IS_FAVORITE, new Integer(isFavoriteInInt));
+        mDbController.putProperty(liveObjNameId, MLProjectContract.IS_FAVORITE, isFavoriteInInt);
         Log.d(LOG_TAG, "now favorite is: " + mDbController.getProperty(liveObjNameId, MLProjectContract.IS_FAVORITE));
     }
 
@@ -336,9 +329,7 @@ public class DetailFragment extends Fragment {
             }
         });
 
-        AlertDialog dialog = alert.create();
-
-        return dialog;
+        return alert.create();
     }
 
     private String makeComment(String text) {
@@ -347,15 +338,14 @@ public class DetailFragment extends Fragment {
         String company = "Organization: " + ProfilePreference.getString(pref, getActivity(), R.string.profile_company_key) + "\n";
         String email = "Email: " + ProfilePreference.getString(pref, getActivity(), R.string.profile_email_key) + "\n";
         String commentHeader = "Comment: \n";
-        String message = name + company + email + commentHeader + text;
-        return message;
+
+        return name + company + email + commentHeader + text;
     }
 
     private String generateCommentFileName() {
         Calendar rightNow = Calendar.getInstance();
-        String commentName = String.format("%1$td%1$tk%1$tM%1$tS.TXT", rightNow);
 
-        return commentName;
+        return String.format("%1$td%1$tk%1$tM%1$tS.TXT", rightNow);
     }
 
     private void setBackgroundImage(String imageFileName) {
@@ -367,8 +357,7 @@ public class DetailFragment extends Fragment {
                 ContentId imageContentId = new ContentId(mLiveObjectName, DIRECTORY_NAME, imageFileName);
 
                 try {
-                    InputStream imageInputStream = mContentController.getInputStreamContent(imageContentId);
-                    return imageInputStream;
+                    return mContentController.getInputStreamContent(imageContentId);
                 } catch (Exception e) {
                     e.printStackTrace();
                     mOnErrorListener.onError(e);

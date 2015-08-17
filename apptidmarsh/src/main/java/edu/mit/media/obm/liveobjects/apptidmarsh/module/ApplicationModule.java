@@ -1,6 +1,7 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.module;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.squareup.otto.Bus;
 
@@ -8,6 +9,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import edu.mit.media.obm.liveobjects.apptidmarsh.utils.BeaconNotifier;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.BluetoothNotifier;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
 
@@ -19,10 +21,13 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
         complete = false,
         includes = SystemModule.class,
         injects = {
-                BluetoothNotifier.class
+                BluetoothNotifier.class,
+                BeaconNotifier.class
         }
 )
 public class ApplicationModule {
+    private static Bus mBus = null;
+
     public ApplicationModule() {
     }
 
@@ -32,6 +37,13 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton Bus provideBus() {
-        return new Bus();
+        // @Singleton annotation guarantees that the returned object exists one-per-objectGraph,
+        // not one-per-application
+        if (mBus == null) {
+            Log.v("ApplicationModule", "create Bus");
+            mBus = new Bus();
+        }
+
+        return mBus;
     }
 }

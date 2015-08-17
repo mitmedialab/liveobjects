@@ -1,38 +1,40 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.main;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Camera;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.GroundOverlayOptions;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.common.eventbus.Subscribe;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import butterknife.BindString;
 import butterknife.ButterKnife;
+import dagger.ObjectGraph;
+import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
+import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
+import edu.mit.media.obm.liveobjects.apptidmarsh.utils.CameraChangeEvent;
+import edu.mit.media.obm.liveobjects.apptidmarsh.utils.FinishedDetectingInactiveLiveObjectEvent;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.InactiveLiveObjectDetectionEvent;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
@@ -56,15 +58,23 @@ public class MainFragment extends GroundOverlayMapFragment {
     @Inject Bus mBus;
 
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.arg_live_object_map_location_x) String EXTRA_LIVE_OBJ_MAP_LOCATION_X;
+    @BindString(R.string.arg_live_object_map_location_y) String EXTRA_LIVE_OBJ_MAP_LOCATION_Y;
+    @BindString(R.string.arg_live_object_map_id) String EXTRA_LIVE_OBJ_MAP_ID;
     @BindString(R.string.arg_connected_to_live_object) String EXTRA_CONNECTED_TO_LIVE_OBJ;
+    @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
 
     private ProgressDialog mConnectingDialog;
 
     private ArrayList<LiveObject> mLiveObjectList = new ArrayList<>();
     private ArrayList<LiveObject> mActiveLiveObjectList = new ArrayList<>();
     private ArrayList<LiveObject> mSleepingLiveObjectList = new ArrayList<>();
+    private ArrayList<LiveObject> mPreviouslyDetectedLiveObjectList = new ArrayList<>();
     private LiveObject mSelectedLiveObject;
     private Marker mClickedMarker;
+
+    private boolean isWifiDiscoveryProcessRunning = false;
+    private boolean isBluetoothDiscoveryProcessRunning = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -80,15 +90,6 @@ public class MainFragment extends GroundOverlayMapFragment {
     }
 
     private void setupUIElements() {
-        /*
-        mAdapter = new AnimationArrayAdapter(getActivity(), R.layout.list_item_live_objects,
-                mLiveObjectNamesList);
-        mLiveObjectsGridView.setAdapter(mAdapter);
-        mSwipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-        */
         mConnectingDialog = new ProgressDialog(getActivity());
         mConnectingDialog.setIndeterminate(true);
         mConnectingDialog.setCancelable(true);
@@ -101,7 +102,6 @@ public class MainFragment extends GroundOverlayMapFragment {
 
         setOnMarkerClickListener(new ConnectToLiveObjectListener());
     }
-
 
     private class ConnectToLiveObjectListener implements GoogleMap.OnMarkerClickListener {
         @Override
@@ -125,6 +125,9 @@ public class MainFragment extends GroundOverlayMapFragment {
             mConnectingDialog.setMessage("Connecting to " + mSelectedLiveObject.getLiveObjectName());
             mConnectingDialog.show();
 
+            // disable notification using Bluetooth for more stable connection to WiFi
+            mLiveObjectNotifier.cancelWakeUp();
+
             mNetworkController.connect(mSelectedLiveObject);
 
             mClickedMarker = marker;
@@ -140,13 +143,34 @@ public class MainFragment extends GroundOverlayMapFragment {
 
         mBus.register(this);
 
-
+        enableWifi();
 
         mNetworkController.start();
-        mNetworkController.startDiscovery();
 
-        mSleepingLiveObjectList.clear();
-        mLiveObjectNotifier.wakeUp();
+        startDiscovery();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        mPreviouslyDetectedLiveObjectList.clear();
+
+        List<Map<String, Object>> allLiveObjects = mDbController.getAllLiveObjectsProperties();
+        for (Map<String, Object> liveObjectProperties : allLiveObjects) {
+            MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
+            String liveObjectName = provider.getId();
+            MapLocation mapLocation = new MapLocation(
+                    provider.getMapLocationX(), provider.getMapLocationY(), provider.getMapId());
+            LiveObject liveObject = new LiveObject(liveObjectName, mapLocation);
+            liveObject.setStatus(LiveObject.STATUS_OUT_OF_SITE);
+            liveObject.setConnectedBefore(true);
+
+            mPreviouslyDetectedLiveObjectList.add(liveObject);
+        }
+
+        updateLiveObjectList();
+        registerLiveObjectMarkers();
     }
 
     @Override
@@ -182,15 +206,27 @@ public class MainFragment extends GroundOverlayMapFragment {
         public void onLiveObjectsDiscovered(List<LiveObject> liveObjectList) {
             Log.d(LOG_TAG, "discovery successfully completed");
             mActiveLiveObjectList.clear();
+            Log.v(LOG_TAG, "-==");
             for (LiveObject liveObject : liveObjectList) {
+                Log.v(LOG_TAG, liveObject.getLiveObjectName() + ", " + liveObject.getMapLocation().toString());
+                liveObject.setConnectedBefore(isConnectedBefore(liveObject));
                 mActiveLiveObjectList.add(liveObject);
+
+                // register all the detected live objects with empty properties
+                Map<String, Object> emptyProperties = new HashMap<>();
+                // add map location to properties
+                MapLocation mapLocation = liveObject.getMapLocation();
+                emptyProperties.put(MLProjectContract.MAP_LOCATION_X, mapLocation.getCoordinateX());
+                emptyProperties.put(MLProjectContract.MAP_LOCATION_Y, mapLocation.getCoordinateY());
+                emptyProperties.put(MLProjectContract.MAP_ID, mapLocation.getMapId());
+                emptyProperties.put(MLProjectContract.IS_FAVORITE, MLProjectContract.IS_FAVORITE_FALSE);
+                mDbController.putLiveObject(liveObject.getLiveObjectName(), emptyProperties);
             }
 
-            updateLiveObjectsList();
+            updateLiveObjectList();
+            registerLiveObjectMarkers();
 
-            for (LiveObject liveObject : mLiveObjectList) {
-                addLiveObjectMarker(liveObject);
-            }
+            isWifiDiscoveryProcessRunning = false;
         }
     }
 
@@ -201,20 +237,27 @@ public class MainFragment extends GroundOverlayMapFragment {
             if (connectedLiveObject.equals(mSelectedLiveObject)) {
                 mConnectingDialog.dismiss();
 
+
+                Bundle arguments = new Bundle();
+                MapLocation mapLocation = mSelectedLiveObject.getMapLocation();
+                arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
+                arguments.putInt(EXTRA_LIVE_OBJ_MAP_LOCATION_X, mapLocation.getCoordinateX());
+                arguments.putInt(EXTRA_LIVE_OBJ_MAP_LOCATION_Y, mapLocation.getCoordinateY());
+                arguments.putInt(EXTRA_LIVE_OBJ_MAP_ID, mapLocation.getMapId());
+                arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
+
                 // when the selected live objected is connected
                 // start the corresponding detail activity
                 Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
-                detailIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-
-                detailIntent.putExtra(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
-                detailIntent.putExtra(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
+                detailIntent.putExtra(EXTRA_ARGUMENTS, arguments);
                 startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
+
                 mSelectedLiveObject = null;
             }
         }
     }
 
-    private void updateLiveObjectsList() {
+    private void updateLiveObjectList() {
         mLiveObjectList.clear();
         mLiveObjectList.addAll(mActiveLiveObjectList);
 
@@ -234,6 +277,29 @@ public class MainFragment extends GroundOverlayMapFragment {
             if (!inActiveList) {
                 mLiveObjectList.add(liveObject);
             }
+        }
+
+        for (LiveObject liveObject : mPreviouslyDetectedLiveObjectList) {
+            boolean inActiveList = false;
+
+            for (LiveObject activeLiveObject : mActiveLiveObjectList) {
+                if (liveObject.getLiveObjectName().equals(activeLiveObject.getLiveObjectName())) {
+                    inActiveList = true;
+                    break;
+                }
+            }
+
+            if (!inActiveList) {
+                mLiveObjectList.add(liveObject);
+            }
+        }
+    }
+
+    private void registerLiveObjectMarkers() {
+        for (LiveObject liveObject : mLiveObjectList) {
+            boolean currentLocation = (liveObject.getStatus() != LiveObject.STATUS_OUT_OF_SITE);
+            boolean connectedBefore = liveObject.getConnectedBefore();
+            updateLiveObjectMarker(liveObject, currentLocation, connectedBefore);
         }
     }
 
@@ -269,13 +335,66 @@ public class MainFragment extends GroundOverlayMapFragment {
         }
     }
 
+    private boolean isConnectedBefore(LiveObject liveObject) {
+        Boolean found = false;
+
+        List<Map<String, Object>> allLiveObjects = mDbController.getAllLiveObjectsProperties();
+        for (Map<String, Object> liveObjectProperties : allLiveObjects) {
+            MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
+            String liveObjectName = provider.getId();
+            if (liveObject.getLiveObjectName().equals(liveObjectName)) {
+                found = true;
+            }
+        }
+
+        return found;
+    }
+
+    private void enableWifi() {
+        WifiManager wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
+        if (!wifiManager.isWifiEnabled()) {
+            wifiManager.setWifiEnabled(true);
+            Toast.makeText(getActivity(), "Turning on WiFi", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Subscribe
     public void addDetectedBluetoothDevice(InactiveLiveObjectDetectionEvent event) {
         Log.v(LOG_TAG, "addDetectedBluetoothDevice()");
-        LiveObject liveObject = new LiveObject(event.mDeviceName);
-        liveObject.setActive(false);
+        LiveObject liveObject = event.mLiveObject;
+        liveObject.setStatus(LiveObject.STATUS_SLEEPING);
+        liveObject.setConnectedBefore(isConnectedBefore(liveObject));
         mSleepingLiveObjectList.add(liveObject);
 
-        updateLiveObjectsList();
+        updateLiveObjectList();
+        registerLiveObjectMarkers();
+    }
+
+    @Subscribe
+    public void triggerLiveObjectScan(CameraChangeEvent event) {
+        Log.v(LOG_TAG, "triggerLiveObjectScan()");
+
+        startDiscovery();
+    }
+
+    @Subscribe
+    public void finalizeBluetoothDetectionProcess(FinishedDetectingInactiveLiveObjectEvent event) {
+        Log.v(LOG_TAG, "finalizeBluetoothDetectionProcess()");
+        isBluetoothDiscoveryProcessRunning = false;
+    }
+
+    private void startDiscovery() {
+        if (!isWifiDiscoveryProcessRunning) {
+            Log.v(LOG_TAG, "starting WiFi discovery");
+            mNetworkController.startDiscovery();
+            isWifiDiscoveryProcessRunning = true;
+        }
+
+        if (!isBluetoothDiscoveryProcessRunning) {
+            Log.v(LOG_TAG, "starting Bluetooth discovery");
+            mSleepingLiveObjectList.clear();
+            mLiveObjectNotifier.wakeUp();
+            isBluetoothDiscoveryProcessRunning = true;
+        }
     }
 }
