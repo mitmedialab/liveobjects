@@ -188,6 +188,8 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
             throws IOException, RemoteException {
         Bitmap iconBitmap;
 
+        boolean a = mDbController.isLiveObjectEmpty(liveObjectName);
+
         if (!mDbController.isLiveObjectEmpty(liveObjectName)) {
             iconBitmap = getLiveObjectIcon(liveObjectName);
             iconBitmap = Bitmap.createScaledBitmap(
@@ -195,8 +197,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
             BitmapEditor bitmapEditor = new BitmapEditor(getActivity());
             bitmapEditor.blurBitmap(iconBitmap, 2);
-        }
-        else {
+        } else {
             int color = mRandomColorGenerator.generateColor(liveObjectName);
             iconBitmap = Bitmap.createBitmap(
                     MAP_MARKER_ICON_SIZE, MAP_MARKER_ICON_SIZE, Bitmap.Config.ARGB_8888);
