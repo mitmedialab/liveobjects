@@ -336,18 +336,7 @@ public class MainFragment extends GroundOverlayMapFragment {
     }
 
     private boolean isConnectedBefore(LiveObject liveObject) {
-        Boolean found = false;
-
-        List<Map<String, Object>> allLiveObjects = mDbController.getAllLiveObjectsProperties();
-        for (Map<String, Object> liveObjectProperties : allLiveObjects) {
-            MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
-            String liveObjectName = provider.getId();
-            if (liveObject.getLiveObjectName().equals(liveObjectName)) {
-                found = true;
-            }
-        }
-
-        return found;
+        return !mDbController.isLiveObjectEmpty(liveObject.getLiveObjectName());
     }
 
     private void enableWifi() {
