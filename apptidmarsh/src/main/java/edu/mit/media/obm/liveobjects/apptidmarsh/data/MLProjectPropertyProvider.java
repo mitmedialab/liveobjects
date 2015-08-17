@@ -54,14 +54,17 @@ public class MLProjectPropertyProvider extends LiveObjectPropertyProvider {
     }
 
     public int getMapLocationX() {
-        return (int) getLiveObjectProperties().get(MLProjectContract.MAP_LOCATION_X);
+        Object propertyValue = getLiveObjectProperties().get(MLProjectContract.MAP_LOCATION_X);
+        return ((Integer) propertyValue).intValue();
     }
 
     public int getMapLocationY() {
-        return (int) getLiveObjectProperties().get(MLProjectContract.MAP_LOCATION_Y);
+        Object propertyValue = getLiveObjectProperties().get(MLProjectContract.MAP_LOCATION_Y);
+        return ((Integer) propertyValue).intValue();
     }
 
     public int getMapId() {
-        return (int) getLiveObjectProperties().get(MLProjectContract.MAP_ID);
+        Object propertyValue = getLiveObjectProperties().get(MLProjectContract.MAP_ID);
+        return ((Integer) propertyValue).intValue();
     }
 }
