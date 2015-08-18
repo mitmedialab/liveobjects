@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.common.collect.Range;
@@ -414,9 +415,23 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
         @Override
         public void onCameraChange(CameraPosition cameraPosition) {
+            LatLngBounds visibleLatLngBounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+            double visibleLatitudeHalfLength =
+                    (visibleLatLngBounds.northeast.latitude - visibleLatLngBounds.southwest.latitude) / 2.0;
+            double visibleLongitudeHalfLength =
+                    (visibleLatLngBounds.northeast.longitude - visibleLatLngBounds.southwest.longitude) / 2.0;
+            double boundLatitudeHalfLength = (mNorthEastBound.latitude - mSouthWestBound.latitude) / 2.0;
+            double boundLongitudeHalfLength = (mNorthEastBound.longitude - mSouthWestBound.longitude) / 2.0;
+            double boundLatitudeCompensation = Math.min(visibleLatitudeHalfLength, boundLatitudeHalfLength);
+            double boundLongitudeCompensation = Math.min(visibleLongitudeHalfLength, boundLongitudeHalfLength);
+
             Range<Float> zoomRange = Range.closed(mMinZoom, mMaxZoom);
-            Range<Double> latitudeRange = Range.closed(mSouthWestBound.latitude, mNorthEastBound.latitude);
-            Range<Double> longitudeRange = Range.closed(mSouthWestBound.longitude, mNorthEastBound.longitude);
+            Range<Double> latitudeRange = Range.closed(
+                    mSouthWestBound.latitude + boundLatitudeCompensation,
+                    mNorthEastBound.latitude - boundLatitudeCompensation);
+            Range<Double> longitudeRange = Range.closed(
+                    mSouthWestBound.longitude + boundLongitudeCompensation,
+                    mNorthEastBound.longitude - boundLongitudeCompensation);
             Range<Float> tiltRange = Range.closed(mMinTilt, mMaxTilt);
             Range<Float> bearingRange = Range.closed(mMinBearing, mMaxBearing);
 
