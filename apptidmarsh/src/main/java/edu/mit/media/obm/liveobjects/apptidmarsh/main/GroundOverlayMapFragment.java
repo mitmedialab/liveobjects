@@ -189,8 +189,6 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
             throws IOException, RemoteException {
         Bitmap iconBitmap;
 
-        boolean a = mDbController.isLiveObjectEmpty(liveObjectName);
-
         if (!mDbController.isLiveObjectEmpty(liveObjectName)) {
             iconBitmap = getLiveObjectIcon(liveObjectName);
             iconBitmap = Bitmap.createScaledBitmap(
@@ -425,7 +423,18 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
             double boundLatitudeCompensation = Math.min(visibleLatitudeHalfLength, boundLatitudeHalfLength);
             double boundLongitudeCompensation = Math.min(visibleLongitudeHalfLength, boundLongitudeHalfLength);
 
-            Range<Float> zoomRange = Range.closed(mMinZoom, mMaxZoom);
+            float zoomCompensation = mMinZoom;
+            float latitudeRatio = (float) boundLatitudeHalfLength / (float) visibleLatitudeHalfLength;
+            float longitudeRatio = (float) boundLongitudeHalfLength / (float) visibleLongitudeHalfLength;
+            if (latitudeRatio < 1.0 && latitudeRatio > longitudeRatio) {
+                Log.v(LOG_TAG, "lat" + Float.toString(latitudeRatio));
+                zoomCompensation = (float) (cameraPosition.zoom + Math.log(1.0 / latitudeRatio) / Math.log(2.0));
+            } else if (longitudeRatio < 1.0 && longitudeRatio > latitudeRatio) {
+                Log.v(LOG_TAG, "lng" + Float.toString(longitudeRatio));
+                zoomCompensation = (float) (cameraPosition.zoom + Math.log(1.0 / longitudeRatio) / Math.log(2.0));
+            }
+
+            Range<Float> zoomRange = Range.closed(zoomCompensation, mMaxZoom);
             Range<Double> latitudeRange = Range.closed(
                     mSouthWestBound.latitude + boundLatitudeCompensation,
                     mNorthEastBound.latitude - boundLatitudeCompensation);
