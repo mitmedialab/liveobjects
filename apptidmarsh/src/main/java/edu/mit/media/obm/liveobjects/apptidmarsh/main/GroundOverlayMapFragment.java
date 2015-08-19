@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.common.collect.Range;
@@ -195,8 +196,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
             BitmapEditor bitmapEditor = new BitmapEditor(getActivity());
             bitmapEditor.blurBitmap(iconBitmap, 2);
-        }
-        else {
+        } else {
             int color = mRandomColorGenerator.generateColor(liveObjectName);
             iconBitmap = Bitmap.createBitmap(
                     MAP_MARKER_ICON_SIZE, MAP_MARKER_ICON_SIZE, Bitmap.Config.ARGB_8888);
@@ -413,9 +413,34 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
         @Override
         public void onCameraChange(CameraPosition cameraPosition) {
-            Range<Float> zoomRange = Range.closed(mMinZoom, mMaxZoom);
-            Range<Double> latitudeRange = Range.closed(mSouthWestBound.latitude, mNorthEastBound.latitude);
-            Range<Double> longitudeRange = Range.closed(mSouthWestBound.longitude, mNorthEastBound.longitude);
+            LatLngBounds visibleLatLngBounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+            double visibleLatitudeHalfLength =
+                    (visibleLatLngBounds.northeast.latitude - visibleLatLngBounds.southwest.latitude) / 2.0;
+            double visibleLongitudeHalfLength =
+                    (visibleLatLngBounds.northeast.longitude - visibleLatLngBounds.southwest.longitude) / 2.0;
+            double boundLatitudeHalfLength = (mNorthEastBound.latitude - mSouthWestBound.latitude) / 2.0;
+            double boundLongitudeHalfLength = (mNorthEastBound.longitude - mSouthWestBound.longitude) / 2.0;
+            double boundLatitudeCompensation = Math.min(visibleLatitudeHalfLength, boundLatitudeHalfLength);
+            double boundLongitudeCompensation = Math.min(visibleLongitudeHalfLength, boundLongitudeHalfLength);
+
+            float zoomCompensation = mMinZoom;
+            float latitudeRatio = (float) boundLatitudeHalfLength / (float) visibleLatitudeHalfLength;
+            float longitudeRatio = (float) boundLongitudeHalfLength / (float) visibleLongitudeHalfLength;
+            if (latitudeRatio < 1.0 && latitudeRatio > longitudeRatio) {
+                Log.v(LOG_TAG, "lat" + Float.toString(latitudeRatio));
+                zoomCompensation = (float) (cameraPosition.zoom + Math.log(1.0 / latitudeRatio) / Math.log(2.0));
+            } else if (longitudeRatio < 1.0 && longitudeRatio > latitudeRatio) {
+                Log.v(LOG_TAG, "lng" + Float.toString(longitudeRatio));
+                zoomCompensation = (float) (cameraPosition.zoom + Math.log(1.0 / longitudeRatio) / Math.log(2.0));
+            }
+
+            Range<Float> zoomRange = Range.closed(zoomCompensation, mMaxZoom);
+            Range<Double> latitudeRange = Range.closed(
+                    mSouthWestBound.latitude + boundLatitudeCompensation,
+                    mNorthEastBound.latitude - boundLatitudeCompensation);
+            Range<Double> longitudeRange = Range.closed(
+                    mSouthWestBound.longitude + boundLongitudeCompensation,
+                    mNorthEastBound.longitude - boundLongitudeCompensation);
             Range<Float> tiltRange = Range.closed(mMinTilt, mMaxTilt);
             Range<Float> bearingRange = Range.closed(mMinBearing, mMaxBearing);
 

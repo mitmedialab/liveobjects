@@ -122,15 +122,32 @@ public class MainFragment extends GroundOverlayMapFragment {
                         "clicked live object was not found in the list of detected live objects");
             }
 
-            mConnectingDialog.setMessage("Connecting to " + mSelectedLiveObject.getLiveObjectName());
-            mConnectingDialog.show();
+            if (mSelectedLiveObject.getStatus() == LiveObject.STATUS_ACTIVE) {
+                mConnectingDialog.setMessage("Connecting to " + mSelectedLiveObject.getLiveObjectName());
+                mConnectingDialog.show();
 
-            // disable notification using Bluetooth for more stable connection to WiFi
-            mLiveObjectNotifier.cancelWakeUp();
+                // disable notification using Bluetooth for more stable connection to WiFi
+                mLiveObjectNotifier.cancelWakeUp();
 
-            mNetworkController.connect(mSelectedLiveObject);
+                mNetworkController.connect(mSelectedLiveObject);
 
-            mClickedMarker = marker;
+                mClickedMarker = marker;
+            } else if (mSelectedLiveObject.getConnectedBefore()) {
+                MapLocation mapLocation = mSelectedLiveObject.getMapLocation();
+
+                Bundle arguments = new Bundle();
+                arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
+                arguments.putInt(EXTRA_LIVE_OBJ_MAP_LOCATION_X, mapLocation.getCoordinateX());
+                arguments.putInt(EXTRA_LIVE_OBJ_MAP_LOCATION_Y, mapLocation.getCoordinateY());
+                arguments.putInt(EXTRA_LIVE_OBJ_MAP_ID, mapLocation.getMapId());
+                arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, false);
+
+                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                intent.putExtra(EXTRA_ARGUMENTS, arguments);
+                startActivity(intent);
+            } else {
+                // cannot connect to a live object which is neither active nor connected before
+            }
 
             return true;
         }
@@ -336,18 +353,7 @@ public class MainFragment extends GroundOverlayMapFragment {
     }
 
     private boolean isConnectedBefore(LiveObject liveObject) {
-        Boolean found = false;
-
-        List<Map<String, Object>> allLiveObjects = mDbController.getAllLiveObjectsProperties();
-        for (Map<String, Object> liveObjectProperties : allLiveObjects) {
-            MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
-            String liveObjectName = provider.getId();
-            if (liveObject.getLiveObjectName().equals(liveObjectName)) {
-                found = true;
-            }
-        }
-
-        return found;
+        return !mDbController.isLiveObjectEmpty(liveObject.getLiveObjectName());
     }
 
     private void enableWifi() {
