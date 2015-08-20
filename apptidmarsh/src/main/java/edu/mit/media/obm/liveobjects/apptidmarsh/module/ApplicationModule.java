@@ -9,7 +9,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import edu.mit.media.obm.liveobjects.apptidmarsh.utils.BeaconNotifier;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.BluetoothNotifier;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
 
@@ -21,8 +20,8 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
         complete = false,
         includes = SystemModule.class,
         injects = {
-                BluetoothNotifier.class,
-                BeaconNotifier.class
+                BluetoothNotifier.class
+
         }
 )
 public class ApplicationModule {
