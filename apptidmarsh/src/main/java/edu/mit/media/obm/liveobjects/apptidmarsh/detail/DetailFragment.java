@@ -64,9 +64,6 @@ public class DetailFragment extends Fragment {
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
     //TODO make the directory name parameterizable
     @BindString(R.string.arg_live_object_name_id) String ARG_LIVE_OBJ_NAME_ID;
-    @BindString(R.string.arg_live_object_map_location_x) String ARG_LIVE_OBJ_MAP_LOCATION_X;
-    @BindString(R.string.arg_live_object_map_location_y) String ARG_LIVE_OBJ_MAP_LOCATION_Y;
-    @BindString(R.string.arg_live_object_map_id) String ARG_LIVE_OBJ_MAP_ID;
     @BindString(R.string.arg_connected_to_live_object) String ARG_CONNECTED_TO_LIVE_OBJ;
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
     @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
@@ -74,7 +71,6 @@ public class DetailFragment extends Fragment {
     @BindString(R.string.dir_comments) String COMMENT_DIRECTORY_NAME;
 
     private String mLiveObjectName;
-    private MapLocation mMapLocation;
 
     private View mRootView;
 
@@ -158,10 +154,6 @@ public class DetailFragment extends Fragment {
         if (arguments != null) {
             mLiveObjectName = arguments.getString(ARG_LIVE_OBJ_NAME_ID);
             mConnectedToLiveObject = arguments.getBoolean(ARG_CONNECTED_TO_LIVE_OBJ);
-            mMapLocation = new MapLocation(
-                    arguments.getInt(ARG_LIVE_OBJ_MAP_LOCATION_X),
-                    arguments.getInt(ARG_LIVE_OBJ_MAP_LOCATION_Y),
-                    arguments.getInt(ARG_LIVE_OBJ_MAP_ID));
         }
 
         Map<String, Object> liveObjectProperties = getLiveObjectProperties(mLiveObjectName);
@@ -223,11 +215,6 @@ public class DetailFragment extends Fragment {
             // add the isFavorite property, which is not present in the remote live-object,
             // and initialize it to false
             properties.put(MLProjectContract.IS_FAVORITE, MLProjectContract.IS_FAVORITE_FALSE);
-
-            // add map location to properties
-            properties.put(MLProjectContract.MAP_LOCATION_X, mMapLocation.getCoordinateX());
-            properties.put(MLProjectContract.MAP_LOCATION_Y, mMapLocation.getCoordinateY());
-            properties.put(MLProjectContract.MAP_ID, mMapLocation.getMapId());
         } catch (Exception e) {
             mOnErrorListener.onError(e);
         }

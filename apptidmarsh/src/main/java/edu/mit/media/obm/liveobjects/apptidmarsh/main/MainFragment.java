@@ -246,13 +246,8 @@ public class MainFragment extends GroundOverlayMapFragment {
             if (connectedLiveObject.equals(mSelectedLiveObject)) {
                 mConnectingDialog.dismiss();
 
-
                 Bundle arguments = new Bundle();
-                MapLocation mapLocation = mSelectedLiveObject.getMapLocation();
                 arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
-                arguments.putInt(EXTRA_LIVE_OBJ_MAP_LOCATION_X, mapLocation.getCoordinateX());
-                arguments.putInt(EXTRA_LIVE_OBJ_MAP_LOCATION_Y, mapLocation.getCoordinateY());
-                arguments.putInt(EXTRA_LIVE_OBJ_MAP_ID, mapLocation.getMapId());
                 arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
 
                 // when the selected live objected is connected
