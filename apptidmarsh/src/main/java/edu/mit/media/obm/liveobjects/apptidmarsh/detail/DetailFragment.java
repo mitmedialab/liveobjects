@@ -67,6 +67,7 @@ public class DetailFragment extends Fragment {
     @BindString(R.string.arg_content_index) String ARG_CONTENT_INDEX;
     @BindString(R.string.arg_connected_to_live_object) String ARG_CONNECTED_TO_LIVE_OBJ;
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.arg_content_index) String EXTRA_CONTENT_INDEX;
     @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
     @BindString(R.string.dir_contents) String DIRECTORY_NAME;
     @BindString(R.string.dir_comments) String COMMENT_DIRECTORY_NAME;
@@ -104,6 +105,7 @@ public class DetailFragment extends Fragment {
 
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mLiveObjectName);
+        arguments.putInt(EXTRA_CONTENT_INDEX, mContentIndex);
 
         // launch the media associated to the object
         Intent intent = new Intent(getActivity(), MediaViewActivity.class);
