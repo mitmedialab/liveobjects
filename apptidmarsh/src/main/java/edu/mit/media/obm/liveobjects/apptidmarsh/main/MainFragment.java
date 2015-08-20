@@ -229,15 +229,7 @@ public class MainFragment extends GroundOverlayMapFragment {
                 liveObject.setConnectedBefore(isConnectedBefore(liveObject));
                 mActiveLiveObjectList.add(liveObject);
 
-                // register all the detected live objects with empty properties
-                Map<String, Object> emptyProperties = new HashMap<>();
-                // add map location to properties
-                MapLocation mapLocation = liveObject.getMapLocation();
-                emptyProperties.put(MLProjectContract.MAP_LOCATION_X, mapLocation.getCoordinateX());
-                emptyProperties.put(MLProjectContract.MAP_LOCATION_Y, mapLocation.getCoordinateY());
-                emptyProperties.put(MLProjectContract.MAP_ID, mapLocation.getMapId());
-                emptyProperties.put(MLProjectContract.IS_FAVORITE, MLProjectContract.IS_FAVORITE_FALSE);
-                mDbController.putLiveObject(liveObject.getLiveObjectName(), emptyProperties);
+                addLiveObjectToDb(liveObject);
             }
 
             updateLiveObjectList();
@@ -372,6 +364,8 @@ public class MainFragment extends GroundOverlayMapFragment {
         liveObject.setConnectedBefore(isConnectedBefore(liveObject));
         mSleepingLiveObjectList.add(liveObject);
 
+        addLiveObjectToDb(liveObject);
+
         updateLiveObjectList();
         registerLiveObjectMarkers();
     }
@@ -402,5 +396,17 @@ public class MainFragment extends GroundOverlayMapFragment {
             mLiveObjectNotifier.wakeUp();
             isBluetoothDiscoveryProcessRunning = true;
         }
+    }
+
+    private void addLiveObjectToDb(LiveObject liveObject) {
+        // register all the detected live objects with empty properties
+        Map<String, Object> emptyProperties = new HashMap<>();
+        // add map location to properties
+        MapLocation mapLocation = liveObject.getMapLocation();
+        emptyProperties.put(MLProjectContract.MAP_LOCATION_X, mapLocation.getCoordinateX());
+        emptyProperties.put(MLProjectContract.MAP_LOCATION_Y, mapLocation.getCoordinateY());
+        emptyProperties.put(MLProjectContract.MAP_ID, mapLocation.getMapId());
+        emptyProperties.put(MLProjectContract.IS_FAVORITE, MLProjectContract.IS_FAVORITE_FALSE);
+        mDbController.putLiveObject(liveObject.getLiveObjectName(), emptyProperties);
     }
 }
