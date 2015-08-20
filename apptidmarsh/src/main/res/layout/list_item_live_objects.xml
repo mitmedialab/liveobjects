@@ -11,8 +11,7 @@
         android:layout_centerInParent="true"
         app:border="true"
         app:shadow="true"
-        android:gravity="center"
-        android:src="@drawable/ic_launcher" />
+        android:gravity="center" />
 
     <TextView
         android:id="@+id/grid_item_title_textview"
@@ -28,6 +27,5 @@
         android:shadowColor="@color/theme_icon_text_shadow"
         android:shadowDx="1"
         android:shadowDy="1"
-        android:shadowRadius="4"
-        android:text="Colosseum" />
+        android:shadowRadius="4" />
 </RelativeLayout>
