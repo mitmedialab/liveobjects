@@ -41,6 +41,7 @@ public class WifiStorageDriver implements RemoteStorageDriver {
 
     @Override
     public void writeNewRawFileFromString(String filePath, String bodyString) {
+        filePath = encodeFilePath(filePath);
 
         String fileName = getFileNameFromPath(filePath);
         String folderName = getFolderNameFromPath(filePath);
@@ -175,27 +176,6 @@ public class WifiStorageDriver implements RemoteStorageDriver {
         return inputStream;
     }
 
-    public String encodeFilePath(String filePath) {
-        Pattern pattern = Pattern.compile("(.*/)(.*)");
-        Matcher matcher = pattern.matcher(filePath);
-
-        String pathName;
-        String fileName;
-
-        if (matcher.find()) {
-            pathName = matcher.group(1);
-            fileName = matcher.group(2);
-        } else {
-            pathName = "";
-            fileName = filePath;
-        }
-
-        String encodedFileName = URLEncoder.encode(fileName);
-        encodedFileName = encodedFileName.replace("+", "%20");
-
-        return pathName + encodedFileName;
-    }
-
     @Override
     public byte[] getByteArrayFromFile(String filePath) throws IOException, RemoteException {
         InputStream inputStream = getInputStreamFromFile(filePath);
@@ -323,5 +303,26 @@ public class WifiStorageDriver implements RemoteStorageDriver {
         }
 
         return fullPath;
+    }
+
+    private String encodeFilePath(String filePath) {
+        Pattern pattern = Pattern.compile("(.*/)(.*)");
+        Matcher matcher = pattern.matcher(filePath);
+
+        String pathName;
+        String fileName;
+
+        if (matcher.find()) {
+            pathName = matcher.group(1);
+            fileName = matcher.group(2);
+        } else {
+            pathName = "";
+            fileName = filePath;
+        }
+
+        String encodedFileName = URLEncoder.encode(fileName);
+        encodedFileName = encodedFileName.replace("+", "%20");
+
+        return pathName + encodedFileName;
     }
 }
