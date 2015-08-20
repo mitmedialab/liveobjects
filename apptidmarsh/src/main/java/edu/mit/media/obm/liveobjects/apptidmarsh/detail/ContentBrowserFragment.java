@@ -50,16 +50,10 @@ public class ContentBrowserFragment extends Fragment {
     @Inject ContentController mContentController;
     @Inject DbController mDbController;
 
-    List<Map<String, Object>> mContentPropertiesList;
-
     @OnItemClick(R.id.content_list_view)
     void onContentItemClick(int position) {
-        MLProjectPropertyProvider provider =
-                new MLProjectPropertyProvider(mContentPropertiesList.get(position));
-        String liveObjNameId = provider.getId();
-
         Bundle arguments = new Bundle();
-        arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, liveObjNameId);
+        arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mLiveObjectName);
         arguments.putInt(EXTRA_CONTENT_INDEX, position);
         arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
 
@@ -91,6 +85,7 @@ public class ContentBrowserFragment extends Fragment {
         }
 
         Map<String, Object> liveObjectProperties = fetchProperties(mLiveObjectName);
+        mDbController.putLiveObject(mLiveObjectName, liveObjectProperties);
         setUIContent(liveObjectProperties);
 
         return rootView;
@@ -141,9 +136,9 @@ public class ContentBrowserFragment extends Fragment {
     }
 
     private void setUIContent(Map<String, Object> liveObjectProperties) {
-        MLProjectPropertyProvider propertyProvider = new MLProjectPropertyProvider(liveObjectProperties);
+        MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
 
-        ListAdapter adapter = new ContentBrowserAdapter(getActivity(), propertyProvider);
+        ListAdapter adapter = new ContentBrowserAdapter(getActivity(), provider);
         mContentListView.setAdapter(adapter);
     }
 

@@ -17,9 +17,12 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import edu.mit.media.obm.liveobjects.middleware.storage.RemoteStorageDriver;
 
@@ -161,14 +164,36 @@ public class WifiStorageDriver implements RemoteStorageDriver {
     @Override
     public InputStream getInputStreamFromFile(String filePath) throws IOException, RemoteException {
         String basePath = WifiStorageConfig.getBasePath(mContext);
-        String path = basePath + filePath;
-        Log.v(getClass().getSimpleName(), "base_path = " + basePath + ", filePath = " + filePath);
+        String encodedFilePath = encodeFilePath(filePath);
+        String path = basePath + encodedFilePath;
+        Log.v(getClass().getSimpleName(), "base_path = " + basePath + ", filePath = " + encodedFilePath);
         Log.d(LOG_TAG, "PATH = " + path);
         URL url = new URL(path);
         URLConnection urlCon = url.openConnection();
         urlCon.connect();
         InputStream inputStream = urlCon.getInputStream();
         return inputStream;
+    }
+
+    public String encodeFilePath(String filePath) {
+        Pattern pattern = Pattern.compile("(.*/)(.*)");
+        Matcher matcher = pattern.matcher(filePath);
+
+        String pathName;
+        String fileName;
+
+        if (matcher.find()) {
+            pathName = matcher.group(1);
+            fileName = matcher.group(2);
+        } else {
+            pathName = "";
+            fileName = filePath;
+        }
+
+        String encodedFileName = URLEncoder.encode(fileName);
+        encodedFileName = encodedFileName.replace("+", "%20");
+
+        return pathName + encodedFileName;
     }
 
     @Override
