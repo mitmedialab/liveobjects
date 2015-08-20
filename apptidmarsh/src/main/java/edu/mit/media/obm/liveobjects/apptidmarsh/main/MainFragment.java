@@ -31,6 +31,7 @@ import butterknife.ButterKnife;
 import dagger.ObjectGraph;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
+import edu.mit.media.obm.liveobjects.apptidmarsh.detail.ContentBrowserActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.CameraChangeEvent;
@@ -51,7 +52,7 @@ import edu.mit.media.obm.shair.liveobjects.R;
 public class MainFragment extends GroundOverlayMapFragment {
     private static final String LOG_TAG = MainFragment.class.getSimpleName();
 
-    private static final int DETAIL_ACTIVITY_REQUEST_CODE = 1;
+    private static final int CONTENT_BROWSER_ACTIVITY_REQUEST_CODE = 1;
 
     @Inject NetworkController mNetworkController;
     @Inject LiveObjectNotifier mLiveObjectNotifier;
@@ -246,9 +247,9 @@ public class MainFragment extends GroundOverlayMapFragment {
 
                 // when the selected live objected is connected
                 // start the corresponding detail activity
-                Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
-                detailIntent.putExtra(EXTRA_ARGUMENTS, arguments);
-                startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
+                Intent intent = new Intent(getActivity(), ContentBrowserActivity.class);
+                intent.putExtra(EXTRA_ARGUMENTS, arguments);
+                startActivityForResult(intent, CONTENT_BROWSER_ACTIVITY_REQUEST_CODE);
 
                 mSelectedLiveObject = null;
             }
@@ -306,7 +307,7 @@ public class MainFragment extends GroundOverlayMapFragment {
         Log.v(LOG_TAG, String.format("onActivityResult(requestCode=%d)", requestCode));
         super.onActivityResult(requestCode, resultCode, intent);
 
-        if (requestCode == DETAIL_ACTIVITY_REQUEST_CODE) {
+        if (requestCode == CONTENT_BROWSER_ACTIVITY_REQUEST_CODE) {
             Log.v(LOG_TAG, "returned from DetailActivity");
             final String errorMessage;
 
