@@ -1,22 +1,30 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.detail;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import butterknife.Bind;
 import butterknife.BindString;
 import butterknife.ButterKnife;
+import butterknife.OnItemClick;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
+import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
@@ -32,9 +40,34 @@ public class ContentBrowserFragment extends Fragment {
     @BindString(R.string.dir_contents) String DIRECTORY_NAME;
     @BindString(R.string.arg_live_object_name_id) String ARG_LIVE_OBJ_NAME_ID;
     @BindString(R.string.arg_connected_to_live_object) String ARG_CONNECTED_TO_LIVE_OBJ;
+    @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.arg_connected_to_live_object) String EXTRA_CONNECTED_TO_LIVE_OBJ;
+    @BindString(R.string.arg_content_index) String EXTRA_CONTENT_INDEX;
+    @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
+
+    @Bind(R.id.content_list_view) ListView mContentListView;
 
     @Inject ContentController mContentController;
     @Inject DbController mDbController;
+
+    List<Map<String, Object>> mContentPropertiesList;
+
+    @OnItemClick(R.id.content_list_view)
+    void onContentItemClick(int position) {
+        MLProjectPropertyProvider provider =
+                new MLProjectPropertyProvider(mContentPropertiesList.get(position));
+        String liveObjNameId = provider.getId();
+
+        Bundle arguments = new Bundle();
+        arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, liveObjNameId);
+        arguments.putInt(EXTRA_CONTENT_INDEX, position);
+        arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
+
+        Intent intent = new Intent(getActivity(), DetailActivity.class);
+        intent.putExtra(EXTRA_ARGUMENTS, arguments);
+        startActivity(intent);
+    }
+
 
     String mLiveObjectName;
     boolean mConnectedToLiveObject;
@@ -108,7 +141,11 @@ public class ContentBrowserFragment extends Fragment {
     }
 
     private void setUIContent(Map<String, Object> liveObjectProperties) {
+        MLProjectPropertyProvider propertyProvider = new MLProjectPropertyProvider(liveObjectProperties);
+        mContentPropertiesList = propertyProvider.getContents();
 
+        ListAdapter adapter = new ContentBrowserAdapter(getActivity(), mContentPropertiesList);
+        mContentListView.setAdapter(adapter);
     }
 
     protected void cancelAsyncTasks() {

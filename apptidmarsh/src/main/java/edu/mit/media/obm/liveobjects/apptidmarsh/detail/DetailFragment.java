@@ -72,6 +72,7 @@ public class DetailFragment extends Fragment {
     @BindString(R.string.dir_comments) String COMMENT_DIRECTORY_NAME;
 
     private String mLiveObjectName;
+    private int mContentIndex;
 
     private View mRootView;
 
@@ -166,16 +167,16 @@ public class DetailFragment extends Fragment {
 
         MLProjectPropertyProvider propertyProvider = new MLProjectPropertyProvider(liveObjectProperties);
 
-        String title = propertyProvider.getProjectTitle();
-        String group = propertyProvider.getProjectGroup();
-        String description = propertyProvider.getProjectDescription();
-        String mediaFileName = propertyProvider.getMediaFileName();
+        String title = propertyProvider.getProjectTitle(mContentIndex);
+        String group = propertyProvider.getProjectGroup(mContentIndex);
+        String description = propertyProvider.getProjectDescription(mContentIndex);
+        String mediaFileName = propertyProvider.getMediaFileName(mContentIndex);
 
         mObjectTitleTextView.setText(title);
         mObjectGroupTextView.setText(group);
         mObjectDescriptionTextView.setText(description);
 
-        String imageFileName = propertyProvider.getIconFileName();
+        String imageFileName = propertyProvider.getIconFileName(mContentIndex);
         setBackgroundImage(imageFileName);
 
         mIsFavorite = setFavoriteButtonState(mFavoriteButtonLayout, propertyProvider);

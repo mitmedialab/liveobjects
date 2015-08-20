@@ -14,9 +14,12 @@ public class MLProjectPropertyProvider extends LiveObjectPropertyProvider {
         super(properties);
     }
 
+    public List<Map<String, Object>> getContents() {
+        return (List<Map<String, Object>>) getLiveObjectProperties().get(MLProjectContract.CONTENTS);
+    }
+
     public int getNumContents() {
-        List<Map<String, Object>> contents = (List<Map<String, Object>>) getLiveObjectProperties().get(MLProjectContract.CONTENTS);
-        return contents.size();
+        return getContents().size();
     }
 
     private Map<String, Object> config(int index) {
@@ -24,8 +27,7 @@ public class MLProjectPropertyProvider extends LiveObjectPropertyProvider {
             throw new ArrayIndexOutOfBoundsException();
         }
 
-        List<Map<String, Object>> contents = (List<Map<String, Object>>) getLiveObjectProperties().get(MLProjectContract.CONTENTS);
-        Map<String, Object> content = contents.get(index);
+        Map<String, Object> content = getContents().get(index);
 
         return (Map<String, Object>) content.get(MLProjectContract.CONFIG);
     }
