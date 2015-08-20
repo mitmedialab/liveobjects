@@ -58,9 +58,6 @@ public class MainFragment extends GroundOverlayMapFragment {
     @Inject Bus mBus;
 
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
-    @BindString(R.string.arg_live_object_map_location_x) String EXTRA_LIVE_OBJ_MAP_LOCATION_X;
-    @BindString(R.string.arg_live_object_map_location_y) String EXTRA_LIVE_OBJ_MAP_LOCATION_Y;
-    @BindString(R.string.arg_live_object_map_id) String EXTRA_LIVE_OBJ_MAP_ID;
     @BindString(R.string.arg_connected_to_live_object) String EXTRA_CONNECTED_TO_LIVE_OBJ;
     @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
 
@@ -137,9 +134,6 @@ public class MainFragment extends GroundOverlayMapFragment {
 
                 Bundle arguments = new Bundle();
                 arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
-                arguments.putInt(EXTRA_LIVE_OBJ_MAP_LOCATION_X, mapLocation.getCoordinateX());
-                arguments.putInt(EXTRA_LIVE_OBJ_MAP_LOCATION_Y, mapLocation.getCoordinateY());
-                arguments.putInt(EXTRA_LIVE_OBJ_MAP_ID, mapLocation.getMapId());
                 arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, false);
 
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
