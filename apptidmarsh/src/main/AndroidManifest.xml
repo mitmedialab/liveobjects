@@ -36,6 +36,9 @@
             android:name="edu.mit.media.obm.liveobjects.apptidmarsh.media.MediaViewActivity"
             android:label="Media"></activity>
         <activity
+            android:name="edu.mit.media.obm.liveobjects.apptidmarsh.detail.ContentBrowserActivity"
+            android:label="Content Browser"></activity>
+        <activity
             android:name="edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity"
             android:label="Detail"></activity>
         <activity

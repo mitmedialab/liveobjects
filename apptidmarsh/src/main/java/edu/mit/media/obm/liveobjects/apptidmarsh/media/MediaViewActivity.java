@@ -33,6 +33,7 @@ public class MediaViewActivity extends SingleFragmentActivity implements OnMedia
     private static final String LOG_TAG = MediaViewActivity.class.getSimpleName();
 
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.arg_content_index) String EXTRA_CONTENT_INDEX;
     @BindString(R.string.arg_file_url) String ARG_FILE_URL;
     @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
     @BindString(R.string.state_live_object_name_id) String STATE_LIVE_OBJ_NAME_ID;
@@ -56,7 +57,8 @@ public class MediaViewActivity extends SingleFragmentActivity implements OnMedia
     protected Fragment createFragment() {
         Bundle arguments = getIntent().getBundleExtra(EXTRA_ARGUMENTS);
         mLiveObjNameId = arguments.getString(EXTRA_LIVE_OBJ_NAME_ID);
-        initContent(mLiveObjNameId);
+        int contentIndex = arguments.getInt(EXTRA_CONTENT_INDEX);
+        initContent(mLiveObjNameId, contentIndex);
         return createMediaFragment();
     }
 
@@ -76,11 +78,11 @@ public class MediaViewActivity extends SingleFragmentActivity implements OnMedia
         }
     }
 
-    private void initContent(String liveObjectId) {
+    private void initContent(String liveObjectId, int contentIndex) {
         Map<String, Object> properties = mDbController.getProperties(liveObjectId);
         MLProjectPropertyProvider propertyProvider = new MLProjectPropertyProvider(properties);
-        mContentType = propertyProvider.getMediaType();
-        mFileName = propertyProvider.getMediaFileName();
+        mContentType = propertyProvider.getMediaType(contentIndex);
+        mFileName = propertyProvider.getMediaFileName(contentIndex);
     }
 
     private Fragment createMediaFragment() {

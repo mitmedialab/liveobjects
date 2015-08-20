@@ -98,8 +98,6 @@ public class BluetoothNotifier extends LiveObjectNotifier {
                     debug(String.format("trying to connect to BLE device '%s'", deviceName));
                     mBluetoothGatt = device.connectGatt(mContext, true, mGattCallback);
 
-                    Toast.makeText(mContext, String.format("Awakening '%s'", deviceName), Toast.LENGTH_SHORT).show();
-
                     // ToDo; shouldn't use WiFiUtil directly
                     LiveObject liveObject = WifiLocationUtil.INSTANCE.convertDeviceIdToLiveObject(deviceName);
                     mBus.post(new InactiveLiveObjectDetectionEvent(liveObject));

@@ -221,7 +221,10 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     private Bitmap getLiveObjectIcon(String liveObjectName) throws IOException, RemoteException {
         Map<String, Object> liveObjectProperties = mDbController.getProperties(liveObjectName);
         MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
-        String iconFileName = provider.getIconFileName();
+
+        // ToDo: use the icon of the first content for the moment
+        String iconFileName = provider.getIconFileName(0);
+
         ContentId iconContentId = new ContentId(liveObjectName, DIR_CONTENTS, iconFileName);
         InputStream imageInputStream = mContentController.getInputStreamContent(iconContentId);
 

@@ -64,17 +64,16 @@ public class DetailFragment extends Fragment {
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
     //TODO make the directory name parameterizable
     @BindString(R.string.arg_live_object_name_id) String ARG_LIVE_OBJ_NAME_ID;
-    @BindString(R.string.arg_live_object_map_location_x) String ARG_LIVE_OBJ_MAP_LOCATION_X;
-    @BindString(R.string.arg_live_object_map_location_y) String ARG_LIVE_OBJ_MAP_LOCATION_Y;
-    @BindString(R.string.arg_live_object_map_id) String ARG_LIVE_OBJ_MAP_ID;
+    @BindString(R.string.arg_content_index) String ARG_CONTENT_INDEX;
     @BindString(R.string.arg_connected_to_live_object) String ARG_CONNECTED_TO_LIVE_OBJ;
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.arg_content_index) String EXTRA_CONTENT_INDEX;
     @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
     @BindString(R.string.dir_contents) String DIRECTORY_NAME;
     @BindString(R.string.dir_comments) String COMMENT_DIRECTORY_NAME;
 
     private String mLiveObjectName;
-    private MapLocation mMapLocation;
+    private int mContentIndex;
 
     private View mRootView;
 
@@ -84,7 +83,6 @@ public class DetailFragment extends Fragment {
     private OnErrorListener mOnErrorListener = null;
 
     private AsyncTask<String, Void, InputStream> mSetBackgroundImageTask = null;
-    private AsyncTask<String, Void, JSONObject> mSetPropertiesTask = null;
 
     private AlertDialog mAddCommentAlert;
     private boolean mIsFavorite;
@@ -100,8 +98,6 @@ public class DetailFragment extends Fragment {
     @Bind(R.id.favorite_button) LinearLayout mFavoriteButtonLayout;
     @Bind(R.id.addCommentButton) LinearLayout mAddCommentLayout;
 
-    @BindString(R.string.media_config_filename) String mMediaConfigFileName;
-
     @OnClick(R.id.object_image_view)
     void onClickIconView() {
         // wait asynchronous tasks finish before starting another activity
@@ -109,6 +105,7 @@ public class DetailFragment extends Fragment {
 
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mLiveObjectName);
+        arguments.putInt(EXTRA_CONTENT_INDEX, mContentIndex);
 
         // launch the media associated to the object
         Intent intent = new Intent(getActivity(), MediaViewActivity.class);
@@ -157,83 +154,14 @@ public class DetailFragment extends Fragment {
         Bundle arguments = getArguments();
         if (arguments != null) {
             mLiveObjectName = arguments.getString(ARG_LIVE_OBJ_NAME_ID);
+            mContentIndex = arguments.getInt(ARG_CONTENT_INDEX);
             mConnectedToLiveObject = arguments.getBoolean(ARG_CONNECTED_TO_LIVE_OBJ);
-            mMapLocation = new MapLocation(
-                    arguments.getInt(ARG_LIVE_OBJ_MAP_LOCATION_X),
-                    arguments.getInt(ARG_LIVE_OBJ_MAP_LOCATION_Y),
-                    arguments.getInt(ARG_LIVE_OBJ_MAP_ID));
         }
 
-        Map<String, Object> liveObjectProperties = getLiveObjectProperties(mLiveObjectName);
+        Map<String, Object> liveObjectProperties = mDbController.getProperties(mLiveObjectName);
         setUIContent(liveObjectProperties);
 
         return mRootView;
-    }
-
-    private Map<String, Object> getLiveObjectProperties(String liveObjectId) {
-        Map<String, Object> properties;
-
-        if (mDbController.isLiveObjectEmpty(liveObjectId)) {
-            // live object empty, fill it with properties
-            properties = fetchProperties(liveObjectId);
-
-            Log.d(LOG_TAG, "storing properties " + properties);
-            mDbController.putLiveObject(liveObjectId, properties);
-        } else {
-            properties = mDbController.getProperties(liveObjectId);
-        }
-
-        return properties;
-    }
-
-    private Map<String, Object> fetchProperties(final String liveObjectId) {
-        String mediaConfigFileName = mMediaConfigFileName + ".jso";
-
-        mSetPropertiesTask =
-                new AsyncTask<String, Void, JSONObject>() {
-                    @Override
-                    protected JSONObject doInBackground(String... params) {
-                        String configFileName = params[0];
-
-                        InputStream inputStream;
-                        try {
-
-                            ContentId configFileContentId = new ContentId(liveObjectId, DIRECTORY_NAME, configFileName);
-                            // retrieve JSON Object
-                            inputStream = mContentController.getInputStreamContent(configFileContentId);
-
-                            JSONObject jsonConfig = JSONUtil.getJSONFromInputStream(inputStream);
-                            inputStream.close();
-                            return jsonConfig;
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            mOnErrorListener.onError(e);
-                        }
-                        return null;
-                    }
-                }.execute(mediaConfigFileName);
-
-
-        Map<String, Object> properties = null;
-        try {
-            JSONObject jsonProperties = mSetPropertiesTask.get();
-            properties = JSONUtil.jsonToMap(jsonProperties);
-
-            // add the isFavorite property, which is not present in the remote live-object,
-            // and initialize it to false
-            properties.put(MLProjectContract.IS_FAVORITE, MLProjectContract.IS_FAVORITE_FALSE);
-
-            // add map location to properties
-            properties.put(MLProjectContract.MAP_LOCATION_X, mMapLocation.getCoordinateX());
-            properties.put(MLProjectContract.MAP_LOCATION_Y, mMapLocation.getCoordinateY());
-            properties.put(MLProjectContract.MAP_ID, mMapLocation.getMapId());
-        } catch (Exception e) {
-            mOnErrorListener.onError(e);
-        }
-
-        return properties;
-
     }
 
     private void setUIContent(Map<String, Object> liveObjectProperties) {
@@ -241,16 +169,16 @@ public class DetailFragment extends Fragment {
 
         MLProjectPropertyProvider propertyProvider = new MLProjectPropertyProvider(liveObjectProperties);
 
-        String title = propertyProvider.getProjectTitle();
-        String group = propertyProvider.getProjectGroup();
-        String description = propertyProvider.getProjectDescription();
-        String mediaFileName = propertyProvider.getMediaFileName();
+        String title = propertyProvider.getProjectTitle(mContentIndex);
+        String group = propertyProvider.getProjectGroup(mContentIndex);
+        String description = propertyProvider.getProjectDescription(mContentIndex);
+        String mediaFileName = propertyProvider.getMediaFileName(mContentIndex);
 
         mObjectTitleTextView.setText(title);
         mObjectGroupTextView.setText(group);
         mObjectDescriptionTextView.setText(description);
 
-        String imageFileName = propertyProvider.getIconFileName();
+        String imageFileName = propertyProvider.getIconFileName(mContentIndex);
         setBackgroundImage(imageFileName);
 
         mIsFavorite = setFavoriteButtonState(mFavoriteButtonLayout, propertyProvider);
@@ -400,14 +328,9 @@ public class DetailFragment extends Fragment {
     }
 
     protected void cancelAsyncTasks() {
-
         if (mSetBackgroundImageTask != null) {
             mSetBackgroundImageTask.cancel(true);
         }
-        if (mSetPropertiesTask != null) {
-            mSetPropertiesTask.cancel(true);
-        }
-
     }
 
     @Override

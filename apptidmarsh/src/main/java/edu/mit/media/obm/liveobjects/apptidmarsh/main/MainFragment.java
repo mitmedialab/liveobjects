@@ -31,6 +31,7 @@ import butterknife.ButterKnife;
 import dagger.ObjectGraph;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
+import edu.mit.media.obm.liveobjects.apptidmarsh.detail.ContentBrowserActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.CameraChangeEvent;
@@ -51,16 +52,13 @@ import edu.mit.media.obm.shair.liveobjects.R;
 public class MainFragment extends GroundOverlayMapFragment {
     private static final String LOG_TAG = MainFragment.class.getSimpleName();
 
-    private static final int DETAIL_ACTIVITY_REQUEST_CODE = 1;
+    private static final int CONTENT_BROWSER_ACTIVITY_REQUEST_CODE = 1;
 
     @Inject NetworkController mNetworkController;
     @Inject LiveObjectNotifier mLiveObjectNotifier;
     @Inject Bus mBus;
 
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
-    @BindString(R.string.arg_live_object_map_location_x) String EXTRA_LIVE_OBJ_MAP_LOCATION_X;
-    @BindString(R.string.arg_live_object_map_location_y) String EXTRA_LIVE_OBJ_MAP_LOCATION_Y;
-    @BindString(R.string.arg_live_object_map_id) String EXTRA_LIVE_OBJ_MAP_ID;
     @BindString(R.string.arg_connected_to_live_object) String EXTRA_CONNECTED_TO_LIVE_OBJ;
     @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
 
@@ -137,9 +135,6 @@ public class MainFragment extends GroundOverlayMapFragment {
 
                 Bundle arguments = new Bundle();
                 arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
-                arguments.putInt(EXTRA_LIVE_OBJ_MAP_LOCATION_X, mapLocation.getCoordinateX());
-                arguments.putInt(EXTRA_LIVE_OBJ_MAP_LOCATION_Y, mapLocation.getCoordinateY());
-                arguments.putInt(EXTRA_LIVE_OBJ_MAP_ID, mapLocation.getMapId());
                 arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, false);
 
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
@@ -229,15 +224,7 @@ public class MainFragment extends GroundOverlayMapFragment {
                 liveObject.setConnectedBefore(isConnectedBefore(liveObject));
                 mActiveLiveObjectList.add(liveObject);
 
-                // register all the detected live objects with empty properties
-                Map<String, Object> emptyProperties = new HashMap<>();
-                // add map location to properties
-                MapLocation mapLocation = liveObject.getMapLocation();
-                emptyProperties.put(MLProjectContract.MAP_LOCATION_X, mapLocation.getCoordinateX());
-                emptyProperties.put(MLProjectContract.MAP_LOCATION_Y, mapLocation.getCoordinateY());
-                emptyProperties.put(MLProjectContract.MAP_ID, mapLocation.getMapId());
-                emptyProperties.put(MLProjectContract.IS_FAVORITE, MLProjectContract.IS_FAVORITE_FALSE);
-                mDbController.putLiveObject(liveObject.getLiveObjectName(), emptyProperties);
+                addLiveObjectToDb(liveObject);
             }
 
             updateLiveObjectList();
@@ -254,20 +241,15 @@ public class MainFragment extends GroundOverlayMapFragment {
             if (connectedLiveObject.equals(mSelectedLiveObject)) {
                 mConnectingDialog.dismiss();
 
-
                 Bundle arguments = new Bundle();
-                MapLocation mapLocation = mSelectedLiveObject.getMapLocation();
                 arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
-                arguments.putInt(EXTRA_LIVE_OBJ_MAP_LOCATION_X, mapLocation.getCoordinateX());
-                arguments.putInt(EXTRA_LIVE_OBJ_MAP_LOCATION_Y, mapLocation.getCoordinateY());
-                arguments.putInt(EXTRA_LIVE_OBJ_MAP_ID, mapLocation.getMapId());
                 arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
 
                 // when the selected live objected is connected
                 // start the corresponding detail activity
-                Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
-                detailIntent.putExtra(EXTRA_ARGUMENTS, arguments);
-                startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
+                Intent intent = new Intent(getActivity(), ContentBrowserActivity.class);
+                intent.putExtra(EXTRA_ARGUMENTS, arguments);
+                startActivityForResult(intent, CONTENT_BROWSER_ACTIVITY_REQUEST_CODE);
 
                 mSelectedLiveObject = null;
             }
@@ -325,7 +307,7 @@ public class MainFragment extends GroundOverlayMapFragment {
         Log.v(LOG_TAG, String.format("onActivityResult(requestCode=%d)", requestCode));
         super.onActivityResult(requestCode, resultCode, intent);
 
-        if (requestCode == DETAIL_ACTIVITY_REQUEST_CODE) {
+        if (requestCode == CONTENT_BROWSER_ACTIVITY_REQUEST_CODE) {
             Log.v(LOG_TAG, "returned from DetailActivity");
             final String errorMessage;
 
@@ -372,6 +354,8 @@ public class MainFragment extends GroundOverlayMapFragment {
         liveObject.setConnectedBefore(isConnectedBefore(liveObject));
         mSleepingLiveObjectList.add(liveObject);
 
+        addLiveObjectToDb(liveObject);
+
         updateLiveObjectList();
         registerLiveObjectMarkers();
     }
@@ -402,5 +386,17 @@ public class MainFragment extends GroundOverlayMapFragment {
             mLiveObjectNotifier.wakeUp();
             isBluetoothDiscoveryProcessRunning = true;
         }
+    }
+
+    private void addLiveObjectToDb(LiveObject liveObject) {
+        // register all the detected live objects with empty properties
+        Map<String, Object> emptyProperties = new HashMap<>();
+        // add map location to properties
+        MapLocation mapLocation = liveObject.getMapLocation();
+        emptyProperties.put(MLProjectContract.MAP_LOCATION_X, mapLocation.getCoordinateX());
+        emptyProperties.put(MLProjectContract.MAP_LOCATION_Y, mapLocation.getCoordinateY());
+        emptyProperties.put(MLProjectContract.MAP_ID, mapLocation.getMapId());
+        emptyProperties.put(MLProjectContract.IS_FAVORITE, MLProjectContract.IS_FAVORITE_FALSE);
+        mDbController.putLiveObject(liveObject.getLiveObjectName(), emptyProperties);
     }
 }
