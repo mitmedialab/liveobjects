@@ -8,6 +8,7 @@ import edu.mit.media.obm.liveobjects.middleware.control.LiveObjectContract;
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public class MLProjectContract implements LiveObjectContract {
+    public static final String CONTENTS = "contents";
 
     public static final String CONFIG = "media-config";
 

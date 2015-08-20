@@ -56,8 +56,9 @@ public class SavedLiveObjectsAdapter extends ArrayAdapter<Map<String, Object>> {
         Map<String, Object> liveObjectProperties = mLiveObjectsPropertiesList.get(position);
         MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
 
-        String iconFileName = provider.getIconFileName();
-        String title = provider.getProjectTitle();
+        // ToDo: set correct index
+        String iconFileName = provider.getIconFileName(0);
+        String title = provider.getProjectTitle(0);
         String liveObjectId = provider.getId();
 
         final ContentId iconContentId = new ContentId(liveObjectId, IMAGE_FOLDER, iconFileName);

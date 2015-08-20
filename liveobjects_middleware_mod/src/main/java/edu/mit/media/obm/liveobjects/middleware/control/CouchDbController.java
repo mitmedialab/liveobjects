@@ -61,7 +61,6 @@ public class CouchDbController implements DbController{
 
     @Override
     public Map<String, Object> getProperties(String liveObjectId) {
-
         Document liveObjDocument = mDatabase.getDocument(liveObjectId);
         return liveObjDocument.getProperties();
     }

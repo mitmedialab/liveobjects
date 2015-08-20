@@ -42,13 +42,9 @@ public class SavedLiveObjectsFragment extends Fragment {
 
     @Bind(R.id.saved_liveobjs_listview) ListView mListView;
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
-    @BindString(R.string.arg_live_object_map_location_x) String EXTRA_LIVE_OBJ_MAP_LOCATION_X;
-    @BindString(R.string.arg_live_object_map_location_y) String EXTRA_LIVE_OBJ_MAP_LOCATION_Y;
-    @BindString(R.string.arg_live_object_map_id) String EXTRA_LIVE_OBJ_MAP_ID;
     @BindString(R.string.arg_connected_to_live_object) String EXTRA_CONNECTED_TO_LIVE_OBJ;
     @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
 
-    @Inject MiddlewareInterface mMiddleware;
     @Inject DbController mDbController;
 
     @OnItemClick(R.id.saved_liveobjs_listview)
@@ -56,15 +52,9 @@ public class SavedLiveObjectsFragment extends Fragment {
         MLProjectPropertyProvider provider =
                 new MLProjectPropertyProvider(mLiveObjectsPropertiesList.get(position));
         String liveObjNameId = provider.getId();
-        int liveObjMapLocationX = provider.getMapLocationX();
-        int liveObjMapLocationY = provider.getMapLocationY();
-        int liveObjMapId = provider.getMapId();
 
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, liveObjNameId);
-        arguments.putInt(EXTRA_LIVE_OBJ_MAP_LOCATION_X, liveObjMapLocationX);
-        arguments.putInt(EXTRA_LIVE_OBJ_MAP_LOCATION_Y, liveObjMapLocationY);
-        arguments.putInt(EXTRA_LIVE_OBJ_MAP_ID, liveObjMapId);
         arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, false);
 
         Intent intent = new Intent(getActivity(), DetailActivity.class);

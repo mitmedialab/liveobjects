@@ -32,9 +32,7 @@
     <string name="dir_contents">DCIM</string>
     <string name="dir_comments">COMMENTS</string>
     <string name="arg_live_object_name_id">live_obj_name_id</string>
-    <string name="arg_live_object_map_location_x">map_location_x</string>
-    <string name="arg_live_object_map_location_y">map_location_y</string>
-    <string name="arg_live_object_map_id">map_id</string>
+    <string name="arg_content_index">content_index</string>
     <string name="arg_connected_to_live_object">connected_to_live_obj</string>
     <string name="arg_file_url">fileurl</string>
     <string name="extra_arguments">extra_arguments</string>

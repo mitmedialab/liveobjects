@@ -22,7 +22,6 @@ import dagger.Provides;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.VideoViewFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.BleUtil;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.BluetoothNotifier;
-import edu.mit.media.obm.liveobjects.apptidmarsh.widget.AnimationArrayAdapter;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
@@ -33,7 +32,6 @@ import edu.mit.media.obm.shair.liveobjects.R;
         complete = false,
         injects = {
                 VideoViewFragment.class,
-                AnimationArrayAdapter.class,
                 BluetoothNotifier.class
         }
 )
