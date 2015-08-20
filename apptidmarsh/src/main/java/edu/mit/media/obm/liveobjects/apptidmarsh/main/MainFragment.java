@@ -174,9 +174,11 @@ public class MainFragment extends GroundOverlayMapFragment {
             String liveObjectName = provider.getId();
             MapLocation mapLocation = new MapLocation(
                     provider.getMapLocationX(), provider.getMapLocationY(), provider.getMapId());
+            boolean isEmpty = mDbController.isLiveObjectEmpty(liveObjectName);
+
             LiveObject liveObject = new LiveObject(liveObjectName, mapLocation);
             liveObject.setStatus(LiveObject.STATUS_OUT_OF_SITE);
-            liveObject.setConnectedBefore(true);
+            liveObject.setConnectedBefore(!isEmpty);
 
             mPreviouslyDetectedLiveObjectList.add(liveObject);
         }
