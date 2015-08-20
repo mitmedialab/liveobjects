@@ -7,6 +7,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.ContentBrowserActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.detail.ContentBrowserAdapter;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.ContentBrowserFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailFragment;
@@ -48,6 +49,7 @@ import edu.mit.media.obm.liveobjects.storage.wifi.WifiStorageDriver;
                 SavedLiveObjectsAdapter.class,
                 ContentBrowserActivity.class,
                 ContentBrowserFragment.class,
+                ContentBrowserAdapter.class,
                 DetailActivity.class,
                 DetailFragment.class,
                 MediaViewActivity.class,

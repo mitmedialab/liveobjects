@@ -26,23 +26,19 @@ public class ContentBrowserAdapter extends ArrayAdapter<Map<String, Object>> {
     private static final String LOG_TAG = ContentBrowserAdapter.class.getSimpleName();
 
     private final Context mContext;
-    private final List<Map<String, Object>> mContentPropertiesList;
+    private final MLProjectPropertyProvider mPropertyProvider;
 
-    public ContentBrowserAdapter(Context context, List<Map<String, Object>> contentPropertiesList) {
-        super(context, R.layout.saved_live_object_row, contentPropertiesList);
+    public ContentBrowserAdapter(Context context, MLProjectPropertyProvider propertyProvider) {
+        super(context, R.layout.saved_live_object_row, propertyProvider.getContents());
         DependencyInjector.inject(this, context);
 
+        mPropertyProvider = propertyProvider;
         mContext = context;
-        mContentPropertiesList = contentPropertiesList;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
-        Map<String, Object> liveObjectProperties = mContentPropertiesList.get(position);
-        MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
-
-        String title = provider.getProjectTitle(position);
+        String title = mPropertyProvider.getProjectTitle(position);
 
         ViewHolder holder;
         if (convertView != null) {
@@ -70,6 +66,6 @@ public class ContentBrowserAdapter extends ArrayAdapter<Map<String, Object>> {
 
     @Override
     public int getCount() {
-        return mContentPropertiesList.size();
+        return mPropertyProvider.getContents().size();
     }
 }

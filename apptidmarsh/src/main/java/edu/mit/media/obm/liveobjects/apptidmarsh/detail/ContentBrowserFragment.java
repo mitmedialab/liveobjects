@@ -79,7 +79,7 @@ public class ContentBrowserFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_content_browser, container, false);
 
         ButterKnife.bind(this, rootView);
         DependencyInjector.inject(this, getActivity());
@@ -142,9 +142,8 @@ public class ContentBrowserFragment extends Fragment {
 
     private void setUIContent(Map<String, Object> liveObjectProperties) {
         MLProjectPropertyProvider propertyProvider = new MLProjectPropertyProvider(liveObjectProperties);
-        mContentPropertiesList = propertyProvider.getContents();
 
-        ListAdapter adapter = new ContentBrowserAdapter(getActivity(), mContentPropertiesList);
+        ListAdapter adapter = new ContentBrowserAdapter(getActivity(), propertyProvider);
         mContentListView.setAdapter(adapter);
     }
 
