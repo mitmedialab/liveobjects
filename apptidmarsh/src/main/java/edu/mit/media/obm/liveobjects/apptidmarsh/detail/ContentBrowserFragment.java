@@ -1,19 +1,24 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.detail;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +31,8 @@ import butterknife.OnItemClick;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
+import edu.mit.media.obm.liveobjects.apptidmarsh.utils.Util;
+import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
@@ -36,6 +43,8 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * Created by artimo14 on 8/19/15.
  */
 public class ContentBrowserFragment extends Fragment {
+    private static final String LOG_TAG = ContentBrowserFragment.class.getSimpleName();
+
     @BindString(R.string.media_config_filename) String MEDIA_CONFIG_FILE_NAME;
     @BindString(R.string.dir_contents) String DIRECTORY_NAME;
     @BindString(R.string.arg_live_object_name_id) String ARG_LIVE_OBJ_NAME_ID;
@@ -86,7 +95,7 @@ public class ContentBrowserFragment extends Fragment {
 
         Map<String, Object> liveObjectProperties = fetchProperties(mLiveObjectName);
         mDbController.putLiveObject(mLiveObjectName, liveObjectProperties);
-        setUIContent(liveObjectProperties);
+        setUIContent(mDbController.getProperties(mLiveObjectName));
 
         return rootView;
     }

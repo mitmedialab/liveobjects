@@ -307,7 +307,6 @@ public class DetailFragment extends Fragment {
                 }
             }
         }.execute(imageFileName);
-
     }
 
     private void setBackgroundImage(Bitmap bitmap) {
