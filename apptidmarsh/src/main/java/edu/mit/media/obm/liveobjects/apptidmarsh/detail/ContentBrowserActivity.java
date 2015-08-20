@@ -57,10 +57,6 @@ public class ContentBrowserActivity extends SingleFragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Bundle arguments = getIntent().getBundleExtra(EXTRA_ARGUMENTS);
-        String liveObjNameId = arguments.getString(EXTRA_LIVE_OBJ_NAME_ID);
-        getSupportActionBar().setTitle(liveObjNameId);
     }
 
     @Override

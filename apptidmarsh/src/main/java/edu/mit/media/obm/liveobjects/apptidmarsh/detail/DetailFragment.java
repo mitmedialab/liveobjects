@@ -197,6 +197,9 @@ public class DetailFragment extends Fragment {
             mIconView.setEnabled(false);
             mIconView.setVisibility(View.GONE);
         }
+
+        // set activity's title from this fragment
+        getActivity().setTitle(title);
     }
 
     private boolean setFavoriteButtonState(LinearLayout favouriteButtonLayout, MLProjectPropertyProvider propertyProvider) {

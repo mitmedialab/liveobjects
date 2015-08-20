@@ -16,10 +16,7 @@ import android.widget.ListView;
 
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -31,8 +28,6 @@ import butterknife.OnItemClick;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
-import edu.mit.media.obm.liveobjects.apptidmarsh.utils.Util;
-import edu.mit.media.obm.liveobjects.apptidmarsh.widget.BitmapEditor;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
@@ -149,6 +144,9 @@ public class ContentBrowserFragment extends Fragment {
 
         ListAdapter adapter = new ContentBrowserAdapter(getActivity(), provider);
         mContentListView.setAdapter(adapter);
+
+        // set activity's title from this fragment
+        getActivity().setTitle(mLiveObjectName);
     }
 
     protected void cancelAsyncTasks() {

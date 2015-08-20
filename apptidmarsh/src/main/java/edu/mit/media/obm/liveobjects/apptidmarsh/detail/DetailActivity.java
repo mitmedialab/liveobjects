@@ -11,6 +11,7 @@ import org.json.JSONException;
 import java.net.ConnectException;
 
 import butterknife.BindString;
+import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.SingleFragmentActivity;
 import edu.mit.media.obm.shair.liveobjects.R;
@@ -19,8 +20,9 @@ import edu.mit.media.obm.shair.liveobjects.R;
 public class DetailActivity extends SingleFragmentActivity {
     private static final String LOG_TAG = DetailActivity.class.getSimpleName();
 
-    @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
     @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
+    @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
+    @BindString(R.string.arg_content_index) String EXTRA_CONTENT_INDEX;
 
     public static int RESULT_CONNECTION_ERROR = RESULT_FIRST_USER;
     public static int RESULT_JSON_ERROR = RESULT_FIRST_USER + 1;
@@ -58,9 +60,6 @@ public class DetailActivity extends SingleFragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        String liveObjNameId = getIntent().getStringExtra(EXTRA_LIVE_OBJ_NAME_ID);
-        getSupportActionBar().setTitle(liveObjNameId);
     }
 
     @Override
