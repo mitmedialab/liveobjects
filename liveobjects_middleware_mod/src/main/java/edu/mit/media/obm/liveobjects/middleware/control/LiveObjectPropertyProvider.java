@@ -13,7 +13,7 @@ public abstract class LiveObjectPropertyProvider {
     private Map<String, Object> liveObjectProperties;
     private static final String ID_KEY = "_id";
 
-    public LiveObjectPropertyProvider(Map<String, Object> liveObjectProperties){
+    public LiveObjectPropertyProvider(Map<String, Object> liveObjectProperties) {
         this.liveObjectProperties = liveObjectProperties;
     }
 
