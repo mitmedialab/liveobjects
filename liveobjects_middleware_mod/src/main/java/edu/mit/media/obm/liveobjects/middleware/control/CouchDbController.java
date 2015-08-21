@@ -114,6 +114,7 @@ public class CouchDbController implements DbController{
         try {
             liveObjDocument.putProperties(properties);
         } catch (CouchbaseLiteException e) {
+            Log.v(LOG_TAG, "updating properties");
             updateProperties(liveObjectId, properties);
         }
     }
@@ -122,12 +123,18 @@ public class CouchDbController implements DbController{
         Document liveObjDocument = mDatabase.getDocument(liveObjectId);
         try {
             liveObjDocument.update(new Document.DocumentUpdater() {
+                // ToDo: just a workaround to prevent infinite loop
+                private final int MAX_RETRY = 5;
+                private int mRetryCount = 0;
+
                 @Override
                 public boolean update(UnsavedRevision newRevision) {
+                    Log.v(LOG_TAG, "update()");
                     Map<String, Object> properties = newRevision.getProperties();
                     properties.putAll(newProperties);
                     newRevision.setUserProperties(properties);
-                    return true;
+
+                    return (++mRetryCount < MAX_RETRY);
                 }
             });
         } catch (CouchbaseLiteException e) {
