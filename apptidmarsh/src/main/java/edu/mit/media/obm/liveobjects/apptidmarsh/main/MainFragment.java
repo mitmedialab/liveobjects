@@ -391,6 +391,12 @@ public class MainFragment extends GroundOverlayMapFragment {
     }
 
     private void addLiveObjectToDb(LiveObject liveObject) {
+        for (String id : mDbController.getLiveObjectsIds()) {
+            if (id.equals(liveObject.getLiveObjectName())) {
+                return;
+            }
+        }
+
         // register all the detected live objects with empty properties
         Map<String, Object> emptyProperties = new HashMap<>();
         // add map location to properties

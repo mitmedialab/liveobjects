@@ -123,10 +123,6 @@ public class CouchDbController implements DbController{
         Document liveObjDocument = mDatabase.getDocument(liveObjectId);
         try {
             liveObjDocument.update(new Document.DocumentUpdater() {
-                // ToDo: just a workaround to prevent infinite loop
-                private final int MAX_RETRY = 5;
-                private int mRetryCount = 0;
-
                 @Override
                 public boolean update(UnsavedRevision newRevision) {
                     Log.v(LOG_TAG, "update()");
@@ -134,7 +130,7 @@ public class CouchDbController implements DbController{
                     properties.putAll(newProperties);
                     newRevision.setUserProperties(properties);
 
-                    return (++mRetryCount < MAX_RETRY);
+                    return true;
                 }
             });
         } catch (CouchbaseLiteException e) {
