@@ -394,6 +394,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         private float mMinBearing;
         private float mMaxBearing;
 
+        private CameraPosition mLastCameraPosition = null;
 
         int ANIMATION_DURATION_MS = 300;
 
@@ -459,18 +460,27 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
                 float tilt = saturate(cameraPosition.tilt, tiltRange);
                 float bearing = saturate(cameraPosition.bearing, bearingRange);
 
-                LatLng latLng = new LatLng(latitude, longitude);
+                // update camera parameters only when it has changed since last time
+                if (mLastCameraPosition == null ||
+                        cameraPosition.zoom != mLastCameraPosition.zoom ||
+                        cameraPosition.target.latitude != mLastCameraPosition.target.latitude ||
+                        cameraPosition.target.longitude != mLastCameraPosition.target.longitude ||
+                        cameraPosition.tilt != mLastCameraPosition.tilt ||
+                        cameraPosition.bearing != mLastCameraPosition.bearing) {
+                    LatLng latLng = new LatLng(latitude, longitude);
 
-                CameraPosition newCameraPosition = CameraPosition.builder()
-                        .target(latLng).zoom(zoom).tilt(tilt).bearing(bearing)
-                        .build();
-                CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(newCameraPosition);
+                    CameraPosition newCameraPosition = CameraPosition.builder()
+                            .target(latLng).zoom(zoom).tilt(tilt).bearing(bearing)
+                            .build();
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(newCameraPosition);
 
-                mMap.animateCamera(cameraUpdate, ANIMATION_DURATION_MS, null);
+                    mMap.animateCamera(cameraUpdate, ANIMATION_DURATION_MS, null);
+                }
             }
 
             Log.v(LOG_TAG, cameraPosition.toString());
 
+            mLastCameraPosition = cameraPosition;
             mBus.post(new CameraChangeEvent());
         }
 
