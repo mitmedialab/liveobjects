@@ -187,16 +187,21 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
     private Bitmap createMarkerIcon(String liveObjectName, boolean currentLocation, boolean visited)
             throws IOException, RemoteException {
-        Bitmap iconBitmap;
+        Bitmap iconBitmap = null;
 
         if (!mDbController.isLiveObjectEmpty(liveObjectName)) {
             iconBitmap = getLiveObjectIcon(liveObjectName);
-            iconBitmap = Bitmap.createScaledBitmap(
-                    iconBitmap, MAP_MARKER_ICON_SIZE, MAP_MARKER_ICON_SIZE, true);
 
-            BitmapEditor bitmapEditor = new BitmapEditor(getActivity());
-            bitmapEditor.blurBitmap(iconBitmap, 2);
-        } else {
+            if (iconBitmap != null) {
+                iconBitmap = Bitmap.createScaledBitmap(
+                        iconBitmap, MAP_MARKER_ICON_SIZE, MAP_MARKER_ICON_SIZE, true);
+
+                BitmapEditor bitmapEditor = new BitmapEditor(getActivity());
+                bitmapEditor.blurBitmap(iconBitmap, 2);
+            }
+        }
+
+        if (iconBitmap == null) {
             int color = mRandomColorGenerator.generateColor(liveObjectName);
             iconBitmap = Bitmap.createBitmap(
                     MAP_MARKER_ICON_SIZE, MAP_MARKER_ICON_SIZE, Bitmap.Config.ARGB_8888);
@@ -225,10 +230,17 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         // ToDo: use the icon of the first content for the moment
         String iconFileName = provider.getIconFileName(0);
 
+        Bitmap bitmap;
         ContentId iconContentId = new ContentId(liveObjectName, DIR_CONTENTS, iconFileName);
-        InputStream imageInputStream = mContentController.getInputStreamContent(iconContentId);
+        if (mContentController.isContentLocallyAvailable(iconContentId)) {
+            InputStream imageInputStream = mContentController.getInputStreamContent(iconContentId);
+            bitmap = Util.getBitmap(imageInputStream);
+        } else {
+            // json file exists, but icon has not been downloaded.
+            bitmap = null;
+        }
 
-        return Util.getBitmap(imageInputStream);
+        return bitmap;
     }
 
     private static Bitmap roundBitmap(Bitmap bitmap, int radius) {
