@@ -14,9 +14,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -283,18 +286,33 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     }
 
     private void printTitleOnBitmap(Bitmap bitmap, String title) {
-        Paint paint = new Paint();
-        paint.setColor(Color.WHITE);
-        paint.setTextSize(MAP_MARKER_FONT_SIZE);
-        paint.setStrokeWidth(1f);
-        paint.setStyle(Paint.Style.FILL_AND_STROKE);
-        paint.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-        paint.setTextAlign(Paint.Align.CENTER);
-        paint.setAntiAlias(true);
-        paint.setShadowLayer(2f, 4f, 4f, Color.BLACK);
+        // create a text view that automatically over-wraps at the end of the line
+        TextView textView = new TextView(getActivity());
 
+        textView.setDrawingCacheEnabled(true);
+        textView.layout(0, 0, bitmap.getWidth() * 9 / 10, bitmap.getHeight() * 9 / 10);
+
+        // define text parameters
+        textView.setText(title);
+        textView.setBackgroundColor(Color.TRANSPARENT);
+        textView.setTextColor(Color.WHITE);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, MAP_MARKER_FONT_SIZE);
+        textView.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+        textView.setGravity(Gravity.CENTER);
+        textView.setTextAlignment(TextView.TEXT_ALIGNMENT_GRAVITY);
+        textView.setShadowLayer(2f, 4f, 4f, Color.BLACK);
+
+        textView.buildDrawingCache(true);
+        Bitmap textViewBitmap = textView.getDrawingCache();
+
+        // draw the text view onto the original bitmap
+        Paint paint = new Paint();
         Canvas canvas = new Canvas(bitmap);
-        canvas.drawText(title, MAP_MARKER_ICON_SIZE / 2, MAP_MARKER_ICON_SIZE / 2, paint);
+        int textBottom = textView.getLineBounds(textView.getLineCount() - 1, null);
+        canvas.drawBitmap(textViewBitmap,
+                (bitmap.getWidth() - textView.getWidth()) / 2,
+                (bitmap.getHeight() - textBottom) / 2,
+                paint);
     }
 
     private Bitmap addArrowToBitmap(Bitmap bitmap) {
