@@ -384,10 +384,10 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     private LatLng gridToLatLng(MapLocation mapLocation) {
         double latitudeScale = NORTH_EAST_BOUND.latitude - SOUTH_WEST_BOUND.latitude;
         double longitudeScale = NORTH_EAST_BOUND.longitude - SOUTH_WEST_BOUND.longitude;
-        double latitudeStep = latitudeScale / (NUM_GRID_X - 1);
-        double longitudeStep = longitudeScale / (NUM_GRID_Y - 1);
-        double latitude = mapLocation.getCoordinateX() * latitudeStep + SOUTH_WEST_BOUND.latitude;
-        double longitude = mapLocation.getCoordinateY() * longitudeStep + SOUTH_WEST_BOUND.longitude;
+        double latitudeStep = latitudeScale / (NUM_GRID_Y - 1);
+        double longitudeStep = longitudeScale / (NUM_GRID_X - 1);
+        double latitude = mapLocation.getCoordinateY() * latitudeStep + SOUTH_WEST_BOUND.latitude;
+        double longitude = mapLocation.getCoordinateX() * longitudeStep + SOUTH_WEST_BOUND.longitude;
 
         return new LatLng(latitude, longitude);
     }
