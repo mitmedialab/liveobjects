@@ -42,7 +42,6 @@ import javax.inject.Inject;
 
 import butterknife.BindColor;
 import butterknife.BindDimen;
-import butterknife.BindDrawable;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
