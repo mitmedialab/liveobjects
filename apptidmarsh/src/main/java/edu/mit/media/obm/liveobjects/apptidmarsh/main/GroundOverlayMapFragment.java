@@ -121,10 +121,11 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
                 .position(defaultTarget, overlayWidth, overlayHeight);
         mMap.addGroundOverlay(newarkMap);
 
-        CustomCameraChangeListener customCameraChangeListener = new CustomCameraChangeListener(
+        mMap.setOnCameraChangeListener(new CustomCameraChangeListener(
                 mMap, SOUTH_WEST_BOUND, NORTH_EAST_BOUND, MIN_ZOOM, MAX_ZOOM, MIN_TILT, MAX_TILT,
-                MIN_BEARING, MAX_BEARING);
-        mMap.setOnCameraChangeListener(customCameraChangeListener);
+                MIN_BEARING, MAX_BEARING));
+
+        mMap.setOnMapClickListener(new CustomOnMapClickListener());
 
         CameraUpdate updateToDefault =
                 CameraUpdateFactory.newLatLngZoom(defaultTarget, defaultZoom);
@@ -156,14 +157,11 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     private Marker addLiveObjectMarker(LiveObject liveObject, boolean currentLocation, boolean visited) {
         String liveObjectName = liveObject.getLiveObjectName();
         MapLocation mapLocation = liveObject.getMapLocation();
-        int gridX = mapLocation.getCoordinateX();
-        int gridY = mapLocation.getCoordinateY();
-        int mapId = mapLocation.getMapId();
 
-        checkArgumentRange("gridX", gridX, 0, NUM_GRID_X - 1);
-        checkArgumentRange("gridY", gridY, 0, NUM_GRID_Y - 1);
-        checkArgumentRange("mapId", mapId, 0, NUM_MAP_ID - 1);
-        LatLng gridLocationInLagLng = gridToLatLng(gridX, gridY);
+        checkArgumentRange("gridX", mapLocation.getCoordinateX(), 0, NUM_GRID_X - 1);
+        checkArgumentRange("gridY", mapLocation.getCoordinateY(), 0, NUM_GRID_Y - 1);
+        checkArgumentRange("mapId", mapLocation.getMapId(), 0, NUM_MAP_ID - 1);
+        LatLng gridLocationInLagLng = gridToLatLng(mapLocation);
 
         Marker marker;
         try {
@@ -383,15 +381,30 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         }
     }
 
-    private LatLng gridToLatLng(int gridX, int gridY) {
+    private LatLng gridToLatLng(MapLocation mapLocation) {
         double latitudeScale = NORTH_EAST_BOUND.latitude - SOUTH_WEST_BOUND.latitude;
         double longitudeScale = NORTH_EAST_BOUND.longitude - SOUTH_WEST_BOUND.longitude;
         double latitudeStep = latitudeScale / (NUM_GRID_X - 1);
         double longitudeStep = longitudeScale / (NUM_GRID_Y - 1);
-        double latitude = gridX * latitudeStep + SOUTH_WEST_BOUND.latitude;
-        double longitude = gridY * longitudeStep + SOUTH_WEST_BOUND.longitude;
+        double latitude = mapLocation.getCoordinateX() * latitudeStep + SOUTH_WEST_BOUND.latitude;
+        double longitude = mapLocation.getCoordinateY() * longitudeStep + SOUTH_WEST_BOUND.longitude;
 
         return new LatLng(latitude, longitude);
+    }
+
+    private MapLocation latLngToGrid(LatLng latLng) {
+        double latitudeScale = NORTH_EAST_BOUND.latitude - SOUTH_WEST_BOUND.latitude;
+        double longitudeScale = NORTH_EAST_BOUND.longitude - SOUTH_WEST_BOUND.longitude;
+        double latitudeStep = latitudeScale / (NUM_GRID_Y - 1);
+        double longitudeStep = longitudeScale / (NUM_GRID_X - 1);
+
+        double latitudeDistance = latLng.latitude - SOUTH_WEST_BOUND.latitude;
+        double longitudeDistance = latLng.longitude - SOUTH_WEST_BOUND.longitude;
+
+        int gridY = (int) Math.round(latitudeDistance / latitudeStep);
+        int gridX = (int) Math.round(longitudeDistance / longitudeStep);
+
+        return new MapLocation(gridX, gridY, 0);
     }
 
     private class CustomCameraChangeListener implements GoogleMap.OnCameraChangeListener {
@@ -508,6 +521,15 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
             }
 
             return saturatedValue;
+        }
+    }
+
+    private class CustomOnMapClickListener implements GoogleMap.OnMapClickListener {
+        @Override
+        public void onMapClick(LatLng latLng) {
+            MapLocation mapLocation = latLngToGrid(latLng);
+            Log.v(LOG_TAG, String.format("clicked location = (%d, %d, %d) (in grid coordinates)",
+                    mapLocation.getCoordinateX(), mapLocation.getCoordinateY(), mapLocation.getMapId()));
         }
     }
 }
