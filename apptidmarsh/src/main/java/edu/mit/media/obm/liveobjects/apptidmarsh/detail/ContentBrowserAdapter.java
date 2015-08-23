@@ -3,7 +3,6 @@ package edu.mit.media.obm.liveobjects.apptidmarsh.detail;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +10,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.noveogroup.android.log.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -32,8 +32,6 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * Created by artimo14 on 8/20/15.
  */
 public class ContentBrowserAdapter extends ArrayAdapter<Map<String, Object>> {
-    private static final String LOG_TAG = ContentBrowserAdapter.class.getSimpleName();
-
     @Inject ContentController mContentController;
 
     private final Context mContext;
@@ -95,7 +93,7 @@ public class ContentBrowserAdapter extends ArrayAdapter<Map<String, Object>> {
         new AsyncTask<Void, Void, InputStream>() {
             @Override
             protected InputStream doInBackground(Void... params) {
-                Log.v(LOG_TAG, "doInBackground()");
+                Log.v("doInBackground()");
 
                 try {
                     return mContentController.getInputStreamContent(contentId);
@@ -107,7 +105,7 @@ public class ContentBrowserAdapter extends ArrayAdapter<Map<String, Object>> {
 
             @Override
             protected void onPostExecute(InputStream imageInputStream) {
-                Log.v(LOG_TAG, "onPostExecute()");
+                Log.v("onPostExecute()");
 
                 try {
                     Bitmap bitmap = Util.getBitmap(imageInputStream);

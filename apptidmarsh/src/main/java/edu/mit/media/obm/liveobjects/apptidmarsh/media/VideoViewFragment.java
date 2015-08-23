@@ -4,12 +4,13 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.MediaController;
 import android.widget.VideoView;
+
+import com.noveogroup.android.log.Log;
 
 import javax.inject.Inject;
 
@@ -28,8 +29,6 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * create an instance of this fragment.
  */
 public class VideoViewFragment extends Fragment {
-    private static final String LOG_TAG = VideoViewFragment.class.getSimpleName();
-
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     @BindString(R.string.arg_file_url) String ARG_FILE_URL;
     @BindString(R.string.state_play_position) String STATE_PLAY_POSITION;
@@ -71,7 +70,7 @@ public class VideoViewFragment extends Fragment {
 
         Uri vidUri = Uri.parse(mFileUrl);
         mVideoView.setVideoURI(vidUri);
-        Log.i(LOG_TAG, "setting video: " + vidUri.toString());
+        Log.i("setting video: " + vidUri.toString());
 
         if (mPlayPosition != null) {
             mVideoView.seekTo(mPlayPosition);

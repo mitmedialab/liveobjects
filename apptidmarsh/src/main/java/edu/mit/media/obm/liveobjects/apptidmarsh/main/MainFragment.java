@@ -4,11 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Camera;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +13,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
+import com.noveogroup.android.log.Log;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -50,8 +48,6 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * Created by artimo14 on 8/9/15.
  */
 public class MainFragment extends GroundOverlayMapFragment {
-    private static final String LOG_TAG = MainFragment.class.getSimpleName();
-
     private static final int CONTENT_BROWSER_ACTIVITY_REQUEST_CODE = 1;
 
     @Inject NetworkController mNetworkController;
@@ -150,7 +146,7 @@ public class MainFragment extends GroundOverlayMapFragment {
 
     @Override
     public void onStart() {
-        Log.v(LOG_TAG, "onStart()");
+        Log.v("onStart()");
         super.onStart();
 
         mBus.register(this);
@@ -189,7 +185,7 @@ public class MainFragment extends GroundOverlayMapFragment {
 
     @Override
     public void onStop() {
-        Log.v(LOG_TAG, "onStop()");
+        Log.v("onStop()");
 //        mNetworkController.stop();
         super.onStop();
 
@@ -202,7 +198,7 @@ public class MainFragment extends GroundOverlayMapFragment {
         mNetworkController.setDiscoveryListener(new LiveObjectDiscoveryListener());
         mNetworkController.setConnectionListener(new LiveObjectConnectionListener());
 
-        Log.v(LOG_TAG, "deleting all the network configuration related to live objects");
+        Log.v("deleting all the network configuration related to live objects");
         if (!mNetworkController.isConnecting()) {
             mNetworkController.forgetNetworkConfigurations();
         }
@@ -213,16 +209,16 @@ public class MainFragment extends GroundOverlayMapFragment {
     private class LiveObjectDiscoveryListener implements DiscoveryListener {
         @Override
         public void onDiscoveryStarted() {
-            Log.d(LOG_TAG, "discovery started");
+            Log.d("discovery started");
         }
 
         @Override
         public void onLiveObjectsDiscovered(List<LiveObject> liveObjectList) {
-            Log.d(LOG_TAG, "discovery successfully completed");
+            Log.d("discovery successfully completed");
             mActiveLiveObjectList.clear();
-            Log.v(LOG_TAG, "-==");
+            Log.v("===");
             for (LiveObject liveObject : liveObjectList) {
-                Log.v(LOG_TAG, liveObject.getLiveObjectName() + ", " + liveObject.getMapLocation().toString());
+                Log.v(liveObject.getLiveObjectName() + ", " + liveObject.getMapLocation().toString());
                 liveObject.setConnectedBefore(isConnectedBefore(liveObject));
                 mActiveLiveObjectList.add(liveObject);
 
@@ -239,7 +235,7 @@ public class MainFragment extends GroundOverlayMapFragment {
     class LiveObjectConnectionListener implements ConnectionListener {
         @Override
         public void onConnected(LiveObject connectedLiveObject) {
-            Log.v(LOG_TAG, String.format("onConnected(%s)", connectedLiveObject));
+            Log.v(String.format("onConnected(%s)", connectedLiveObject));
             if (connectedLiveObject.equals(mSelectedLiveObject)) {
                 mConnectingDialog.dismiss();
 
@@ -306,11 +302,11 @@ public class MainFragment extends GroundOverlayMapFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        Log.v(LOG_TAG, String.format("onActivityResult(requestCode=%d)", requestCode));
+        Log.v(String.format("onActivityResult(requestCode=%d)", requestCode));
         super.onActivityResult(requestCode, resultCode, intent);
 
         if (requestCode == CONTENT_BROWSER_ACTIVITY_REQUEST_CODE) {
-            Log.v(LOG_TAG, "returned from DetailActivity");
+            Log.v("returned from DetailActivity");
             final String errorMessage;
 
             if (resultCode == DetailActivity.RESULT_CONNECTION_ERROR) {
@@ -350,7 +346,7 @@ public class MainFragment extends GroundOverlayMapFragment {
 
     @Subscribe
     public void addDetectedBluetoothDevice(InactiveLiveObjectDetectionEvent event) {
-        Log.v(LOG_TAG, "addDetectedBluetoothDevice()");
+        Log.v("addDetectedBluetoothDevice()");
         LiveObject liveObject = event.mLiveObject;
         liveObject.setStatus(LiveObject.STATUS_SLEEPING);
         liveObject.setConnectedBefore(isConnectedBefore(liveObject));
@@ -364,26 +360,26 @@ public class MainFragment extends GroundOverlayMapFragment {
 
     @Subscribe
     public void triggerLiveObjectScan(CameraChangeEvent event) {
-        Log.v(LOG_TAG, "triggerLiveObjectScan()");
+        Log.v("triggerLiveObjectScan()");
 
         startDiscovery();
     }
 
     @Subscribe
     public void finalizeBluetoothDetectionProcess(FinishedDetectingInactiveLiveObjectEvent event) {
-        Log.v(LOG_TAG, "finalizeBluetoothDetectionProcess()");
+        Log.v("finalizeBluetoothDetectionProcess()");
         isBluetoothDiscoveryProcessRunning = false;
     }
 
     private void startDiscovery() {
         if (!isWifiDiscoveryProcessRunning) {
-            Log.v(LOG_TAG, "starting WiFi discovery");
+            Log.v("starting WiFi discovery");
             mNetworkController.startDiscovery();
             isWifiDiscoveryProcessRunning = true;
         }
 
         if (!isBluetoothDiscoveryProcessRunning) {
-            Log.v(LOG_TAG, "starting Bluetooth discovery");
+            Log.v("starting Bluetooth discovery");
             mSleepingLiveObjectList.clear();
             mLiveObjectNotifier.wakeUp();
             isBluetoothDiscoveryProcessRunning = true;

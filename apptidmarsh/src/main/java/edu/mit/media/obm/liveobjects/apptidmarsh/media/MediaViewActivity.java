@@ -6,10 +6,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import com.noveogroup.android.log.Log;
 
 import java.io.IOException;
 import java.util.Map;
@@ -30,8 +31,6 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * Created by Valerio Panzica La Manna on 08/12/14.
  */
 public class MediaViewActivity extends SingleFragmentActivity implements OnMediaViewListener {
-    private static final String LOG_TAG = MediaViewActivity.class.getSimpleName();
-
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
     @BindString(R.string.arg_content_index) String EXTRA_CONTENT_INDEX;
     @BindString(R.string.arg_file_url) String ARG_FILE_URL;
@@ -102,7 +101,7 @@ public class MediaViewActivity extends SingleFragmentActivity implements OnMedia
         try {
             fileUrl = mContentController.getFileUrl(mediaContentId);
         } catch (IOException | RemoteException e) {
-            Log.e(LOG_TAG, e.toString());
+            Log.e(e.toString());
             throw new IllegalStateException();
         }
 
@@ -116,7 +115,7 @@ public class MediaViewActivity extends SingleFragmentActivity implements OnMedia
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.v(LOG_TAG, "onDestroy()");
+        Log.v("onDestroy()");
 
         cancelTask();
     }

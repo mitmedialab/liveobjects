@@ -31,8 +31,6 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public class SavedLiveObjectsFragment extends Fragment {
-    private static String LOG_TAG = SavedLiveObjectsFragment.class.getSimpleName();
-
     /**
      * The fragment argument representing the section number for this
      * fragment.

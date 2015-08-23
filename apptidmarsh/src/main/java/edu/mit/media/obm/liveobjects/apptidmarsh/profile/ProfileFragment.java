@@ -6,11 +6,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.noveogroup.android.log.Log;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -23,8 +24,6 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * create an instance of this fragment.
  */
 public class ProfileFragment extends Fragment {
-    private static final String LOG_TAG = ProfileFragment.class.getSimpleName();
-
     @Bind(R.id.nameTextView) TextView mNameTextView;
     @Bind(R.id.companyTextView) TextView mCompanyTextView;
     @Bind(R.id.emailTextView) TextView mEmailTextView;
@@ -79,19 +78,19 @@ public class ProfileFragment extends Fragment {
     public void onResume() {
         super.onResume();
         setUIProfileContent();
-        Log.d(LOG_TAG, "onResume");
+        Log.d("onResume");
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(LOG_TAG, "onPause");
+        Log.d("onPause");
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d(LOG_TAG, "ON ACTIVITY RESULT");
+        Log.d("ON ACTIVITY RESULT");
         setUIProfileContent();
     }
 }

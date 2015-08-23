@@ -18,8 +18,6 @@ import edu.mit.media.obm.shair.liveobjects.R;
 
 
 public class DetailActivity extends SingleFragmentActivity {
-    private static final String LOG_TAG = DetailActivity.class.getSimpleName();
-
     @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
     @BindString(R.string.arg_content_index) String EXTRA_CONTENT_INDEX;

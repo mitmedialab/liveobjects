@@ -12,7 +12,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -26,7 +25,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONObject;
+import com.noveogroup.android.log.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,8 +59,6 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * Shows the details of a connected live object and allows to play the content
  */
 public class DetailFragment extends Fragment {
-
-    private static final String LOG_TAG = DetailFragment.class.getSimpleName();
     //TODO make the directory name parameterizable
     @BindString(R.string.arg_live_object_name_id) String ARG_LIVE_OBJ_NAME_ID;
     @BindString(R.string.arg_content_index) String ARG_CONTENT_INDEX;
@@ -165,7 +162,7 @@ public class DetailFragment extends Fragment {
     }
 
     private void setUIContent(Map<String, Object> liveObjectProperties) {
-        Log.d(LOG_TAG, liveObjectProperties.toString());
+        Log.d(liveObjectProperties.toString());
 
         MLProjectPropertyProvider propertyProvider = new MLProjectPropertyProvider(liveObjectProperties);
 
@@ -221,9 +218,9 @@ public class DetailFragment extends Fragment {
 
         int isFavoriteInInt = isFavorite ? MLProjectContract.IS_FAVORITE_TRUE :
                 MLProjectContract.IS_FAVORITE_FALSE;
-        Log.d(LOG_TAG, "update property is favorite to: " + isFavoriteInInt);
+        Log.d("update property is favorite to: " + isFavoriteInInt);
         mDbController.putProperty(liveObjNameId, MLProjectContract.IS_FAVORITE, isFavoriteInInt);
-        Log.d(LOG_TAG, "now favorite is: " + mDbController.getProperty(liveObjNameId, MLProjectContract.IS_FAVORITE));
+        Log.d("now favorite is: " + mDbController.getProperty(liveObjNameId, MLProjectContract.IS_FAVORITE));
     }
 
     private AlertDialog initAddCommentAlert() {
@@ -245,7 +242,7 @@ public class DetailFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
 
                 String commentText = makeComment(input.getText().toString());
-                Log.d(LOG_TAG, "ADDING COMMENT: " + input.getText().toString());
+                Log.d("ADDING COMMENT: " + input.getText().toString());
                 ContentId commentContentId = new ContentId(mLiveObjectName, COMMENT_DIRECTORY_NAME, generateCommentFileName());
                 mContentController.putStringContent(commentContentId, commentText);
 
@@ -283,7 +280,7 @@ public class DetailFragment extends Fragment {
         mSetBackgroundImageTask = new AsyncTask<String, Void, InputStream>() {
             @Override
             protected InputStream doInBackground(String... params) {
-                Log.v(LOG_TAG, "doInBackground()");
+                Log.v("doInBackground()");
                 String imageFileName = params[0];
                 ContentId imageContentId = new ContentId(mLiveObjectName, DIRECTORY_NAME, imageFileName);
 
@@ -298,7 +295,7 @@ public class DetailFragment extends Fragment {
 
             @Override
             protected void onPostExecute(InputStream imageInputStream) {
-                Log.v(LOG_TAG, "onPostExecute()");
+                Log.v("onPostExecute()");
 
                 try {
                     Bitmap bitmap = Util.getBitmap(imageInputStream);

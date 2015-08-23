@@ -10,10 +10,8 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -34,6 +32,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.common.collect.Range;
+import com.noveogroup.android.log.Log;
 import com.squareup.otto.Bus;
 
 import java.io.IOException;
@@ -63,8 +62,6 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * Created by arata on 8/11/15.
  */
 public class GroundOverlayMapFragment extends SupportMapFragment {
-    private static final String LOG_TAG = GroundOverlayMapFragment.class.getSimpleName();
-
     private final int NUM_GRID_X = 256;
     private final int NUM_GRID_Y = 256;
     private final int NUM_MAP_ID = 16;
@@ -153,7 +150,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
         mLiveObjectMarkers.put(liveObject.getLiveObjectName(), marker);
 
-        Log.v(LOG_TAG, mLiveObjectMarkers.keySet().toString());
+        Log.v(mLiveObjectMarkers.keySet().toString());
     }
 
     private Marker addLiveObjectMarker(LiveObject liveObject, boolean currentLocation, boolean visited) {
@@ -176,8 +173,8 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
                     .title(liveObjectName);
             marker = mMap.addMarker(markerOptions);
         } catch (Exception e) {
-            Log.e(LOG_TAG, "failed to add a marker for the live object '" + liveObjectName + "'");
-            Log.e(LOG_TAG, e.toString());
+            Log.e("failed to add a marker for the live object '" + liveObjectName + "'");
+            Log.e(e.toString());
 
             throw new RuntimeException();
         }
@@ -473,10 +470,10 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
             float latitudeRatio = (float) boundLatitudeHalfLength / (float) visibleLatitudeHalfLength;
             float longitudeRatio = (float) boundLongitudeHalfLength / (float) visibleLongitudeHalfLength;
             if (latitudeRatio < 1.0 && latitudeRatio > longitudeRatio) {
-                Log.v(LOG_TAG, "lat" + Float.toString(latitudeRatio));
+                Log.v("lat" + Float.toString(latitudeRatio));
                 zoomCompensation = (float) (cameraPosition.zoom + Math.log(1.0 / latitudeRatio) / Math.log(2.0));
             } else if (longitudeRatio < 1.0 && longitudeRatio > latitudeRatio) {
-                Log.v(LOG_TAG, "lng" + Float.toString(longitudeRatio));
+                Log.v("lng" + Float.toString(longitudeRatio));
                 zoomCompensation = (float) (cameraPosition.zoom + Math.log(1.0 / longitudeRatio) / Math.log(2.0));
             }
 
@@ -520,7 +517,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
                 }
             }
 
-            Log.v(LOG_TAG, cameraPosition.toString());
+            Log.v(cameraPosition.toString());
 
             mLastCameraPosition = cameraPosition;
             mBus.post(new CameraChangeEvent());
@@ -545,7 +542,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         @Override
         public void onMapClick(LatLng latLng) {
             MapLocation mapLocation = latLngToGrid(latLng);
-            Log.v(LOG_TAG, String.format("clicked location = (%d, %d, %d) (in grid coordinates)",
+            Log.v(String.format("clicked location = (%d, %d, %d) (in grid coordinates)",
                     mapLocation.getCoordinateX(), mapLocation.getCoordinateY(), mapLocation.getMapId()));
         }
     }

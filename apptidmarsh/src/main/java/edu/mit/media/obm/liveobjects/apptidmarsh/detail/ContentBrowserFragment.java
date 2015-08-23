@@ -38,8 +38,6 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * Created by artimo14 on 8/19/15.
  */
 public class ContentBrowserFragment extends Fragment {
-    private static final String LOG_TAG = ContentBrowserFragment.class.getSimpleName();
-
     @BindString(R.string.media_config_filename) String MEDIA_CONFIG_FILE_NAME;
     @BindString(R.string.dir_contents) String DIRECTORY_NAME;
     @BindString(R.string.arg_live_object_name_id) String ARG_LIVE_OBJ_NAME_ID;

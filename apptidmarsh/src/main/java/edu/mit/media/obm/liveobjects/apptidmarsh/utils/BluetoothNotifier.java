@@ -8,22 +8,19 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.util.Log;
-import android.widget.Toast;
+
+import com.noveogroup.android.log.Log;
 
 import javax.inject.Inject;
 
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiLocationUtil;
-import edu.mit.media.obm.liveobjects.driver.wifi.WifiUtil;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 
 /**
  * Created by arata on 8/7/15.
  */
 public class BluetoothNotifier extends LiveObjectNotifier {
-    private static final String LOG_TAG = BluetoothNotifier.class.getSimpleName();
-
     @Inject BluetoothAdapter mBluetoothAdapter;
     private BluetoothDetectionReceiver mBroadcastReceiver = null;
 
@@ -49,7 +46,7 @@ public class BluetoothNotifier extends LiveObjectNotifier {
     public synchronized void wakeUp() {
         cancelWakeUp();
 
-        debug("start awakening...");
+        Log.d("start awakening...");
 
         mBroadcastReceiver = new BluetoothDetectionReceiver();
 
@@ -61,15 +58,15 @@ public class BluetoothNotifier extends LiveObjectNotifier {
 
         mBluetoothAdapter.startDiscovery();
 
-        debug("num bonded devices:" + mBluetoothAdapter.getBondedDevices().size());
+        Log.d("num bonded devices:" + mBluetoothAdapter.getBondedDevices().size());
         for (BluetoothDevice device : mBluetoothAdapter.getBondedDevices()) {
-            debug("device = " + device.getName());
+            Log.d("device = " + device.getName());
         }
     }
 
     @Override
     public synchronized void cancelWakeUp() {
-        debug("cancel awakening...");
+        Log.d("cancel awakening...");
 
         if (mBroadcastReceiver != null) {
             mBluetoothAdapter.cancelDiscovery();
@@ -90,12 +87,12 @@ public class BluetoothNotifier extends LiveObjectNotifier {
                 String deviceName = device.getName();
 
                 if (deviceName != null) {
-                    debug("detected device: " + deviceName);
+                    Log.d("detected device: " + deviceName);
                 }
 
                 // ToDo; shouldn't use WiFiUtil directly
                 if (deviceName != null && WifiLocationUtil.INSTANCE.isLiveObject(deviceName)) {
-                    debug(String.format("trying to connect to BLE device '%s'", deviceName));
+                    Log.d(String.format("trying to connect to BLE device '%s'", deviceName));
                     mBluetoothGatt = device.connectGatt(mContext, true, mGattCallback);
 
                     // ToDo; shouldn't use WiFiUtil directly
@@ -103,7 +100,7 @@ public class BluetoothNotifier extends LiveObjectNotifier {
                     mBus.post(new InactiveLiveObjectDetectionEvent(liveObject));
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                debug("finished BLE discovery");
+                Log.d("finished BLE discovery");
                 cancelWakeUp();
 
                 mBus.post(new FinishedDetectingInactiveLiveObjectEvent());
@@ -116,14 +113,10 @@ public class BluetoothNotifier extends LiveObjectNotifier {
                 super.onConnectionStateChange(gatt, status, newState);
 
                 if (newState == BluetoothGatt.STATE_CONNECTED) {
-                    debug("disconecting from GATT");
+                    Log.d("disconecting from GATT");
                     mBluetoothGatt.disconnect();
                 }
             }
         };
-    }
-
-    private void debug(String message) {
-        Log.d(LOG_TAG, message);
     }
 }
