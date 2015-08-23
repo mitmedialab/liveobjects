@@ -56,22 +56,28 @@ import edu.mit.media.obm.liveobjects.storage.wifi.WifiStorageDriver;
         }
 )
 public class MiddlewareModule {
+    private static MiddlewareInterface mMiddleware = null;
+
     public MiddlewareModule() {
     }
 
     @Provides @Singleton
     MiddlewareInterface provideMiddlewareInterface(Context context) {
-        NetworkDriver networkDriver = new WifiDriver(context);
-        NetworkController networkController = new NetworkBridge(networkDriver);
+        if (mMiddleware == null) {
+            NetworkDriver networkDriver = new DummyDriver(context);
+            NetworkController networkController = new NetworkBridge(networkDriver);
 
-        LocalStorageDriver localStorageDriver = new FileLocalStorageDriver(context);
-        RemoteStorageDriver remoteStorageDriver = new WifiStorageDriver(context);
+            LocalStorageDriver localStorageDriver = new FileLocalStorageDriver(context);
+            RemoteStorageDriver remoteStorageDriver = new WifiStorageDriver(context);
 
-        ContentController contentController = new ContentBridge(context, localStorageDriver, remoteStorageDriver);
+            ContentController contentController = new ContentBridge(context, localStorageDriver, remoteStorageDriver);
 
-        DbController dbController = new CouchDbController(context);
+            DbController dbController = new CouchDbController(context);
 
-        return new LiveObjectsMiddleware(networkController, contentController, dbController);
+            mMiddleware = new LiveObjectsMiddleware(networkController, contentController, dbController);
+        }
+
+        return mMiddleware;
     }
 
     @Provides
