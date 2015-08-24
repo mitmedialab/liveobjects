@@ -1,19 +1,23 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.notifications;
 
-import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import edu.mit.media.obm.liveobjects.apptidmarsh.TidmarshApplication;
+import javax.inject.Inject;
+
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.BluetoothNotifier;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.InactiveLiveObjectDetectionEvent;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
@@ -26,64 +30,78 @@ import edu.mit.media.obm.shair.liveobjects.R;
  *
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
-public class DiscoveryService extends IntentService {
+public class DiscoveryService extends Service {
     private static final String LOG_TAG = DiscoveryService.class.getSimpleName();
+    private static final int NOTIFICATION_ID = 1;
 
-    public static final int NOTIFICATION_ID = 1;
 
-    //todo create with dependency injection
+    private Context mContext;
+
     private LiveObjectNotifier mLiveObjectNotifier;
 
-
-    private Bus mBus;
-    private NotificationManager mNotificationManager;
-
-    public DiscoveryService() {
-        super("DiscoveryService");
-    }
+    @Inject Bus mBus;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        // registering the service on the bus
-        mBus = ((TidmarshApplication) getApplication()).getBus();
+        DependencyInjector.inject(this, this);
+
+        mContext = this;
+        mLiveObjectNotifier = new BluetoothNotifier(mContext);
+
         mBus.register(this);
-        mLiveObjectNotifier = new BluetoothNotifier(this);
+
+
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    public int onStartCommand(Intent intent, int flags, int startId) {
         performDiscovery();
-
+        return START_NOT_STICKY;
     }
+
 
     private void performDiscovery() {
-        Log.v(LOG_TAG, "starting Bluetooth discovery");
+        Log.d(LOG_TAG, "starting Bluetooth discovery");
+
+
         mLiveObjectNotifier.wakeUp();
+
+
     }
+
 
     @Subscribe
     public void addDetectedBluetoothDevice(InactiveLiveObjectDetectionEvent event) {
-        Log.v(LOG_TAG, "received InactiveLiveObjectDetectionEvent");
+        Log.d(LOG_TAG, "received InactiveLiveObjectDetectionEvent");
         LiveObject liveObject = event.mLiveObject;
         String liveObjectName = liveObject.getLiveObjectName();
 
-        Log.v(LOG_TAG, "send a notification for liveobject: " + liveObjectName);
-        String liveobjectName = "";
-        sendNotification(liveobjectName);
+        Log.d(LOG_TAG, "send a notification for liveobject: " + liveObjectName);
+
+        sendNotification(liveObjectName);
+
+        stopSelf();
 
     }
 
 
-    private void sendNotification(String msg) {
-        mNotificationManager = (NotificationManager)
-                this.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, MainActivity.class), 0);
+    private void sendNotification(String msg) {
+        NotificationManager notificationManager = (NotificationManager)
+                mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0,
+                new Intent(mContext, MainActivity.class), 0);
 
         NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
+                new NotificationCompat.Builder(mContext)
                         .setSmallIcon(R.drawable.ic_launcher)
                         .setContentTitle("Live Object discovered")
                         .setStyle(new NotificationCompat.BigTextStyle()
@@ -92,9 +110,33 @@ public class DiscoveryService extends IntentService {
 
         mBuilder.setContentIntent(contentIntent);
         Notification note = mBuilder.build();
-        note.defaults |= Notification.DEFAULT_VIBRATE;
-        mNotificationManager.notify(NOTIFICATION_ID, note);
+        note.defaults |= Notification.DEFAULT_ALL;
+        notificationManager.notify(NOTIFICATION_ID, note);
+
+
+    }
+
+    private void clean() {
+        Log.d(LOG_TAG, "clean");
+        mBus.unregister(this);
+        mLiveObjectNotifier.cancelWakeUp();
+
+
     }
 
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(LOG_TAG, "onDestroy");
+        clean();
+
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        Log.d(LOG_TAG, "onTaskRemoved");
+        clean();
+    }
 }

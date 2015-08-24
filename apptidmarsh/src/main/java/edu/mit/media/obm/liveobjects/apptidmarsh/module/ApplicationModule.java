@@ -11,7 +11,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import edu.mit.media.obm.liveobjects.apptidmarsh.TidmarshApplication;
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.notifications.AlarmReceiver;
 import edu.mit.media.obm.liveobjects.apptidmarsh.notifications.DiscoveryService;
@@ -30,7 +29,6 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
                 BluetoothNotifier.class,
                 DiscoveryService.class,
                 PeriodicAlarmManager.class,
-                TidmarshApplication.class,
                 MainActivity.class
 
 
