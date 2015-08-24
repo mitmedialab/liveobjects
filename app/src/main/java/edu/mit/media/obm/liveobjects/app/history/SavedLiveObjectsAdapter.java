@@ -3,13 +3,14 @@ package edu.mit.media.obm.liveobjects.app.history;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.noveogroup.android.log.Log;
 
 import java.io.InputStream;
 import java.util.List;
@@ -28,8 +29,6 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public class SavedLiveObjectsAdapter extends ArrayAdapter<Map<String,Object>> {
-    private static final String LOG_TAG = SavedLiveObjectsAdapter.class.getSimpleName();
-
     private final Context mContext;
     private final List<Map<String,Object>> mLiveObjectsPropertiesList;
 
@@ -75,7 +74,7 @@ public class SavedLiveObjectsAdapter extends ArrayAdapter<Map<String,Object>> {
             Bitmap croppedBitmap = bitmapEditor.cropToAspectRatio(bitmap, 1.0F);
             iconView.setImageBitmap(croppedBitmap);
         } catch (Exception e) {
-            Log.e(LOG_TAG, "error setting icon image", e);
+            Log.e("error setting icon image", e);
         }
 
 

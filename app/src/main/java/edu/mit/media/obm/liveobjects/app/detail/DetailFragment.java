@@ -1,6 +1,5 @@
 package edu.mit.media.obm.liveobjects.app.detail;
 
-
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -8,7 +7,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +14,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.noveogroup.android.log.Log;
 
 import org.json.JSONObject;
 
@@ -43,8 +43,6 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * Shows the details of a connected live object and allows to play the content
  */
 public class DetailFragment extends Fragment {
-
-    private static final String LOG_TAG = DetailFragment.class.getSimpleName();
     //TODO make the directory name parametrizable
     private static final String DIRECTORY_NAME = "DCIM";
 
@@ -193,15 +191,12 @@ public class DetailFragment extends Fragment {
     }
 
     private void storeProperties(String liveObjectId, Map<String, Object> properties) {
-        Log.d(LOG_TAG, "storing properties " + properties);
+        Log.d("storing properties " + properties);
         mDbController.putLiveObject(liveObjectId, properties);
     }
 
-
-
-
     private void setUIContent(Map<String, Object> liveObjectProperties) {
-        Log.d(LOG_TAG, liveObjectProperties.toString());
+        Log.d(liveObjectProperties.toString());
 
         MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
 

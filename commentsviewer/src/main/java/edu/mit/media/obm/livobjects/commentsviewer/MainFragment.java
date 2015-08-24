@@ -6,11 +6,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.noveogroup.android.log.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -39,7 +40,6 @@ import edu.mit.media.obm.liveobjects.storage.wifi.WifiStorageDriver;
  * create an instance of this fragment.
  */
 public class MainFragment extends Fragment {
-    private static final String LOG_TAG = MainFragment.class.getSimpleName();
     private TextView mCommentTextView;
 
     private static final String COMMENT_FOLDER = "COMMENTS";
@@ -147,11 +147,11 @@ public class MainFragment extends Fragment {
                         String comment = extractComment(stringContent);
                         commentList.add(comment);
                     } catch (IOException e) {
-                        Log.e(LOG_TAG, "", e);
+                        Log.e("", e);
                         e.printStackTrace();
                     } catch (RemoteException e) {
                         e.printStackTrace();
-                        Log.e(LOG_TAG, "", e);
+                        Log.e("", e);
                     }
 
                 }

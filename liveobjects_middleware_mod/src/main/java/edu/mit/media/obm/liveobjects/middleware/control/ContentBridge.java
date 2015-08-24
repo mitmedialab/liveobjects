@@ -3,7 +3,8 @@ package edu.mit.media.obm.liveobjects.middleware.control;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.RemoteException;
-import android.util.Log;
+
+import com.noveogroup.android.log.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,8 +23,6 @@ import edu.mit.media.obm.liveobjects.middleware.storage.RemoteStorageDriver;
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public class ContentBridge implements ContentController {
-    private static final String LOG_TAG = ContentBridge.class.getSimpleName();
-
     private LocalStorageDriver mLocalStorageDriver;
     private RemoteStorageDriver mRemoteStorageDriver;
     private Context mContext;
@@ -49,7 +48,7 @@ public class ContentBridge implements ContentController {
                 try {
                     mRemoteStorageDriver.writeNewRawFileFromString(filePath, stringContent);
                 } catch (IOException e) {
-                    Log.e(LOG_TAG,"writeNewRawFile", e);
+                    Log.e("writeNewRawFile", e);
                     e.printStackTrace();
                 }
                 return null;
@@ -67,11 +66,11 @@ public class ContentBridge implements ContentController {
         InputStream inputStream;
         String filePath = contentId.getRelativePath();
         if (mLocalStorageDriver.isFileExisting(filePath)) {
-            Log.d(LOG_TAG, "accessing content locally, filePath: " + filePath);
+            Log.d("accessing content locally, filePath: " + filePath);
             inputStream = mLocalStorageDriver.getInputStreamFromFile(filePath);
         }
         else {
-            Log.d(LOG_TAG, "accessing content remotely, filePath: " + filePath);
+            Log.d("accessing content remotely, filePath: " + filePath);
             inputStream = mRemoteStorageDriver.getInputStreamFromFile(filePath);
             mLocalStorageDriver.writeNewRawFileFromInputStream(filePath, inputStream);
             inputStream.close();
@@ -99,11 +98,11 @@ public class ContentBridge implements ContentController {
     public String getFileUrl(final ContentId contentId) throws IOException, RemoteException {
         String filePath = contentId.getRelativePath();
         if (mLocalStorageDriver.isFileExisting(filePath)) {
-            Log.d(LOG_TAG, "returning local file path, filePath: " + filePath);
+            Log.d("returning local file path, filePath: " + filePath);
             return mLocalStorageDriver.getFullPath(filePath);
         }
         else {
-            Log.d(LOG_TAG, "returning remote file path, filePath: " + filePath);
+            Log.d("returning remote file path, filePath: " + filePath);
             new AsyncTask<String, Void, Void>() {
                 @Override
                 protected Void doInBackground(String... params) {

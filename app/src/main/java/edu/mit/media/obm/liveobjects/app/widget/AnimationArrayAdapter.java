@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import com.noveogroup.android.log.Log;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -33,8 +34,6 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * Created by arata on 3/13/15.
  */
 public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
-    private static final String LOG_TAG = AnimationArrayAdapter.class.getSimpleName();
-
     private Context mContext;
     private LayoutInflater mInflater;
     private int mResource;
@@ -149,7 +148,7 @@ public class AnimationArrayAdapter<T> extends ArrayAdapter<T> {
 
                 imageView.setImageDrawable(bitmapDrawable);
             } catch (Exception e) {
-                Log.e(LOG_TAG, "error setting icon image", e);
+                Log.e("error setting icon image", e);
             }
 
         }

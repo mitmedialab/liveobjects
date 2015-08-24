@@ -8,10 +8,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import com.noveogroup.android.log.Log;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -37,8 +38,6 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * Created by Valerio Panzica La Manna on 08/12/14.
  */
 public class MediaViewActivity extends ActionBarActivity implements OnMediaViewListener {
-    private static final String LOG_TAG = MediaViewActivity.class.getSimpleName();
-
     public static String EXTRA_LIVE_OBJ_NAME_ID = "live_obj_name_id";
     public static String STATE_LIVE_OBJ_NAME_ID = "state_live_obj_name_id";
 
@@ -140,16 +139,16 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
             e.printStackTrace();
         }
 //        if (isLocallyAvailable(mFilePath, mFileName, MEDIA_DIRECTORY_NAME)) {
-//            Log.d(LOG_TAG, "media file locally available ");
+//            Log.d("media file locally available ");
 //            fileUrl = mFilePath;
 //        }
 //        else {
-//            Log.d(LOG_TAG, "media file taken from live object ");
-//            Log.e(LOG_TAG, "filename: " + mFileName);
-//            Log.e(LOG_TAG, "filePath: " + mFilePath);
+//            Log.d("media file taken from live object ");
+//            Log.e("filename: " + mFileName);
+//            Log.e("filePath: " + mFilePath);
 //            fileUrl = getFileUrl(mFileName);
 //
-//            Log.e(LOG_TAG, "fileUrl: " + fileUrl);
+//            Log.e("fileUrl: " + fileUrl);
 //        }
 
 
@@ -174,14 +173,14 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 //        File sizeFile = new File(localPath + ".size");
 //
 //        if (!sizeFile.exists()) {
-//            Log.v(LOG_TAG, "file doesn't exist in local");
+//            Log.v("file doesn't exist in local");
 //            return false;
 //        }
 //
 //        int fileSize = getFileSize(localPath, remoteFileName, remoteDirName);
 //        File file = new File(localPath);
 //
-//        Log.v(LOG_TAG, String.format("file size in local (%d), in remote (%d)", file.length(), fileSize));
+//        Log.v(String.format("file size in local (%d), in remote (%d)", file.length(), fileSize));
 //
 //        return (fileSize == file.length());
 //    }
@@ -197,7 +196,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
             ContentId remoteContentId = new ContentId(mLiveObjNameId, remoteDirName, remoteFileName);
             int fileSize = mContentController.getContentSize(remoteContentId);
             PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(sizeFile)));
-            Log.v(LOG_TAG, "file_size = " + fileSize);
+            Log.v("file_size = " + fileSize);
             writer.print(fileSize);
             writer.close();
         } catch (IOException e) {
@@ -232,7 +231,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.v(LOG_TAG, "onDestroy()");
+        Log.v("onDestroy()");
 
         cancelTask();
     }
@@ -317,7 +316,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 //
 //                if (!isLocallyAvailable(mFilePath, mFileName, MEDIA_DIRECTORY_NAME)) {
 //                    try {
-//                        Log.d(LOG_TAG, "starting saving media file " + mFileName + " into " + mFilePath);
+//                        Log.d("starting saving media file " + mFileName + " into " + mFilePath);
 //
 //                        storeFileSize(mFilePath, mFileName, MEDIA_DIRECTORY_NAME);
 //                        int fileSize = getFileSize(mFilePath, mFileName, MEDIA_DIRECTORY_NAME);
@@ -348,7 +347,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 //                        inputStream.close();
 //                        outputStream.close();
 //                    } catch (Exception e) {
-//                        Log.e(LOG_TAG, "Error saving media file", e);
+//                        Log.e("Error saving media file", e);
 //                    }
 //                }
 //
@@ -366,7 +365,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 //
 //                mDownloadProgressDialog.dismiss();
 //
-//                Log.d(LOG_TAG, "file saving completed");
+//                Log.d("file saving completed");
 //                launchMediaFragment();
 //            }
 //        };

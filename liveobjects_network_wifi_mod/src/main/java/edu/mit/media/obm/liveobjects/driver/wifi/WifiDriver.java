@@ -10,7 +10,8 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
-import android.util.Log;
+
+import com.noveogroup.android.log.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +27,6 @@ import edu.mit.media.obm.liveobjects.middleware.net.NetworkUtil;
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public class WifiDriver implements NetworkDriver {
-    private final static String LOG_TAG = WifiDriver.class.getSimpleName();
-
     private final String NETWORK_PASSWORD;
     protected final String SSID_PREFIX;
     private final char SSID_DELIMITER;
@@ -90,7 +89,7 @@ public class WifiDriver implements NetworkDriver {
 
     @Override
     synchronized public void startScan() {
-        Log.v(LOG_TAG, "starting Wifi scan");
+        Log.v("starting Wifi scan");
         mWifiManager.startScan();
     }
 
@@ -159,7 +158,7 @@ public class WifiDriver implements NetworkDriver {
         new AsyncTask<String, Void, Void>() {
             @Override
             protected Void doInBackground(String... params) {
-                Log.v(LOG_TAG, "deletes network configurations for all live objects");
+                Log.v("deletes network configurations for all live objects");
                 final List<WifiConfiguration> configurations = mWifiManager.getConfiguredNetworks();
 
                 // configurations can be null when WiFi is disabled
@@ -170,9 +169,9 @@ public class WifiDriver implements NetworkDriver {
                 for (WifiConfiguration configuration: configurations) {
                     String ssid = WifiManagerWrapper.unQuoteString(configuration.SSID);
 
-                    Log.v(LOG_TAG, "found a network configuration for '" + ssid + "'");
+                    Log.v("found a network configuration for '" + ssid + "'");
                     if (mNetworkUtil.isLiveObject(ssid)) {
-                        Log.v(LOG_TAG, "deleting a network configuration for live object '" + ssid + "'");
+                        Log.v("deleting a network configuration for live object '" + ssid + "'");
                         WifiManagerWrapper.removeNetwork(mWifiManager, ssid);
                     }
                 }
@@ -200,13 +199,13 @@ public class WifiDriver implements NetworkDriver {
         }
 
         private void handleWifiScan() {
-            Log.v(LOG_TAG, "SCANNING WIFI");
+            Log.v("SCANNING WIFI");
             List<LiveObject> liveObjectList = new ArrayList<>();
             List<ScanResult> scanResults = mWifiManager.getScanResults();
 
             for (ScanResult scanResult : scanResults) {
                 String deviceId = scanResult.SSID.toString();
-                Log.v(LOG_TAG, "scanResult: " +  deviceId);
+                Log.v("scanResult: " +  deviceId);
 
                 if (mNetworkUtil.isLiveObject(deviceId)){
                     LiveObject liveObject = mNetworkUtil.convertDeviceIdToLiveObject(deviceId);
@@ -226,7 +225,7 @@ public class WifiDriver implements NetworkDriver {
         private void handleWifiConnection(Intent intent) {
             NetworkInfo networkInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
             NetworkInfo.State state = networkInfo.getState();
-            Log.v(LOG_TAG, "networkInfo = " + networkInfo.toString());
+            Log.v("networkInfo = " + networkInfo.toString());
 
             synchronized (WifiDriver.class) {
                 if (state.equals(NetworkInfo.State.CONNECTED) && mConnecting == true) {
@@ -239,7 +238,7 @@ public class WifiDriver implements NetworkDriver {
                     ssid = WifiManagerWrapper.unQuoteString(ssid);
                     if (mNetworkUtil.isLiveObject(ssid)) {
                         LiveObject connectedLiveObject = mNetworkUtil.convertDeviceIdToLiveObject(ssid);
-                        Log.d(LOG_TAG, "connectedLiveObject = " + connectedLiveObject);
+                        Log.d("connectedLiveObject = " + connectedLiveObject);
                         mNetworkListener.onConnected(connectedLiveObject.getLiveObjectName());
 
                         mConnecting = false;

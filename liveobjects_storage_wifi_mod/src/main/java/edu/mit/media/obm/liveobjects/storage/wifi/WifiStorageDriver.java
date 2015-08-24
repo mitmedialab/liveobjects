@@ -3,7 +3,8 @@ package edu.mit.media.obm.liveobjects.storage.wifi;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.RemoteException;
-import android.util.Log;
+
+import com.noveogroup.android.log.Log;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -30,9 +31,6 @@ import edu.mit.media.obm.liveobjects.middleware.storage.RemoteStorageDriver;
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public class WifiStorageDriver implements RemoteStorageDriver {
-
-    private static final String LOG_TAG = WifiStorageDriver.class.getSimpleName();
-
     private Context mContext;
 
     public WifiStorageDriver(Context context) {
@@ -75,7 +73,7 @@ public class WifiStorageDriver implements RemoteStorageDriver {
         URL url = new URL(path);
         HttpURLConnection urlCon = (HttpURLConnection) url.openConnection();
         urlCon.connect();
-        Log.d(LOG_TAG, "connecting to path " + path);
+        Log.d("connecting to path " + path);
 
         //wait request to be completed
         urlCon.getResponseCode();
@@ -103,7 +101,7 @@ public class WifiStorageDriver implements RemoteStorageDriver {
 
         try {
             String command = WifiStorageConfig.getBasePath(mContext) + "upload.cgi";
-            Log.d(LOG_TAG, "command = " + command);
+            Log.d("command = " + command);
             URL url = new URL(command);
             HttpURLConnection httpUrlCon = (HttpURLConnection) url.openConnection();
             httpUrlCon.setDoInput(true);
@@ -123,8 +121,7 @@ public class WifiStorageDriver implements RemoteStorageDriver {
             ds.writeBytes("--" + boundary + "--" + "\r\n");
             ds.flush();
             ds.close();
-            Log.d(LOG_TAG, "writing filename =  " + fileName  +
-                            " with bodyString = " + bodyString);
+            Log.d("writing filename =  " + fileName  + " with bodyString = " + bodyString);
 
             if(httpUrlCon.getResponseCode() == HttpURLConnection.HTTP_OK){
                 StringBuffer sb = new StringBuffer();
@@ -136,7 +133,7 @@ public class WifiStorageDriver implements RemoteStorageDriver {
                 }
                 result = sb.toString();
             }
-            Log.d(LOG_TAG,"result = " + result);
+            Log.d("result = " + result);
 
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -168,7 +165,7 @@ public class WifiStorageDriver implements RemoteStorageDriver {
         String encodedFilePath = encodeFilePath(filePath);
         String path = basePath + encodedFilePath;
         Log.v(getClass().getSimpleName(), "base_path = " + basePath + ", filePath = " + encodedFilePath);
-        Log.d(LOG_TAG, "PATH = " + path);
+        Log.d("PATH = " + path);
         URL url = new URL(path);
         URLConnection urlCon = url.openConnection();
         urlCon.connect();
@@ -215,7 +212,7 @@ public class WifiStorageDriver implements RemoteStorageDriver {
             }
 
         } catch (RemoteException e) {
-            Log.e(LOG_TAG, "RemoteException", e);
+            Log.e("RemoteException", e);
         }
 
         return fileNames;
@@ -227,9 +224,9 @@ public class WifiStorageDriver implements RemoteStorageDriver {
         String fileName = getFileNameFromPath(filePath);
         String basePath = WifiStorageConfig.getBasePath(mContext);
         String requestUrl = basePath + "command.cgi?op=100&DIR=/" + folder;
-        Log.d(LOG_TAG, "requestUrl = " + requestUrl);
+        Log.d("requestUrl = " + requestUrl);
         String fileListString = getStringFromRequest(requestUrl);
-        Log.d(LOG_TAG, "fileListString = " + fileListString);
+        Log.d("fileListString = " + fileListString);
         String[] files = fileListString.split("([\n])");
 
         // File names in FlashAir consist of only upper letters
@@ -295,10 +292,10 @@ public class WifiStorageDriver implements RemoteStorageDriver {
         String fullPath = null;
         try {
             fullPath = WifiStorageConfig.getBasePath(mContext) + "/" + filePath;
-            Log.d(LOG_TAG, "remote full path: " + fullPath);
+            Log.d("remote full path: " + fullPath);
 
         } catch (RemoteException e) {
-            Log.e(LOG_TAG, "error get Base Path", e);
+            Log.e("error get Base Path", e);
             e.printStackTrace();
         }
 

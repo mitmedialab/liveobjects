@@ -31,4 +31,5 @@ dependencies {
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
     androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
     androidTestCompile 'org.mockito:mockito-core:2.0.5-beta'
+    compile 'com.noveogroup.android:android-logger:1.3.5'
 }

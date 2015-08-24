@@ -4,13 +4,10 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.common.MapLocation;
@@ -21,8 +18,6 @@ import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
  * Created by arata on 8/11/15.
  */
 public class DummyDriver implements NetworkDriver {
-    private final static String LOG_TAG = DummyDriver.class.getSimpleName();
-
     private NetworkListener mNetworkListener = null;
 
     private final int MAX_LOCATION_X;

@@ -5,15 +5,14 @@ import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.RemoteException;
 import android.text.format.Formatter;
-import android.util.Log;
+
+import com.noveogroup.android.log.Log;
 
 
 /**
  * @author Arata Miyamoto <arata@media.mit.edu>
  */
 public class WifiStorageConfig {
-    private final static String LOG_TAG = WifiStorageConfig.class.getSimpleName();
-
     public static class ContextWrapper {
         private Context mContext;
 
@@ -54,7 +53,7 @@ public class WifiStorageConfig {
         }
 
         String gateway = Formatter.formatIpAddress(dhcpInfo.gateway);
-        Log.d(LOG_TAG, "baseUrl = " + gateway);
+        Log.d("baseUrl = " + gateway);
 
         if ("0.0.0.0".equals(gateway)) {
             throw new RemoteException("failed to get the IP address of the gateway");
