@@ -19,11 +19,13 @@ import edu.mit.media.obm.shair.liveobjects.R;
 
 
 public class MainActivity extends SingleFragmentActivity {
+
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     @Inject NetworkController mNetWorkController;
 
-    @Inject PeriodicAlarmManager mPeriodicAlarmManager;
+    @Inject
+    PeriodicAlarmManager mPeriodicAlarmManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +73,7 @@ public class MainActivity extends SingleFragmentActivity {
 
         return super.onOptionsItemSelected(item);
     }
+<<<<<<< HEAD
 
     @Override
     public void onBackPressed() {
@@ -84,4 +87,6 @@ public class MainActivity extends SingleFragmentActivity {
         Log.d(LOG_TAG, "onDestroy");
         mPeriodicAlarmManager.stopPeriodicService();
     }
+=======
+>>>>>>> 0c2913735bc57569c076b962cc084e167963b3b3
 }

@@ -26,6 +26,7 @@ import javax.inject.Inject;
 
 import butterknife.BindString;
 import butterknife.ButterKnife;
+import dagger.ObjectGraph;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.ContentBrowserActivity;
@@ -154,6 +155,13 @@ public class MainFragment extends GroundOverlayMapFragment {
 
         mNetworkController.start();
 
+        Log.v("deleting all the network configuration related to live objects");
+        if (!mNetworkController.isConnecting()) {
+            mNetworkController.forgetNetworkConfigurations();
+        }
+
+//        mAdapter.notifyDataSetChanged();
+
         startDiscovery();
     }
 
@@ -185,7 +193,7 @@ public class MainFragment extends GroundOverlayMapFragment {
     @Override
     public void onStop() {
         Log.v("onStop()");
-//        mNetworkController.stop();
+        mNetworkController.stop();
         super.onStop();
 
         mBus.unregister(this);
@@ -196,13 +204,6 @@ public class MainFragment extends GroundOverlayMapFragment {
     private void initNetworkListeners() {
         mNetworkController.setDiscoveryListener(new LiveObjectDiscoveryListener());
         mNetworkController.setConnectionListener(new LiveObjectConnectionListener());
-
-        Log.v("deleting all the network configuration related to live objects");
-        if (!mNetworkController.isConnecting()) {
-            mNetworkController.forgetNetworkConfigurations();
-        }
-
-//        mAdapter.notifyDataSetChanged();
     }
 
     private class LiveObjectDiscoveryListener implements DiscoveryListener {
@@ -234,7 +235,7 @@ public class MainFragment extends GroundOverlayMapFragment {
     class LiveObjectConnectionListener implements ConnectionListener {
         @Override
         public void onConnected(LiveObject connectedLiveObject) {
-            Log.v(String.format("onConnected(%s)", connectedLiveObject));
+            Log.v("onConnected(%s)", connectedLiveObject);
             if (connectedLiveObject.equals(mSelectedLiveObject)) {
                 mConnectingDialog.dismiss();
 
@@ -301,7 +302,7 @@ public class MainFragment extends GroundOverlayMapFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        Log.v(String.format("onActivityResult(requestCode=%d)", requestCode));
+        Log.v("onActivityResult(requestCode=%d)", requestCode);
         super.onActivityResult(requestCode, resultCode, intent);
 
         if (requestCode == CONTENT_BROWSER_ACTIVITY_REQUEST_CODE) {

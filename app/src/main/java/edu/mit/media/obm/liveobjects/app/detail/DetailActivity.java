@@ -1,7 +1,5 @@
 package edu.mit.media.obm.liveobjects.app.detail;
 
-
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -11,14 +9,11 @@ import org.json.JSONException;
 
 import java.net.ConnectException;
 
-import edu.mit.media.obm.liveobjects.app.main.MainActivity;
 import edu.mit.media.obm.liveobjects.app.widget.MenuActions;
 import edu.mit.media.obm.shair.liveobjects.R;
 
 
 public class DetailActivity extends ActionBarActivity {
-    private static final String LOG_TAG = DetailActivity.class.getSimpleName();
-
     public static String EXTRA_LIVE_OBJ_NAME_ID = "live_obj_name_id";
 
     public static int RESULT_CONNECTION_ERROR = RESULT_FIRST_USER;

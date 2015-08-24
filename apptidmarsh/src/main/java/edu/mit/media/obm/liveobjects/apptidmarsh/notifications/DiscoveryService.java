@@ -9,8 +9,8 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
+import com.noveogroup.android.log.Log;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -30,6 +30,7 @@ import edu.mit.media.obm.shair.liveobjects.R;
  *
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
+
 public class DiscoveryService extends Service {
     private static final String LOG_TAG = DiscoveryService.class.getSimpleName();
     private static final int NOTIFICATION_ID = 1;
@@ -68,8 +69,8 @@ public class DiscoveryService extends Service {
 
 
     private void performDiscovery() {
-        Log.d(LOG_TAG, "starting Bluetooth discovery");
 
+        Log.d(LOG_TAG, "starting Bluetooth discovery");
 
         mLiveObjectNotifier.wakeUp();
 
@@ -79,6 +80,7 @@ public class DiscoveryService extends Service {
 
     @Subscribe
     public void addDetectedBluetoothDevice(InactiveLiveObjectDetectionEvent event) {
+
         Log.d(LOG_TAG, "received InactiveLiveObjectDetectionEvent");
         LiveObject liveObject = event.mLiveObject;
         String liveObjectName = liveObject.getLiveObjectName();
@@ -88,6 +90,7 @@ public class DiscoveryService extends Service {
         sendNotification(liveObjectName);
 
         stopSelf();
+
 
     }
 

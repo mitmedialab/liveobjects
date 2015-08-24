@@ -9,7 +9,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +20,8 @@ import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.noveogroup.android.log.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,8 +45,6 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * Created by Valerio Panzica La Manna on 08/12/14.
  */
 public class MainFragment extends Fragment {
-    private static final String LOG_TAG = MainFragment.class.getSimpleName();
-
     private static final int DETAIL_ACTIVITY_REQUEST_CODE = 1;
 
     private SwipeRefreshLayout mSwipeLayout;
@@ -173,7 +172,7 @@ public class MainFragment extends Fragment {
         initDiscoveryListener();
         initConnectionListener();
 
-        Log.v(LOG_TAG, "deleting all the network configuration related to live objects");
+        Log.v("deleting all the network configuration related to live objects");
         NetworkController networkController = mMiddleware.getNetworkController();
         if (!networkController.isConnecting()) {
             mMiddleware.getNetworkController().forgetNetworkConfigurations();
@@ -186,12 +185,12 @@ public class MainFragment extends Fragment {
         mNetworkController.setDiscoveryListener(new DiscoveryListener() {
             @Override
             public void onDiscoveryStarted() {
-                Log.d(LOG_TAG, "discovery started");
+                Log.d("discovery started");
             }
 
             @Override
             public void onLiveObjectsDiscovered(List<LiveObject> liveObjectList) {
-                Log.d(LOG_TAG, "discovery successfully completed");
+                Log.d("discovery successfully completed");
                 mLiveObjectNamesList.clear();
                 for (LiveObject liveObject : liveObjectList) {
                     mLiveObjectNamesList.add(liveObject);
@@ -206,7 +205,7 @@ public class MainFragment extends Fragment {
         mNetworkController.setConnectionListener(new ConnectionListener() {
             @Override
             public void onConnected(LiveObject connectedLiveObject) {
-                Log.v(LOG_TAG, String.format("onConnected(%s)", connectedLiveObject));
+                Log.v("onConnected(%s)", connectedLiveObject);
                 if (connectedLiveObject.equals(mSelectedLiveObject)) {
                     mConnectingDialog.dismiss();
 
@@ -221,7 +220,7 @@ public class MainFragment extends Fragment {
                         public void onAnimationStart(Animation animation) {
                             // doesn't show the title of a live object to prevent a strange error
                             // regarding too huge texts when the icon is expanding on an emulator.
-                            Log.v(LOG_TAG, "onAnimationStart()");
+                            Log.v("onAnimationStart()");
                             liveObjectTitleTextView.setVisibility(View.GONE);
 
                             mSwipeLayout.setClipChildren(false);
@@ -229,7 +228,7 @@ public class MainFragment extends Fragment {
 
                         @Override
                         public void onAnimationEnd(Animation animation) {
-                            Log.v(LOG_TAG, "onAnimationEnd()");
+                            Log.v("onAnimationEnd()");
 
                             // when the selected live objected is connected
                             // start the corresponding detail activity
@@ -257,7 +256,7 @@ public class MainFragment extends Fragment {
                     }
 
                     mClickedView.startAnimation(animation);
-                    Log.v(LOG_TAG, "starting an animation");
+                    Log.v("starting an animation");
                 }
 
             }
@@ -266,7 +265,7 @@ public class MainFragment extends Fragment {
 
     @Override
     public void onStart() {
-        Log.v(LOG_TAG, "onStart()");
+        Log.v("onStart()");
         super.onStart();
         mNetworkController.start();
         mNetworkController.startDiscovery();
@@ -274,18 +273,18 @@ public class MainFragment extends Fragment {
 
     @Override
     public void onStop() {
-        Log.v(LOG_TAG, "onStop()");
+        Log.v("onStop()");
 //        mNetworkController.stop();
         super.onStop();
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        Log.v(LOG_TAG, String.format("onActivityResult(requestCode=%d)", requestCode));
+        Log.v("onActivityResult(requestCode=%d)", requestCode);
         super.onActivityResult(requestCode, resultCode, intent);
 
         if (requestCode == DETAIL_ACTIVITY_REQUEST_CODE) {
-            Log.v(LOG_TAG, "returned from DetailActivity");
+            Log.v("returned from DetailActivity");
             final String errorMessage;
 
             if (resultCode == DetailActivity.RESULT_CONNECTION_ERROR) {

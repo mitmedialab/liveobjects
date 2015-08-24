@@ -1,7 +1,6 @@
 package edu.mit.media.obm.liveobjects.middleware.control;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
@@ -12,6 +11,7 @@ import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
 import com.couchbase.lite.UnsavedRevision;
 import com.couchbase.lite.android.AndroidContext;
+import com.noveogroup.android.log.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,9 +26,7 @@ import java.util.Map;
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public class CouchDbController implements DbController{
-    private static final String LOG_TAG = CouchDbController.class.getSimpleName();
     public static final String DB_NAME = "live-objects";
-
 
     private Manager mManager;
     private Database mDatabase;
@@ -42,9 +40,9 @@ public class CouchDbController implements DbController{
     private void createManager(Context context) {
         try {
             mManager = new Manager(new AndroidContext(context), Manager.DEFAULT_OPTIONS);
-            Log.d(LOG_TAG, "Manager created");
+            Log.d("Manager created");
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Cannot create manager object", e);
+            Log.e("Cannot create manager object", e);
             return;
         }
     }
@@ -52,9 +50,9 @@ public class CouchDbController implements DbController{
     private void createDb(String dbName) {
         try {
             mDatabase = mManager.getDatabase(dbName);
-            Log.d(LOG_TAG, "database created");
+            Log.d("database created");
         } catch (CouchbaseLiteException e) {
-            Log.e(LOG_TAG, "Cannot get database");
+            Log.e("Cannot get database");
             return;
         }
     }
@@ -114,7 +112,7 @@ public class CouchDbController implements DbController{
         try {
             liveObjDocument.putProperties(properties);
         } catch (CouchbaseLiteException e) {
-            Log.v(LOG_TAG, "updating properties");
+            Log.v("updating properties");
             updateProperties(liveObjectId, properties);
         }
     }
@@ -125,7 +123,7 @@ public class CouchDbController implements DbController{
             liveObjDocument.update(new Document.DocumentUpdater() {
                 @Override
                 public boolean update(UnsavedRevision newRevision) {
-                    Log.v(LOG_TAG, "update()");
+                    Log.v("update()");
                     Map<String, Object> properties = newRevision.getProperties();
                     properties.putAll(newProperties);
                     newRevision.setUserProperties(properties);
@@ -134,7 +132,7 @@ public class CouchDbController implements DbController{
                 }
             });
         } catch (CouchbaseLiteException e) {
-            Log.e(LOG_TAG, "not able to update the live object in the db ", e);
+            Log.e("not able to update the live object in the db ", e);
             e.printStackTrace();
         }
     }

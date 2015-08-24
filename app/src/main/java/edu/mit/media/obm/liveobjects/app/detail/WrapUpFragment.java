@@ -1,6 +1,5 @@
 package edu.mit.media.obm.liveobjects.app.detail;
 
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -12,7 +11,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -23,6 +21,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.noveogroup.android.log.Log;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -45,7 +45,6 @@ import edu.mit.media.obm.shair.liveobjects.R;
  * create an instance of this fragment.
  */
 public class WrapUpFragment extends Fragment {
-    private static final String LOG_TAG = WrapUpFragment.class.getSimpleName();
     // TODO make the comment directory names parametrizable
     private static final String COMMENT_DIRECTORY_NAME = "COMMENTS";
     private static final String MEDIA_DIR_NAME = "DCIM";
@@ -146,7 +145,7 @@ public class WrapUpFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
 
                 String commentText = makeComment(input.getText().toString());
-                Log.d(LOG_TAG, "ADDING COMMENT: " + input.getText().toString());
+                Log.d("ADDING COMMENT: " + input.getText().toString());
                 ContentId commentContentId = new ContentId(mLiveObjNameId, COMMENT_DIRECTORY_NAME, generateCommentFileName());
                 mContentController.putStringContent(commentContentId, commentText);
 
@@ -262,9 +261,9 @@ public class WrapUpFragment extends Fragment {
 
         int isFavoriteInInt = isFavorite ? MLProjectContract.IS_FAVORITE_TRUE :
                 MLProjectContract.IS_FAVORITE_FALSE ;
-        Log.d(LOG_TAG, "update property is favorite to: " + isFavoriteInInt);
+        Log.d("update property is favorite to: " + isFavoriteInInt);
         mDbController.putProperty(liveObjNameId, MLProjectContract.IS_FAVORITE, new Integer(isFavoriteInInt));
-        Log.d(LOG_TAG , "now favorite is: " + mDbController.getProperty(liveObjNameId, MLProjectContract.IS_FAVORITE));
+        Log.d("now favorite is: " + mDbController.getProperty(liveObjNameId, MLProjectContract.IS_FAVORITE));
     }
 
     private void setImage(View view, String fileName){
@@ -284,7 +283,7 @@ public class WrapUpFragment extends Fragment {
                 view.setBackgroundDrawable(background);
             }
         } catch (Exception e) {
-            Log.e(LOG_TAG, "error setting image", e);
+            Log.e("error setting image", e);
         }
     }
 

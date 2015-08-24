@@ -3,8 +3,8 @@ package edu.mit.media.obm.liveobjects.apptidmarsh.module;
 import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
+import com.noveogroup.android.log.Log;
 import com.squareup.otto.Bus;
 
 import javax.inject.Singleton;
@@ -49,7 +49,7 @@ public class ApplicationModule {
         // @Singleton annotation guarantees that the returned object exists one-per-objectGraph,
         // not one-per-application
         if (mBus == null) {
-            Log.v("ApplicationModule", "create Bus");
+            Log.v("create Bus");
             mBus = new Bus();
         }
 

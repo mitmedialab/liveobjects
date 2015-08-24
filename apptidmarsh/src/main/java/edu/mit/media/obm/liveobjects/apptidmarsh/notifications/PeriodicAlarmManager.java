@@ -4,7 +4,8 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+
+import com.noveogroup.android.log.Log;
 
 import javax.inject.Inject;
 
@@ -13,8 +14,6 @@ import javax.inject.Inject;
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public class PeriodicAlarmManager {
-    private static final String LOG_TAG = PeriodicAlarmManager.class.getSimpleName();
-
     private static final long SECOND = 1000;
 
     @Inject Intent mAlarmReceiverIntent;
@@ -28,7 +27,7 @@ public class PeriodicAlarmManager {
     }
 
     public void startPeriodicService() {
-        Log.d(LOG_TAG, "startingPeriodicService");
+        Log.d("startingPeriodicService");
         long triggeringNow = System.currentTimeMillis();
         long periodicInterval = 60 * SECOND;
 

@@ -2,7 +2,8 @@ package edu.mit.media.obm.liveobjects.storage.local;
 
 import android.content.Context;
 import android.os.RemoteException;
-import android.util.Log;
+
+import com.noveogroup.android.log.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -20,8 +21,6 @@ import edu.mit.media.obm.liveobjects.middleware.storage.LocalStorageDriver;
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public class FileLocalStorageDriver implements LocalStorageDriver {
-    private static final String LOG_TAG = FileLocalStorageDriver.class.getSimpleName();
-
     private Context mContext;
 
     public FileLocalStorageDriver(Context context) {
@@ -64,7 +63,7 @@ public class FileLocalStorageDriver implements LocalStorageDriver {
         File directory = new File(directoryPath);
         boolean directoryCreated =directory.mkdirs();
         if (directoryCreated) {
-            Log.d(LOG_TAG, "directory created: " + directory);
+            Log.d("directory created: " + directory);
         }
 
     }

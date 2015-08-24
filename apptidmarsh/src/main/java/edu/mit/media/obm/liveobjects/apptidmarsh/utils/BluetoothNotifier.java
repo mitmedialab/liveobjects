@@ -96,7 +96,7 @@ public class BluetoothNotifier extends LiveObjectNotifier {
 
                 // ToDo; shouldn't use WiFiUtil directly
                 if (deviceName != null && WifiLocationUtil.INSTANCE.isLiveObject(deviceName)) {
-                    Log.d(String.format("trying to connect to BLE device '%s'", deviceName));
+                    Log.d("trying to connect to BLE device '%s'", deviceName);
                     mBluetoothGatt = device.connectGatt(mContext, true, mGattCallback);
 
                     // ToDo; shouldn't use WiFiUtil directly
