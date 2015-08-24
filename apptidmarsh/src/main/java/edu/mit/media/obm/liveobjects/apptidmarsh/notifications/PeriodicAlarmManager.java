@@ -14,6 +14,7 @@ import javax.inject.Inject;
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public class PeriodicAlarmManager {
+    private static final String LOG_TAG = PeriodicAlarmManager.class.getSimpleName();
     private static final long SECOND = 1000;
 
     @Inject Intent mAlarmReceiverIntent;

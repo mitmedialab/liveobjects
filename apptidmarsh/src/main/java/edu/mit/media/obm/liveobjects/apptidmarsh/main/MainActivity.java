@@ -73,7 +73,7 @@ public class MainActivity extends SingleFragmentActivity {
 
         return super.onOptionsItemSelected(item);
     }
-<<<<<<< HEAD
+
 
     @Override
     public void onBackPressed() {
@@ -87,6 +87,5 @@ public class MainActivity extends SingleFragmentActivity {
         Log.d(LOG_TAG, "onDestroy");
         mPeriodicAlarmManager.stopPeriodicService();
     }
-=======
->>>>>>> 0c2913735bc57569c076b962cc084e167963b3b3
+
 }
