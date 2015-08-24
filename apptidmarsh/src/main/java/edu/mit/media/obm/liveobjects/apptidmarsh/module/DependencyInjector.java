@@ -14,7 +14,7 @@ public class DependencyInjector {
 
     private DependencyInjector() {
         // create object class for dependency injection
-        mObjectGraph = ObjectGraph.create(MiddlewareModule.class, ApplicationModule.class);
+        mObjectGraph = ObjectGraph.create(MiddlewareModule.class, ApplicationModule.class, SystemModule.class);
     }
 
     public static DependencyInjector getInstance() {

@@ -1,6 +1,8 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.module;
 
+import android.app.AlarmManager;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.squareup.otto.Bus;
@@ -9,6 +11,11 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import edu.mit.media.obm.liveobjects.apptidmarsh.TidmarshApplication;
+import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.notifications.AlarmReceiver;
+import edu.mit.media.obm.liveobjects.apptidmarsh.notifications.DiscoveryService;
+import edu.mit.media.obm.liveobjects.apptidmarsh.notifications.PeriodicAlarmManager;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.BluetoothNotifier;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
 
@@ -20,7 +27,12 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
         complete = false,
         includes = SystemModule.class,
         injects = {
-                BluetoothNotifier.class
+                BluetoothNotifier.class,
+                DiscoveryService.class,
+                PeriodicAlarmManager.class,
+                TidmarshApplication.class,
+                MainActivity.class
+
 
         }
 )
@@ -45,4 +57,16 @@ public class ApplicationModule {
 
         return mBus;
     }
+
+    @Provides
+    Intent provideAlarmReceiverIntent(Context context) {
+        return new Intent(context, AlarmReceiver.class);
+    }
+
+    @Provides
+    PeriodicAlarmManager providePeriodicAlarmManager(Intent alarmReceiverIntent, Context context, AlarmManager alarmManager) {
+        return new PeriodicAlarmManager(alarmReceiverIntent, context, alarmManager
+        );
+    }
+
 }

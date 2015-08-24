@@ -1,6 +1,6 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.module;
 
-import android.app.Activity;
+import android.app.AlarmManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.Context;
@@ -10,9 +10,9 @@ import android.widget.MediaController;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
 
-import butterknife.ButterKnife;
 import dagger.Module;
 import dagger.Provides;
+import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.VideoViewFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.BluetoothNotifier;
 
@@ -24,7 +24,9 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.utils.BluetoothNotifier;
         complete = false,
         injects = {
                 VideoViewFragment.class,
-                BluetoothNotifier.class
+                BluetoothNotifier.class,
+                MainActivity.class
+
         }
 )
 public class SystemModule {
@@ -33,7 +35,7 @@ public class SystemModule {
 
     public SystemModule(Context context) {
         mContext = context;
-        ButterKnife.bind(this, (Activity)mContext);
+        //ButterKnife.bind(this, (Activity)mContext);
     }
 
     @Provides Context provideContext() {
@@ -63,6 +65,10 @@ public class SystemModule {
 
     @Provides BluetoothLeAdvertiser provideBluetoothLeAdvertiser(BluetoothAdapter adapter) {
         return adapter.getBluetoothLeAdvertiser();
+    }
+
+    @Provides AlarmManager provideAlarmManager(Context context) {
+        return (AlarmManager)context.getSystemService(context.ALARM_SERVICE);
     }
 
 }
