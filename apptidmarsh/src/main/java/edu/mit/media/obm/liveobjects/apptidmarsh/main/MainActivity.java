@@ -9,7 +9,6 @@ import android.view.MenuItem;
 
 import javax.inject.Inject;
 
-import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.apptidmarsh.notifications.PeriodicAlarmManager;
 import edu.mit.media.obm.liveobjects.apptidmarsh.profile.ProfileActivity;
@@ -64,12 +63,14 @@ public class MainActivity extends SingleFragmentActivity {
             startActivity(intent);
 
             return true;
-        } else if (id == R.id.action_goto_history) {
-            Intent intent = new Intent(this, SavedLiveObjectsActivity.class);
-            startActivity(intent);
-
-            return true;
         }
+// history page temporarily deactivated
+//        else if (id == R.id.action_goto_history) {
+//            Intent intent = new Intent(this, SavedLiveObjectsActivity.class);
+//            startActivity(intent);
+//
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
