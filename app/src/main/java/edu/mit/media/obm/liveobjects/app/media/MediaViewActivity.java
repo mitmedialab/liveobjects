@@ -180,7 +180,7 @@ public class MediaViewActivity extends ActionBarActivity implements OnMediaViewL
 //        int fileSize = getFileSize(localPath, remoteFileName, remoteDirName);
 //        File file = new File(localPath);
 //
-//        Log.v(String.format("file size in local (%d), in remote (%d)", file.length(), fileSize));
+//        Log.v("file size in local (%d), in remote (%d)", file.length(), fileSize);
 //
 //        return (fileSize == file.length());
 //    }

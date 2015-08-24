@@ -1,13 +1,14 @@
 package edu.mit.media.obm.liveobjects.app.widget;
 
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
+
+import com.noveogroup.android.log.Log;
 
 /**
  * Created by artimo14 on 3/14/15.
@@ -53,8 +54,8 @@ public class ExpandIconAnimation {
         float diagonalLength = (float) Math.sqrt(Math.pow(displayMetrics.widthPixels, 2) +
                 Math.pow(displayMetrics.heightPixels, 2));
         float scale = diagonalLength / view.getMeasuredWidth() * 1.4f;
-        Log.v(getClass().getSimpleName(), String.format("displayMetrics = (%d, %d)", displayMetrics.widthPixels, displayMetrics.heightPixels));
-        Log.v(getClass().getSimpleName(), String.format("diagonalLength = %f, width = %d, scale = %f", diagonalLength, view.getMeasuredWidth(), scale));
+        Log.v("displayMetrics = (%d, %d)", displayMetrics.widthPixels, displayMetrics.heightPixels);
+        Log.v("diagonalLength = %f, width = %d, scale = %f", diagonalLength, view.getMeasuredWidth(), scale);
 
         float xDest = displayMetrics.widthPixels / 2 - view.getMeasuredWidth() / 2 / (scale * 2);
         float yDest = displayMetrics.heightPixels / 2 - view.getMeasuredHeight() / 2 / (scale * 2);

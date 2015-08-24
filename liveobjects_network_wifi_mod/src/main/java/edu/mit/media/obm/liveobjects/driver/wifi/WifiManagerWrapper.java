@@ -30,16 +30,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import android.content.Context;
-import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
-import android.net.wifi.WifiConfiguration.AuthAlgorithm;
-import android.net.wifi.WifiConfiguration.GroupCipher;
-import android.net.wifi.WifiConfiguration.KeyMgmt;
-import android.net.wifi.WifiConfiguration.PairwiseCipher;
-import android.net.wifi.WifiConfiguration.Protocol;
 import android.text.TextUtils;
-import android.util.Log;
+
+import com.noveogroup.android.log.Log;
 
 public class WifiManagerWrapper {
 
@@ -98,7 +93,7 @@ public class WifiManagerWrapper {
 
         final List<WifiConfiguration> configurations = wifiMgr.getConfiguredNetworks();
         for (final WifiConfiguration conf : configurations) {
-            Log.v(WifiManagerWrapper.class.getSimpleName(), String.format("%s: %d", conf.SSID, conf.priority));
+            Log.v("%s: %d", conf.SSID, conf.priority);
         }
 
         // Do not disable others

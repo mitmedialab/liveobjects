@@ -235,7 +235,7 @@ public class MainFragment extends GroundOverlayMapFragment {
     class LiveObjectConnectionListener implements ConnectionListener {
         @Override
         public void onConnected(LiveObject connectedLiveObject) {
-            Log.v(String.format("onConnected(%s)", connectedLiveObject));
+            Log.v("onConnected(%s)", connectedLiveObject);
             if (connectedLiveObject.equals(mSelectedLiveObject)) {
                 mConnectingDialog.dismiss();
 
@@ -302,7 +302,7 @@ public class MainFragment extends GroundOverlayMapFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        Log.v(String.format("onActivityResult(requestCode=%d)", requestCode));
+        Log.v("onActivityResult(requestCode=%d)", requestCode);
         super.onActivityResult(requestCode, resultCode, intent);
 
         if (requestCode == CONTENT_BROWSER_ACTIVITY_REQUEST_CODE) {

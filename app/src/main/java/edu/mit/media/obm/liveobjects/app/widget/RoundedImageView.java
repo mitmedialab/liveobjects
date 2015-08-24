@@ -11,8 +11,9 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.ImageView;
+
+import com.noveogroup.android.log.Log;
 
 /**
  * Created by arata on 3/12/15.
@@ -60,7 +61,7 @@ public class RoundedImageView extends ImageView {
         Paint paint = new Paint();
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
 
-        Log.v("RoundedImageView", String.format("view = (%d, %d)", getWidth(), getHeight()));
+        Log.v("view = (%d, %d)", getWidth(), getHeight());
 
         Bitmap roundBitmap = getCroppedBitmap(bitmap, getWidth());
         canvas.drawBitmap(roundBitmap, 0, 0, null);

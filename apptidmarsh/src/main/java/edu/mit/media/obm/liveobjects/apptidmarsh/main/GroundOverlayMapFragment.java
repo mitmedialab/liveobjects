@@ -542,8 +542,8 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         @Override
         public void onMapClick(LatLng latLng) {
             MapLocation mapLocation = latLngToGrid(latLng);
-            Log.v(String.format("clicked location = (%d, %d, %d) (in grid coordinates)",
-                    mapLocation.getCoordinateX(), mapLocation.getCoordinateY(), mapLocation.getMapId()));
+            Log.v("clicked location = (%d, %d, %d) (in grid coordinates)",
+                    mapLocation.getCoordinateX(), mapLocation.getCoordinateY(), mapLocation.getMapId());
         }
     }
 }
