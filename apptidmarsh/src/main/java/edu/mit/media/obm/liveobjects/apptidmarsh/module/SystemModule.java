@@ -27,6 +27,7 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.utils.BluetoothNotifier;
                 BluetoothNotifier.class,
                 MainActivity.class
 
+
         }
 )
 public class SystemModule {

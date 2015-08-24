@@ -40,7 +40,7 @@ public class PeriodicAlarmManager {
 
 
     public void stopPeriodicService() {
-
+        Log.d(LOG_TAG, "stopping periodic service");
         PendingIntent pendingIntent = getPendingIntent();
         pendingIntent.cancel();
         mAlarm.cancel(pendingIntent);

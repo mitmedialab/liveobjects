@@ -18,6 +18,7 @@ import edu.mit.media.obm.shair.liveobjects.R;
 
 
 public class MainActivity extends SingleFragmentActivity {
+
     @Inject NetworkController mNetWorkController;
 
     @Inject PeriodicAlarmManager mPeriodicAlarmManager;
@@ -78,6 +79,7 @@ public class MainActivity extends SingleFragmentActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         mPeriodicAlarmManager.stopPeriodicService();
     }
 }
