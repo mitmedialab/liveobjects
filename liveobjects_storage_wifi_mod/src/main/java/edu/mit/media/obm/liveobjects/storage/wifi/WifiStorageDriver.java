@@ -164,7 +164,7 @@ public class WifiStorageDriver implements RemoteStorageDriver {
         String basePath = WifiStorageConfig.getBasePath(mContext);
         String encodedFilePath = encodeFilePath(filePath);
         String path = basePath + encodedFilePath;
-        Log.v(getClass().getSimpleName(), "base_path = " + basePath + ", filePath = " + encodedFilePath);
+        Log.v("base_path = " + basePath + ", filePath = " + encodedFilePath);
         Log.d("PATH = " + path);
         URL url = new URL(path);
         URLConnection urlCon = url.openConnection();
@@ -303,23 +303,6 @@ public class WifiStorageDriver implements RemoteStorageDriver {
     }
 
     private String encodeFilePath(String filePath) {
-        Pattern pattern = Pattern.compile("(.*/)(.*)");
-        Matcher matcher = pattern.matcher(filePath);
-
-        String pathName;
-        String fileName;
-
-        if (matcher.find()) {
-            pathName = matcher.group(1);
-            fileName = matcher.group(2);
-        } else {
-            pathName = "";
-            fileName = filePath;
-        }
-
-        String encodedFileName = URLEncoder.encode(fileName);
-        encodedFileName = encodedFileName.replace("+", "%20");
-
-        return pathName + encodedFileName;
+        return filePath.replace(" ", "%20");
     }
 }
