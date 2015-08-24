@@ -9,10 +9,10 @@
         android:title="profile"
         app:showAsAction="always" />
 
-    <item
-        android:id="@+id/action_goto_history"
-        android:icon="@drawable/history_white"
-        android:title="history"
-        app:showAsAction="always" />
+    <!--<item-->
+        <!--android:id="@+id/action_goto_history"-->
+        <!--android:icon="@drawable/history_white"-->
+        <!--android:title="history"-->
+        <!--app:showAsAction="always" />-->
 
 </menu>
