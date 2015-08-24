@@ -98,6 +98,10 @@
     <orderEntry type="library" exported="" name="appcompat-v7-22.2.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="dexmaker-1.2" level="project" />
     <orderEntry type="library" exported="" name="jackson-core-asl-1.9.2" level="project" />
+<<<<<<< HEAD
+=======
+    <orderEntry type="library" exported="" scope="TEST" name="dexmaker-1.2" level="project" />
+>>>>>>> discovery-notification
     <orderEntry type="library" exported="" scope="TEST" name="mockito-core-2.0.5-beta" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="hamcrest-core-1.1" level="project" />
     <orderEntry type="library" exported="" name="jackson-mapper-asl-1.9.2" level="project" />

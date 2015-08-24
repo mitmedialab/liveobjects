@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,12 +28,10 @@ import javax.inject.Inject;
 
 import butterknife.BindString;
 import butterknife.ButterKnife;
-import dagger.ObjectGraph;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.ContentBrowserActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
-import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.CameraChangeEvent;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.FinishedDetectingInactiveLiveObjectEvent;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.InactiveLiveObjectDetectionEvent;
@@ -75,7 +75,7 @@ public class MainFragment extends GroundOverlayMapFragment {
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
 
         ButterKnife.bind(this, rootView);
-        DependencyInjector.inject(this, getActivity());
+        //DependencyInjector.inject(this, getActivity());
 
         setupUIElements();
         initNetworkListeners();
