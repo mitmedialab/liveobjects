@@ -107,6 +107,7 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/symbols" />
       <excludeFolder url="file://$MODULE_DIR$/build/outputs" />
+      <excludeFolder url="file://$MODULE_DIR$/build/tmp" />
     </content>
     <orderEntry type="jdk" jdkName="Android API 21 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -151,8 +152,8 @@
     <orderEntry type="library" exported="" name="appcompat-v7-22.2.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-ads-7.5.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-location-7.5.0" level="project" />
-    <orderEntry type="library" exported="" name="jackson-mapper-asl-1.9.2" level="project" />
     <orderEntry type="library" exported="" name="javawriter-2.5.0" level="project" />
+    <orderEntry type="library" exported="" name="jackson-mapper-asl-1.9.2" level="project" />
     <orderEntry type="module" module-name="liveobjects_storage_local_mod" exported="" />
     <orderEntry type="module" module-name="liveobjects_storage_wifi_mod" exported="" />
     <orderEntry type="module" module-name="liveobjects_network_wifi_mod" exported="" />

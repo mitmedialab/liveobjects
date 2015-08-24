@@ -64,7 +64,7 @@ public class MiddlewareModule {
     @Provides @Singleton
     MiddlewareInterface provideMiddlewareInterface(Context context) {
         if (mMiddleware == null) {
-            NetworkDriver networkDriver = new DummyDriver(context);
+            NetworkDriver networkDriver = new WifiDriver(context);
             NetworkController networkController = new NetworkBridge(networkDriver);
 
             LocalStorageDriver localStorageDriver = new FileLocalStorageDriver(context);
