@@ -18,12 +18,9 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import edu.mit.media.obm.liveobjects.middleware.storage.RemoteStorageDriver;
 
@@ -164,8 +161,8 @@ public class WifiStorageDriver implements RemoteStorageDriver {
         String basePath = WifiStorageConfig.getBasePath(mContext);
         String encodedFilePath = encodeFilePath(filePath);
         String path = basePath + encodedFilePath;
-        Log.v("base_path = " + basePath + ", filePath = " + encodedFilePath);
-        Log.d("PATH = " + path);
+        Log.v("base_path = %s, filePath = ", basePath, encodedFilePath);
+        Log.d("PATH = %s", path);
         URL url = new URL(path);
         URLConnection urlCon = url.openConnection();
         urlCon.connect();
@@ -266,11 +263,11 @@ public class WifiStorageDriver implements RemoteStorageDriver {
             }
             result =  strbuf.toString();
         }catch(MalformedURLException e) {
-            Log.e("ERROR", "ERROR: " + e.toString());
+            Log.e("ERROR: " + e.toString());
             e.printStackTrace();
         }
         catch(IOException e) {
-            Log.e("ERROR", "ERROR: " + e.toString());
+            Log.e("ERROR: " + e.toString());
             e.printStackTrace();
         }
         return result;
