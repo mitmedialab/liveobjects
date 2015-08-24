@@ -109,7 +109,9 @@ public class FileLocalStorageDriver implements LocalStorageDriver {
 
     @Override
     public String getFullPath(String relativePath) {
-        return mContext.getFilesDir().getAbsolutePath() + "/" + relativePath;
+        String fullPath = mContext.getFilesDir().getAbsolutePath() + "/" + relativePath;
+        Log.v("fullPath = %s", fullPath);
 
+        return fullPath;
     }
 }

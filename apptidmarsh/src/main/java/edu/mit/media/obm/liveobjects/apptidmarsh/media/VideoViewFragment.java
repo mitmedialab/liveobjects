@@ -70,7 +70,7 @@ public class VideoViewFragment extends Fragment {
 
         Uri vidUri = Uri.parse(mFileUrl);
         mVideoView.setVideoURI(vidUri);
-        Log.i("setting video: " + vidUri.toString());
+        Log.i("setting video: %s", vidUri.toString());
 
         if (mPlayPosition != null) {
             mVideoView.seekTo(mPlayPosition);
