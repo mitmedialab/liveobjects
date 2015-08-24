@@ -51,6 +51,7 @@
 
         <service
             android:name="edu.mit.media.obm.liveobjects.apptidmarsh.notifications.DiscoveryService"
+            android:stopWithTask="false"
             android:exported="false"/>
         <receiver android:name="edu.mit.media.obm.liveobjects.apptidmarsh.notifications.AlarmReceiver"
             android:exported="false">

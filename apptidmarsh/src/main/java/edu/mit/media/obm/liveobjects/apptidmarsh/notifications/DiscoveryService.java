@@ -87,7 +87,7 @@ public class DiscoveryService extends Service {
 
         sendNotification(liveObjectName);
 
-        cancel();
+        stopSelf();
 
     }
 
@@ -116,20 +116,27 @@ public class DiscoveryService extends Service {
 
     }
 
-    private void cancel() {
+    private void clean() {
+        Log.d(LOG_TAG, "clean");
         mBus.unregister(this);
         mLiveObjectNotifier.cancelWakeUp();
-        stopSelf();
+
 
     }
 
 
     @Override
     public void onDestroy() {
-        Log.d(LOG_TAG, "onDestroy");
         super.onDestroy();
+        Log.d(LOG_TAG, "onDestroy");
+        clean();
 
     }
 
-
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        Log.d(LOG_TAG, "onTaskRemoved");
+        clean();
+    }
 }

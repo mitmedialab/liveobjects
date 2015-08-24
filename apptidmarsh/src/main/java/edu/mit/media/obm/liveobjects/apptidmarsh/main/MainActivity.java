@@ -3,6 +3,7 @@ package edu.mit.media.obm.liveobjects.apptidmarsh.main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -18,6 +19,7 @@ import edu.mit.media.obm.shair.liveobjects.R;
 
 
 public class MainActivity extends SingleFragmentActivity {
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     @Inject NetworkController mNetWorkController;
 
@@ -79,7 +81,7 @@ public class MainActivity extends SingleFragmentActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        Log.d(LOG_TAG, "onDestroy");
         mPeriodicAlarmManager.stopPeriodicService();
     }
 }
