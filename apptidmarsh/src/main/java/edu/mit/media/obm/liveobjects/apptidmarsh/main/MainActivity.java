@@ -56,15 +56,15 @@ public class MainActivity extends SingleFragmentActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_goto_profile) {
-            Intent intent = new Intent(this, ProfileActivity.class);
-            startActivity(intent);
-
-            return true;
-        }
-// history page temporarily deactivated
+// todo profile page temporariy disabled
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_goto_profile) {
+//            Intent intent = new Intent(this, ProfileActivity.class);
+//            startActivity(intent);
+//
+//            return true;
+//        }
+// todo history page temporarily deactivated
 //        else if (id == R.id.action_goto_history) {
 //            Intent intent = new Intent(this, SavedLiveObjectsActivity.class);
 //            startActivity(intent);
