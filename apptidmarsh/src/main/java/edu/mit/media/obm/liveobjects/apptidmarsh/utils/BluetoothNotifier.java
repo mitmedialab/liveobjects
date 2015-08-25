@@ -88,10 +88,6 @@ public class BluetoothNotifier extends LiveObjectNotifier {
 
                 if (deviceName != null) {
                     Log.d("detected device: " + deviceName);
-//                    //todo for testing: to remove
-//                        LiveObject liveObject = WifiLocationUtil.INSTANCE.convertDeviceIdToLiveObject("liveobj-Test@2aa08");
-//                        mBus.post(new InactiveLiveObjectDetectionEvent(liveObject));
-//                    //
                 }
 
                 // ToDo; shouldn't use WiFiUtil directly

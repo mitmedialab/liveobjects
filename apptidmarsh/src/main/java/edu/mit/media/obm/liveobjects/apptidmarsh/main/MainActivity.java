@@ -1,6 +1,5 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.main;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -11,7 +10,6 @@ import javax.inject.Inject;
 
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.apptidmarsh.notifications.PeriodicAlarmManager;
-import edu.mit.media.obm.liveobjects.apptidmarsh.profile.ProfileActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.SingleFragmentActivity;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
 import edu.mit.media.obm.shair.liveobjects.R;
@@ -31,6 +29,21 @@ public class MainActivity extends SingleFragmentActivity {
         super.onCreate(savedInstanceState);
         DependencyInjector.inject(this, getApplicationContext());
         mPeriodicAlarmManager.startPeriodicService();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // stop the periodic bluetooth scan once the activity is visible.
+        mPeriodicAlarmManager.stopPeriodicService();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        //restart the bluetooth scan once the activity is not anymore visible
+        mPeriodicAlarmManager.startPeriodicService();
+
     }
 
     @Override
