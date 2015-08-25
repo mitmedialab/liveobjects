@@ -1,5 +1,6 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.media;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
@@ -94,24 +95,33 @@ public class PdfViewFragment extends Fragment implements OnPageChangeListener {
     }
 
     private void openPdfFile() {
-        try {
-            File pdfFile = File.createTempFile("tempPdf", "pdf");
-            InputStream inputStream = mContentController.getInputStreamContent(mContentId);
-            OutputStream outputStream = new FileOutputStream(pdfFile);
-            IOUtils.copy(inputStream, outputStream);
-            outputStream.close();
+        new AsyncTask<Void, Void, File>() {
+            @Override
+            protected File doInBackground(Void... params) {
+                try {
+                    File pdfFile = File.createTempFile("tempPdf", "pdf");
+                    InputStream inputStream = mContentController.getInputStreamContent(mContentId);
+                    OutputStream outputStream = new FileOutputStream(pdfFile);
+                    IOUtils.copy(inputStream, outputStream);
+                    outputStream.close();
 
-            mPdfView.fromFile(pdfFile)
-                    .defaultPage(mCurrentPage)
-                    .onPageChange(this)
-                    .load();
-        } catch (IOException e) {
-            Log.e("Failed to open pdf file", e);
-            throw new RuntimeException();
-        } catch (RemoteException e) {
-            Log.e("Failed to open pdf file", e);
-            throw new RuntimeException();
-        }
+                    return pdfFile;
+                } catch (IOException e) {
+                    Log.e("Failed to open pdf file", e);
+                    throw new RuntimeException();
+                } catch (RemoteException e) {
+                    Log.e("Failed to open pdf file", e);
+                    throw new RuntimeException();
+                }
+            }
+
+            protected void onPostExecute(File pdfFile) {
+                mPdfView.fromFile(pdfFile)
+                        .defaultPage(mCurrentPage)
+                        .onPageChange(PdfViewFragment.this)
+                        .load();
+            }
+        }.execute();
     }
 
     @Override
