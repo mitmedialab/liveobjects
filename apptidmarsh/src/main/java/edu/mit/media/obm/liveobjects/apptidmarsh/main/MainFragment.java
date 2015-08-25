@@ -26,7 +26,6 @@ import javax.inject.Inject;
 
 import butterknife.BindString;
 import butterknife.ButterKnife;
-import dagger.ObjectGraph;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.ContentBrowserActivity;
@@ -127,15 +126,16 @@ public class MainFragment extends GroundOverlayMapFragment {
 
                 mClickedMarker = marker;
             } else if (mSelectedLiveObject.getConnectedBefore()) {
-                MapLocation mapLocation = mSelectedLiveObject.getMapLocation();
-
-                Bundle arguments = new Bundle();
-                arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
-                arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, false);
-
-                Intent intent = new Intent(getActivity(), DetailActivity.class);
-                intent.putExtra(EXTRA_ARGUMENTS, arguments);
-                startActivity(intent);
+//                // TODO: 8/24/15 temporarily disabled  
+//                MapLocation mapLocation = mSelectedLiveObject.getMapLocation();
+//
+//                Bundle arguments = new Bundle();
+//                arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
+//                arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, false);
+//
+//                Intent intent = new Intent(getActivity(), DetailActivity.class);
+//                intent.putExtra(EXTRA_ARGUMENTS, arguments);
+//                startActivity(intent);
             } else {
                 // cannot connect to a live object which is neither active nor connected before
             }
