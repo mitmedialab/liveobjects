@@ -4,6 +4,7 @@
     <string name="media_config_filename">conf</string>
     <string name="content_type_video">video</string>
     <string name="content_type_audio">audio</string>
+    <string name="content_type_pdf">pdf</string>
     <string name="content_type_gallery">gallery</string>
 
     <string name="ibeacon_notification_uuid">98447aa4-7679-4d30-bd33-4f54634bc907</string>

@@ -47,6 +47,7 @@ public class MediaViewActivity extends SingleFragmentActivity implements OnMedia
 
     @BindString(R.string.content_type_video) String mContentTypeVideo;
     @BindString(R.string.content_type_audio) String mContentTypeAudio;
+    @BindString(R.string.content_type_pdf) String mContentTypePdf;
     @BindString(R.string.content_type_gallery) String mContentTypeGallery;
 
     @Inject ContentController mContentController;
@@ -90,6 +91,8 @@ public class MediaViewActivity extends SingleFragmentActivity implements OnMedia
         Fragment fragment;
         if (mContentType.equals(mContentTypeVideo) || mContentType.equals(mContentTypeAudio)) {
             fragment = new VideoViewFragment();
+        } else if (mContentType.equals(mContentTypePdf)) {
+            fragment = new PdfViewFragment();
         } else if (mContentType.equals(mContentTypeGallery)) {
             //TODO launch gallery
             throw new IllegalStateException("Unimplemented content type");
