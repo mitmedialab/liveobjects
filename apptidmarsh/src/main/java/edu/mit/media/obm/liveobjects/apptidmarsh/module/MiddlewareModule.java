@@ -17,6 +17,7 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.history.SavedLiveObjectsFragmen
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.MediaViewActivity;
+import edu.mit.media.obm.liveobjects.apptidmarsh.media.PdfViewFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.profile.ProfileActivity;
 import edu.mit.media.obm.liveobjects.driver.wifi.DummyDriver;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiDriver;
@@ -53,6 +54,7 @@ import edu.mit.media.obm.liveobjects.storage.wifi.WifiStorageDriver;
                 DetailActivity.class,
                 DetailFragment.class,
                 MediaViewActivity.class,
+                PdfViewFragment.class
         }
 )
 public class MiddlewareModule {
