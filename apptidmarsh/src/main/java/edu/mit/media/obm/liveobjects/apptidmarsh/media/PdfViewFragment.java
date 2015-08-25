@@ -1,9 +1,10 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.media;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,7 +88,9 @@ public class PdfViewFragment extends Fragment implements OnPageChangeListener {
 
     @Override
     public void onPageChanged(int page, int pageCount) {
-        getActivity().setTitle(String.format("%s %s / %s", PDF_FILE, page, pageCount));
+        ActionBar actionBar = ((ActionBarActivity)getActivity()).getSupportActionBar();
+        actionBar.setTitle(String.format("%s %s / %s", PDF_FILE, page, pageCount));
+        mCurrentPage = page;
     }
 
     private void openPdfFile() {
@@ -110,4 +113,11 @@ public class PdfViewFragment extends Fragment implements OnPageChangeListener {
             throw new RuntimeException();
         }
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STATE_CURRENT_PAGE, mPdfView.getCurrentPage());
+    }
+
 }
