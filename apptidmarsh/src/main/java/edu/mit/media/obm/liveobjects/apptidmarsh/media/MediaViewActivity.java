@@ -19,6 +19,7 @@ import javax.inject.Inject;
 
 import butterknife.BindString;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
+import edu.mit.media.obm.liveobjects.apptidmarsh.notifications.PeriodicAlarmManager;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.SingleFragmentActivity;
 import edu.mit.media.obm.liveobjects.middleware.common.ContentId;
@@ -53,6 +54,8 @@ public class MediaViewActivity extends SingleFragmentActivity implements OnMedia
     @Inject ContentController mContentController;
     @Inject DbController mDbController;
 
+    @Inject PeriodicAlarmManager mPeriodicAlarmManager;
+
     @Override
     protected Fragment createFragment() {
         Bundle arguments = getIntent().getBundleExtra(EXTRA_ARGUMENTS);
@@ -77,6 +80,21 @@ public class MediaViewActivity extends SingleFragmentActivity implements OnMedia
             mLiveObjNameId = savedInstanceState.getString(STATE_LIVE_OBJ_NAME_ID);
         }
     }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // stop the periodic bluetooth scan once the activity is visible.
+        mPeriodicAlarmManager.stopPeriodicService();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        //restart the bluetooth scan once the activity is not anymore visible
+        mPeriodicAlarmManager.startPeriodicService();
+
+    }
+
 
     private void initContent(String liveObjectId, int contentIndex) {
         Map<String, Object> properties = mDbController.getProperties(liveObjectId);
