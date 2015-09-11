@@ -7,9 +7,7 @@ import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
  * Specific implementation of DeviceIdTranslator for Wifi
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
-public enum SsidTranslator implements DeviceIdTranslator {
-    INSTANCE;
-
+public class SsidTranslator implements DeviceIdTranslator {
     private String SSID_PREFIX;
 
     @Override

@@ -57,13 +57,12 @@ public class WifiConnectionManager extends StartableEntity implements NetworkCon
         // (ssid_delimiter should be 1 byte long string, though)
         SSID_DELIMITER = resources.getString(R.string.ssid_delimiter).charAt(0);
 
-        int locationXLength = resources.getInteger(R.integer.map_location_coordinate_x_length);
-        int locationYLength = resources.getInteger(R.integer.map_location_coordinate_y_length);
-        int mapIdLength = resources.getInteger(R.integer.map_location_map_id_length);
+        int locationXLength = resources.getInteger(R.integer.map_location_x_length);
+        int locationYLength = resources.getInteger(R.integer.map_location_y_length);
+        int mapIdLength = resources.getInteger(R.integer.map_location_id_length);
 
-        PositionedSsidTranslator.INSTANCE.setSsidFormat(
+        mDeviceIdTranslator = new PositionedSsidTranslator(
                 SSID_PREFIX, SSID_DELIMITER, locationXLength, locationYLength, mapIdLength);
-        mDeviceIdTranslator = PositionedSsidTranslator.INSTANCE;
     }
 
     @Override

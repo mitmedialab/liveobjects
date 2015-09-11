@@ -14,7 +14,7 @@ import static org.testng.Assert.*;
  * Created by arata on 9/11/15.
  */
 public class PositionedSsidTranslatorTest {
-    private PositionedSsidTranslator positionedSsidTranslator = PositionedSsidTranslator.INSTANCE;
+    private PositionedSsidTranslator positionedSsidTranslator;
     private static String DEFAULT_PREFIX = "liveobj-";
     private static char DEFAULT_DELIMITER = '@';
     private static int DEFAULT_X_LENGTH_IN_HEX = 2;
@@ -25,7 +25,7 @@ public class PositionedSsidTranslatorTest {
 
     @BeforeMethod
     public void setUp() throws Exception {
-        positionedSsidTranslator.setSsidFormat(DEFAULT_PREFIX, DEFAULT_DELIMITER,
+        positionedSsidTranslator = new PositionedSsidTranslator(DEFAULT_PREFIX, DEFAULT_DELIMITER,
                 DEFAULT_X_LENGTH_IN_HEX, DEFAULT_Y_LENGTH_IN_HEX, DEFAULT_ID_LENGTH_IN_HEX);
     }
 
@@ -141,7 +141,8 @@ public class PositionedSsidTranslatorTest {
     public void shouldSetDeviceIdFormat(
             String prefix, char delimiter, int xLengthInHex, int yLengthInHex, int idLengthInHex,
             String deviceId, String expectedName, int expectedX, int expectedY, int expectedId) throws Exception {
-        positionedSsidTranslator.setSsidFormat(prefix, delimiter, xLengthInHex, yLengthInHex, idLengthInHex);
+        PositionedSsidTranslator positionedSsidTranslator = new PositionedSsidTranslator(
+                prefix, delimiter, xLengthInHex, yLengthInHex, idLengthInHex);
 
         assertTrue(positionedSsidTranslator.isLiveObject(deviceId));
 
