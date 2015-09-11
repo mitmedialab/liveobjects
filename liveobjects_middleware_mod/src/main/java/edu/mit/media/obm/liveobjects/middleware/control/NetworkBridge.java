@@ -3,7 +3,7 @@ package edu.mit.media.obm.liveobjects.middleware.control;
 import java.util.List;
 
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
-import edu.mit.media.obm.liveobjects.middleware.net.NetworkDriver;
+import edu.mit.media.obm.liveobjects.middleware.net.NetworkConnectionManager;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
 
 /**
@@ -11,17 +11,17 @@ import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
  */
 public class NetworkBridge implements NetworkController, NetworkListener{
 
-    //TODO extending to a list of NetworkDriver to have multiple discovery?
-    private NetworkDriver mNetworkDriver;
+    //TODO extending to a list of NetworkConnectionManager to have multiple discovery?
+    private NetworkConnectionManager mNetworkConnectionManager;
     private DiscoveryListener mDiscoveryListener;
     private ConnectionListener mConnectionListener;
 
     private LiveObject liveObjectToConnectWith;
 
-    public NetworkBridge(NetworkDriver networkDriver){
-        mNetworkDriver = networkDriver;
-        mNetworkDriver.initialize();
-        mNetworkDriver.setNetworkListener(this);
+    public NetworkBridge(NetworkConnectionManager networkConnectionManager){
+        mNetworkConnectionManager = networkConnectionManager;
+        mNetworkConnectionManager.initialize();
+        mNetworkConnectionManager.setNetworkListener(this);
 
     }
 
@@ -33,17 +33,17 @@ public class NetworkBridge implements NetworkController, NetworkListener{
 
     @Override
     public void start() {
-        mNetworkDriver.start();
+        mNetworkConnectionManager.start();
     }
 
     @Override
     public void startDiscovery() {
-        mNetworkDriver.startScan();
+        mNetworkConnectionManager.startScan();
     }
 
     @Override
     public void stop() {
-        mNetworkDriver.stop();
+        mNetworkConnectionManager.stop();
     }
 
     @Override
@@ -54,17 +54,17 @@ public class NetworkBridge implements NetworkController, NetworkListener{
     @Override
     public void connect(LiveObject liveObject) {
         liveObjectToConnectWith = liveObject;
-        mNetworkDriver.connect(liveObject);
+        mNetworkConnectionManager.connect(liveObject);
     }
 
     @Override
     public void cancelConnecting() {
-        mNetworkDriver.cancelConnecting();
+        mNetworkConnectionManager.cancelConnecting();
     }
 
     @Override
     public boolean isConnecting() {
-        return mNetworkDriver.isConnecting();
+        return mNetworkConnectionManager.isConnecting();
     }
 
     @Override
@@ -81,6 +81,6 @@ public class NetworkBridge implements NetworkController, NetworkListener{
 
     @Override
     public void forgetNetworkConfigurations() {
-        mNetworkDriver.forgetNetworkConfigurations();
+        mNetworkConnectionManager.forgetNetworkConfigurations();
     }
 }

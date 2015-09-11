@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
-import edu.mit.media.obm.liveobjects.middleware.net.NetworkDriver;
+import edu.mit.media.obm.liveobjects.middleware.net.NetworkConnectionManager;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 
@@ -26,7 +26,7 @@ import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
  *
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
-public class WifiDriver implements NetworkDriver {
+public class WifiConnectionManager extends StartableEntity implements NetworkConnectionManager {
     private final String NETWORK_PASSWORD;
     protected final String SSID_PREFIX;
     private final char SSID_DELIMITER;
@@ -37,7 +37,6 @@ public class WifiDriver implements NetworkDriver {
     private WifiManager mWifiManager;
 
     private WifiReceiver mWifiReceiver;
-    private boolean isWifiReceiverRegistered;
 
     private Context mContext;
 
@@ -48,7 +47,7 @@ public class WifiDriver implements NetworkDriver {
 
     private DeviceIdTranslator mDeviceIdTranslator;
 
-    public WifiDriver(Context context) {
+    public WifiConnectionManager(Context context) {
         mContext = context;
 
         Resources resources = mContext.getResources();
@@ -74,35 +73,33 @@ public class WifiDriver implements NetworkDriver {
         mIntentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
         mIntentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         mWifiReceiver = new WifiReceiver();
-        isWifiReceiverRegistered = false;
 
         mConnecting = false;
     }
 
     @Override
-    synchronized public void start() {
-        if (!isWifiReceiverRegistered) {
-            mContext.registerReceiver(mWifiReceiver, mIntentFilter);
-            isWifiReceiverRegistered = true;
-        }
+    protected void startEntity() {
+        mContext.registerReceiver(mWifiReceiver, mIntentFilter);
+    }
+
+    @Override
+    protected void stopEntity() {
+        mContext.unregisterReceiver(mWifiReceiver);
     }
 
     @Override
     synchronized public void startScan() {
         Log.v("starting Wifi scan");
+
+        requireStarted();
+
         mWifiManager.startScan();
     }
 
     @Override
-    synchronized public void stop() {
-        if (isWifiReceiverRegistered) {
-            mContext.unregisterReceiver(mWifiReceiver);
-            isWifiReceiverRegistered = false;
-        }
-    }
-
-    @Override
     synchronized public void connect(LiveObject liveObject) throws IllegalStateException {
+        requireStarted();
+
         if (isConnecting()) {
             throw new IllegalStateException("Must not try to connect when it's already connecting");
         }
@@ -227,7 +224,7 @@ public class WifiDriver implements NetworkDriver {
             NetworkInfo.State state = networkInfo.getState();
             Log.v("networkInfo = " + networkInfo.toString());
 
-            synchronized (WifiDriver.class) {
+            synchronized (WifiConnectionManager.class) {
                 if (state.equals(NetworkInfo.State.CONNECTED) && mConnecting == true) {
                     String ssid = networkInfo.getExtraInfo();
                     if (ssid == null) {

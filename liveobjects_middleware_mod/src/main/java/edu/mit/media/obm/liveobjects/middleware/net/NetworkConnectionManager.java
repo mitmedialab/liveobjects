@@ -8,7 +8,7 @@ import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
  *
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
-public interface NetworkDriver {
+public interface NetworkConnectionManager {
 
     /**
      * Initializing the driver

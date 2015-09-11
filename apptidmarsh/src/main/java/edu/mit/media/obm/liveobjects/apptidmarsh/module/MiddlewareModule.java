@@ -19,7 +19,7 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.MediaViewActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.PdfViewFragment;
 import edu.mit.media.obm.liveobjects.apptidmarsh.profile.ProfileActivity;
-import edu.mit.media.obm.liveobjects.driver.wifi.WifiDriver;
+import edu.mit.media.obm.liveobjects.driver.wifi.WifiConnectionManager;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObjectsMiddleware;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentBridge;
@@ -28,7 +28,7 @@ import edu.mit.media.obm.liveobjects.middleware.control.CouchDbController;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkBridge;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
-import edu.mit.media.obm.liveobjects.middleware.net.NetworkDriver;
+import edu.mit.media.obm.liveobjects.middleware.net.NetworkConnectionManager;
 import edu.mit.media.obm.liveobjects.middleware.storage.LocalStorageDriver;
 import edu.mit.media.obm.liveobjects.middleware.storage.RemoteStorageDriver;
 import edu.mit.media.obm.liveobjects.storage.local.FileLocalStorageDriver;
@@ -65,8 +65,8 @@ public class MiddlewareModule {
     @Provides @Singleton
     MiddlewareInterface provideMiddlewareInterface(Context context) {
         if (mMiddleware == null) {
-            NetworkDriver networkDriver = new WifiDriver(context);
-            NetworkController networkController = new NetworkBridge(networkDriver);
+            NetworkConnectionManager networkConnectionManager = new WifiConnectionManager(context);
+            NetworkController networkController = new NetworkBridge(networkConnectionManager);
 
             LocalStorageDriver localStorageDriver = new FileLocalStorageDriver(context);
             RemoteStorageDriver remoteStorageDriver = new WifiStorageDriver(context);

@@ -2,7 +2,7 @@ package edu.mit.media.obm.liveobjects.app;
 
 import android.app.Application;
 
-import edu.mit.media.obm.liveobjects.driver.wifi.WifiDriver;
+import edu.mit.media.obm.liveobjects.driver.wifi.WifiConnectionManager;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObjectsMiddleware;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 import edu.mit.media.obm.liveobjects.middleware.control.ContentBridge;
@@ -11,7 +11,7 @@ import edu.mit.media.obm.liveobjects.middleware.control.CouchDbController;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkBridge;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
-import edu.mit.media.obm.liveobjects.middleware.net.NetworkDriver;
+import edu.mit.media.obm.liveobjects.middleware.net.NetworkConnectionManager;
 import edu.mit.media.obm.liveobjects.middleware.storage.LocalStorageDriver;
 import edu.mit.media.obm.liveobjects.middleware.storage.RemoteStorageDriver;
 import edu.mit.media.obm.liveobjects.storage.local.FileLocalStorageDriver;
@@ -39,8 +39,8 @@ public class LiveObjectsApplication extends Application {
 
 
     private MiddlewareInterface createMiddleware() {
-        NetworkDriver networkDriver = new WifiDriver(this);
-        NetworkController networkController = new NetworkBridge(networkDriver);
+        NetworkConnectionManager networkConnectionManager = new WifiConnectionManager(this);
+        NetworkController networkController = new NetworkBridge(networkConnectionManager);
 
 
         LocalStorageDriver localStorageDriver = new FileLocalStorageDriver(this);
