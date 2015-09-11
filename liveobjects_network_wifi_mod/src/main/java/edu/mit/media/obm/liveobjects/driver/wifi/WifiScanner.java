@@ -2,17 +2,11 @@ package edu.mit.media.obm.liveobjects.driver.wifi;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 
 import com.noveogroup.android.log.Log;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
 
@@ -47,7 +41,7 @@ public class WifiScanner extends BroadcastSubscriber {
 
     @Override
     protected final BroadcastReceiver createBroadcastReceiver() {
-        return new WifiReceiver();
+        return new ScanResultsReceiver(mDeviceIdTranslator, mNetworkListener);
     }
 
     @Override
@@ -58,39 +52,4 @@ public class WifiScanner extends BroadcastSubscriber {
         return intentFilter;
     }
 
-    class WifiReceiver extends BroadcastReceiver {
-
-        public void onReceive(Context c, Intent intent) {
-            String action = intent.getAction();
-            switch (action) {
-                case WifiManager.SCAN_RESULTS_AVAILABLE_ACTION :
-                    handleWifiScan();
-                    break;
-            }
-        }
-
-        private void handleWifiScan() {
-            Log.v("SCANNING WIFI");
-            List<LiveObject> liveObjectList = new ArrayList<>();
-            List<ScanResult> scanResults = mWifiManager.getScanResults();
-
-            for (ScanResult scanResult : scanResults) {
-                String deviceId = scanResult.SSID.toString();
-                Log.v("scanResult: " +  deviceId);
-
-                if (mDeviceIdTranslator.isLiveObject(deviceId)) {
-                    LiveObject liveObject = mDeviceIdTranslator.translateToLiveObject(deviceId);
-                    liveObject.setStatus(LiveObject.STATUS_ACTIVE);
-
-                    //network device representing a live object found
-                    // add it to the list
-                    liveObjectList.add(liveObject);
-                }
-            }
-
-            // notifies the middleware about the presence of live-object devices
-            // notifies even if no live-objects are discovered
-            mNetworkListener.onNetworkDevicesAvailable(liveObjectList);
-        }
-    }
 }
