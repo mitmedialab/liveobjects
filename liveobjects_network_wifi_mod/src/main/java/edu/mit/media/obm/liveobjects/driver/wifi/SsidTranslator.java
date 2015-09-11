@@ -8,16 +8,20 @@ import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public class SsidTranslator implements DeviceIdTranslator {
-    private String SSID_PREFIX;
+    private String ssidPrefix;
+
+    public SsidTranslator(String ssidPrefix) {
+        this.ssidPrefix = ssidPrefix;
+    }
 
     @Override
     public boolean isLiveObject(String deviceId) {
-        return deviceId.startsWith(SSID_PREFIX);
+        return deviceId.startsWith(ssidPrefix);
     }
 
     @Override
     public LiveObject translateToLiveObject(String deviceId) {
-        int prefixLength = SSID_PREFIX.length();
+        int prefixLength = ssidPrefix.length();
         String liveObjectName = deviceId.substring(prefixLength);
 
         return new LiveObject(liveObjectName);
@@ -25,12 +29,6 @@ public class SsidTranslator implements DeviceIdTranslator {
 
     @Override
     public String translateFromLiveObject(LiveObject liveObject){
-        return SSID_PREFIX + liveObject.getLiveObjectName();
+        return ssidPrefix + liveObject.getLiveObjectName();
     }
-
-    protected final void setSsidPrefix(String ssidPrefix) {
-        SSID_PREFIX = ssidPrefix;
-    }
-
-
 }
