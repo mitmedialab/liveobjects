@@ -1,16 +1,11 @@
 package edu.mit.media.obm.liveobjects.driver.wifi;
 
-import android.bluetooth.BluetoothClass;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources;
-import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
-import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 
 import com.noveogroup.android.log.Log;
 
@@ -24,33 +19,21 @@ import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
 /**
  * Created by arata on 9/11/15.
  */
-public class WifiScanner {
+public class WifiScanner extends BroadcastSubscriber {
     private NetworkListener mNetworkListener;
     private WifiManager mWifiManager;
-    private WifiReceiver mWifiReceiver;
     private Context mContext;
-    private IntentFilter mIntentFilter;
-
     private DeviceIdTranslator mDeviceIdTranslator;
 
     public WifiScanner(Context context, DeviceIdTranslator deviceIdTranslator) {
+        super(context);
+
         mContext = context;
         mDeviceIdTranslator = deviceIdTranslator;
     }
 
     public void initialize() {
         mWifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
-        mIntentFilter = new IntentFilter();
-        mIntentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
-        mWifiReceiver = new WifiReceiver();
-    }
-
-    protected void start() {
-        mContext.registerReceiver(mWifiReceiver, mIntentFilter);
-    }
-
-    protected void stop() {
-        mContext.unregisterReceiver(mWifiReceiver);
     }
 
     synchronized public void startScan() {
@@ -62,6 +45,19 @@ public class WifiScanner {
         mNetworkListener = networkListener;
     }
 
+    @Override
+    protected final BroadcastReceiver createBroadcastReceiver() {
+        return new WifiReceiver();
+    }
+
+    @Override
+    protected final IntentFilter createIntentFilter() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+
+        return intentFilter;
+    }
+
     class WifiReceiver extends BroadcastReceiver {
 
         public void onReceive(Context c, Intent intent) {
@@ -71,7 +67,6 @@ public class WifiScanner {
                     handleWifiScan();
                     break;
             }
-
         }
 
         private void handleWifiScan() {

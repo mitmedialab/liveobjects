@@ -21,18 +21,14 @@ import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
 /**
  * Created by arata on 9/11/15.
  */
-public class WifiConnector {
+public class WifiConnector extends BroadcastSubscriber {
     private final String NETWORK_PASSWORD;
 
     private NetworkListener mNetworkListener;
 
     private WifiManager mWifiManager;
 
-    private WifiReceiver mWifiReceiver;
-
     private Context mContext;
-
-    private IntentFilter mIntentFilter;
 
     private boolean mConnecting;
     private int mConnectingNetworkId;
@@ -40,6 +36,8 @@ public class WifiConnector {
     private DeviceIdTranslator mDeviceIdTranslator;
 
     public WifiConnector(Context context, DeviceIdTranslator deviceIdTranslator) {
+        super(context);
+
         mContext = context;
         mDeviceIdTranslator = deviceIdTranslator;
 
@@ -49,19 +47,20 @@ public class WifiConnector {
 
     public void initialize() {
         mWifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
-        mIntentFilter = new IntentFilter();
-        mIntentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-        mWifiReceiver = new WifiReceiver();
-
         mConnecting = false;
     }
 
-    protected void start() {
-        mContext.registerReceiver(mWifiReceiver, mIntentFilter);
+    @Override
+    protected BroadcastReceiver createBroadcastReceiver() {
+        return new WifiReceiver();
     }
 
-    protected void stop() {
-        mContext.unregisterReceiver(mWifiReceiver);
+    @Override
+    protected IntentFilter createIntentFilter() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+
+        return intentFilter;
     }
 
     synchronized public void connect(LiveObject liveObject) throws IllegalStateException {

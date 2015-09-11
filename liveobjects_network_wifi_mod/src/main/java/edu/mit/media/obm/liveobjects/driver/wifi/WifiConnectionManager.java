@@ -57,14 +57,14 @@ public class WifiConnectionManager extends ActivatableEntity implements NetworkC
 
     @Override
     protected void activateEntity() {
-        mWifiScanner.start();
-        mWifiConnector.start();
+        mWifiScanner.activate();
+        mWifiConnector.activate();
     }
 
     @Override
     protected void deactivateEntity() {
-        mWifiScanner.stop();
-        mWifiConnector.stop();
+        mWifiScanner.deactivate();
+        mWifiConnector.deactivate();
     }
 
     @Override
