@@ -1,20 +1,7 @@
 package edu.mit.media.obm.liveobjects.driver.wifi;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Resources;
-import android.net.NetworkInfo;
-import android.net.wifi.ScanResult;
-import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
-
-import com.noveogroup.android.log.Log;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkConnectionManager;
@@ -26,7 +13,7 @@ import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
  *
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
-public class WifiConnectionManager extends StartableEntity implements NetworkConnectionManager {
+public class WifiConnectionManager extends ActivatableEntity implements NetworkConnectionManager {
     private WifiScanner mWifiScanner;
     private WifiConnector mWifiConnector;
 
@@ -59,44 +46,54 @@ public class WifiConnectionManager extends StartableEntity implements NetworkCon
     }
 
     @Override
-    protected void startEntity() {
+    public void start() {
+        activate();
+    }
+
+    @Override
+    public void stop() {
+        deactivate();
+    }
+
+    @Override
+    protected void activateEntity() {
         mWifiScanner.start();
         mWifiConnector.start();
     }
 
     @Override
-    protected void stopEntity() {
-        mWifiScanner.start();
-        mWifiConnector.start();
+    protected void deactivateEntity() {
+        mWifiScanner.stop();
+        mWifiConnector.stop();
     }
 
     @Override
     synchronized public void startScan() {
-        requireStarted();
+        requireActivated();
         mWifiScanner.startScan();
     }
 
     @Override
     synchronized public void connect(LiveObject liveObject) throws IllegalStateException {
-        requireStarted();
+        requireActivated();
         mWifiConnector.connect(liveObject);
     }
 
     @Override
     synchronized public void cancelConnecting() throws IllegalStateException {
-        requireStarted();
+        requireActivated();
         mWifiConnector.cancelConnecting();
     }
 
     @Override
     public boolean isConnecting() {
-        requireStarted();
+        requireActivated();
         return mWifiConnector.isConnecting();
     }
 
     @Override
     public void forgetNetworkConfigurations() {
-        requireStarted();
+        requireActivated();
         mWifiConnector.forgetNetworkConfigurations();
     }
 
