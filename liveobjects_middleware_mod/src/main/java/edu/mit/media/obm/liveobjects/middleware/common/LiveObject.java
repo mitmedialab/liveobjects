@@ -22,7 +22,7 @@ public final class LiveObject {
      */
     public LiveObject(String liveObjectName) {
         if (liveObjectName == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException();
         }
 
         mLiveObjectName = liveObjectName;
@@ -34,7 +34,7 @@ public final class LiveObject {
      */
     public LiveObject(String liveObjectName, MapLocation mapLocation) {
         if (liveObjectName == null || mapLocation == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException("arguments cannot be null");
         }
 
         mLiveObjectName = liveObjectName;
@@ -83,6 +83,33 @@ public final class LiveObject {
 
     @Override
     public String toString() {
-        return mLiveObjectName;
+        String stringExpression = getLiveObjectName();
+
+        if (getMapLocation() != null) {
+            stringExpression += " " + getMapLocation();
+        }
+
+        return stringExpression;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof LiveObject)) {
+            return false;
+        }
+
+        LiveObject liveObject = (LiveObject) object;
+
+        if (!getLiveObjectName().equals(liveObject.getLiveObjectName())) {
+            return false;
+        }
+
+        if (getMapLocation() == null && liveObject.getMapLocation() == null) {
+            return true;
+        } else if (getMapLocation() != null && liveObject.getMapLocation() != null) {
+            return getMapLocation().equals(liveObject.getMapLocation());
+        } else {
+            return false;
+        }
     }
 }
