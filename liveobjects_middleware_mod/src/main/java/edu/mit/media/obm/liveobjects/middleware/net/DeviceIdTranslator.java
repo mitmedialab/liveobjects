@@ -9,7 +9,7 @@ import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
  *
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
-public interface NetworkUtil {
+public interface DeviceIdTranslator {
 
     /**
      * Checks if the network device is a live object
@@ -23,12 +23,12 @@ public interface NetworkUtil {
      * @param deviceId the id to convert
      * @return the live object
      */
-    LiveObject convertDeviceIdToLiveObject(String deviceId) throws IllegalFormatException;
+    LiveObject translateToLiveObject(String deviceId) throws IllegalFormatException;
 
     /**
      * Converts a live object into a device id
      * @param liveObject
      * @return
      */
-    String convertLiveObjectToDeviceId(LiveObject liveObject);
+    String translateFromLiveObject(LiveObject liveObject);
 }

@@ -1,13 +1,13 @@
 package edu.mit.media.obm.liveobjects.driver.wifi;
 
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
-import edu.mit.media.obm.liveobjects.middleware.net.NetworkUtil;
+import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 
 /**
- * Specific implementation of NetworkUtil for Wifi
+ * Specific implementation of DeviceIdTranslator for Wifi
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
-public enum  WifiUtil implements NetworkUtil {
+public enum SsidTranslator implements DeviceIdTranslator {
     INSTANCE;
 
     private String SSID_PREFIX;
@@ -18,7 +18,7 @@ public enum  WifiUtil implements NetworkUtil {
     }
 
     @Override
-    public LiveObject convertDeviceIdToLiveObject(String deviceId) {
+    public LiveObject translateToLiveObject(String deviceId) {
         int prefixLength = SSID_PREFIX.length();
         String liveObjectName = deviceId.substring(prefixLength);
 
@@ -26,7 +26,7 @@ public enum  WifiUtil implements NetworkUtil {
     }
 
     @Override
-    public String convertLiveObjectToDeviceId(LiveObject liveObject){
+    public String translateFromLiveObject(LiveObject liveObject){
         return SSID_PREFIX + liveObject.getLiveObjectName();
     }
 

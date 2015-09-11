@@ -5,12 +5,12 @@ import java.util.regex.Pattern;
 
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.common.MapLocation;
-import edu.mit.media.obm.liveobjects.middleware.net.NetworkUtil;
+import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 
 /**
  * Created by arata on 8/5/15.
  */
-public enum WifiLocationUtil implements NetworkUtil {
+public enum PositionedSsidTranslator implements DeviceIdTranslator {
     INSTANCE;
 
     private String SSID_PREFIX;
@@ -29,7 +29,7 @@ public enum WifiLocationUtil implements NetworkUtil {
     }
 
     @Override
-    public LiveObject convertDeviceIdToLiveObject(String deviceId) {
+    public LiveObject translateToLiveObject(String deviceId) {
         if (!isLiveObject(deviceId)) {
             throw new IllegalArgumentException("illegal deviceId '" + deviceId + "'");
         }
@@ -47,7 +47,7 @@ public enum WifiLocationUtil implements NetworkUtil {
     }
 
     @Override
-    public String convertLiveObjectToDeviceId(LiveObject liveObject) {
+    public String translateFromLiveObject(LiveObject liveObject) {
         MapLocation mapLocation = liveObject.getMapLocation();
 
         if (mapLocation == null) {

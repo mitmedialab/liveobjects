@@ -14,7 +14,7 @@ import com.noveogroup.android.log.Log;
 import javax.inject.Inject;
 
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
-import edu.mit.media.obm.liveobjects.driver.wifi.WifiLocationUtil;
+import edu.mit.media.obm.liveobjects.driver.wifi.PositionedSsidTranslator;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 
 /**
@@ -91,12 +91,12 @@ public class BluetoothNotifier extends LiveObjectNotifier {
                 }
 
                 // ToDo; shouldn't use WiFiUtil directly
-                if (deviceName != null && WifiLocationUtil.INSTANCE.isLiveObject(deviceName)) {
+                if (deviceName != null && PositionedSsidTranslator.INSTANCE.isLiveObject(deviceName)) {
                     Log.d("trying to connect to BLE device '%s'", deviceName);
                     mBluetoothGatt = device.connectGatt(mContext, true, mGattCallback);
 
                     // ToDo; shouldn't use WiFiUtil directly
-                    LiveObject liveObject = WifiLocationUtil.INSTANCE.convertDeviceIdToLiveObject(deviceName);
+                    LiveObject liveObject = PositionedSsidTranslator.INSTANCE.translateToLiveObject(deviceName);
                     mBus.post(new InactiveLiveObjectDetectionEvent(liveObject));
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {

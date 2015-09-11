@@ -19,7 +19,7 @@ import java.util.List;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkDriver;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
-import edu.mit.media.obm.liveobjects.middleware.net.NetworkUtil;
+import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 
 /**
  * This class implements a concrete driver for wifi network
@@ -46,7 +46,7 @@ public class WifiDriver implements NetworkDriver {
     private boolean mConnecting;
     private int mConnectingNetworkId;
 
-    private NetworkUtil mNetworkUtil;
+    private DeviceIdTranslator mDeviceIdTranslator;
 
     public WifiDriver(Context context) {
         mContext = context;
@@ -62,9 +62,9 @@ public class WifiDriver implements NetworkDriver {
         int locationYLength = resources.getInteger(R.integer.map_location_coordinate_y_length);
         int mapIdLength = resources.getInteger(R.integer.map_location_map_id_length);
 
-        WifiLocationUtil.INSTANCE.setSsidFormat(
+        PositionedSsidTranslator.INSTANCE.setSsidFormat(
                 SSID_PREFIX, SSID_DELIMITER, locationXLength, locationYLength, mapIdLength);
-        mNetworkUtil = WifiLocationUtil.INSTANCE;
+        mDeviceIdTranslator = PositionedSsidTranslator.INSTANCE;
     }
 
     @Override
@@ -109,7 +109,7 @@ public class WifiDriver implements NetworkDriver {
 
         mConnecting = true;
 
-        String deviceId = mNetworkUtil.convertLiveObjectToDeviceId(liveObject);
+        String deviceId = mDeviceIdTranslator.translateFromLiveObject(liveObject);
 
         // executes as an asynchronous task because WifiManager.getConfiguredNetwork() may block.
         new AsyncTask<String, Void, Void>() {
@@ -170,7 +170,7 @@ public class WifiDriver implements NetworkDriver {
                     String ssid = WifiManagerWrapper.unQuoteString(configuration.SSID);
 
                     Log.v("found a network configuration for '" + ssid + "'");
-                    if (mNetworkUtil.isLiveObject(ssid)) {
+                    if (mDeviceIdTranslator.isLiveObject(ssid)) {
                         Log.v("deleting a network configuration for live object '" + ssid + "'");
                         WifiManagerWrapper.removeNetwork(mWifiManager, ssid);
                     }
@@ -207,8 +207,8 @@ public class WifiDriver implements NetworkDriver {
                 String deviceId = scanResult.SSID.toString();
                 Log.v("scanResult: " +  deviceId);
 
-                if (mNetworkUtil.isLiveObject(deviceId)){
-                    LiveObject liveObject = mNetworkUtil.convertDeviceIdToLiveObject(deviceId);
+                if (mDeviceIdTranslator.isLiveObject(deviceId)){
+                    LiveObject liveObject = mDeviceIdTranslator.translateToLiveObject(deviceId);
                     liveObject.setStatus(LiveObject.STATUS_ACTIVE);
 
                     //network device representing a live object found
@@ -236,8 +236,8 @@ public class WifiDriver implements NetworkDriver {
                     }
 
                     ssid = WifiManagerWrapper.unQuoteString(ssid);
-                    if (mNetworkUtil.isLiveObject(ssid)) {
-                        LiveObject connectedLiveObject = mNetworkUtil.convertDeviceIdToLiveObject(ssid);
+                    if (mDeviceIdTranslator.isLiveObject(ssid)) {
+                        LiveObject connectedLiveObject = mDeviceIdTranslator.translateToLiveObject(ssid);
                         Log.d("connectedLiveObject = " + connectedLiveObject);
                         mNetworkListener.onConnected(connectedLiveObject.getLiveObjectName());
 

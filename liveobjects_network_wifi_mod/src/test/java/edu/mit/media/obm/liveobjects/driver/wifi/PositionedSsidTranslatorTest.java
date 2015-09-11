@@ -13,8 +13,8 @@ import static org.testng.Assert.*;
 /**
  * Created by arata on 9/11/15.
  */
-public class WifiLocationUtilTest {
-    private WifiLocationUtil wifiLocationUtil = WifiLocationUtil.INSTANCE;
+public class PositionedSsidTranslatorTest {
+    private PositionedSsidTranslator positionedSsidTranslator = PositionedSsidTranslator.INSTANCE;
     private static String DEFAULT_PREFIX = "liveobj-";
     private static char DEFAULT_DELIMITER = '@';
     private static int DEFAULT_X_LENGTH_IN_HEX = 2;
@@ -25,7 +25,7 @@ public class WifiLocationUtilTest {
 
     @BeforeMethod
     public void setUp() throws Exception {
-        wifiLocationUtil.setSsidFormat(DEFAULT_PREFIX, DEFAULT_DELIMITER,
+        positionedSsidTranslator.setSsidFormat(DEFAULT_PREFIX, DEFAULT_DELIMITER,
                 DEFAULT_X_LENGTH_IN_HEX, DEFAULT_Y_LENGTH_IN_HEX, DEFAULT_ID_LENGTH_IN_HEX);
     }
 
@@ -51,7 +51,7 @@ public class WifiLocationUtilTest {
     @Test(dataProvider = "IsLegalTestSets")
     public void shouldBeAbleToJudgeIfDeviceIdIsLegal(
             String deviceId, boolean expectedIsLegalSsid, String message) throws Exception {
-        boolean isLegalSsid = wifiLocationUtil.isLiveObject(deviceId);
+        boolean isLegalSsid = positionedSsidTranslator.isLiveObject(deviceId);
         assertEquals(isLegalSsid, expectedIsLegalSsid, message);
     }
 
@@ -71,34 +71,34 @@ public class WifiLocationUtilTest {
     }
 
     @Test(dataProvider = "DeviceIdAndLiveObjectPairs")
-    public void shouldConvertLegalDeviceIdToLiveObject(
+    public void shouldTranslateLegalDeviceIdToLiveObject(
             String deviceId, String liveObjectName, int locationX, int locationY, int locationId) throws Exception {
         MapLocation mapLocation = new MapLocation(locationX, locationY, locationId);
         LiveObject liveObject = new LiveObject(liveObjectName, mapLocation);
-        LiveObject convertedLiveObject = wifiLocationUtil.convertDeviceIdToLiveObject(deviceId);
+        LiveObject translatedLiveObject = positionedSsidTranslator.translateToLiveObject(deviceId);
 
-        assertEquals(convertedLiveObject, liveObject);
+        assertEquals(translatedLiveObject, liveObject);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
-    public void shouldThrowWhenTryToConvertIllegalDeviceId() throws Exception {
-        wifiLocationUtil.convertDeviceIdToLiveObject("IllegalDeviceID");
+    public void shouldThrowWhenTryToTranslateIllegalDeviceId() throws Exception {
+        positionedSsidTranslator.translateToLiveObject("IllegalDeviceID");
     }
 
     @Test(dataProvider = "DeviceIdAndLiveObjectPairs")
-    public void shouldConvertLiveObjectToDeviceId(
+    public void shouldTranslateLiveObjectToDeviceId(
             String deviceId, String liveObjectName, int locationX, int locationY, int locationId) throws Exception {
         MapLocation mapLocation = new MapLocation(locationX, locationY, locationId);
         LiveObject liveObject = new LiveObject(liveObjectName, mapLocation);
-        String  convertedDeviceId = wifiLocationUtil.convertLiveObjectToDeviceId(liveObject);
+        String  translatedDeviceId = positionedSsidTranslator.translateFromLiveObject(liveObject);
 
-        assertEquals(convertedDeviceId, deviceId);
+        assertEquals(translatedDeviceId, deviceId);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
-    public void shouldThrowIfTryToConvertLiveObjectWithoutLocation() throws Exception {
+    public void shouldThrowIfTryToTranslateLiveObjectWithoutLocation() throws Exception {
         LiveObject liveObject = new LiveObject(TEST_SSID);
-        wifiLocationUtil.convertLiveObjectToDeviceId(liveObject);
+        positionedSsidTranslator.translateFromLiveObject(liveObject);
     }
 
     @DataProvider(name = "VarietyOfDeviceIdFormats")
@@ -141,11 +141,11 @@ public class WifiLocationUtilTest {
     public void shouldSetDeviceIdFormat(
             String prefix, char delimiter, int xLengthInHex, int yLengthInHex, int idLengthInHex,
             String deviceId, String expectedName, int expectedX, int expectedY, int expectedId) throws Exception {
-        wifiLocationUtil.setSsidFormat(prefix, delimiter, xLengthInHex, yLengthInHex, idLengthInHex);
+        positionedSsidTranslator.setSsidFormat(prefix, delimiter, xLengthInHex, yLengthInHex, idLengthInHex);
 
-        assertTrue(wifiLocationUtil.isLiveObject(deviceId));
+        assertTrue(positionedSsidTranslator.isLiveObject(deviceId));
 
-        LiveObject liveObject = wifiLocationUtil.convertDeviceIdToLiveObject(deviceId);
+        LiveObject liveObject = positionedSsidTranslator.translateToLiveObject(deviceId);
         MapLocation mapLocation = liveObject.getMapLocation();
 
         assertEquals(liveObject.getLiveObjectName(), expectedName);
