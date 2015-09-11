@@ -157,9 +157,9 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         String liveObjectName = liveObject.getLiveObjectName();
         MapLocation mapLocation = liveObject.getMapLocation();
 
-        checkArgumentRange("gridX", mapLocation.getCoordinateX(), 0, NUM_GRID_X - 1);
-        checkArgumentRange("gridY", mapLocation.getCoordinateY(), 0, NUM_GRID_Y - 1);
-        checkArgumentRange("mapId", mapLocation.getMapId(), 0, NUM_MAP_ID - 1);
+        checkArgumentRange("X", mapLocation.getX(), 0, NUM_GRID_X - 1);
+        checkArgumentRange("Y", mapLocation.getY(), 0, NUM_GRID_Y - 1);
+        checkArgumentRange("Id", mapLocation.getId(), 0, NUM_MAP_ID - 1);
         LatLng gridLocationInLagLng = gridToLatLng(mapLocation);
 
         Marker marker;
@@ -400,8 +400,8 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         double longitudeScale = NORTH_EAST_BOUND.longitude - SOUTH_WEST_BOUND.longitude;
         double latitudeStep = latitudeScale / (NUM_GRID_Y - 1);
         double longitudeStep = longitudeScale / (NUM_GRID_X - 1);
-        double latitude = mapLocation.getCoordinateY() * latitudeStep + SOUTH_WEST_BOUND.latitude;
-        double longitude = mapLocation.getCoordinateX() * longitudeStep + SOUTH_WEST_BOUND.longitude;
+        double latitude = mapLocation.getY() * latitudeStep + SOUTH_WEST_BOUND.latitude;
+        double longitude = mapLocation.getX() * longitudeStep + SOUTH_WEST_BOUND.longitude;
 
         return new LatLng(latitude, longitude);
     }
@@ -542,8 +542,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
         @Override
         public void onMapClick(LatLng latLng) {
             MapLocation mapLocation = latLngToGrid(latLng);
-            Log.v("clicked location = (%d, %d, %d) (in grid coordinates)",
-                    mapLocation.getCoordinateX(), mapLocation.getCoordinateY(), mapLocation.getMapId());
+            Log.v("clicked location = %s (in grid coordinates)", mapLocation);
         }
     }
 }

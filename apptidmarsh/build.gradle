@@ -51,4 +51,9 @@ dependencies {
     compile project(':liveobjects_network_wifi_mod')
     compile project(':liveobjects_storage_wifi_mod')
     compile project(':liveobjects_storage_local_mod')
+
+    testCompile 'org.testng:testng:6.9.4'
+    testCompile 'org.mockito:mockito-all:2.0.2-beta'
+    testCompile 'org.powermock:powermock-api-mockito:1.6.2'
+    testCompile 'org.powermock:powermock-module-testng:1.6.2'
 }

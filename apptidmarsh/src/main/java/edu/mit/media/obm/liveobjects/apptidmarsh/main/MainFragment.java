@@ -397,9 +397,9 @@ public class MainFragment extends GroundOverlayMapFragment {
         Map<String, Object> emptyProperties = new HashMap<>();
         // add map location to properties
         MapLocation mapLocation = liveObject.getMapLocation();
-        emptyProperties.put(MLProjectContract.MAP_LOCATION_X, mapLocation.getCoordinateX());
-        emptyProperties.put(MLProjectContract.MAP_LOCATION_Y, mapLocation.getCoordinateY());
-        emptyProperties.put(MLProjectContract.MAP_ID, mapLocation.getMapId());
+        emptyProperties.put(MLProjectContract.MAP_LOCATION_X, mapLocation.getX());
+        emptyProperties.put(MLProjectContract.MAP_LOCATION_Y, mapLocation.getY());
+        emptyProperties.put(MLProjectContract.MAP_ID, mapLocation.getId());
         emptyProperties.put(MLProjectContract.IS_FAVORITE, MLProjectContract.IS_FAVORITE_FALSE);
         mDbController.putLiveObject(liveObject.getLiveObjectName(), emptyProperties);
     }
