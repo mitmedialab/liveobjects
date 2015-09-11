@@ -16,11 +16,11 @@ public enum WifiLocationUtil implements NetworkUtil {
     private String SSID_PREFIX;
     private char SSID_DELIMITER;
 
-    private int LOCATION_COORDINATE_X_LENGTH;
-    private int LOCATION_COORDINATE_Y_LENGTH;
-    private int LOCATION_MAP_ID_LENGTH;
-
     private Pattern SSID_PATTERN;
+
+    private int LOCATION_X_LENGTH;
+    private int LOCATION_Y_LENGTH;
+    private int LOCATION_ID_LENGTH;
 
     @Override
     public boolean isLiveObject(String deviceId) {
@@ -30,11 +30,12 @@ public enum WifiLocationUtil implements NetworkUtil {
 
     @Override
     public LiveObject convertDeviceIdToLiveObject(String deviceId) {
-        Matcher matcher = SSID_PATTERN.matcher(deviceId);
-
-        if (!matcher.find()) {
-            throw new RuntimeException("illegal deviceId '" + deviceId + "'");
+        if (!isLiveObject(deviceId)) {
+            throw new IllegalArgumentException("illegal deviceId '" + deviceId + "'");
         }
+
+        Matcher matcher = SSID_PATTERN.matcher(deviceId);
+        matcher.find();
 
         String name = matcher.group(1);
         int locationX = Integer.parseInt(matcher.group(2), 16);
@@ -48,27 +49,33 @@ public enum WifiLocationUtil implements NetworkUtil {
     @Override
     public String convertLiveObjectToDeviceId(LiveObject liveObject) {
         MapLocation mapLocation = liveObject.getMapLocation();
-        String locationX = Integer.toHexString(mapLocation.getX());
-        String locationY = Integer.toHexString(mapLocation.getY());
-        String mapId = Integer.toHexString(mapLocation.getId());
 
-        String deviceId = SSID_PREFIX + liveObject.getLiveObjectName() + SSID_DELIMITER +
-                locationX + locationY + mapId;
+        if (mapLocation == null) {
+            throw new IllegalArgumentException("mapLocation cannot be null");
+        }
+
+        String formatString = String.format("%%s%%s%%c%%0%dx%%0%dx%%0%dx",
+                LOCATION_X_LENGTH, LOCATION_Y_LENGTH, LOCATION_ID_LENGTH);
+        String deviceId = String.format(formatString, SSID_PREFIX, liveObject.getLiveObjectName(),
+                SSID_DELIMITER, mapLocation.getX(), mapLocation.getY(), mapLocation.getId());
+
         return deviceId;
     }
 
     protected final void setSsidFormat(String ssidPrefix, char ssidDelimiter,
-            int locationCoordinateXLength, int locationCoordinateYLength, int locationMapIdLength) {
+            int locationXLength, int locationYLength, int locationIdLength) {
         SSID_PREFIX = ssidPrefix;
         SSID_DELIMITER = ssidDelimiter;
-        LOCATION_COORDINATE_X_LENGTH = locationCoordinateXLength;
-        LOCATION_COORDINATE_Y_LENGTH = locationCoordinateYLength;
-        LOCATION_MAP_ID_LENGTH = locationMapIdLength;
+        LOCATION_X_LENGTH = locationXLength;
+        LOCATION_Y_LENGTH = locationYLength;
+        LOCATION_ID_LENGTH = locationIdLength;
 
-        String patternString = SSID_PREFIX + "(.*)" + SSID_DELIMITER
-                + "(\\p{XDigit}{" + LOCATION_COORDINATE_X_LENGTH + "})"
-                + "(\\p{XDigit}{" + LOCATION_COORDINATE_Y_LENGTH + "})"
-                + "(\\p{XDigit}{" + LOCATION_MAP_ID_LENGTH + "})";
+        int maxSsidLength = 32 - (SSID_PREFIX.length() + /* delimiter length */1
+                + LOCATION_X_LENGTH + LOCATION_Y_LENGTH + LOCATION_ID_LENGTH);
+
+        String patternString = String.format(
+                "^%s(.{1,%d})%c(\\p{XDigit}{%d})(\\p{XDigit}{%d})(\\p{XDigit}{%d})$",
+                SSID_PREFIX, maxSsidLength, SSID_DELIMITER, LOCATION_X_LENGTH, LOCATION_Y_LENGTH, LOCATION_ID_LENGTH);
         SSID_PATTERN = Pattern.compile(patternString);
     }
 }
