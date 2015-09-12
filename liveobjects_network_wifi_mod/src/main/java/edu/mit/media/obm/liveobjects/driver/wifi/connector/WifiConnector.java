@@ -12,9 +12,13 @@ import com.noveogroup.android.log.Log;
 
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import edu.mit.media.obm.liveobjects.driver.wifi.base.BroadcastSubscriber;
 import edu.mit.media.obm.liveobjects.driver.wifi.R;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerWrapper;
+import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
@@ -27,41 +31,37 @@ public class WifiConnector extends BroadcastSubscriber {
 
     private NetworkListener mNetworkListener;
 
-    private WifiManager mWifiManager;
+    @Inject Context mContext;
+    @Inject WifiManager mWifiManager;
+    @Inject DeviceIdTranslator mDeviceIdTranslator;
 
-    private Context mContext;
+    @Inject @Named("connector") IntentFilter mIntentFilter;
+    @Inject @Named("connector") BroadcastReceiver mBroadcastReceiver;
 
     private boolean mConnecting;
     private int mConnectingNetworkId;
 
-    private DeviceIdTranslator mDeviceIdTranslator;
-
-    public WifiConnector(Context context, DeviceIdTranslator deviceIdTranslator) {
+    public WifiConnector(Context context) {
         super(context);
 
-        mContext = context;
-        mDeviceIdTranslator = deviceIdTranslator;
+        DependencyInjector.inject(this, context);
 
         Resources resources = mContext.getResources();
         NETWORK_PASSWORD = resources.getString(R.string.network_password);
     }
 
     public void initialize() {
-        mWifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
         mConnecting = false;
     }
 
     @Override
     protected BroadcastReceiver createBroadcastReceiver() {
-        return new NetworkStateChangedReceiver(this, mDeviceIdTranslator, mNetworkListener);
+        return mBroadcastReceiver;
     }
 
     @Override
     protected IntentFilter createIntentFilter() {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-
-        return intentFilter;
+        return mIntentFilter;
     }
 
     synchronized public void connect(LiveObject liveObject) throws IllegalStateException {
@@ -108,7 +108,7 @@ public class WifiConnector extends BroadcastSubscriber {
     }
 
     public void setNetworkListener(NetworkListener networkListener) {
-        mNetworkListener = networkListener;
+        ((NetworkStateChangedReceiver) mBroadcastReceiver).setNetworkListener(networkListener);
     }
 
     synchronized public void forgetNetworkConfigurations() throws IllegalStateException {

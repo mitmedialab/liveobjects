@@ -8,8 +8,11 @@ import android.net.wifi.WifiManager;
 
 import com.noveogroup.android.log.Log;
 
+import javax.inject.Inject;
+
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiConnectionManager;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerWrapper;
+import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
@@ -17,21 +20,23 @@ import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
 /**
  * Created by arata on 9/11/15.
  */
-class NetworkStateChangedReceiver extends BroadcastReceiver {
-    private WifiManager wifiManager;
-    private DeviceIdTranslator deviceIdTranslator;
-    private NetworkListener networkListener;
+public class NetworkStateChangedReceiver extends BroadcastReceiver {
+    @Inject WifiManager wifiManager;
+    @Inject DeviceIdTranslator deviceIdTranslator;
     private WifiConnector wifiConnector;
+    private NetworkListener networkListener;
 
-    public NetworkStateChangedReceiver(WifiConnector wifiConnector, DeviceIdTranslator deviceIdTranslator, NetworkListener networkListener) {
+    public NetworkStateChangedReceiver(Context context, WifiConnector wifiConnector) {
+        DependencyInjector.inject(this, context);
+
         this.wifiConnector = wifiConnector;
-        this.deviceIdTranslator = deviceIdTranslator;
+    }
+
+    public void setNetworkListener(NetworkListener networkListener) {
         this.networkListener = networkListener;
     }
 
     public void onReceive(Context context, Intent intent) {
-        wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-
         String action = intent.getAction();
         switch (action) {
             case WifiManager.NETWORK_STATE_CHANGED_ACTION:

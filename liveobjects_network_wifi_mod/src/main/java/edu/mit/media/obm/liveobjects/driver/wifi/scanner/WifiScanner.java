@@ -7,7 +7,11 @@ import android.net.wifi.WifiManager;
 
 import com.noveogroup.android.log.Log;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import edu.mit.media.obm.liveobjects.driver.wifi.base.BroadcastSubscriber;
+import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
 
@@ -15,20 +19,17 @@ import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
  * Created by arata on 9/11/15.
  */
 public class WifiScanner extends BroadcastSubscriber {
-    private NetworkListener mNetworkListener;
-    private WifiManager mWifiManager;
-    private Context mContext;
-    private DeviceIdTranslator mDeviceIdTranslator;
+    @Inject WifiManager mWifiManager;
+    @Inject @Named("scanner") IntentFilter mIntentFilter;
+    @Inject @Named("scanner") BroadcastReceiver mBroadcastReceiver;
 
-    public WifiScanner(Context context, DeviceIdTranslator deviceIdTranslator) {
+    public WifiScanner(Context context) {
         super(context);
 
-        mContext = context;
-        mDeviceIdTranslator = deviceIdTranslator;
+        DependencyInjector.inject(this, context);
     }
 
     public void initialize() {
-        mWifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
     }
 
     synchronized public void startScan() {
@@ -37,20 +38,16 @@ public class WifiScanner extends BroadcastSubscriber {
     }
 
     public void setNetworkListener(NetworkListener networkListener) {
-        mNetworkListener = networkListener;
+        ((ScanResultsReceiver) mBroadcastReceiver).setNetworkListener(networkListener);
     }
 
     @Override
     protected final BroadcastReceiver createBroadcastReceiver() {
-        return new ScanResultsReceiver(mDeviceIdTranslator, mNetworkListener);
+        return mBroadcastReceiver;
     }
 
     @Override
     protected final IntentFilter createIntentFilter() {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
-
-        return intentFilter;
+        return mIntentFilter;
     }
-
 }
