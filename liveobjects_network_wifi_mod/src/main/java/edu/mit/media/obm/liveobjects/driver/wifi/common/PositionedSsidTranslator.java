@@ -1,4 +1,4 @@
-package edu.mit.media.obm.liveobjects.driver.wifi;
+package edu.mit.media.obm.liveobjects.driver.wifi.common;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -3,6 +3,10 @@ package edu.mit.media.obm.liveobjects.driver.wifi;
 import android.content.Context;
 import android.content.res.Resources;
 
+import edu.mit.media.obm.liveobjects.driver.wifi.base.ActivatableEntity;
+import edu.mit.media.obm.liveobjects.driver.wifi.common.PositionedSsidTranslator;
+import edu.mit.media.obm.liveobjects.driver.wifi.connector.WifiConnector;
+import edu.mit.media.obm.liveobjects.driver.wifi.scanner.WifiScanner;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkConnectionManager;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;

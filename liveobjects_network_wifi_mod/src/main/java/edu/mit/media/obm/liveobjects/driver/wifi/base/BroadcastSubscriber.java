@@ -1,8 +1,10 @@
-package edu.mit.media.obm.liveobjects.driver.wifi;
+package edu.mit.media.obm.liveobjects.driver.wifi.base;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+
+import edu.mit.media.obm.liveobjects.driver.wifi.base.ActivatableEntity;
 
 /**
  * Created by arata on 9/11/15.

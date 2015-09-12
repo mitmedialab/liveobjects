@@ -14,12 +14,11 @@ import com.noveogroup.android.log.Log;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
 import butterknife.BindInt;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
-import edu.mit.media.obm.liveobjects.driver.wifi.PositionedSsidTranslator;
+import edu.mit.media.obm.liveobjects.driver.wifi.common.PositionedSsidTranslator;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 

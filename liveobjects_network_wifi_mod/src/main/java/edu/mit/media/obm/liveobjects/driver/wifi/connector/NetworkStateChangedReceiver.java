@@ -1,6 +1,5 @@
-package edu.mit.media.obm.liveobjects.driver.wifi;
+package edu.mit.media.obm.liveobjects.driver.wifi.connector;
 
-import android.bluetooth.BluetoothClass;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +8,8 @@ import android.net.wifi.WifiManager;
 
 import com.noveogroup.android.log.Log;
 
+import edu.mit.media.obm.liveobjects.driver.wifi.WifiConnectionManager;
+import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerWrapper;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;

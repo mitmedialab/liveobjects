@@ -23,7 +23,7 @@
  * 
  **/
 
-package edu.mit.media.obm.liveobjects.driver.wifi;
+package edu.mit.media.obm.liveobjects.driver.wifi.common;
 
 import java.util.Comparator;
 import java.util.Iterator;

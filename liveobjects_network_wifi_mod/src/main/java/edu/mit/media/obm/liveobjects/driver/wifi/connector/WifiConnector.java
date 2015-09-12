@@ -1,4 +1,4 @@
-package edu.mit.media.obm.liveobjects.driver.wifi;
+package edu.mit.media.obm.liveobjects.driver.wifi.connector;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,6 +12,9 @@ import com.noveogroup.android.log.Log;
 
 import java.util.List;
 
+import edu.mit.media.obm.liveobjects.driver.wifi.base.BroadcastSubscriber;
+import edu.mit.media.obm.liveobjects.driver.wifi.R;
+import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerWrapper;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;

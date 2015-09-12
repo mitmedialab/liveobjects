@@ -1,4 +1,4 @@
-package edu.mit.media.obm.liveobjects.driver.wifi;
+package edu.mit.media.obm.liveobjects.driver.wifi.scanner;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
