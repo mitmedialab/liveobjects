@@ -6,11 +6,14 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.net.wifi.WifiManager;
 
+import com.squareup.otto.Bus;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import edu.mit.media.obm.liveobjects.driver.wifi.WifiNetworkBus;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.PositionedSsidTranslator;
 import edu.mit.media.obm.liveobjects.driver.wifi.connector.NetworkStateChangedReceiver;
 import edu.mit.media.obm.liveobjects.driver.wifi.connector.WifiConnector;
@@ -94,6 +97,11 @@ public class NetworkWifiModule {
     @Provides @Named("connector") @Singleton
     public BroadcastReceiver provideConnectorBroadcastReceiver(Context context, WifiConnector wifiConnector) {
         return new NetworkStateChangedReceiver(context, wifiConnector);
+    }
+
+    @Provides
+    public Bus provideBus() {
+        return WifiNetworkBus.getBus();
     }
 
 }

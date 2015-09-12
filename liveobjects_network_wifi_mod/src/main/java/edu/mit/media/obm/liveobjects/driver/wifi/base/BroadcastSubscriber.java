@@ -19,7 +19,7 @@ public abstract class BroadcastSubscriber extends ActivatableEntity {
     }
 
     @Override
-    protected final void activateEntity() {
+    protected void activateEntity() {
         broadcastReceiver = createBroadcastReceiver();
         IntentFilter intentFilter = createIntentFilter();
 
@@ -27,7 +27,7 @@ public abstract class BroadcastSubscriber extends ActivatableEntity {
     }
 
     @Override
-    protected final void deactivateEntity() {
+    protected void deactivateEntity() {
         context.unregisterReceiver(broadcastReceiver);
     }
 

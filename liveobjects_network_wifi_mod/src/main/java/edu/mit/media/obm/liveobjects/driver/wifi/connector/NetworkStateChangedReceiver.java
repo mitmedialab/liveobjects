@@ -7,11 +7,13 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 
 import com.noveogroup.android.log.Log;
+import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
 
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiConnectionManager;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerWrapper;
+import edu.mit.media.obm.liveobjects.driver.wifi.event.ConnectedToNetworkDeviceEvent;
 import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
@@ -23,17 +25,14 @@ import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
 public class NetworkStateChangedReceiver extends BroadcastReceiver {
     @Inject WifiManager wifiManager;
     @Inject DeviceIdTranslator deviceIdTranslator;
+    @Inject Bus bus;
+
     private WifiConnector wifiConnector;
-    private NetworkListener networkListener;
 
     public NetworkStateChangedReceiver(Context context, WifiConnector wifiConnector) {
         DependencyInjector.inject(this, context);
 
         this.wifiConnector = wifiConnector;
-    }
-
-    public void setNetworkListener(NetworkListener networkListener) {
-        this.networkListener = networkListener;
     }
 
     public void onReceive(Context context, Intent intent) {
@@ -63,7 +62,9 @@ public class NetworkStateChangedReceiver extends BroadcastReceiver {
                 if (deviceIdTranslator.isLiveObject(ssid)) {
                     LiveObject connectedLiveObject = deviceIdTranslator.translateToLiveObject(ssid);
                     Log.d("connectedLiveObject = " + connectedLiveObject);
-                    networkListener.onConnected(connectedLiveObject.getLiveObjectName());
+
+                    ConnectedToNetworkDeviceEvent event = new ConnectedToNetworkDeviceEvent(connectedLiveObject.getLiveObjectName());
+                    bus.post(event);
 
                     wifiConnector.setConnecting(false);
                 }

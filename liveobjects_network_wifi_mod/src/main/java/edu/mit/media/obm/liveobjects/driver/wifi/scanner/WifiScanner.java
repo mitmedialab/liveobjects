@@ -37,10 +37,6 @@ public class WifiScanner extends BroadcastSubscriber {
         mWifiManager.startScan();
     }
 
-    public void setNetworkListener(NetworkListener networkListener) {
-        ((ScanResultsReceiver) mBroadcastReceiver).setNetworkListener(networkListener);
-    }
-
     @Override
     protected final BroadcastReceiver createBroadcastReceiver() {
         return mBroadcastReceiver;

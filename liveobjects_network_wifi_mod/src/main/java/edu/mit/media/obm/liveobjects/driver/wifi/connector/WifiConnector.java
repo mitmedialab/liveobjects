@@ -8,7 +8,9 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 
+import com.google.common.eventbus.Subscribe;
 import com.noveogroup.android.log.Log;
+import com.squareup.otto.Bus;
 
 import java.util.List;
 
@@ -18,10 +20,10 @@ import javax.inject.Named;
 import edu.mit.media.obm.liveobjects.driver.wifi.base.BroadcastSubscriber;
 import edu.mit.media.obm.liveobjects.driver.wifi.R;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerWrapper;
+import edu.mit.media.obm.liveobjects.driver.wifi.event.ConnectedToNetworkDeviceEvent;
 import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
-import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
 
 /**
  * Created by arata on 9/11/15.
@@ -29,14 +31,14 @@ import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
 public class WifiConnector extends BroadcastSubscriber {
     private final String NETWORK_PASSWORD;
 
-    private NetworkListener mNetworkListener;
-
     @Inject Context mContext;
     @Inject WifiManager mWifiManager;
     @Inject DeviceIdTranslator mDeviceIdTranslator;
 
     @Inject @Named("connector") IntentFilter mIntentFilter;
     @Inject @Named("connector") BroadcastReceiver mBroadcastReceiver;
+
+    @Inject Bus bus;
 
     private boolean mConnecting;
     private int mConnectingNetworkId;
@@ -51,7 +53,19 @@ public class WifiConnector extends BroadcastSubscriber {
     }
 
     public void initialize() {
-        mConnecting = false;
+        setConnecting(false);
+    }
+
+    @Override
+    protected void activateEntity() {
+        super.activateEntity();
+        bus.register(this);
+    }
+
+    @Override
+    protected void deactivateEntity() {
+        super.deactivateEntity();
+        bus.unregister(this);
     }
 
     @Override
@@ -69,7 +83,7 @@ public class WifiConnector extends BroadcastSubscriber {
             throw new IllegalStateException("Must not try to connect when it's already connecting");
         }
 
-        mConnecting = true;
+        setConnecting(true);
 
         String deviceId = mDeviceIdTranslator.translateFromLiveObject(liveObject);
 
@@ -96,19 +110,15 @@ public class WifiConnector extends BroadcastSubscriber {
         }
 
         mWifiManager.disableNetwork(mConnectingNetworkId);
-        mConnecting = false;
+        setConnecting(false);
     }
 
     public boolean isConnecting() {
         return mConnecting;
     }
 
-    void setConnecting(boolean connecting) {
+    private void setConnecting(boolean connecting) {
         mConnecting = connecting;
-    }
-
-    public void setNetworkListener(NetworkListener networkListener) {
-        ((NetworkStateChangedReceiver) mBroadcastReceiver).setNetworkListener(networkListener);
     }
 
     synchronized public void forgetNetworkConfigurations() throws IllegalStateException {
@@ -143,4 +153,8 @@ public class WifiConnector extends BroadcastSubscriber {
         }.execute();
     }
 
+    @Subscribe
+    protected void finalizeConnectionProcess(ConnectedToNetworkDeviceEvent event) {
+        setConnecting(false);
+    }
 }

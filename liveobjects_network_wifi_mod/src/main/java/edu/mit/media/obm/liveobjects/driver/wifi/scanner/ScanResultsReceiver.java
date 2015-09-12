@@ -7,12 +7,14 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 
 import com.noveogroup.android.log.Log;
+import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import edu.mit.media.obm.liveobjects.driver.wifi.event.NetworkDevicesAvailableEvent;
 import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
@@ -24,15 +26,10 @@ import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
 public class ScanResultsReceiver extends BroadcastReceiver {
     @Inject WifiManager wifiManager;
     @Inject DeviceIdTranslator deviceIdTranslator;
-
-    NetworkListener networkListener;
+    @Inject Bus bus;
 
     public ScanResultsReceiver(Context context) {
         DependencyInjector.inject(this, context);
-    }
-
-    public void setNetworkListener(NetworkListener networkListener) {
-        this.networkListener = networkListener;
     }
 
     public void onReceive(Context context, Intent intent) {
@@ -65,6 +62,7 @@ public class ScanResultsReceiver extends BroadcastReceiver {
 
         // notifies the middleware about the presence of live-object devices
         // notifies even if no live-objects are discovered
-        networkListener.onNetworkDevicesAvailable(liveObjectList);
+        NetworkDevicesAvailableEvent event = new NetworkDevicesAvailableEvent(liveObjectList);
+        bus.post(event);
     }
 }

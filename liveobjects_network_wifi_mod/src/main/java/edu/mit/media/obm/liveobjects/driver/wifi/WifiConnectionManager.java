@@ -2,6 +2,8 @@ package edu.mit.media.obm.liveobjects.driver.wifi;
 
 import android.content.Context;
 
+import com.squareup.otto.Bus;
+
 import javax.inject.Inject;
 
 import edu.mit.media.obm.liveobjects.driver.wifi.base.ActivatableEntity;
@@ -20,6 +22,7 @@ import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
 public class WifiConnectionManager extends ActivatableEntity implements NetworkConnectionManager {
     @Inject WifiScanner mWifiScanner;
     @Inject WifiConnector mWifiConnector;
+    @Inject Bus bus;
 
     public WifiConnectionManager(Context context) {
         DependencyInjector.inject(this, context);
@@ -84,8 +87,7 @@ public class WifiConnectionManager extends ActivatableEntity implements NetworkC
     }
 
     @Override
-    public void setNetworkListener(NetworkListener networkListener) {
-        mWifiScanner.setNetworkListener(networkListener);
-        mWifiConnector.setNetworkListener(networkListener);
+    public Bus getEventBus() {
+        return bus;
     }
 }
