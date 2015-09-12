@@ -17,8 +17,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import edu.mit.media.obm.liveobjects.driver.wifi.base.BroadcastSubscriber;
 import edu.mit.media.obm.liveobjects.driver.wifi.R;
+import edu.mit.media.obm.liveobjects.driver.wifi.base.BroadcastSubscriber;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerWrapper;
 import edu.mit.media.obm.liveobjects.driver.wifi.event.ConnectedToNetworkDeviceEvent;
 import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
