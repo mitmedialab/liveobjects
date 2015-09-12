@@ -12,7 +12,6 @@ import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.driver.wifi.scanner.WifiScanner;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.NetworkConnectionManager;
-import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
 
 /**
  * This class implements a concrete driver for wifi network
@@ -25,7 +24,8 @@ public class WifiConnectionManager extends ActivatableEntity implements NetworkC
     @Inject Bus bus;
 
     public WifiConnectionManager(Context context) {
-        DependencyInjector.inject(this, context);
+        DependencyInjector.setApplicationContext(context);
+        DependencyInjector.inject(this);
     }
 
     @Override

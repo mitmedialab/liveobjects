@@ -28,8 +28,8 @@ public class ScanResultsReceiver extends BroadcastReceiver {
     @Inject DeviceIdTranslator deviceIdTranslator;
     @Inject Bus bus;
 
-    public ScanResultsReceiver(Context context) {
-        DependencyInjector.inject(this, context);
+    public ScanResultsReceiver() {
+        DependencyInjector.inject(this);
     }
 
     public void onReceive(Context context, Intent intent) {

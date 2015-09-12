@@ -27,12 +27,10 @@ public class NetworkStateChangedReceiver extends BroadcastReceiver {
     @Inject DeviceIdTranslator deviceIdTranslator;
     @Inject Bus bus;
 
-    private WifiConnector wifiConnector;
+    private boolean connecting = false;
 
-    public NetworkStateChangedReceiver(Context context, WifiConnector wifiConnector) {
-        DependencyInjector.inject(this, context);
-
-        this.wifiConnector = wifiConnector;
+    public NetworkStateChangedReceiver() {
+        DependencyInjector.inject(this);
     }
 
     public void onReceive(Context context, Intent intent) {
@@ -51,7 +49,7 @@ public class NetworkStateChangedReceiver extends BroadcastReceiver {
         Log.v("networkInfo = " + networkInfo.toString());
 
         synchronized (WifiConnectionManager.class) {
-            if (state.equals(NetworkInfo.State.CONNECTED) && wifiConnector.isConnecting()) {
+            if (state.equals(NetworkInfo.State.CONNECTED) && isConnecting()) {
                 String ssid = networkInfo.getExtraInfo();
                 if (ssid == null) {
                     // SSID in NetworkInfo may be null depending on the model of the device
@@ -68,5 +66,13 @@ public class NetworkStateChangedReceiver extends BroadcastReceiver {
                 }
             }
         }
+    }
+
+    public boolean isConnecting() {
+        return connecting;
+    }
+
+    public void setConnecting(boolean connecting) {
+        this.connecting = connecting;
     }
 }

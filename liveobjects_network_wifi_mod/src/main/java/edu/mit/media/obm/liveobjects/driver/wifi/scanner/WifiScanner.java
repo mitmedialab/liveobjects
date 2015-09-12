@@ -23,10 +23,8 @@ public class WifiScanner extends BroadcastSubscriber {
     @Inject @Named("scanner") IntentFilter mIntentFilter;
     @Inject @Named("scanner") BroadcastReceiver mBroadcastReceiver;
 
-    public WifiScanner(Context context) {
-        super(context);
-
-        DependencyInjector.inject(this, context);
+    public WifiScanner() {
+        DependencyInjector.inject(this);
     }
 
     public void initialize() {

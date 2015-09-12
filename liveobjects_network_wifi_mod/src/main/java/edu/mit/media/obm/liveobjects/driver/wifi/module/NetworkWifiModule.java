@@ -31,25 +31,25 @@ import edu.mit.media.obm.liveobjects.driver.wifi.R;
         }
 )
 public class NetworkWifiModule {
-    private Context context;
+    private Context applicationContext;
 
-    public NetworkWifiModule(Context context) {
-        this.context = context;
+    public NetworkWifiModule(Context applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
+    @Provides @Named("application")
+    public Context provideApplicationContext() {
+        return applicationContext;
     }
 
     @Provides
-    public Context provideContext() {
-        return context;
-    }
-
-    @Provides
-    public WifiManager provideWifiManager(Context context) {
-        return (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+    public WifiManager provideWifiManager(@Named("application") Context applicationContext) {
+        return (WifiManager) applicationContext.getSystemService(Context.WIFI_SERVICE);
     }
 
     @Provides
     public DeviceIdTranslator provideDeviceIdTranslator() {
-        Resources resources = context.getResources();
+        Resources resources = applicationContext.getResources();
         String ssidPrefix = resources.getString(R.string.ssid_prefix);
         // use only the first char as a delimiter
         // (ssid_delimiter should be 1 byte long string, though)
@@ -64,13 +64,13 @@ public class NetworkWifiModule {
     }
 
     @Provides @Singleton
-    public WifiScanner provideWifiScanner(Context context) {
-        return new WifiScanner(context);
+    public WifiScanner provideWifiScanner() {
+        return new WifiScanner();
     }
 
     @Provides @Singleton
-    public WifiConnector provideWifiConnector(Context context) {
-        return new WifiConnector(context);
+    public WifiConnector provideWifiConnector() {
+        return new WifiConnector();
     }
 
     @Provides @Named("scanner") @Singleton
@@ -82,8 +82,8 @@ public class NetworkWifiModule {
     }
 
     @Provides @Named("scanner") @Singleton
-    public BroadcastReceiver provideScannerBroadcastReceiver(Context context) {
-        return new ScanResultsReceiver(context);
+    public BroadcastReceiver provideScannerBroadcastReceiver() {
+        return new ScanResultsReceiver();
     }
 
     @Provides @Named("connector") @Singleton
@@ -95,8 +95,8 @@ public class NetworkWifiModule {
     }
 
     @Provides @Named("connector") @Singleton
-    public BroadcastReceiver provideConnectorBroadcastReceiver(Context context, WifiConnector wifiConnector) {
-        return new NetworkStateChangedReceiver(context, wifiConnector);
+    public BroadcastReceiver provideConnectorBroadcastReceiver() {
+        return new NetworkStateChangedReceiver();
     }
 
     @Provides

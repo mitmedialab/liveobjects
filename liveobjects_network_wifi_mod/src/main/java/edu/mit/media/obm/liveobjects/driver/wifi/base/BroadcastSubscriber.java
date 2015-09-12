@@ -4,18 +4,22 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import edu.mit.media.obm.liveobjects.driver.wifi.base.ActivatableEntity;
+import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 
 /**
  * Created by arata on 9/11/15.
  */
 public abstract class BroadcastSubscriber extends ActivatableEntity {
-    Context context;
+    @Inject @Named("application") Context context;
 
     protected BroadcastReceiver broadcastReceiver;
 
-    public BroadcastSubscriber(Context context) {
-        this.context = context;
+    public BroadcastSubscriber() {
+        DependencyInjector.inject(this);
     }
 
     @Override

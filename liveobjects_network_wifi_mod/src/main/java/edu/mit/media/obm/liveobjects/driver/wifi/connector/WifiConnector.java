@@ -31,7 +31,7 @@ import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 public class WifiConnector extends BroadcastSubscriber {
     private final String NETWORK_PASSWORD;
 
-    @Inject Context mContext;
+    @Inject @Named("application") Context mContext;
     @Inject WifiManager mWifiManager;
     @Inject DeviceIdTranslator mDeviceIdTranslator;
 
@@ -40,13 +40,10 @@ public class WifiConnector extends BroadcastSubscriber {
 
     @Inject Bus bus;
 
-    private boolean mConnecting;
     private int mConnectingNetworkId;
 
-    public WifiConnector(Context context) {
-        super(context);
-
-        DependencyInjector.inject(this, context);
+    public WifiConnector() {
+        DependencyInjector.inject(this);
 
         Resources resources = mContext.getResources();
         NETWORK_PASSWORD = resources.getString(R.string.network_password);
@@ -114,11 +111,11 @@ public class WifiConnector extends BroadcastSubscriber {
     }
 
     public boolean isConnecting() {
-        return mConnecting;
+        return ((NetworkStateChangedReceiver) mBroadcastReceiver).isConnecting();
     }
 
     private void setConnecting(boolean connecting) {
-        mConnecting = connecting;
+        ((NetworkStateChangedReceiver) mBroadcastReceiver).setConnecting(connecting);
     }
 
     synchronized public void forgetNetworkConfigurations() throws IllegalStateException {
