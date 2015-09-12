@@ -9,7 +9,7 @@ import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
 /**
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
-public class NetworkBridge implements NetworkController, NetworkListener{
+public class NetworkBridge implements NetworkController, NetworkListener {
 
     //TODO extending to a list of NetworkConnectionManager to have multiple discovery?
     private NetworkConnectionManager mNetworkConnectionManager;
