@@ -55,6 +55,32 @@ public class PositionedSsidTranslatorTest {
         assertEquals(isLegalSsid, expectedIsLegalSsid, message);
     }
 
+    @DataProvider(name = "IsLegalLiveObjectTestSets")
+    public static Object[][] provideIsLegalLiveObjectTestSets() {
+        return new Object[][] {
+                { "ObjForTest"         , 0x2a, 0x3b, 0xc, true , "valid live object"        },
+                { ""                   , 0x2a, 0x3b, 0xc, false, "empty name"               },
+                { "LoooooooooooongName", 0x2a, 0x3b, 0xc, false, "too long name"            },
+                { "ObjForTest"         ,   -1, 0x3b, 0xc, false, "x is out of lower bound"  },
+                { "ObjForTest"         ,  256, 0x3b, 0xc, false, "x is out of upper bound"  },
+                { "ObjForTest"         , 0x2a,   -1, 0xc, false, "y is out of lower bound"  },
+                { "ObjForTest"         , 0x2a,  256, 0xc, false, "y is out of upper bound"  },
+                { "ObjForTest"         , 0x2a, 0x3b,  -1, false, "id is out of lower bound" },
+                { "ObjForTest"         , 0x2a, 0x3b,  16, false, "id is out of upper bound" },
+        };
+    }
+
+    @Test(dataProvider = "IsLegalLiveObjectTestSets")
+    public void shouldBeAbleToJudgeIfLiveObjectIsLegal(
+            String name, int locationX, int locationY, int locationId,
+            boolean expectedIsLegalLiveObject, String message) throws Exception {
+        MapLocation mapLocation = new MapLocation(locationX, locationY, locationId);
+        LiveObject liveObject = new LiveObject(name, mapLocation);
+        boolean isLegalLiveObject = positionedSsidTranslator.isValidLiveObject(liveObject);
+
+        assertEquals(isLegalLiveObject, expectedIsLegalLiveObject, message);
+    }
+
     @DataProvider(name = "DeviceIdAndLiveObjectPairs")
     public static Object[][] provideDeviceIdAndLiveObjectPairs() {
         return new Object[][] {
@@ -93,6 +119,14 @@ public class PositionedSsidTranslatorTest {
         String  translatedDeviceId = positionedSsidTranslator.translateFromLiveObject(liveObject);
 
         assertEquals(translatedDeviceId, deviceId);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void shouldThrowWhenTryToTranslateIllegalLiveObject() throws Exception {
+        MapLocation mapLocation = new MapLocation(0x2a, 0x3b, 0xc);
+        LiveObject liveObject = new LiveObject("LoooooooooooongName", mapLocation);
+
+        positionedSsidTranslator.translateFromLiveObject(liveObject);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)

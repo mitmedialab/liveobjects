@@ -20,6 +20,11 @@ public class SsidTranslator implements DeviceIdTranslator {
     }
 
     @Override
+    public boolean isValidLiveObject(LiveObject liveObject) {
+        return true;
+    }
+
+    @Override
     public LiveObject translateToLiveObject(String deviceId) {
         int prefixLength = ssidPrefix.length();
         String liveObjectName = deviceId.substring(prefixLength);

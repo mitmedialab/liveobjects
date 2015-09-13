@@ -54,23 +54,23 @@ public class PositionedSsidTranslator implements DeviceIdTranslator {
             return true;
         }
 
-        int maxX = 1 << (locationXLength * 4) - 1;
-        int maxY = 1 << (locationYLength * 4) - 1;
-        int maxId = 1 << (locationIdLength * 4) - 1;
-
-        if (mapLocation.getX() < 0 || mapLocation.getX() > maxX) {
-            return false;
-        }
-
-        if (mapLocation.getY() < 0 || mapLocation.getY() > maxY) {
-            return false;
-        }
-
-        if (mapLocation.getId() < 0 || mapLocation.getId() > maxId) {
+        if (!isInHexLengthRange(mapLocation.getX(), locationXLength)
+                || !isInHexLengthRange(mapLocation.getY(), locationYLength)
+                || !isInHexLengthRange(mapLocation.getId(), locationIdLength)) {
             return false;
         }
 
         return true;
+    }
+
+    private boolean isInHexLengthRange(int value, int hexLength) {
+        int maxValue = maxValueFromHexLength(hexLength);
+
+        return (0 <= value && value <= maxValue);
+    }
+
+    private int maxValueFromHexLength(int hexLength) {
+        return (1 << (hexLength * 4)) - 1;
     }
 
     @Override
