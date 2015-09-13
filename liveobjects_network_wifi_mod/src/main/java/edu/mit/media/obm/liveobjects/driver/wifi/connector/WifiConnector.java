@@ -4,12 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.content.res.Resources;
-import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiManager;
 
 import com.noveogroup.android.log.Log;
-
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -17,7 +13,6 @@ import javax.inject.Named;
 import edu.mit.media.obm.liveobjects.driver.wifi.R;
 import edu.mit.media.obm.liveobjects.driver.wifi.base.BroadcastSubscriber;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerFacade;
-import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerWrapper;
 import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
@@ -117,7 +112,7 @@ public class WifiConnector extends BroadcastSubscriber {
         Log.v("deletes network configurations for all live objects");
         for (String ssid: mWifiManagerFacade.getRegisteredSsids()) {
             Log.v("found a network configuration for '" + ssid + "'");
-            if (mDeviceIdTranslator.isLiveObject(ssid)) {
+            if (mDeviceIdTranslator.isValidSsid(ssid)) {
                 Log.v("deleting a network configuration for live object '" + ssid + "'");
                 mWifiManagerFacade.removeNetwork(ssid);
             }

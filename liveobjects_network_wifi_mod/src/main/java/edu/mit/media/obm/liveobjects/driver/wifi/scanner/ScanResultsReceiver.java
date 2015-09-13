@@ -18,7 +18,6 @@ import edu.mit.media.obm.liveobjects.driver.wifi.event.NetworkDevicesAvailableEv
 import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
-import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
 
 /**
  * Created by arata on 9/11/15.
@@ -57,7 +56,7 @@ public class ScanResultsReceiver extends BroadcastReceiver {
             String deviceId = scanResult.SSID.toString();
             Log.v("scanResult: " + deviceId);
 
-            if (deviceIdTranslator.isLiveObject(deviceId)) {
+            if (deviceIdTranslator.isValidSsid(deviceId)) {
                 LiveObject liveObject = deviceIdTranslator.translateToLiveObject(deviceId);
                 liveObject.setStatus(LiveObject.STATUS_ACTIVE);
 

@@ -15,7 +15,7 @@ public class SsidTranslator implements DeviceIdTranslator {
     }
 
     @Override
-    public boolean isLiveObject(String deviceId) {
+    public boolean isValidSsid(String deviceId) {
         return deviceId.startsWith(ssidPrefix);
     }
 

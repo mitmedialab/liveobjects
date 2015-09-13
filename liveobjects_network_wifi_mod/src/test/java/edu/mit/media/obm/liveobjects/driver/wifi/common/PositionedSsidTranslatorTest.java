@@ -5,7 +5,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import edu.mit.media.obm.liveobjects.driver.wifi.common.PositionedSsidTranslator;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.common.MapLocation;
 
@@ -52,7 +51,7 @@ public class PositionedSsidTranslatorTest {
     @Test(dataProvider = "IsLegalTestSets")
     public void shouldBeAbleToJudgeIfDeviceIdIsLegal(
             String deviceId, boolean expectedIsLegalSsid, String message) throws Exception {
-        boolean isLegalSsid = positionedSsidTranslator.isLiveObject(deviceId);
+        boolean isLegalSsid = positionedSsidTranslator.isValidSsid(deviceId);
         assertEquals(isLegalSsid, expectedIsLegalSsid, message);
     }
 
@@ -145,7 +144,7 @@ public class PositionedSsidTranslatorTest {
         PositionedSsidTranslator positionedSsidTranslator = new PositionedSsidTranslator(
                 prefix, delimiter, xLengthInHex, yLengthInHex, idLengthInHex);
 
-        assertTrue(positionedSsidTranslator.isLiveObject(deviceId));
+        assertTrue(positionedSsidTranslator.isValidSsid(deviceId));
 
         LiveObject liveObject = positionedSsidTranslator.translateToLiveObject(deviceId);
         MapLocation mapLocation = liveObject.getMapLocation();

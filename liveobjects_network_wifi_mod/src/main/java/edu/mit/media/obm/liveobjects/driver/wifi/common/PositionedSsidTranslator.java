@@ -28,24 +28,54 @@ public class PositionedSsidTranslator implements DeviceIdTranslator {
         this.locationYLength = locationYLength;
         this.locationIdLength = locationIdLength;
 
-        int maxSsidLength = 32 - (this.ssidPrefix.length() + /* delimiter length */1
-                + this.locationXLength + this.locationYLength + this.locationIdLength);
-
         String patternString = String.format(
                 "^%s(.{1,%d})%c(\\p{XDigit}{%d})(\\p{XDigit}{%d})(\\p{XDigit}{%d})$",
-                this.ssidPrefix, maxSsidLength, this.ssidDelimiter, this.locationXLength, this.locationYLength, this.locationIdLength);
+                this.ssidPrefix, getMaxNameLength(), this.ssidDelimiter, this.locationXLength, this.locationYLength, this.locationIdLength);
         ssidPattern = Pattern.compile(patternString);
     }
 
     @Override
-    public boolean isLiveObject(String deviceId) {
+    public boolean isValidSsid(String deviceId) {
         Matcher matcher = ssidPattern.matcher(deviceId);
         return matcher.find();
     }
 
     @Override
+    public boolean isValidLiveObject(LiveObject liveObject) {
+        int nameLength = liveObject.getLiveObjectName().length();
+
+        if (nameLength < 1 || nameLength > getMaxNameLength()) {
+            return false;
+        }
+
+        MapLocation mapLocation = liveObject.getMapLocation();
+
+        if (mapLocation == null) {
+            return true;
+        }
+
+        int maxX = 1 << (locationXLength * 4) - 1;
+        int maxY = 1 << (locationYLength * 4) - 1;
+        int maxId = 1 << (locationIdLength * 4) - 1;
+
+        if (mapLocation.getX() < 0 || mapLocation.getX() > maxX) {
+            return false;
+        }
+
+        if (mapLocation.getY() < 0 || mapLocation.getY() > maxY) {
+            return false;
+        }
+
+        if (mapLocation.getId() < 0 || mapLocation.getId() > maxId) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
     public LiveObject translateToLiveObject(String deviceId) {
-        if (!isLiveObject(deviceId)) {
+        if (!isValidSsid(deviceId)) {
             throw new IllegalArgumentException("illegal deviceId '" + deviceId + "'");
         }
 
@@ -63,17 +93,23 @@ public class PositionedSsidTranslator implements DeviceIdTranslator {
 
     @Override
     public String translateFromLiveObject(LiveObject liveObject) {
-        MapLocation mapLocation = liveObject.getMapLocation();
-
-        if (mapLocation == null) {
-            throw new IllegalArgumentException("mapLocation cannot be null");
+        if (!isValidLiveObject(liveObject)) {
+            throw new IllegalArgumentException("illegal live object");
         }
 
+        MapLocation mapLocation = liveObject.getMapLocation();
         String formatString = String.format("%%s%%s%%c%%0%dx%%0%dx%%0%dx",
                 locationXLength, locationYLength, locationIdLength);
-        String deviceId = String.format(formatString, ssidPrefix, liveObject.getLiveObjectName(),
+        String ssid = String.format(formatString, ssidPrefix, liveObject.getLiveObjectName(),
                 ssidDelimiter, mapLocation.getX(), mapLocation.getY(), mapLocation.getId());
 
-        return deviceId;
+        return ssid;
+    }
+
+    private int getMaxNameLength() {
+        final int maxSsidLength = 32;
+
+        return maxSsidLength - (this.ssidPrefix.length() + /* delimiter length */1
+                + this.locationXLength + this.locationYLength + this.locationIdLength);
     }
 }

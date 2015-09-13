@@ -80,8 +80,8 @@ public class ScanResultsReceiverTest extends PowerMockTestCase {
         DependencyInjector.inject(this, new TestModule());
         scanResultsReceiver = new ScanResultsReceiver(wifiManager, deviceIdTranslator, bus);
 
-        stub(deviceIdTranslator.isLiveObject(VALID_SSID)).toReturn(true);
-        stub(deviceIdTranslator.isLiveObject(INVALID_SSID)).toReturn(false);
+        stub(deviceIdTranslator.isValidSsid(VALID_SSID)).toReturn(true);
+        stub(deviceIdTranslator.isValidSsid(INVALID_SSID)).toReturn(false);
         stub(deviceIdTranslator.translateToLiveObject(VALID_SSID)).toReturn(new LiveObject(VALID_SSID));
 
         dummyContext = mock(Context.class);

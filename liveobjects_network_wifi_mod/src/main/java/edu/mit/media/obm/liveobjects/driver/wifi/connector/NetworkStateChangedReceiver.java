@@ -17,7 +17,6 @@ import edu.mit.media.obm.liveobjects.driver.wifi.event.ConnectedToNetworkDeviceE
 import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
-import edu.mit.media.obm.liveobjects.middleware.net.NetworkListener;
 
 /**
  * Created by arata on 9/11/15.
@@ -57,7 +56,7 @@ public class NetworkStateChangedReceiver extends BroadcastReceiver {
                 }
 
                 ssid = WifiManagerWrapper.unQuoteString(ssid);
-                if (deviceIdTranslator.isLiveObject(ssid)) {
+                if (deviceIdTranslator.isValidSsid(ssid)) {
                     LiveObject connectedLiveObject = deviceIdTranslator.translateToLiveObject(ssid);
                     Log.d("connectedLiveObject = " + connectedLiveObject);
 
