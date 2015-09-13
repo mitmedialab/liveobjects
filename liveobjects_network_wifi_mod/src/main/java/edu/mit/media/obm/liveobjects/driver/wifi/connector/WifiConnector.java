@@ -16,6 +16,7 @@ import javax.inject.Named;
 
 import edu.mit.media.obm.liveobjects.driver.wifi.R;
 import edu.mit.media.obm.liveobjects.driver.wifi.base.BroadcastSubscriber;
+import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerFacade;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerWrapper;
 import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
@@ -27,7 +28,7 @@ import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 public class WifiConnector extends BroadcastSubscriber {
     private String NETWORK_PASSWORD;
 
-    @Inject WifiManager mWifiManager;
+    @Inject WifiManagerFacade mWifiManagerFacade;
     @Inject DeviceIdTranslator mDeviceIdTranslator;
 
     @Inject @Named("connector") IntentFilter mIntentFilter;
@@ -41,11 +42,11 @@ public class WifiConnector extends BroadcastSubscriber {
         initializeConstants();
     }
 
-    public WifiConnector(Context context, WifiManager wifiManager, IntentFilter intentFilter,
+    public WifiConnector(Context context, WifiManagerFacade wifiManagerFacade, IntentFilter intentFilter,
                          BroadcastReceiver broadcastReceiver, DeviceIdTranslator deviceIdTranslator) {
         super(context);
 
-        mWifiManager = wifiManager;
+        mWifiManagerFacade = wifiManagerFacade;
         mIntentFilter = intentFilter;
         mBroadcastReceiver = broadcastReceiver;
         mDeviceIdTranslator = deviceIdTranslator;
@@ -73,6 +74,8 @@ public class WifiConnector extends BroadcastSubscriber {
     }
 
     synchronized public void connect(LiveObject liveObject) throws IllegalStateException {
+        requireActivated();
+
         if (isConnecting()) {
             throw new IllegalStateException("Must not try to connect when it's already connecting");
         }
@@ -80,25 +83,23 @@ public class WifiConnector extends BroadcastSubscriber {
         setConnecting(true);
 
         String deviceId = mDeviceIdTranslator.translateFromLiveObject(liveObject);
-
-        WifiConfiguration config = WifiManagerWrapper.addNewNetwork(mWifiManager, deviceId, NETWORK_PASSWORD);
-        WifiManagerWrapper.connectToConfiguredNetwork(context, mWifiManager, config, true);
-
-        mConnectingNetworkId = config.networkId;
-
-        mWifiManager.enableNetwork(mConnectingNetworkId, true);
+        mConnectingNetworkId = mWifiManagerFacade.connectToNetwork(deviceId);
     }
 
     synchronized public void cancelConnecting() throws IllegalStateException {
+        requireActivated();
+
         if (!isConnecting()) {
             throw new IllegalStateException("Must not try to cancel when it's not connecting");
         }
 
-        mWifiManager.disableNetwork(mConnectingNetworkId);
+        mWifiManagerFacade.disconnectFromNetwork(mConnectingNetworkId);
         setConnecting(false);
     }
 
     public boolean isConnecting() {
+        requireActivated();
+
         return ((NetworkStateChangedReceiver) mBroadcastReceiver).isConnecting();
     }
 
@@ -107,25 +108,18 @@ public class WifiConnector extends BroadcastSubscriber {
     }
 
     synchronized public void forgetNetworkConfigurations() throws IllegalStateException {
+        requireActivated();
+
         if (isConnecting()) {
             throw new IllegalStateException("Must not try to disconnect when it's already connecting");
         }
 
         Log.v("deletes network configurations for all live objects");
-        final List<WifiConfiguration> configurations = mWifiManager.getConfiguredNetworks();
-
-        // configurations can be null when WiFi is disabled
-        if (configurations == null) {
-            return;
-        }
-
-        for (WifiConfiguration configuration: configurations) {
-            String ssid = WifiManagerWrapper.unQuoteString(configuration.SSID);
-
+        for (String ssid: mWifiManagerFacade.getRegisteredSsids()) {
             Log.v("found a network configuration for '" + ssid + "'");
             if (mDeviceIdTranslator.isLiveObject(ssid)) {
                 Log.v("deleting a network configuration for live object '" + ssid + "'");
-                WifiManagerWrapper.removeNetwork(mWifiManager, ssid);
+                mWifiManagerFacade.removeNetwork(ssid);
             }
         }
     }

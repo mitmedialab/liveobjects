@@ -15,6 +15,7 @@ import dagger.Module;
 import dagger.Provides;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiNetworkBus;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.PositionedSsidTranslator;
+import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerFacade;
 import edu.mit.media.obm.liveobjects.driver.wifi.connector.NetworkStateChangedReceiver;
 import edu.mit.media.obm.liveobjects.driver.wifi.connector.WifiConnector;
 import edu.mit.media.obm.liveobjects.driver.wifi.scanner.ScanResultsReceiver;
@@ -46,6 +47,11 @@ public class NetworkWifiModule {
     @Provides
     public WifiManager provideWifiManager(@Named("application") Context applicationContext) {
         return (WifiManager) applicationContext.getSystemService(Context.WIFI_SERVICE);
+    }
+
+    @Provides
+    public WifiManagerFacade provideWifiManagerFacade(WifiManager wifiManager) {
+        return new WifiManagerFacade(wifiManager);
     }
 
     @Provides
