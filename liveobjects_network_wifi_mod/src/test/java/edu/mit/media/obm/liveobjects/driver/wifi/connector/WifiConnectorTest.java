@@ -18,6 +18,10 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -39,6 +43,8 @@ import static org.testng.Assert.*;
 @PrepareForTest(Log.class)
 public class WifiConnectorTest extends PowerMockTestCase {
     private static final String TEST_DEVICE_ID = "device_id";
+    private static final String VALID_SSID = "valid_ssid";
+    private static final String INVALID_SSID = "invalid_ssid";
 
     @Inject Context context;
     @Inject WifiManagerFacade wifiManagerFacade;
@@ -91,6 +97,8 @@ public class WifiConnectorTest extends PowerMockTestCase {
 
         LiveObject liveObject = new LiveObject(TEST_DEVICE_ID);
         stub(deviceIdTranslator.translateFromLiveObject(liveObject)).toReturn(TEST_DEVICE_ID);
+        stub(deviceIdTranslator.isValidSsid(VALID_SSID)).toReturn(true);
+        stub(deviceIdTranslator.isValidSsid(INVALID_SSID)).toReturn(false);
     }
 
     @Test
@@ -149,32 +157,110 @@ public class WifiConnectorTest extends PowerMockTestCase {
             verify(context, times(registerCount)).registerReceiver(networkStateChangedReceiver, intentFilter);
             verify(context, times(unregisterCount)).unregisterReceiver(networkStateChangedReceiver);
             verify(wifiManagerFacade, times(connectCount)).connectToNetwork(TEST_DEVICE_ID);
+
+            if (connectCount > 0) {
+                verify(networkStateChangedReceiver).setConnecting(true);
+            }
         } catch (RuntimeException e) {
             assertTrue(shouldThrow, description + ": This test should not throw an exception, but threw " + e);
         }
+    }
+
+    @Test(expectedExceptions = IllegalStateException.class)
+    public void shouldThrowIfTryToConnectWhenAlreadyConnecting() {
+        stub(networkStateChangedReceiver.isConnecting()).toReturn(true);
+
+        wifiConnector.activate();
+        wifiConnector.connect(new LiveObject(TEST_DEVICE_ID));
     }
 
     private int countCharacters(String string, char c) {
         return string.length() - string.replace(String.valueOf(c), "").length();
     }
 
-    @Test
-    public void testConnect() throws Exception {
-
+    @Test(expectedExceptions = IllegalStateException.class)
+    public void shouldThrowIfTryToCancelConnectingWhenNotActivated() throws Exception {
+        wifiConnector.cancelConnecting();
     }
 
     @Test
-    public void testCancelConnecting() throws Exception {
+    public void shouldNotDisableNetworkWhenNotConnecting() throws Exception {
+        wifiConnector.activate();
+        wifiConnector.cancelConnecting();
 
+        assertFalse(networkStateChangedReceiver.isConnecting());
+        verify(wifiManagerFacade, never()).disconnectFromNetwork(anyInt());
     }
 
     @Test
-    public void testIsConnecting() throws Exception {
+    public void shouldDisableNetworkWhenConnecting() throws Exception {
+        stub(networkStateChangedReceiver.isConnecting()).toReturn(true);
 
+        wifiConnector.activate();
+        wifiConnector.cancelConnecting();
+
+        verify(wifiManagerFacade).disconnectFromNetwork(anyInt());
+        verify(networkStateChangedReceiver).setConnecting(false);
+    }
+
+    @Test(expectedExceptions = IllegalStateException.class)
+    public void shouldThrowIfTryToGetConnectingStatusWhenNotActivated() throws Exception {
+        wifiConnector.isConnecting();
     }
 
     @Test
-    public void testForgetNetworkConfigurations() throws Exception {
+    public void shouldReturnFalseWhenNotConnecting() throws Exception {
+        stub(networkStateChangedReceiver.isConnecting()).toReturn(false);
 
+        wifiConnector.activate();
+
+        assertFalse(wifiConnector.isConnecting());
+    }
+
+    @Test
+    public void shouldReturnTrueWhenConnecting() throws Exception {
+        stub(networkStateChangedReceiver.isConnecting()).toReturn(true);
+
+        wifiConnector.activate();
+
+        assertTrue(wifiConnector.isConnecting());
+    }
+
+    @Test(expectedExceptions = IllegalStateException.class)
+    public void shouldThrowIfTryToForgetNetworkConfigurationsWhenNotActivated() throws Exception {
+        wifiConnector.forgetNetworkConfigurations();
+    }
+
+    @Test(expectedExceptions = IllegalStateException.class)
+    public void shouldThrowIfTryToForgetNetworkConfigurationsWhenConnecting() throws Exception {
+        stub(networkStateChangedReceiver.isConnecting()).toReturn(true);
+
+        wifiConnector.activate();
+
+        wifiConnector.forgetNetworkConfigurations();
+    }
+
+    @DataProvider(name = "addedNetworkConfigurations")
+    public Object[][] provideAddedNetworkConfigurations() {
+        return new Object[][] {
+                { Arrays.asList() },
+                { Arrays.asList(VALID_SSID) },
+                { Arrays.asList(VALID_SSID, VALID_SSID, VALID_SSID, VALID_SSID) },
+                { Arrays.asList(INVALID_SSID) },
+                { Arrays.asList(INVALID_SSID, INVALID_SSID, INVALID_SSID, INVALID_SSID) },
+                { Arrays.asList(VALID_SSID, VALID_SSID, INVALID_SSID, INVALID_SSID) }
+        };
+    }
+
+    @Test(dataProvider = "addedNetworkConfigurations")
+    public void shouldForgetNetworkConfigurations(List<String> ssids) throws Exception {
+        stub(wifiManagerFacade.getRegisteredSsids()).toReturn(ssids);
+
+        wifiConnector.activate();
+        wifiConnector.forgetNetworkConfigurations();
+
+        int numValidSsid = Collections.frequency(ssids, VALID_SSID);
+        verify(wifiManagerFacade, times(numValidSsid)).removeNetwork(VALID_SSID);
+        verify(wifiManagerFacade, never()).removeNetwork(INVALID_SSID);
     }
 }

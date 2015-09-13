@@ -85,7 +85,8 @@ public class WifiConnector extends BroadcastSubscriber {
         requireActivated();
 
         if (!isConnecting()) {
-            throw new IllegalStateException("Must not try to cancel when it's not connecting");
+            Log.w("trying to cancel connecting, but not connecting now");
+            return;
         }
 
         mWifiManagerFacade.disconnectFromNetwork(mConnectingNetworkId);
