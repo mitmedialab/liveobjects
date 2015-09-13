@@ -32,12 +32,19 @@ public class ScanResultsReceiver extends BroadcastReceiver {
         DependencyInjector.inject(this);
     }
 
+    public ScanResultsReceiver(WifiManager wifiManager, DeviceIdTranslator deviceIdTranslator, Bus bus) {
+        this.wifiManager = wifiManager;
+        this.deviceIdTranslator = deviceIdTranslator;
+        this.bus = bus;
+    }
+
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
-        switch (action) {
-            case WifiManager.SCAN_RESULTS_AVAILABLE_ACTION:
-                handleWifiScan();
-                break;
+
+        if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(action)) {
+            handleWifiScan();
+        } else {
+            throw new IllegalArgumentException("unexpected action received: " + action);
         }
     }
 
@@ -60,9 +67,11 @@ public class ScanResultsReceiver extends BroadcastReceiver {
             }
         }
 
-        // notifies the middleware about the presence of live-object devices
-        // notifies even if no live-objects are discovered
-        NetworkDevicesAvailableEvent event = new NetworkDevicesAvailableEvent(liveObjectList);
-        bus.post(event);
+        if (liveObjectList.size() > 0) {
+            // notifies the middleware about the presence of live-object devices
+            // notifies even if no live-objects are discovered
+            NetworkDevicesAvailableEvent event = new NetworkDevicesAvailableEvent(liveObjectList);
+            bus.post(event);
+        }
     }
 }

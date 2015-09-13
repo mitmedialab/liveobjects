@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import edu.mit.media.obm.liveobjects.driver.wifi.base.ActivatableEntity;
 import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 
 /**

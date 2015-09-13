@@ -1,4 +1,4 @@
-package edu.mit.media.obm.liveobjects.driver.wifi;
+package edu.mit.media.obm.liveobjects.driver.wifi.common;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
