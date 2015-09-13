@@ -28,6 +28,7 @@ import edu.mit.media.obm.liveobjects.driver.wifi.R;
 @Module(
         library = true,
         injects = {
+                WifiScanner.class
         }
 )
 public class NetworkWifiModule {

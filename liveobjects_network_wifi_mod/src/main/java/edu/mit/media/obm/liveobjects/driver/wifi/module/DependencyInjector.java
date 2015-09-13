@@ -25,18 +25,21 @@ public class DependencyInjector {
             throw new IllegalStateException("Must set application context before any injection");
         }
 
-        Object[] modules = getDefaultModules(applicationContext);
-        inject(dependent, modules);
+        injectModules(dependent, getDefaultModules(applicationContext));
     }
 
     public static void inject(Object dependent, Object... modules) {
-        ObjectGraph objectGraph = ObjectGraph.create(modules);
-        objectGraph.inject(dependent);
+        injectModules(dependent, modules);
     }
 
     private static Object[] getDefaultModules(Context context) {
         return new Object[] {
                 new NetworkWifiModule(context)
         };
+    }
+
+    private static void injectModules(Object dependent, Object[] modules) {
+        ObjectGraph objectGraph = ObjectGraph.create(modules);
+        objectGraph.inject(dependent);
     }
 }

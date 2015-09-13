@@ -30,7 +30,6 @@ public class WifiConnectionManager extends ActivatableEntity implements NetworkC
 
     @Override
     public void initialize() {
-        mWifiScanner.initialize();
         mWifiConnector.initialize();
     }
 

@@ -22,6 +22,10 @@ public abstract class BroadcastSubscriber extends ActivatableEntity {
         DependencyInjector.inject(this);
     }
 
+    public BroadcastSubscriber(Context context) {
+        this.context = context;
+    }
+
     @Override
     protected void activateEntity() {
         broadcastReceiver = createBroadcastReceiver();

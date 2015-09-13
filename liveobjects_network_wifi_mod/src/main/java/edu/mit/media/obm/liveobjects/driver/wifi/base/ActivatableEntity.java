@@ -4,36 +4,36 @@ package edu.mit.media.obm.liveobjects.driver.wifi.base;
  * Created by arata on 9/11/15.
  */
 public abstract class ActivatableEntity {
-    private boolean started = false;
+    private boolean activated = false;
 
     abstract protected void activateEntity();
     abstract protected void deactivateEntity();
 
     public synchronized void activate() {
         if (isActivated()) {
-            throw new RuntimeException("must not try to activate when already activated");
+            throw new IllegalStateException("must not try to activate when already activated");
         }
 
         activateEntity();
-        started = true;
+        activated = true;
     }
 
     public synchronized void deactivate() {
         if (!isActivated()) {
-            throw new RuntimeException("must not try to deactivate when not activated");
+            throw new IllegalStateException("must not try to deactivate when not activated");
         }
 
         deactivateEntity();
-        started = false;
+        activated = false;
     }
 
     public synchronized void requireActivated() {
         if (!isActivated()) {
-            throw new RuntimeException("Tried to execute entity before activation");
+            throw new IllegalStateException("Tried to execute entity before activation");
         }
     }
 
     private synchronized boolean isActivated() {
-        return started;
+        return activated;
     }
 }
