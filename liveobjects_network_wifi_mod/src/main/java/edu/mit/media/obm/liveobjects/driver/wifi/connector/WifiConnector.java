@@ -25,9 +25,8 @@ import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
  * Created by arata on 9/11/15.
  */
 public class WifiConnector extends BroadcastSubscriber {
-    private final String NETWORK_PASSWORD;
+    private String NETWORK_PASSWORD;
 
-    @Inject @Named("application") Context mContext;
     @Inject WifiManager mWifiManager;
     @Inject DeviceIdTranslator mDeviceIdTranslator;
 
@@ -39,7 +38,23 @@ public class WifiConnector extends BroadcastSubscriber {
     public WifiConnector() {
         DependencyInjector.inject(this);
 
-        Resources resources = mContext.getResources();
+        initializeConstants();
+    }
+
+    public WifiConnector(Context context, WifiManager wifiManager, IntentFilter intentFilter,
+                         BroadcastReceiver broadcastReceiver, DeviceIdTranslator deviceIdTranslator) {
+        super(context);
+
+        mWifiManager = wifiManager;
+        mIntentFilter = intentFilter;
+        mBroadcastReceiver = broadcastReceiver;
+        mDeviceIdTranslator = deviceIdTranslator;
+
+        initializeConstants();
+    }
+
+    private void initializeConstants() {
+        Resources resources = context.getResources();
         NETWORK_PASSWORD = resources.getString(R.string.network_password);
     }
 
@@ -67,7 +82,7 @@ public class WifiConnector extends BroadcastSubscriber {
         String deviceId = mDeviceIdTranslator.translateFromLiveObject(liveObject);
 
         WifiConfiguration config = WifiManagerWrapper.addNewNetwork(mWifiManager, deviceId, NETWORK_PASSWORD);
-        WifiManagerWrapper.connectToConfiguredNetwork(mContext, mWifiManager, config, true);
+        WifiManagerWrapper.connectToConfiguredNetwork(context, mWifiManager, config, true);
 
         mConnectingNetworkId = config.networkId;
 
