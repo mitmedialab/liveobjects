@@ -63,6 +63,8 @@ public class NetworkStateChangedReceiver extends BroadcastReceiver {
 
                     ConnectedToNetworkDeviceEvent event = new ConnectedToNetworkDeviceEvent(connectedLiveObject.getLiveObjectName());
                     bus.post(event);
+
+                    setConnecting(false);
                 }
             }
         }
