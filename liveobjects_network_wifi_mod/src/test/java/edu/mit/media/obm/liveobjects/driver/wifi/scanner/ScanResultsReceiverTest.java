@@ -10,6 +10,7 @@ import com.noveogroup.android.log.Log;
 import com.squareup.otto.Bus;
 
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.exceptions.base.MockitoAssertionError;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -44,15 +45,14 @@ import static org.testng.Assert.*;
         ScanResultsReceiver.class // need to suppress execution of BroadcastReceiver constructor
 })
 public class ScanResultsReceiverTest extends PowerMockTestCase {
-    /*
     private static final String VALID_SSID = "valid_ssid";
     private static final String INVALID_SSID = "invalid_ssid";
 
-    @Inject WifiManager wifiManager;
-    @Inject DeviceIdTranslator deviceIdTranslator;
-    @Inject Bus bus;
+    @Mock @Inject WifiManager wifiManager;
+    @Mock @Inject DeviceIdTranslator deviceIdTranslator;
+    @Mock @Inject Bus bus;
+    @Inject ScanResultsReceiver scanResultsReceiver;
 
-    private ScanResultsReceiver scanResultsReceiver;
     private Context dummyContext;
 
     @Module(injects = ScanResultsReceiverTest.class)
@@ -79,7 +79,6 @@ public class ScanResultsReceiverTest extends PowerMockTestCase {
         PowerMockito.suppress(PowerMockito.constructor(BroadcastReceiver.class));
 
         DependencyInjector.inject(this, new TestModule());
-        scanResultsReceiver = new ScanResultsReceiver(wifiManager, deviceIdTranslator, bus);
 
         stub(deviceIdTranslator.isValidSsid(VALID_SSID)).toReturn(true);
         stub(deviceIdTranslator.isValidSsid(INVALID_SSID)).toReturn(false);
@@ -189,5 +188,4 @@ public class ScanResultsReceiverTest extends PowerMockTestCase {
             throw new AssertionError(description, error);
         }
     }
-    */
 }

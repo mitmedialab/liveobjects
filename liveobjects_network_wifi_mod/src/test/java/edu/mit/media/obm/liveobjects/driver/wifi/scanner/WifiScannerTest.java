@@ -40,9 +40,7 @@ public class WifiScannerTest extends PowerMockTestCase {
     @Mock @Inject @Named("scanner") BroadcastReceiver broadcastReceiver;
     @Inject WifiScanner wifiScanner;
 
-    @Module(
-            injects = WifiScannerTest.class
-    )
+    @Module(injects = WifiScannerTest.class)
     static class TestModule {
         @Provides @Singleton @Named("application")
         Context provideContext() {
@@ -69,8 +67,7 @@ public class WifiScannerTest extends PowerMockTestCase {
     public void setUp() throws Exception {
         PowerMockito.mockStatic(Log.class);
 
-        ObjectGraph objectGraph = ObjectGraph.create(TestModule.class);
-        objectGraph.inject(this);
+        DependencyInjector.inject(this, new TestModule());
     }
 
     @AfterMethod

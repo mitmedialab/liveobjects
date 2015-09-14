@@ -7,6 +7,7 @@ import android.content.res.Resources;
 
 import com.noveogroup.android.log.Log;
 
+import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
@@ -19,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -36,23 +38,22 @@ import static org.testng.Assert.*;
  */
 @PrepareForTest(Log.class)
 public class WifiConnectorTest extends PowerMockTestCase {
-    /*
     private static final String TEST_DEVICE_ID = "device_id";
     private static final String VALID_SSID = "valid_ssid";
     private static final String INVALID_SSID = "invalid_ssid";
 
-    @Inject Context context;
-    @Inject WifiManagerFacade wifiManagerFacade;
-    @Inject IntentFilter intentFilter;
-    @Inject NetworkStateChangedReceiver networkStateChangedReceiver;
-    @Inject DeviceIdTranslator deviceIdTranslator;
-    private WifiConnector wifiConnector;
+    @Mock @Inject @Named("application") Context context;
+    @Mock @Inject WifiManagerFacade wifiManagerFacade;
+    @Mock @Inject @Named("connector") IntentFilter intentFilter;
+    @Mock @Inject @Named("connector") BroadcastReceiver broadcastReceiver;
+    @Mock @Inject DeviceIdTranslator deviceIdTranslator;
+    @Inject WifiConnector wifiConnector;
 
-    @Module(
-            injects = WifiConnectorTest.class
-    )
+    private NetworkStateChangedReceiver networkStateChangedReceiver;
+
+    @Module(injects = WifiConnectorTest.class)
     static class TestModule {
-        @Provides @Singleton
+        @Provides @Named("application") @Singleton
         Context provideContext() {
             return mock(Context.class);
         }
@@ -62,13 +63,13 @@ public class WifiConnectorTest extends PowerMockTestCase {
             return mock(WifiManagerFacade.class);
         }
 
-        @Provides @Singleton
+        @Provides @Named("connector") @Singleton
         IntentFilter provideIntentFilter() {
             return mock(IntentFilter.class);
         }
 
-        @Provides @Singleton
-        NetworkStateChangedReceiver provideNetworkStateChangedReceiver() {
+        @Provides @Named("connector") @Singleton
+        BroadcastReceiver provideBroadcastReceiver() {
             return mock(NetworkStateChangedReceiver.class);
         }
 
@@ -88,7 +89,8 @@ public class WifiConnectorTest extends PowerMockTestCase {
         stub(resources.getString(anyInt())).toReturn("PASSWORD");
         stub(context.getResources()).toReturn(resources);
 
-        wifiConnector = new WifiConnector(context, wifiManagerFacade, intentFilter, networkStateChangedReceiver, deviceIdTranslator);
+        DependencyInjector.inject(this, new TestModule());
+        networkStateChangedReceiver = (NetworkStateChangedReceiver) broadcastReceiver;
 
         LiveObject liveObject = new LiveObject(TEST_DEVICE_ID);
         stub(deviceIdTranslator.translateFromLiveObject(liveObject)).toReturn(TEST_DEVICE_ID);
@@ -149,8 +151,8 @@ public class WifiConnectorTest extends PowerMockTestCase {
             int registerCount = countCharacters(registrationSequence, 'r');
             int unregisterCount = countCharacters(registrationSequence, 'u');
             int connectCount = countCharacters(registrationSequence, 's');
-            verify(context, times(registerCount)).registerReceiver(networkStateChangedReceiver, intentFilter);
-            verify(context, times(unregisterCount)).unregisterReceiver(networkStateChangedReceiver);
+            verify(context, times(registerCount)).registerReceiver(broadcastReceiver, intentFilter);
+            verify(context, times(unregisterCount)).unregisterReceiver(broadcastReceiver);
             verify(wifiManagerFacade, times(connectCount)).connectToNetwork(TEST_DEVICE_ID);
 
             if (connectCount > 0) {
@@ -257,5 +259,5 @@ public class WifiConnectorTest extends PowerMockTestCase {
         int numValidSsid = Collections.frequency(ssids, VALID_SSID);
         verify(wifiManagerFacade, times(numValidSsid)).removeNetwork(VALID_SSID);
         verify(wifiManagerFacade, never()).removeNetwork(INVALID_SSID);
-    }*/
+    }
 }
