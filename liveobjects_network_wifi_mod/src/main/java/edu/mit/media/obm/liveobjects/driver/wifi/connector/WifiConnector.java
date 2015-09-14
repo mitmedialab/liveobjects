@@ -21,8 +21,6 @@ import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
  * Created by arata on 9/11/15.
  */
 public class WifiConnector extends BroadcastSubscriber {
-    private String NETWORK_PASSWORD;
-
     @Inject WifiManagerFacade mWifiManagerFacade;
     @Inject DeviceIdTranslator mDeviceIdTranslator;
 
@@ -33,8 +31,6 @@ public class WifiConnector extends BroadcastSubscriber {
 
     public WifiConnector() {
         DependencyInjector.inject(this);
-
-        initializeConstants();
     }
 
     public WifiConnector(Context context, WifiManagerFacade wifiManagerFacade, IntentFilter intentFilter,
@@ -45,13 +41,6 @@ public class WifiConnector extends BroadcastSubscriber {
         mIntentFilter = intentFilter;
         mBroadcastReceiver = broadcastReceiver;
         mDeviceIdTranslator = deviceIdTranslator;
-
-        initializeConstants();
-    }
-
-    private void initializeConstants() {
-        Resources resources = context.getResources();
-        NETWORK_PASSWORD = resources.getString(R.string.network_password);
     }
 
     public void initialize() {

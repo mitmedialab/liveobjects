@@ -2,13 +2,7 @@ package edu.mit.media.obm.liveobjects.driver.wifi.module;
 
 import android.content.Context;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import dagger.ObjectGraph;
-import edu.mit.media.obm.liveobjects.driver.wifi.event.ConnectedToNetworkDeviceEvent;
-import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
 
 /**
  * Created by artimo14 on 8/8/15.

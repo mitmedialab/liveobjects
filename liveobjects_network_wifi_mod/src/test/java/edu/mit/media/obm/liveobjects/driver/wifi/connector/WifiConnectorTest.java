@@ -1,16 +1,12 @@
 package edu.mit.media.obm.liveobjects.driver.wifi.connector;
 
-import android.bluetooth.BluetoothClass;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
-import android.net.wifi.WifiManager;
 
 import com.noveogroup.android.log.Log;
 
-import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
@@ -23,14 +19,12 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerFacade;
 import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
-import edu.mit.media.obm.liveobjects.driver.wifi.scanner.WifiScanner;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 

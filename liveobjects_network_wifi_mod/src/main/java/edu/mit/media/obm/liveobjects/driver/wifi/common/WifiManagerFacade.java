@@ -1,5 +1,7 @@
 package edu.mit.media.obm.liveobjects.driver.wifi.common;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
@@ -10,6 +12,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import edu.mit.media.obm.liveobjects.driver.wifi.R;
 import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 
 /**
@@ -18,14 +21,25 @@ import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 public class WifiManagerFacade {
     private String WIFI_DEFAULT_PASSWORD;
 
+    @Inject Context context;
     @Inject WifiManager wifiManager;
 
     public WifiManagerFacade() {
         DependencyInjector.inject(this);
+
+        initResources();
     }
 
-    public WifiManagerFacade(WifiManager wifiManager) {
+    public WifiManagerFacade(Context context, WifiManager wifiManager) {
+        this.context = context;
         this.wifiManager = wifiManager;
+
+        initResources();
+    }
+
+    private void initResources() {
+        Resources resources = context.getResources();
+        WIFI_DEFAULT_PASSWORD = resources.getString(R.string.network_password);
     }
 
     public void startScan() {

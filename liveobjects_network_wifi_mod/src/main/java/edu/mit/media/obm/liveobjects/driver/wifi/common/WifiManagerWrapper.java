@@ -25,16 +25,16 @@
 
 package edu.mit.media.obm.liveobjects.driver.wifi.common;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-
 import android.content.Context;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.text.TextUtils;
 
 import com.noveogroup.android.log.Log;
+
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
 public class WifiManagerWrapper {
 

@@ -13,6 +13,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import edu.mit.media.obm.liveobjects.driver.wifi.R;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiNetworkBus;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.PositionedSsidTranslator;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerFacade;
@@ -21,7 +22,6 @@ import edu.mit.media.obm.liveobjects.driver.wifi.connector.WifiConnector;
 import edu.mit.media.obm.liveobjects.driver.wifi.scanner.ScanResultsReceiver;
 import edu.mit.media.obm.liveobjects.driver.wifi.scanner.WifiScanner;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
-import edu.mit.media.obm.liveobjects.driver.wifi.R;
 
 /**
  * Created by artimo14 on 9/12/15.
