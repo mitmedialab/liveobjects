@@ -69,7 +69,7 @@ public class NetworkStateChangedReceiver extends BroadcastReceiver {
             ssid = wifiManagerFacade.getConnectedSsid();
         }
 
-        return WifiManagerWrapper.unQuoteString(ssid);
+        return ssid;
     }
 
     private void postEventWithConnectedDeviceSsid(String ssid) {

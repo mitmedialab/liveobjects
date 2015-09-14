@@ -63,7 +63,9 @@ public class WifiManagerFacade {
     }
 
     public String getConnectedSsid() {
-        return wifiManager.getConnectionInfo().getSSID();
+        String ssid = wifiManager.getConnectionInfo().getSSID();
+
+        return unquote(ssid);
     }
 
     public List<String> getRegisteredSsids() {
@@ -83,7 +85,7 @@ public class WifiManagerFacade {
     }
 
     public void removeNetwork(String ssid) {
-
+        WifiManagerWrapper.removeNetwork(wifiManager, ssid);
     }
 
     private String quote(String text) {
