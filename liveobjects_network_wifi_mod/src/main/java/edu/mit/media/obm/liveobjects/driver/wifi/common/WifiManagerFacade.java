@@ -85,7 +85,30 @@ public class WifiManagerFacade {
     }
 
     public void removeNetwork(String ssid) {
-        WifiManagerWrapper.removeNetwork(wifiManager, ssid);
+        WifiConfiguration configuration = getConfiguration(ssid);
+
+        if (configuration != null) {
+            wifiManager.removeNetwork(configuration.networkId);
+        }
+    }
+
+    private WifiConfiguration getConfiguration(String ssid) {
+        WifiConfiguration foundConfiguration = null;
+
+        final List<WifiConfiguration> configurations = wifiManager.getConfiguredNetworks();
+
+        // configurations can be null when WiFi is disabled
+        if (configurations != null) {
+            for (WifiConfiguration configuration : configurations) {
+                String registeredSsid = unquote(configuration.SSID);
+
+                if (registeredSsid.equals(ssid)) {
+                    foundConfiguration = configuration;
+                }
+            }
+        }
+
+        return foundConfiguration;
     }
 
     private String quote(String text) {
