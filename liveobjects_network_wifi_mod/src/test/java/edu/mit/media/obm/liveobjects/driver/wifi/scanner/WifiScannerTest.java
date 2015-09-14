@@ -17,10 +17,13 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
+import dagger.ObjectGraph;
 import dagger.Provides;
+import edu.mit.media.obm.liveobjects.driver.wifi.base.BroadcastSubscriber;
 import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 
 import static org.testng.Assert.*;
@@ -31,17 +34,17 @@ import static org.mockito.Mockito.*;
  */
 @PrepareForTest(Log.class)
 public class WifiScannerTest extends PowerMockTestCase {
-    @Mock @Inject Context context;
+    @Mock @Inject @Named("application") Context context;
     @Mock @Inject WifiManager wifiManager;
-    @Mock @Inject IntentFilter intentFilter;
-    @Mock @Inject BroadcastReceiver broadcastReceiver;
-    private WifiScanner wifiScanner;
+    @Mock @Inject @Named("scanner") IntentFilter intentFilter;
+    @Mock @Inject @Named("scanner") BroadcastReceiver broadcastReceiver;
+    @Inject WifiScanner wifiScanner;
 
     @Module(
             injects = WifiScannerTest.class
     )
     static class TestModule {
-        @Provides @Singleton
+        @Provides @Singleton @Named("application")
         Context provideContext() {
             return mock(Context.class);
         }
@@ -51,12 +54,12 @@ public class WifiScannerTest extends PowerMockTestCase {
             return mock(WifiManager.class);
         }
 
-        @Provides @Singleton
+        @Provides @Singleton @Named("scanner")
         IntentFilter provideIntentFilter() {
             return mock(IntentFilter.class);
         }
 
-        @Provides @Singleton
+        @Provides @Singleton @Named("scanner")
         BroadcastReceiver provideBroadcastReceiver() {
             return mock(BroadcastReceiver.class);
         }
@@ -66,8 +69,8 @@ public class WifiScannerTest extends PowerMockTestCase {
     public void setUp() throws Exception {
         PowerMockito.mockStatic(Log.class);
 
-        DependencyInjector.inject(this, new TestModule());
-        wifiScanner = new WifiScanner(context, wifiManager, intentFilter, broadcastReceiver);
+        ObjectGraph objectGraph = ObjectGraph.create(TestModule.class);
+        objectGraph.inject(this);
     }
 
     @AfterMethod

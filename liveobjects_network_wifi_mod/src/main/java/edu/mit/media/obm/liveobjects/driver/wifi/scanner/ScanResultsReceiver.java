@@ -27,16 +27,6 @@ public class ScanResultsReceiver extends BroadcastReceiver {
     @Inject DeviceIdTranslator deviceIdTranslator;
     @Inject Bus bus;
 
-    public ScanResultsReceiver() {
-        DependencyInjector.inject(this);
-    }
-
-    public ScanResultsReceiver(WifiManager wifiManager, DeviceIdTranslator deviceIdTranslator, Bus bus) {
-        this.wifiManager = wifiManager;
-        this.deviceIdTranslator = deviceIdTranslator;
-        this.bus = bus;
-    }
-
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
 

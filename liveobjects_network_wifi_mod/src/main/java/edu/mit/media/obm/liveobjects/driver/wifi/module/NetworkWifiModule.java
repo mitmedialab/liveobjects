@@ -44,14 +44,14 @@ public class NetworkWifiModule {
         return applicationContext;
     }
 
-    @Provides
+    @Provides @Singleton
     public WifiManager provideWifiManager(@Named("application") Context applicationContext) {
         return (WifiManager) applicationContext.getSystemService(Context.WIFI_SERVICE);
     }
 
-    @Provides
+    @Provides @Singleton
     public WifiManagerFacade provideWifiManagerFacade(WifiManager wifiManager) {
-        return new WifiManagerFacade(wifiManager);
+        return new WifiManagerFacade();
     }
 
     @Provides
@@ -80,7 +80,7 @@ public class NetworkWifiModule {
         return new WifiConnector();
     }
 
-    @Provides @Named("scanner") @Singleton
+    @Provides @Named("scanner")
     public IntentFilter provideScannerIntentFilter() {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
@@ -93,7 +93,7 @@ public class NetworkWifiModule {
         return new ScanResultsReceiver();
     }
 
-    @Provides @Named("connector") @Singleton
+    @Provides @Named("connector")
     public IntentFilter provideConnectorIntentFilter() {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
@@ -106,9 +106,8 @@ public class NetworkWifiModule {
         return new NetworkStateChangedReceiver();
     }
 
-    @Provides
+    @Provides @Singleton
     public Bus provideBus() {
         return WifiNetworkBus.getBus();
     }
-
 }

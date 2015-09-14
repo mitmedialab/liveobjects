@@ -11,7 +11,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import edu.mit.media.obm.liveobjects.driver.wifi.base.BroadcastSubscriber;
-import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 
 /**
  * Created by arata on 9/11/15.
@@ -20,19 +19,6 @@ public class WifiScanner extends BroadcastSubscriber {
     @Inject WifiManager mWifiManager;
     @Inject @Named("scanner") IntentFilter mIntentFilter;
     @Inject @Named("scanner") BroadcastReceiver mBroadcastReceiver;
-
-    public WifiScanner() {
-        DependencyInjector.inject(this);
-    }
-
-    public WifiScanner(Context context, WifiManager wifiManager, IntentFilter intentFilter, BroadcastReceiver broadcastReceiver) {
-        super(context);
-
-        mWifiManager = wifiManager;
-        mIntentFilter = intentFilter;
-        mBroadcastReceiver = broadcastReceiver;
-    }
-
 
     synchronized public void startScan() {
         requireActivated();

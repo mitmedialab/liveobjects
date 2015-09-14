@@ -44,6 +44,7 @@ import static org.testng.Assert.*;
         ScanResultsReceiver.class // need to suppress execution of BroadcastReceiver constructor
 })
 public class ScanResultsReceiverTest extends PowerMockTestCase {
+    /*
     private static final String VALID_SSID = "valid_ssid";
     private static final String INVALID_SSID = "invalid_ssid";
 
@@ -188,4 +189,5 @@ public class ScanResultsReceiverTest extends PowerMockTestCase {
             throw new AssertionError(description, error);
         }
     }
+    */
 }

@@ -29,20 +29,6 @@ public class WifiConnector extends BroadcastSubscriber {
 
     private int mConnectingNetworkId;
 
-    public WifiConnector() {
-        DependencyInjector.inject(this);
-    }
-
-    public WifiConnector(Context context, WifiManagerFacade wifiManagerFacade, IntentFilter intentFilter,
-                         BroadcastReceiver broadcastReceiver, DeviceIdTranslator deviceIdTranslator) {
-        super(context);
-
-        mWifiManagerFacade = wifiManagerFacade;
-        mIntentFilter = intentFilter;
-        mBroadcastReceiver = broadcastReceiver;
-        mDeviceIdTranslator = deviceIdTranslator;
-    }
-
     public void initialize() {
         setConnecting(false);
     }

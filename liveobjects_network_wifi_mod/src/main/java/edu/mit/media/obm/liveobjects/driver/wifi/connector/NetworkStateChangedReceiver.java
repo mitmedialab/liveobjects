@@ -28,10 +28,6 @@ public class NetworkStateChangedReceiver extends BroadcastReceiver {
 
     private boolean connecting = false;
 
-    public NetworkStateChangedReceiver() {
-        DependencyInjector.inject(this);
-    }
-
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         switch (action) {
