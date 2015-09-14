@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.NetworkInfo;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
 import com.noveogroup.android.log.Log;
@@ -23,17 +22,14 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.Map;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerFacade;
-import edu.mit.media.obm.liveobjects.driver.wifi.event.ConnectedToNetworkDeviceEvent;
+import edu.mit.media.obm.liveobjects.driver.wifi.event.NetworkConnectedEvent;
 import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
-import edu.mit.media.obm.liveobjects.driver.wifi.scanner.ScanResultsReceiver;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 
@@ -152,8 +148,8 @@ public class NetworkStateChangedReceiverTest extends PowerMockTestCase {
         networkStateChangedReceiver.startMonitoring(VALID_SSID);
         networkStateChangedReceiver.onReceive(dummyContext, intent);
 
-        ConnectedToNetworkDeviceEvent event = new ConnectedToNetworkDeviceEvent(VALID_SSID,
-                ConnectedToNetworkDeviceEvent.ConnectionStatus.CONNECTED_TO_TARGET_DEVICE);
+        NetworkConnectedEvent event = new NetworkConnectedEvent(VALID_SSID,
+                NetworkConnectedEvent.State.CONNECTED_TO_TARGET);
         verify(bus).post(event);
         assertFalse(networkStateChangedReceiver.isMonitoring());
     }
@@ -163,8 +159,8 @@ public class NetworkStateChangedReceiverTest extends PowerMockTestCase {
         networkStateChangedReceiver.startMonitoring(INVALID_SSID);
         networkStateChangedReceiver.onReceive(dummyContext, intent);
 
-        ConnectedToNetworkDeviceEvent event = new ConnectedToNetworkDeviceEvent(VALID_SSID,
-                ConnectedToNetworkDeviceEvent.ConnectionStatus.CONNECTED_TO_WRONG_DEVICE);
+        NetworkConnectedEvent event = new NetworkConnectedEvent(VALID_SSID,
+                NetworkConnectedEvent.State.CONNECTED_TO_NON_TARGET);
         verify(bus).post(event);
         assertFalse(networkStateChangedReceiver.isMonitoring());
     }
@@ -178,8 +174,8 @@ public class NetworkStateChangedReceiverTest extends PowerMockTestCase {
         networkStateChangedReceiver.startMonitoring(ANOTHER_VALID_SSID);
         networkStateChangedReceiver.onReceive(dummyContext, intent);
 
-        ConnectedToNetworkDeviceEvent event = new ConnectedToNetworkDeviceEvent(VALID_SSID,
-                ConnectedToNetworkDeviceEvent.ConnectionStatus.CONNECTED_TO_WRONG_DEVICE);
+        NetworkConnectedEvent event = new NetworkConnectedEvent(VALID_SSID,
+                NetworkConnectedEvent.State.CONNECTED_TO_NON_TARGET);
         verify(bus).post(event);
         assertFalse(networkStateChangedReceiver.isMonitoring());
     }
@@ -192,8 +188,8 @@ public class NetworkStateChangedReceiverTest extends PowerMockTestCase {
         networkStateChangedReceiver.startMonitoring(VALID_SSID);
         networkStateChangedReceiver.onReceive(dummyContext, intent);
 
-        ConnectedToNetworkDeviceEvent event = new ConnectedToNetworkDeviceEvent(null,
-                ConnectedToNetworkDeviceEvent.ConnectionStatus.CONNECTION_FAILED_FOR_UNKNOWN_REASON);
+        NetworkConnectedEvent event = new NetworkConnectedEvent(null,
+                NetworkConnectedEvent.State.NOT_CONNECTED_FOR_SSID_ACQUISITION_FAILURE);
         verify(bus).post(event);
         assertFalse(networkStateChangedReceiver.isMonitoring());
     }

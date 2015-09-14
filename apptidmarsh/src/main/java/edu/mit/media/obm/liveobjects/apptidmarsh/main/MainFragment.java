@@ -37,12 +37,10 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.utils.InactiveLiveObjectDetecti
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiNetworkBus;
-import edu.mit.media.obm.liveobjects.driver.wifi.event.ConnectedToNetworkDeviceEvent;
+import edu.mit.media.obm.liveobjects.driver.wifi.event.NetworkConnectedEvent;
 import edu.mit.media.obm.liveobjects.driver.wifi.event.NetworkDevicesAvailableEvent;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.common.MapLocation;
-import edu.mit.media.obm.liveobjects.middleware.control.ConnectionListener;
-import edu.mit.media.obm.liveobjects.middleware.control.DiscoveryListener;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
 import edu.mit.media.obm.shair.liveobjects.R;
 
@@ -231,7 +229,7 @@ public class MainFragment extends GroundOverlayMapFragment {
     }
 
     @Subscribe
-    public void startContentBrowserActivity(ConnectedToNetworkDeviceEvent event) {
+    public void startContentBrowserActivity(NetworkConnectedEvent event) {
         String connectedLiveObject = event.getConnectedDeviceName();
 
         Log.v("onConnected(%s)", connectedLiveObject);

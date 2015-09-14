@@ -14,7 +14,7 @@ import javax.inject.Inject;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiConnectionManager;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerFacade;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerWrapper;
-import edu.mit.media.obm.liveobjects.driver.wifi.event.ConnectedToNetworkDeviceEvent;
+import edu.mit.media.obm.liveobjects.driver.wifi.event.NetworkConnectedEvent;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 
@@ -73,29 +73,29 @@ public class NetworkStateChangedReceiver extends BroadcastReceiver {
     }
 
     private void postEventWithConnectedDeviceSsid(String ssid) {
-        ConnectedToNetworkDeviceEvent.ConnectionStatus connectionStatus = getConnectionStatus(ssid);
-        ConnectedToNetworkDeviceEvent event;
+        NetworkConnectedEvent.State state = getConnectionStatus(ssid);
+        NetworkConnectedEvent event;
 
         if (deviceIdTranslator.isValidSsid(ssid)) {
             LiveObject connectedLiveObject = deviceIdTranslator.translateToLiveObject(ssid);
             Log.d("connectedLiveObject = " + connectedLiveObject);
 
-            event = new ConnectedToNetworkDeviceEvent(
-                    connectedLiveObject.getLiveObjectName(), connectionStatus);
+            event = new NetworkConnectedEvent(
+                    connectedLiveObject.getLiveObjectName(), state);
         } else {
-            event = new ConnectedToNetworkDeviceEvent(ssid, connectionStatus);
+            event = new NetworkConnectedEvent(ssid, state);
         }
 
         bus.post(event);
     }
 
-    private ConnectedToNetworkDeviceEvent.ConnectionStatus getConnectionStatus(String ssid) {
+    private NetworkConnectedEvent.State getConnectionStatus(String ssid) {
         if (ssid == null) {
-            return ConnectedToNetworkDeviceEvent.ConnectionStatus.CONNECTION_FAILED_FOR_UNKNOWN_REASON;
+            return NetworkConnectedEvent.State.NOT_CONNECTED_FOR_SSID_ACQUISITION_FAILURE;
         } else if (connectingDeviceSsid.equals(ssid)) {
-            return ConnectedToNetworkDeviceEvent.ConnectionStatus.CONNECTED_TO_TARGET_DEVICE;
+            return NetworkConnectedEvent.State.CONNECTED_TO_TARGET;
         } else {
-            return ConnectedToNetworkDeviceEvent.ConnectionStatus.CONNECTED_TO_WRONG_DEVICE;
+            return NetworkConnectedEvent.State.CONNECTED_TO_NON_TARGET;
         }
     }
 
