@@ -32,7 +32,10 @@ import static org.mockito.Mockito.*;
 /**
  * Created by artimo14 on 9/12/15.
  */
-@PrepareForTest(Log.class)
+@PrepareForTest({
+        Log.class,
+        ScanResultsReceiver.class // need to suppress execution of BroadcastReceiver constructor
+})
 public class WifiScannerTest extends PowerMockTestCase {
     @Mock @Inject @Named("application") Context context;
     @Mock @Inject WifiManager wifiManager;
