@@ -24,6 +24,7 @@ import dagger.Module;
 import dagger.ObjectGraph;
 import dagger.Provides;
 import edu.mit.media.obm.liveobjects.driver.wifi.base.BroadcastSubscriber;
+import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerFacade;
 import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 
 import static org.testng.Assert.*;
@@ -38,7 +39,7 @@ import static org.mockito.Mockito.*;
 })
 public class WifiScannerTest extends PowerMockTestCase {
     @Mock @Inject @Named("application") Context context;
-    @Mock @Inject WifiManager wifiManager;
+    @Mock @Inject WifiManagerFacade wifiManagerFacade;
     @Mock @Inject @Named("scanner") IntentFilter intentFilter;
     @Mock @Inject @Named("scanner") BroadcastReceiver broadcastReceiver;
     @Inject WifiScanner wifiScanner;
@@ -51,8 +52,8 @@ public class WifiScannerTest extends PowerMockTestCase {
         }
 
         @Provides @Singleton
-        WifiManager provideWifiManager() {
-            return mock(WifiManager.class);
+        WifiManagerFacade provideWifiManagerFacade() {
+            return mock(WifiManagerFacade.class);
         }
 
         @Provides @Singleton @Named("scanner")
@@ -112,7 +113,7 @@ public class WifiScannerTest extends PowerMockTestCase {
             int scanCount = countCharacters(registrationSequence, 's');
             verify(context, times(activationCount)).registerReceiver(broadcastReceiver, intentFilter);
             verify(context, times(deactivationCount)).unregisterReceiver(broadcastReceiver);
-            verify(wifiManager, times(scanCount)).startScan();
+            verify(wifiManagerFacade, times(scanCount)).startScan();
         } catch (IllegalStateException e) {
             assertTrue(shouldThrow, description + ": This test should not throw an exception, but threw " + e);
         }
