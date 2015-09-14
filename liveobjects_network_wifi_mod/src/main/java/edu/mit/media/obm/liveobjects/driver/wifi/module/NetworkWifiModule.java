@@ -14,6 +14,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import edu.mit.media.obm.liveobjects.driver.wifi.R;
+import edu.mit.media.obm.liveobjects.driver.wifi.WifiConnectionManager;
 import edu.mit.media.obm.liveobjects.driver.wifi.WifiNetworkBus;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.PositionedSsidTranslator;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerFacade;
@@ -29,7 +30,7 @@ import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 @Module(
         library = true,
         injects = {
-                WifiScanner.class
+                WifiConnectionManager.class,
         }
 )
 public class NetworkWifiModule {
@@ -50,8 +51,9 @@ public class NetworkWifiModule {
     }
 
     @Provides @Singleton
-    public WifiManagerFacade provideWifiManagerFacade(WifiManager wifiManager) {
-        return new WifiManagerFacade();
+    public WifiManagerFacade provideWifiManagerFacade(
+            @Named("application") Context applicationContext, WifiManager wifiManager) {
+        return new WifiManagerFacade(applicationContext, wifiManager);
     }
 
     @Provides
@@ -71,13 +73,22 @@ public class NetworkWifiModule {
     }
 
     @Provides @Singleton
-    public WifiScanner provideWifiScanner() {
-        return new WifiScanner();
+    public WifiScanner provideWifiScanner(
+            @Named("application") Context context,
+            WifiManagerFacade wifiManagerFacade,
+            @Named("scanner") IntentFilter intentFilter,
+            @Named("scanner") BroadcastReceiver broadcastReceiver) {
+        return new WifiScanner(context, wifiManagerFacade, intentFilter, broadcastReceiver);
     }
 
     @Provides @Singleton
-    public WifiConnector provideWifiConnector() {
-        return new WifiConnector();
+    public WifiConnector provideWifiConnector(
+            @Named("application") Context context,
+            WifiManagerFacade wifiManagerFacade,
+            DeviceIdTranslator deviceIdTranslator,
+            @Named("connector") IntentFilter intentFilter,
+            @Named("connector") BroadcastReceiver broadcastReceiver) {
+        return new WifiConnector(context, wifiManagerFacade, deviceIdTranslator, intentFilter, broadcastReceiver);
     }
 
     @Provides @Named("scanner")
@@ -89,8 +100,9 @@ public class NetworkWifiModule {
     }
 
     @Provides @Named("scanner") @Singleton
-    public BroadcastReceiver provideScannerBroadcastReceiver() {
-        return new ScanResultsReceiver();
+    public BroadcastReceiver provideScannerBroadcastReceiver(
+            WifiManagerFacade wifiManagerFacade, DeviceIdTranslator deviceIdTranslator, Bus bus) {
+        return new ScanResultsReceiver(wifiManagerFacade, deviceIdTranslator, bus);
     }
 
     @Provides @Named("connector")
@@ -102,8 +114,9 @@ public class NetworkWifiModule {
     }
 
     @Provides @Named("connector") @Singleton
-    public BroadcastReceiver provideConnectorBroadcastReceiver() {
-        return new NetworkStateChangedReceiver();
+    public BroadcastReceiver provideConnectorBroadcastReceiver(
+            WifiManagerFacade wifiManagerFacade, DeviceIdTranslator deviceIdTranslator, Bus bus) {
+        return new NetworkStateChangedReceiver(wifiManagerFacade, deviceIdTranslator, bus);
     }
 
     @Provides @Singleton

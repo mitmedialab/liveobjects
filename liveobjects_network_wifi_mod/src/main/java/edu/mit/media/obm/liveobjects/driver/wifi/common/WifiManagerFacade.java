@@ -24,7 +24,11 @@ public class WifiManagerFacade {
     @Inject Context context;
     @Inject WifiManager wifiManager;
 
-    public WifiManagerFacade() {
+    @Inject
+    public WifiManagerFacade(Context context, WifiManager wifiManager) {
+        this.context = context;
+        this.wifiManager = wifiManager;
+
         Resources resources = context.getResources();
         WIFI_DEFAULT_PASSWORD = resources.getString(R.string.network_password);
     }

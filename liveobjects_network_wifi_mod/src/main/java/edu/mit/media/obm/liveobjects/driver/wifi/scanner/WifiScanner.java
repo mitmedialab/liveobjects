@@ -17,9 +17,19 @@ import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerFacade;
  * Created by arata on 9/11/15.
  */
 public class WifiScanner extends BroadcastSubscriber {
-    @Inject WifiManagerFacade mWifiManagerFacade;
-    @Inject @Named("scanner") IntentFilter mIntentFilter;
-    @Inject @Named("scanner") BroadcastReceiver mBroadcastReceiver;
+    WifiManagerFacade mWifiManagerFacade;
+    IntentFilter mIntentFilter;
+    BroadcastReceiver mBroadcastReceiver;
+
+    @Inject
+    public WifiScanner(Context context, WifiManagerFacade wifiManagerFacade, IntentFilter intentFilter,
+                       BroadcastReceiver broadcastReceiver) {
+        super(context);
+
+        mWifiManagerFacade = wifiManagerFacade;
+        mIntentFilter = intentFilter;
+        mBroadcastReceiver = broadcastReceiver;
+    }
 
     synchronized public void startScan() {
         requireActivated();

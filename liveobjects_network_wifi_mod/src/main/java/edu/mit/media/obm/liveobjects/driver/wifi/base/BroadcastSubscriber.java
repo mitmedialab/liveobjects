@@ -13,9 +13,13 @@ import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
  * Created by arata on 9/11/15.
  */
 public abstract class BroadcastSubscriber extends ActivatableEntity {
-    @Inject @Named("application") protected Context context;
+    protected Context context;
 
     protected BroadcastReceiver broadcastReceiver;
+
+    public BroadcastSubscriber(Context context) {
+        this.context = context;
+    }
 
     @Override
     protected void activateEntity() {

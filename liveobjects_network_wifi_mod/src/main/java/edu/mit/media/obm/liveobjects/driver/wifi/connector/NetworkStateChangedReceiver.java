@@ -1,8 +1,10 @@
 package edu.mit.media.obm.liveobjects.driver.wifi.connector;
 
+import android.bluetooth.BluetoothClass;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 
@@ -21,11 +23,19 @@ import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
  * Created by arata on 9/11/15.
  */
 public class NetworkStateChangedReceiver extends BroadcastReceiver {
-    @Inject WifiManagerFacade wifiManagerFacade;
-    @Inject DeviceIdTranslator deviceIdTranslator;
-    @Inject Bus bus;
+    WifiManagerFacade wifiManagerFacade;
+    DeviceIdTranslator deviceIdTranslator;
+    Bus bus;
 
     private String connectingDeviceSsid = null;
+
+    @Inject
+    public NetworkStateChangedReceiver(WifiManagerFacade wifiManagerFacade,
+                                       DeviceIdTranslator deviceIdTranslator, Bus bus) {
+        this.wifiManagerFacade = wifiManagerFacade;
+        this.deviceIdTranslator = deviceIdTranslator;
+        this.bus = bus;
+    }
 
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();

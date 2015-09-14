@@ -32,8 +32,6 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
                 PeriodicAlarmManager.class,
                 MainActivity.class,
                 MediaViewActivity.class
-
-
         }
 )
 public class ApplicationModule {
