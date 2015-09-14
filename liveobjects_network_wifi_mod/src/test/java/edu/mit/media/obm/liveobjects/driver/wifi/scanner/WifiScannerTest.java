@@ -3,7 +3,6 @@ package edu.mit.media.obm.liveobjects.driver.wifi.scanner;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
-import android.net.wifi.WifiManager;
 
 import com.noveogroup.android.log.Log;
 
@@ -21,9 +20,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
-import dagger.ObjectGraph;
 import dagger.Provides;
-import edu.mit.media.obm.liveobjects.driver.wifi.base.BroadcastSubscriber;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerFacade;
 import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 
@@ -38,15 +35,15 @@ import static org.mockito.Mockito.*;
         ScanResultsReceiver.class // need to suppress execution of BroadcastReceiver constructor
 })
 public class WifiScannerTest extends PowerMockTestCase {
-    @Mock @Inject @Named("application") Context context;
+    @Mock @Inject Context context;
     @Mock @Inject WifiManagerFacade wifiManagerFacade;
-    @Mock @Inject @Named("scanner") IntentFilter intentFilter;
-    @Mock @Inject @Named("scanner") BroadcastReceiver broadcastReceiver;
+    @Mock @Inject IntentFilter intentFilter;
+    @Mock @Inject BroadcastReceiver broadcastReceiver;
     @Inject WifiScanner wifiScanner;
 
     @Module(injects = WifiScannerTest.class)
     static class TestModule {
-        @Provides @Singleton @Named("application")
+        @Provides @Singleton
         Context provideContext() {
             return mock(Context.class);
         }
@@ -56,12 +53,12 @@ public class WifiScannerTest extends PowerMockTestCase {
             return mock(WifiManagerFacade.class);
         }
 
-        @Provides @Singleton @Named("scanner")
+        @Provides @Singleton
         IntentFilter provideIntentFilter() {
             return mock(IntentFilter.class);
         }
 
-        @Provides @Singleton @Named("scanner")
+        @Provides @Singleton
         BroadcastReceiver provideBroadcastReceiver() {
             return mock(BroadcastReceiver.class);
         }
