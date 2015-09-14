@@ -27,6 +27,7 @@ import dagger.Module;
 import dagger.Provides;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerFacade;
 import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
+import edu.mit.media.obm.liveobjects.driver.wifi.scanner.ScanResultsReceiver;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 
@@ -36,7 +37,10 @@ import static org.testng.Assert.*;
 /**
  * Created by artimo14 on 9/12/15.
  */
-@PrepareForTest(Log.class)
+@PrepareForTest({
+        Log.class,
+        NetworkStateChangedReceiver.class // need to suppress execution of BroadcastReceiver constructor
+})
 public class WifiConnectorTest extends PowerMockTestCase {
     private static final String TEST_DEVICE_ID = "device_id";
     private static final String VALID_SSID = "valid_ssid";
@@ -96,14 +100,15 @@ public class WifiConnectorTest extends PowerMockTestCase {
         stub(deviceIdTranslator.translateFromLiveObject(liveObject)).toReturn(TEST_DEVICE_ID);
         stub(deviceIdTranslator.isValidSsid(VALID_SSID)).toReturn(true);
         stub(deviceIdTranslator.isValidSsid(INVALID_SSID)).toReturn(false);
+
+        stub(networkStateChangedReceiver.isMonitoring()).toReturn(false);
     }
 
     @Test
     public void testInitialize() throws Exception {
-        doNothing().when(networkStateChangedReceiver).setConnecting(anyBoolean());
         wifiConnector.initialize();
 
-        verify(networkStateChangedReceiver).setConnecting(false);
+        verify(networkStateChangedReceiver).stopMonitoring();
     }
 
     @Test
@@ -156,7 +161,7 @@ public class WifiConnectorTest extends PowerMockTestCase {
             verify(wifiManagerFacade, times(connectCount)).connectToNetwork(TEST_DEVICE_ID);
 
             if (connectCount > 0) {
-                verify(networkStateChangedReceiver).setConnecting(true);
+                verify(networkStateChangedReceiver).startMonitoring(TEST_DEVICE_ID);
             }
         } catch (RuntimeException e) {
             assertTrue(shouldThrow, description + ": This test should not throw an exception, but threw " + e);
@@ -165,7 +170,7 @@ public class WifiConnectorTest extends PowerMockTestCase {
 
     @Test(expectedExceptions = IllegalStateException.class)
     public void shouldThrowIfTryToConnectWhenAlreadyConnecting() {
-        stub(networkStateChangedReceiver.isConnecting()).toReturn(true);
+        stub(networkStateChangedReceiver.isMonitoring()).toReturn(true);
 
         wifiConnector.activate();
         wifiConnector.connect(new LiveObject(TEST_DEVICE_ID));
@@ -185,19 +190,19 @@ public class WifiConnectorTest extends PowerMockTestCase {
         wifiConnector.activate();
         wifiConnector.cancelConnecting();
 
-        assertFalse(networkStateChangedReceiver.isConnecting());
+        assertFalse(networkStateChangedReceiver.isMonitoring());
         verify(wifiManagerFacade, never()).disconnectFromNetwork(anyInt());
     }
 
     @Test
     public void shouldDisableNetworkWhenConnecting() throws Exception {
-        stub(networkStateChangedReceiver.isConnecting()).toReturn(true);
+        stub(networkStateChangedReceiver.isMonitoring()).toReturn(true);
 
         wifiConnector.activate();
         wifiConnector.cancelConnecting();
 
         verify(wifiManagerFacade).disconnectFromNetwork(anyInt());
-        verify(networkStateChangedReceiver).setConnecting(false);
+        verify(networkStateChangedReceiver).stopMonitoring();
     }
 
     @Test(expectedExceptions = IllegalStateException.class)
@@ -207,8 +212,6 @@ public class WifiConnectorTest extends PowerMockTestCase {
 
     @Test
     public void shouldReturnFalseWhenNotConnecting() throws Exception {
-        stub(networkStateChangedReceiver.isConnecting()).toReturn(false);
-
         wifiConnector.activate();
 
         assertFalse(wifiConnector.isConnecting());
@@ -216,7 +219,7 @@ public class WifiConnectorTest extends PowerMockTestCase {
 
     @Test
     public void shouldReturnTrueWhenConnecting() throws Exception {
-        stub(networkStateChangedReceiver.isConnecting()).toReturn(true);
+        stub(networkStateChangedReceiver.isMonitoring()).toReturn(true);
 
         wifiConnector.activate();
 
@@ -230,7 +233,7 @@ public class WifiConnectorTest extends PowerMockTestCase {
 
     @Test(expectedExceptions = IllegalStateException.class)
     public void shouldThrowIfTryToForgetNetworkConfigurationsWhenConnecting() throws Exception {
-        stub(networkStateChangedReceiver.isConnecting()).toReturn(true);
+        stub(networkStateChangedReceiver.isMonitoring()).toReturn(true);
 
         wifiConnector.activate();
 

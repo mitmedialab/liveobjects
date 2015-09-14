@@ -1,9 +1,7 @@
 package edu.mit.media.obm.liveobjects.driver.wifi.connector;
 
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.IntentFilter;
-import android.content.res.Resources;
 
 import com.noveogroup.android.log.Log;
 
@@ -13,7 +11,6 @@ import javax.inject.Named;
 import edu.mit.media.obm.liveobjects.driver.wifi.R;
 import edu.mit.media.obm.liveobjects.driver.wifi.base.BroadcastSubscriber;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerFacade;
-import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 
@@ -30,7 +27,7 @@ public class WifiConnector extends BroadcastSubscriber {
     private int mConnectingNetworkId;
 
     public void initialize() {
-        setConnecting(false);
+        stopMonitoring();
     }
 
     @Override
@@ -50,10 +47,10 @@ public class WifiConnector extends BroadcastSubscriber {
             throw new IllegalStateException("Must not try to connect when it's already connecting");
         }
 
-        setConnecting(true);
-
         String deviceId = mDeviceIdTranslator.translateFromLiveObject(liveObject);
         mConnectingNetworkId = mWifiManagerFacade.connectToNetwork(deviceId);
+
+        startMonitoring(deviceId);
     }
 
     synchronized public void cancelConnecting() throws IllegalStateException {
@@ -65,17 +62,25 @@ public class WifiConnector extends BroadcastSubscriber {
         }
 
         mWifiManagerFacade.disconnectFromNetwork(mConnectingNetworkId);
-        setConnecting(false);
+        stopMonitoring();
     }
 
     public boolean isConnecting() {
         requireActivated();
 
-        return ((NetworkStateChangedReceiver) mBroadcastReceiver).isConnecting();
+        return isMonitoring();
     }
 
-    private void setConnecting(boolean connecting) {
-        ((NetworkStateChangedReceiver) mBroadcastReceiver).setConnecting(connecting);
+    private void startMonitoring(String ssid) {
+        ((NetworkStateChangedReceiver) mBroadcastReceiver).startMonitoring(ssid);
+    }
+
+    private void stopMonitoring() {
+        ((NetworkStateChangedReceiver) mBroadcastReceiver).stopMonitoring();
+    }
+
+    private boolean isMonitoring() {
+        return ((NetworkStateChangedReceiver) mBroadcastReceiver).isMonitoring();
     }
 
     synchronized public void forgetNetworkConfigurations() throws IllegalStateException {

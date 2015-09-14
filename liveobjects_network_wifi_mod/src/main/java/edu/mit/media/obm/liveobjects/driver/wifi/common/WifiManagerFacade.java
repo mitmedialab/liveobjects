@@ -62,8 +62,8 @@ public class WifiManagerFacade {
         wifiManager.disableNetwork(networkId);
     }
 
-    public WifiInfo getConnectionInfo() {
-        return wifiManager.getConnectionInfo();
+    public String getConnectedSsid() {
+        return wifiManager.getConnectionInfo().getSSID();
     }
 
     public List<String> getRegisteredSsids() {
