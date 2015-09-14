@@ -29,6 +29,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerFacade;
 import edu.mit.media.obm.liveobjects.driver.wifi.event.NetworkDevicesAvailableEvent;
 import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
@@ -48,7 +49,7 @@ public class ScanResultsReceiverTest extends PowerMockTestCase {
     private static final String VALID_SSID = "valid_ssid";
     private static final String INVALID_SSID = "invalid_ssid";
 
-    @Mock @Inject WifiManager wifiManager;
+    @Mock @Inject WifiManagerFacade wifiManagerFacade;
     @Mock @Inject DeviceIdTranslator deviceIdTranslator;
     @Mock @Inject Bus bus;
     @Inject ScanResultsReceiver scanResultsReceiver;
@@ -58,8 +59,8 @@ public class ScanResultsReceiverTest extends PowerMockTestCase {
     @Module(injects = ScanResultsReceiverTest.class)
     static class TestModule {
         @Provides @Singleton
-        WifiManager provideWifiManager() {
-            return mock(WifiManager.class);
+        WifiManagerFacade provideWifiManagerFacade() {
+            return mock(WifiManagerFacade.class);
         }
 
         @Provides @Singleton
@@ -163,7 +164,7 @@ public class ScanResultsReceiverTest extends PowerMockTestCase {
             scanResults.add(scanResult);
         }
 
-        stub(wifiManager.getScanResults()).toReturn(scanResults);
+        stub(wifiManagerFacade.getScanResults()).toReturn(scanResults);
 
         // act
         scanResultsReceiver.onReceive(dummyContext, intent);
