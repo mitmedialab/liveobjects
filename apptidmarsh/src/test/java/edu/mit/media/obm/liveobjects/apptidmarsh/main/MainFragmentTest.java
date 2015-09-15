@@ -87,6 +87,11 @@ public class MainFragmentTest {
         List<LiveObject> sleepingLiveObjectList = Whitebox.getInternalState(mainFragment, "mSleepingLiveObjectList");
         List<LiveObject> previouslyDetectedLiveObjectList = Whitebox.getInternalState(mainFragment, "mPreviouslyDetectedLiveObjectList");
 
+        // live objects stored originally in the list must be removed
+        liveObjectList.add(new LiveObject("liveObjectXX"));
+        liveObjectList.add(new LiveObject("liveObjectYY"));
+        liveObjectList.add(new LiveObject("liveObjectZZ"));
+
         activeLiveObjectList.add(new LiveObject("liveObject01"));
         activeLiveObjectList.add(new LiveObject("liveObject02"));
         activeLiveObjectList.add(new LiveObject("liveObject03"));
