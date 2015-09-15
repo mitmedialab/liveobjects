@@ -111,13 +111,24 @@ public class MainFragmentTest {
             sleepingLiveObjectList.add(liveObject);
         }
 
+        LiveObject[] previouslyDetectedLiveObjects = new LiveObject[]{
+                new LiveObject("liveObject02"),
+                new LiveObject("liveObject04"),
+                new LiveObject("liveObject06"),
+                new LiveObject("liveObject07")
+        };
+
+        for (LiveObject liveObject : sleepingLiveObjects) {
+            liveObject.setStatus(LiveObject.STATUS_SLEEPING);
+            sleepingLiveObjectList.add(liveObject);
+        }
+
         Whitebox.invokeMethod(mainFragment, "updateLiveObjectList");
 
         LiveObject[] expectedLiveObjectList = new LiveObject[] {
                 activeLiveObjects[0], activeLiveObjects[1], activeLiveObjects[2], activeLiveObjects[3],
-                sleepingLiveObjects[2], sleepingLiveObjects[3]
+                sleepingLiveObjects[2], sleepingLiveObjects[3], previouslyDetectedLiveObjects[3]
         };
-
         Assert.assertArrayEquals(expectedLiveObjectList, liveObjectList.toArray());
     }
 }
