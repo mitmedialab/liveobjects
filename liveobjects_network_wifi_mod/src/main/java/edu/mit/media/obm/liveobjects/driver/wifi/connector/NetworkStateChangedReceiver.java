@@ -1,10 +1,8 @@
 package edu.mit.media.obm.liveobjects.driver.wifi.connector;
 
-import android.bluetooth.BluetoothClass;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 

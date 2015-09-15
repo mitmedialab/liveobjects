@@ -7,9 +7,7 @@ import android.content.IntentFilter;
 import com.noveogroup.android.log.Log;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
-import edu.mit.media.obm.liveobjects.driver.wifi.R;
 import edu.mit.media.obm.liveobjects.driver.wifi.base.BroadcastSubscriber;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerFacade;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;

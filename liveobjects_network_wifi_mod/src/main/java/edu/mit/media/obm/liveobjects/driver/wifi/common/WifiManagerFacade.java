@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import edu.mit.media.obm.liveobjects.driver.wifi.R;
-import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 
 /**
  * Created by arata on 9/2/15.
