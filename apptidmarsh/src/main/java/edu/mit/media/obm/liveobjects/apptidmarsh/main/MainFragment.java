@@ -230,7 +230,7 @@ public class MainFragment extends GroundOverlayMapFragment {
 
     @Subscribe
     public void startContentBrowserActivity(NetworkConnectedEvent event) {
-        String connectedLiveObject = event.getConnectedDeviceName();
+        LiveObject connectedLiveObject = event.getConnectedLiveObject();
 
         Log.v("onConnected(%s)", connectedLiveObject);
         if (connectedLiveObject.equals(mSelectedLiveObject)) {

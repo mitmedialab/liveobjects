@@ -82,19 +82,13 @@ public class NetworkStateChangedReceiver extends BroadcastReceiver {
     }
 
     private void postEventWithConnectedDeviceSsid(String ssid) {
+        LiveObject connectedLiveObject = (deviceIdTranslator.isValidSsid(ssid) ?
+            deviceIdTranslator.translateToLiveObject(ssid) : null);
+
+        Log.d("connectedLiveObject = " + connectedLiveObject);
+
         NetworkConnectedEvent.State state = getConnectionStatus(ssid);
-        NetworkConnectedEvent event;
-
-        if (deviceIdTranslator.isValidSsid(ssid)) {
-            LiveObject connectedLiveObject = deviceIdTranslator.translateToLiveObject(ssid);
-            Log.d("connectedLiveObject = " + connectedLiveObject);
-
-            event = new NetworkConnectedEvent(
-                    connectedLiveObject.getLiveObjectName(), state);
-        } else {
-            event = new NetworkConnectedEvent(ssid, state);
-        }
-
+        NetworkConnectedEvent event = new NetworkConnectedEvent(connectedLiveObject, state);
         bus.post(event);
     }
 
