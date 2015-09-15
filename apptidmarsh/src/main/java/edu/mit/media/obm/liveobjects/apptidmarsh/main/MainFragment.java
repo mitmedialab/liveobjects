@@ -126,7 +126,7 @@ public class MainFragment extends GroundOverlayMapFragment {
 
                 mNetworkController.connect(mSelectedLiveObject);
             } else if (mSelectedLiveObject.getConnectedBefore()) {
-//                // TODO: 8/24/15 temporarily disabled  
+//                // TODO: 8/24/15 temporarily disabled  @Inject
 //                MapLocation mapLocation = mSelectedLiveObject.getMapLocation();
 //
 //                Bundle arguments = new Bundle();
@@ -212,8 +212,7 @@ public class MainFragment extends GroundOverlayMapFragment {
         Log.v("===");
         for (LiveObject liveObject : discoveredLiveObjects) {
             Log.v(liveObject.getLiveObjectName() + ", " + liveObject.getMapLocation().toString());
-            liveObject.setConnectedBefore(isConnectedBefore(liveObject));
-            mDiscoveryInfo.mActiveLiveObjectList.add(liveObject);
+            mDiscoveryInfo.addActiveLiveObject(liveObject);
 
             addLiveObjectToDb(liveObject);
         }
@@ -286,10 +285,6 @@ public class MainFragment extends GroundOverlayMapFragment {
         }
     }
 
-    private boolean isConnectedBefore(LiveObject liveObject) {
-        return !mDbController.isLiveObjectEmpty(liveObject.getLiveObjectName());
-    }
-
     private void enableWifi() {
         WifiManager wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
         if (!wifiManager.isWifiEnabled()) {
@@ -302,9 +297,7 @@ public class MainFragment extends GroundOverlayMapFragment {
     public void addDetectedBluetoothDevice(InactiveLiveObjectDetectionEvent event) {
         Log.v("addDetectedBluetoothDevice()");
         LiveObject liveObject = event.mLiveObject;
-        liveObject.setStatus(LiveObject.STATUS_SLEEPING);
-        liveObject.setConnectedBefore(isConnectedBefore(liveObject));
-        mDiscoveryInfo.mSleepingLiveObjectList.add(liveObject);
+        mDiscoveryInfo.addSleepingLiveObject(liveObject);
 
         addLiveObjectToDb(liveObject);
 
