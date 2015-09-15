@@ -208,7 +208,7 @@ public class MainFragment extends GroundOverlayMapFragment {
         List<LiveObject> discoveredLiveObjects = event.getAvailableLiveObjects();
 
         Log.d("discovery successfully completed");
-        mDiscoveryInfo.mActiveLiveObjectList.clear();
+        mDiscoveryInfo.clearActiveLiveObject();
         Log.v("===");
         for (LiveObject liveObject : discoveredLiveObjects) {
             Log.v(liveObject.getLiveObjectName() + ", " + liveObject.getMapLocation().toString());
@@ -327,7 +327,7 @@ public class MainFragment extends GroundOverlayMapFragment {
 
         if (!isBluetoothDiscoveryProcessRunning) {
             Log.v("starting Bluetooth discovery");
-            mDiscoveryInfo.mSleepingLiveObjectList.clear();
+            mDiscoveryInfo.clearSleepingLiveObject();
             mLiveObjectNotifier.wakeUp();
             isBluetoothDiscoveryProcessRunning = true;
         }

@@ -58,8 +58,6 @@ public class DiscoveryInfoTest {
     @Test
     public void testUpdateDiscoveredLiveObjectList() throws Exception {
         List<LiveObject> liveObjectList = discoveryInfo.mLiveObjectList;
-        List<LiveObject> activeLiveObjectList = discoveryInfo.mActiveLiveObjectList;
-        List<LiveObject> sleepingLiveObjectList = discoveryInfo.mSleepingLiveObjectList;
         List<LiveObject> previouslyDetectedLiveObjectList = discoveryInfo.mPreviouslyDetectedLiveObjectList;
 
         // live objects stored originally in the list must be removed
@@ -67,23 +65,15 @@ public class DiscoveryInfoTest {
         liveObjectList.add(new LiveObject("liveObjectYY"));
         liveObjectList.add(new LiveObject("liveObjectZZ"));
 
-        activeLiveObjectList.add(new LiveObject("liveObject01"));
-        activeLiveObjectList.add(new LiveObject("liveObject02"));
-        activeLiveObjectList.add(new LiveObject("liveObject03"));
-        activeLiveObjectList.add(new LiveObject("liveObject04"));
+        discoveryInfo.addActiveLiveObject(new LiveObject("liveObject01"));
+        discoveryInfo.addActiveLiveObject(new LiveObject("liveObject02"));
+        discoveryInfo.addActiveLiveObject(new LiveObject("liveObject03"));
+        discoveryInfo.addActiveLiveObject(new LiveObject("liveObject04"));
 
-        for (LiveObject liveObject : activeLiveObjectList) {
-            liveObject.setStatus(LiveObject.STATUS_ACTIVE);
-        }
-
-        sleepingLiveObjectList.add(new LiveObject("liveObject03"));
-        sleepingLiveObjectList.add(new LiveObject("liveObject04"));
-        sleepingLiveObjectList.add(new LiveObject("liveObject05"));
-        sleepingLiveObjectList.add(new LiveObject("liveObject06"));
-
-        for (LiveObject liveObject : sleepingLiveObjectList) {
-            liveObject.setStatus(LiveObject.STATUS_SLEEPING);
-        }
+        discoveryInfo.addSleepingLiveObject(new LiveObject("liveObject03"));
+        discoveryInfo.addSleepingLiveObject(new LiveObject("liveObject04"));
+        discoveryInfo.addSleepingLiveObject(new LiveObject("liveObject05"));
+        discoveryInfo.addSleepingLiveObject(new LiveObject("liveObject06"));
 
         previouslyDetectedLiveObjectList.add(new LiveObject("liveObject02"));
         previouslyDetectedLiveObjectList.add(new LiveObject("liveObject04"));
@@ -97,12 +87,12 @@ public class DiscoveryInfoTest {
         discoveryInfo.updateLiveObjectList();
 
         LiveObject[] expectedLiveObjectList = new LiveObject[] {
-                activeLiveObjectList.get(0),
-                activeLiveObjectList.get(1),
-                activeLiveObjectList.get(2),
-                activeLiveObjectList.get(3),
-                sleepingLiveObjectList.get(2),
-                sleepingLiveObjectList.get(3),
+                new LiveObject("liveObject01"),
+                new LiveObject("liveObject02"),
+                new LiveObject("liveObject03"),
+                new LiveObject("liveObject04"),
+                new LiveObject("liveObject05"),
+                new LiveObject("liveObject06"),
                 previouslyDetectedLiveObjectList.get(3),
         };
         assertArrayEquals(expectedLiveObjectList, liveObjectList.toArray());
@@ -179,7 +169,9 @@ public class DiscoveryInfoTest {
             discoveryInfo.addActiveLiveObject(liveObject);
         }
 
-        analyzeAddedLiveObjects(storedLiveObjects, discoveryInfo.mActiveLiveObjectList, LiveObject.STATUS_ACTIVE);
+        discoveryInfo.updateLiveObjectList();
+
+        analyzeAddedLiveObjects(storedLiveObjects, discoveryInfo.mLiveObjectList, LiveObject.STATUS_ACTIVE);
     }
 
     @Test @UseDataProvider("provideLiveObjectsForAddTests")
@@ -191,6 +183,38 @@ public class DiscoveryInfoTest {
             discoveryInfo.addSleepingLiveObject(liveObject);
         }
 
-        analyzeAddedLiveObjects(storedLiveObjects, discoveryInfo.mSleepingLiveObjectList, LiveObject.STATUS_SLEEPING);
+        discoveryInfo.updateLiveObjectList();
+
+        analyzeAddedLiveObjects(storedLiveObjects, discoveryInfo.mLiveObjectList, LiveObject.STATUS_SLEEPING);
+    }
+
+    @Test
+    public void shouldClearActiveLiveObject() throws Exception {
+        final int NUM_LIVE_OBJECTS = 10;
+
+        for (int i = 0; i < NUM_LIVE_OBJECTS; i++) {
+            String name = String.format("liveObject%02d", i);
+            discoveryInfo.addActiveLiveObject(new LiveObject(name));
+        }
+
+        discoveryInfo.clearActiveLiveObject();
+        discoveryInfo.updateLiveObjectList();
+
+        assertEquals(0, discoveryInfo.mLiveObjectList.size());
+    }
+
+    @Test
+    public void shouldClearSleepingLiveObject() throws Exception {
+        final int NUM_LIVE_OBJECTS = 10;
+
+        for (int i = 0; i < NUM_LIVE_OBJECTS; i++) {
+            String name = String.format("liveObject%02d", i);
+            discoveryInfo.addSleepingLiveObject(new LiveObject(name));
+        }
+
+        discoveryInfo.clearSleepingLiveObject();
+        discoveryInfo.updateLiveObjectList();
+
+        assertEquals(0, discoveryInfo.mLiveObjectList.size());
     }
 }

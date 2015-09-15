@@ -15,8 +15,8 @@ public class DiscoveryInfo {
     DbController mDbController;
 
     public ArrayList<LiveObject> mLiveObjectList = new ArrayList<>();
-    public ArrayList<LiveObject> mActiveLiveObjectList = new ArrayList<>();
-    public ArrayList<LiveObject> mSleepingLiveObjectList = new ArrayList<>();
+    private ArrayList<LiveObject> mActiveLiveObjectList = new ArrayList<>();
+    private ArrayList<LiveObject> mSleepingLiveObjectList = new ArrayList<>();
     public ArrayList<LiveObject> mPreviouslyDetectedLiveObjectList = new ArrayList<>();
 
     @Inject
@@ -71,5 +71,13 @@ public class DiscoveryInfo {
         String liveObjectName = liveObject.getLiveObjectName();
 
         return !mDbController.isLiveObjectEmpty(liveObjectName);
+    }
+
+    public void clearActiveLiveObject() {
+        mActiveLiveObjectList.clear();
+    }
+
+    public void clearSleepingLiveObject() {
+        mSleepingLiveObjectList.clear();
     }
 }
