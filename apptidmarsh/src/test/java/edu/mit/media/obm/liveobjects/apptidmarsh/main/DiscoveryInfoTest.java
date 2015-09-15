@@ -1,26 +1,45 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.main;
 
 import org.junit.After;
-import org.junit.Assert;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import org.powermock.reflect.Whitebox;
 
 import java.util.List;
 
-import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
+import dagger.Module;
+import dagger.ObjectGraph;
+import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
+import edu.mit.media.obm.liveobjects.middleware.control.DbController;
+
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.stub;
 
 /**
  * Created by arata on 9/14/15.
  */
 public class DiscoveryInfoTest {
-    private DiscoveryInfo discoveryInfo;
+    @Inject DiscoveryInfo discoveryInfo;
+    @Inject DbController dbController;
+
+    private final LiveObject testLiveObject = new LiveObject("test_name");
+
+    @Module(injects = DiscoveryInfoTest.class)
+    class TestModule {
+        @Inject @Singleton
+        DbController provideDbController() {
+            return mock(DbController.class);
+        }
+    }
 
     @Before
     public void setUp() throws Exception {
-        discoveryInfo = new DiscoveryInfo();
+        ObjectGraph objectGraph = ObjectGraph.create(new TestModule());
+        objectGraph.inject(this);
     }
 
     @After
@@ -78,6 +97,29 @@ public class DiscoveryInfoTest {
                 sleepingLiveObjectList.get(3),
                 previouslyDetectedLiveObjectList.get(3),
         };
-        Assert.assertArrayEquals(expectedLiveObjectList, liveObjectList.toArray());
+        assertArrayEquals(expectedLiveObjectList, liveObjectList.toArray());
+    }
+
+    @Test
+    public void shouldAddActiveLiveObject() throws Exception {
+        stub(dbController.isLiveObjectEmpty(anyString())).toReturn(true);
+        final int NUM_LIVE_OBJECTS = 4;
+        for (int i = 0; i < NUM_LIVE_OBJECTS; i++) {
+            discoveryInfo.addActiveLiveObject(testLiveObject);
+        }
+
+        List<LiveObject> activeLiveObjectList = discoveryInfo.mActiveLiveObjectList;
+
+        assertEquals(NUM_LIVE_OBJECTS, activeLiveObjectList.size());
+        for (LiveObject liveObject : activeLiveObjectList) {
+            assertEquals("test_name", liveObject.getLiveObjectName());
+            assertEquals(LiveObject.STATUS_ACTIVE, liveObject.getStatus());
+            assertTrue(liveObject.getConnectedBefore());
+        }
+    }
+
+    @Test
+    public void testAddSleepingLiveObject() throws Exception {
+
     }
 }

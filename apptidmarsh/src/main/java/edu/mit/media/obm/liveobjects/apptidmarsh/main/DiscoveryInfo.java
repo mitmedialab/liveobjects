@@ -20,7 +20,7 @@ public class DiscoveryInfo {
     public ArrayList<LiveObject> mPreviouslyDetectedLiveObjectList = new ArrayList<>();
 
     @Inject
-    public void DiscoveryInfo(DbController dbController) {
+    public DiscoveryInfo(DbController dbController) {
         mDbController = dbController;
     }
 
@@ -68,6 +68,8 @@ public class DiscoveryInfo {
     }
 
     private boolean isConnectedBefore(LiveObject liveObject) {
-        return !mDbController.isLiveObjectEmpty(liveObject.getLiveObjectName());
+        String liveObjectName = liveObject.getLiveObjectName();
+
+        return !mDbController.isLiveObjectEmpty(liveObjectName);
     }
 }

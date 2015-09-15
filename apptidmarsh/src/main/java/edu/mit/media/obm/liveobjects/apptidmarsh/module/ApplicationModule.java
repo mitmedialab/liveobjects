@@ -11,6 +11,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import edu.mit.media.obm.liveobjects.apptidmarsh.main.DiscoveryInfo;
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.MediaViewActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.notifications.AlarmReceiver;
@@ -18,6 +19,7 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.notifications.DiscoveryService;
 import edu.mit.media.obm.liveobjects.apptidmarsh.notifications.PeriodicAlarmManager;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.BluetoothNotifier;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
+import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 
 /**
  * Created by artimo14 on 8/1/15.
@@ -67,4 +69,8 @@ public class ApplicationModule {
         );
     }
 
+    @Provides
+    DiscoveryInfo provideDiscoveryInfo(DbController dbController) {
+        return new DiscoveryInfo(dbController);
+    }
 }

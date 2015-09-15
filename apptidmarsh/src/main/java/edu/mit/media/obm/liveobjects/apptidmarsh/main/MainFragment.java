@@ -55,6 +55,8 @@ public class MainFragment extends GroundOverlayMapFragment {
     @Inject LiveObjectNotifier mLiveObjectNotifier;
     @Inject Bus mBus;
 
+    @Inject DiscoveryInfo mDiscoveryInfo;
+
     private Bus mNetworkConnectionBus;
 
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
@@ -62,8 +64,6 @@ public class MainFragment extends GroundOverlayMapFragment {
     @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
 
     private ProgressDialog mConnectingDialog;
-
-    DiscoveryInfo mDiscoveryInfo = new DiscoveryInfo();
 
     private LiveObject mSelectedLiveObject;
 
