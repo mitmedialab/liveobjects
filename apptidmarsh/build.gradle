@@ -58,4 +58,5 @@ dependencies {
     testCompile 'org.powermock:powermock-api-mockito:1.6.2'
     testCompile 'org.powermock:powermock-modules-test:1.6.2'
     testCompile 'org.robolectric:robolectric:3.0'
+    testCompile 'com.tngtech.java:junit-dataprovider:1.10.1'
 }
