@@ -53,8 +53,9 @@ dependencies {
     compile project(':liveobjects_network_wifi_mod')
     compile project(':liveobjects_storage_wifi_mod')
     compile project(':liveobjects_storage_local_mod')
-
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-all:2.0.2-beta'
+    testCompile 'org.powermock:powermock-api-mockito:1.6.2'
+    testCompile 'org.powermock:powermock-modules-test:1.6.2'
     testCompile 'org.robolectric:robolectric:3.0'
 }
