@@ -63,10 +63,8 @@ public class MainFragment extends GroundOverlayMapFragment {
 
     private ProgressDialog mConnectingDialog;
 
-    private ArrayList<LiveObject> mLiveObjectList = new ArrayList<>();
-    private ArrayList<LiveObject> mActiveLiveObjectList = new ArrayList<>();
-    private ArrayList<LiveObject> mSleepingLiveObjectList = new ArrayList<>();
-    private ArrayList<LiveObject> mPreviouslyDetectedLiveObjectList = new ArrayList<>();
+    DiscoveryInfo mDiscoveryInfo = new DiscoveryInfo();
+
     private LiveObject mSelectedLiveObject;
 
     private boolean isWifiDiscoveryProcessRunning = false;
@@ -105,7 +103,7 @@ public class MainFragment extends GroundOverlayMapFragment {
         public boolean onMarkerClick(Marker marker) {
             // when a live object appearing in the list is clicked, connect to it
             mSelectedLiveObject = null;
-            for (LiveObject liveObject : mLiveObjectList) {
+            for (LiveObject liveObject : mDiscoveryInfo.mLiveObjectList) {
                 String markerTitle = marker.getTitle();
                 String liveObjectName = liveObject.getLiveObjectName();
 
@@ -172,7 +170,7 @@ public class MainFragment extends GroundOverlayMapFragment {
     public void onResume() {
         super.onResume();
 
-        mPreviouslyDetectedLiveObjectList.clear();
+        mDiscoveryInfo.mPreviouslyDetectedLiveObjectList.clear();
 
         List<Map<String, Object>> allLiveObjects = mDbController.getAllLiveObjectsProperties();
         for (Map<String, Object> liveObjectProperties : allLiveObjects) {
@@ -186,10 +184,10 @@ public class MainFragment extends GroundOverlayMapFragment {
             liveObject.setStatus(LiveObject.STATUS_OUT_OF_SITE);
             liveObject.setConnectedBefore(!isEmpty);
 
-            mPreviouslyDetectedLiveObjectList.add(liveObject);
+            mDiscoveryInfo.mPreviouslyDetectedLiveObjectList.add(liveObject);
         }
 
-        updateLiveObjectList();
+        mDiscoveryInfo.updateLiveObjectList();
         registerLiveObjectMarkers();
     }
 
@@ -210,17 +208,17 @@ public class MainFragment extends GroundOverlayMapFragment {
         List<LiveObject> discoveredLiveObjects = event.getAvailableLiveObjects();
 
         Log.d("discovery successfully completed");
-        mActiveLiveObjectList.clear();
+        mDiscoveryInfo.mActiveLiveObjectList.clear();
         Log.v("===");
         for (LiveObject liveObject : discoveredLiveObjects) {
             Log.v(liveObject.getLiveObjectName() + ", " + liveObject.getMapLocation().toString());
             liveObject.setConnectedBefore(isConnectedBefore(liveObject));
-            mActiveLiveObjectList.add(liveObject);
+            mDiscoveryInfo.mActiveLiveObjectList.add(liveObject);
 
             addLiveObjectToDb(liveObject);
         }
 
-        updateLiveObjectList();
+        mDiscoveryInfo.updateLiveObjectList();
         registerLiveObjectMarkers();
 
         isWifiDiscoveryProcessRunning = false;
@@ -248,40 +246,8 @@ public class MainFragment extends GroundOverlayMapFragment {
         }
     }
 
-    private void updateLiveObjectList() {
-        mLiveObjectList.clear();
-        mLiveObjectList.addAll(mActiveLiveObjectList);
-
-        // add only ones in active list if the same live object exists both in active and in
-        // sleeping lists.
-        addLiveObjectsWithUniqueNames(mLiveObjectList, mSleepingLiveObjectList);
-        addLiveObjectsWithUniqueNames(mLiveObjectList, mPreviouslyDetectedLiveObjectList);
-    }
-
-    private static void addLiveObjectsWithUniqueNames(
-            List<LiveObject> destinationLiveObjectList, List<LiveObject> sourceLiveObjectList) {
-
-        for (LiveObject liveObject : sourceLiveObjectList) {
-            if (!isLiveObjectWithSameNameIncluded(liveObject, destinationLiveObjectList)) {
-                destinationLiveObjectList.add(liveObject);
-            }
-        }
-    }
-
-    private static boolean isLiveObjectWithSameNameIncluded(LiveObject liveObject, List<LiveObject> liveObjectList) {
-        for (LiveObject liveObjectInList : liveObjectList) {
-            String name = liveObject.getLiveObjectName();
-            String nameInList = liveObjectInList.getLiveObjectName();
-            if (name.equals(nameInList)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private void registerLiveObjectMarkers() {
-        for (LiveObject liveObject : mLiveObjectList) {
+        for (LiveObject liveObject : mDiscoveryInfo.mLiveObjectList) {
             boolean currentLocation = (liveObject.getStatus() != LiveObject.STATUS_OUT_OF_SITE);
             boolean connectedBefore = liveObject.getConnectedBefore();
             updateLiveObjectMarker(liveObject, currentLocation, connectedBefore);
@@ -338,11 +304,11 @@ public class MainFragment extends GroundOverlayMapFragment {
         LiveObject liveObject = event.mLiveObject;
         liveObject.setStatus(LiveObject.STATUS_SLEEPING);
         liveObject.setConnectedBefore(isConnectedBefore(liveObject));
-        mSleepingLiveObjectList.add(liveObject);
+        mDiscoveryInfo.mSleepingLiveObjectList.add(liveObject);
 
         addLiveObjectToDb(liveObject);
 
-        updateLiveObjectList();
+        mDiscoveryInfo.updateLiveObjectList();
         registerLiveObjectMarkers();
     }
 
@@ -368,7 +334,7 @@ public class MainFragment extends GroundOverlayMapFragment {
 
         if (!isBluetoothDiscoveryProcessRunning) {
             Log.v("starting Bluetooth discovery");
-            mSleepingLiveObjectList.clear();
+            mDiscoveryInfo.mSleepingLiveObjectList.clear();
             mLiveObjectNotifier.wakeUp();
             isBluetoothDiscoveryProcessRunning = true;
         }
