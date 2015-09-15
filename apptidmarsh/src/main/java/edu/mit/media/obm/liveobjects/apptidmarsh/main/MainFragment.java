@@ -18,6 +18,7 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -253,36 +254,30 @@ public class MainFragment extends GroundOverlayMapFragment {
 
         // add only ones in active list if the same live object exists both in active and in
         // sleeping lists.
-        // ToDo: should use Set<T>
-        for (LiveObject liveObject : mSleepingLiveObjectList) {
-            boolean inActiveList = false;
+        addLiveObjectsWithUniqueNames(mLiveObjectList, mSleepingLiveObjectList);
+        addLiveObjectsWithUniqueNames(mLiveObjectList, mPreviouslyDetectedLiveObjectList);
+    }
 
-            for (LiveObject activeLiveObject : mLiveObjectList) {
-                if (liveObject.getLiveObjectName().equals(activeLiveObject.getLiveObjectName())) {
-                    inActiveList = true;
-                    break;
-                }
+    private static void addLiveObjectsWithUniqueNames(
+            List<LiveObject> destinationLiveObjectList, List<LiveObject> sourceLiveObjectList) {
+
+        for (LiveObject liveObject : sourceLiveObjectList) {
+            if (!isLiveObjectWithSameNameIncluded(liveObject, destinationLiveObjectList)) {
+                destinationLiveObjectList.add(liveObject);
             }
+        }
+    }
 
-            if (!inActiveList) {
-                mLiveObjectList.add(liveObject);
+    private static boolean isLiveObjectWithSameNameIncluded(LiveObject liveObject, List<LiveObject> liveObjectList) {
+        for (LiveObject liveObjectInList : liveObjectList) {
+            String name = liveObject.getLiveObjectName();
+            String nameInList = liveObjectInList.getLiveObjectName();
+            if (name.equals(nameInList)) {
+                return true;
             }
         }
 
-        for (LiveObject liveObject : mPreviouslyDetectedLiveObjectList) {
-            boolean inActiveList = false;
-
-            for (LiveObject activeLiveObject : mLiveObjectList) {
-                if (liveObject.getLiveObjectName().equals(activeLiveObject.getLiveObjectName())) {
-                    inActiveList = true;
-                    break;
-                }
-            }
-
-            if (!inActiveList) {
-                mLiveObjectList.add(liveObject);
-            }
-        }
+        return false;
     }
 
     private void registerLiveObjectMarkers() {
