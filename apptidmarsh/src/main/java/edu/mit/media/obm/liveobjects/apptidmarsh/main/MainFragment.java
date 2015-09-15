@@ -67,7 +67,6 @@ public class MainFragment extends GroundOverlayMapFragment {
     private ArrayList<LiveObject> mSleepingLiveObjectList = new ArrayList<>();
     private ArrayList<LiveObject> mPreviouslyDetectedLiveObjectList = new ArrayList<>();
     private LiveObject mSelectedLiveObject;
-    private Marker mClickedMarker;
 
     private boolean isWifiDiscoveryProcessRunning = false;
     private boolean isBluetoothDiscoveryProcessRunning = false;
@@ -127,8 +126,6 @@ public class MainFragment extends GroundOverlayMapFragment {
                 mLiveObjectNotifier.cancelWakeUp();
 
                 mNetworkController.connect(mSelectedLiveObject);
-
-                mClickedMarker = marker;
             } else if (mSelectedLiveObject.getConnectedBefore()) {
 //                // TODO: 8/24/15 temporarily disabled  
 //                MapLocation mapLocation = mSelectedLiveObject.getMapLocation();
