@@ -115,11 +115,11 @@ public class WifiManagerFacade {
         return foundConfiguration;
     }
 
-    private String quote(String text) {
+    private static String quote(String text) {
         return String.format("\"%s\"", text);
     }
 
-    private String unquote(String text) {
+    public static String unquote(String text) {
         String unquotedText = text;
 
         if (unquotedText.startsWith("\"")) {

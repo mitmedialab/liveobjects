@@ -71,9 +71,9 @@ public class NetworkStateChangedReceiver extends BroadcastReceiver {
 
     private String getConnectedDeviceSsid(Intent intent) {
         NetworkInfo networkInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
-        String ssid = networkInfo.getExtraInfo();
+        String ssid = WifiManagerFacade.unquote(networkInfo.getExtraInfo());
 
-        if (ssid == null) {
+        if (ssid == null || "<unknown ssid>".equals(ssid)) {
             // SSID in NetworkInfo may be null depending on the model of the device
             ssid = wifiManagerFacade.getConnectedSsid();
         }
