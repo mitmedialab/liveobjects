@@ -99,7 +99,7 @@ public class MainFragmentTest {
             activeLiveObjectList.add(liveObject);
         }
 
-        LiveObject[] sleepingLiveObjects = new LiveObject[]{
+        LiveObject[] sleepingLiveObjects = new LiveObject[] {
                 new LiveObject("liveObject03"),
                 new LiveObject("liveObject04"),
                 new LiveObject("liveObject05"),
@@ -118,9 +118,9 @@ public class MainFragmentTest {
                 new LiveObject("liveObject07")
         };
 
-        for (LiveObject liveObject : sleepingLiveObjects) {
-            liveObject.setStatus(LiveObject.STATUS_SLEEPING);
-            sleepingLiveObjectList.add(liveObject);
+        for (LiveObject liveObject : previouslyDetectedLiveObjects) {
+            liveObject.setStatus(LiveObject.STATUS_OUT_OF_SITE);
+            previouslyDetectedLiveObjectList.add(liveObject);
         }
 
         Whitebox.invokeMethod(mainFragment, "updateLiveObjectList");

@@ -257,7 +257,7 @@ public class MainFragment extends GroundOverlayMapFragment {
         for (LiveObject liveObject : mSleepingLiveObjectList) {
             boolean inActiveList = false;
 
-            for (LiveObject activeLiveObject : mActiveLiveObjectList) {
+            for (LiveObject activeLiveObject : mLiveObjectList) {
                 if (liveObject.getLiveObjectName().equals(activeLiveObject.getLiveObjectName())) {
                     inActiveList = true;
                     break;
@@ -272,7 +272,7 @@ public class MainFragment extends GroundOverlayMapFragment {
         for (LiveObject liveObject : mPreviouslyDetectedLiveObjectList) {
             boolean inActiveList = false;
 
-            for (LiveObject activeLiveObject : mActiveLiveObjectList) {
+            for (LiveObject activeLiveObject : mLiveObjectList) {
                 if (liveObject.getLiveObjectName().equals(activeLiveObject.getLiveObjectName())) {
                     inActiveList = true;
                     break;
