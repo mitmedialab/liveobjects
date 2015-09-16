@@ -101,7 +101,7 @@ public class MainFragment extends GroundOverlayMapFragment {
         public boolean onMarkerClick(Marker marker) {
             // when a live object appearing in the list is clicked, connect to it
             mSelectedLiveObject = null;
-            for (LiveObject liveObject : mDiscoveryInfo.mLiveObjectList) {
+            for (LiveObject liveObject : mDiscoveryInfo.getAllLiveObjects()) {
                 String markerTitle = marker.getTitle();
                 String liveObjectName = liveObject.getName();
 
@@ -181,7 +181,6 @@ public class MainFragment extends GroundOverlayMapFragment {
             mDiscoveryInfo.addLostLiveObject(liveObject);
         }
 
-        mDiscoveryInfo.updateLiveObjectList();
         registerLiveObjectMarkers();
     }
 
@@ -211,7 +210,6 @@ public class MainFragment extends GroundOverlayMapFragment {
             addLiveObjectToDb(liveObject);
         }
 
-        mDiscoveryInfo.updateLiveObjectList();
         registerLiveObjectMarkers();
 
         isWifiDiscoveryProcessRunning = false;
@@ -240,7 +238,7 @@ public class MainFragment extends GroundOverlayMapFragment {
     }
 
     private void registerLiveObjectMarkers() {
-        for (LiveObject liveObject : mDiscoveryInfo.mLiveObjectList) {
+        for (LiveObject liveObject : mDiscoveryInfo.getAllLiveObjects()) {
             boolean currentLocation = (liveObject.getStatus() != LiveObject.STATUS_LOST);
             boolean connectedBefore = liveObject.getConnectedBefore();
             updateLiveObjectMarker(liveObject, currentLocation, connectedBefore);
@@ -295,7 +293,6 @@ public class MainFragment extends GroundOverlayMapFragment {
 
         addLiveObjectToDb(liveObject);
 
-        mDiscoveryInfo.updateLiveObjectList();
         registerLiveObjectMarkers();
     }
 

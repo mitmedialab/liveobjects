@@ -14,7 +14,6 @@ import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 public class DiscoveryInfo {
     DbController mDbController;
 
-    public ArrayList<LiveObject> mLiveObjectList = new ArrayList<>();
     private ArrayList<LiveObject> mActiveLiveObjectList = new ArrayList<>();
     private ArrayList<LiveObject> mSleepingLiveObjectList = new ArrayList<>();
     private ArrayList<LiveObject> mLostLiveObjectList = new ArrayList<>();
@@ -24,14 +23,16 @@ public class DiscoveryInfo {
         mDbController = dbController;
     }
 
-    public void updateLiveObjectList() {
-        mLiveObjectList.clear();
-        mLiveObjectList.addAll(mActiveLiveObjectList);
+    public List<LiveObject> getAllLiveObjects() {
+        List<LiveObject> liveObjects = new ArrayList<>();
+        liveObjects.addAll(mActiveLiveObjectList);
 
         // add only ones in active list if the same live object exists both in active and in
         // sleeping lists.
-        addLiveObjectsWithUniqueNames(mLiveObjectList, mSleepingLiveObjectList);
-        addLiveObjectsWithUniqueNames(mLiveObjectList, mLostLiveObjectList);
+        addLiveObjectsWithUniqueNames(liveObjects, mSleepingLiveObjectList);
+        addLiveObjectsWithUniqueNames(liveObjects, mLostLiveObjectList);
+
+        return liveObjects;
     }
 
     private static void addLiveObjectsWithUniqueNames(

@@ -57,29 +57,15 @@ public class DiscoveryInfoTest {
     }
 
     @Test
-    public void shouldRemoveOldLiveObjects() throws Exception {
-        List<LiveObject> liveObjectList = discoveryInfo.mLiveObjectList;
-
-        // live objects stored originally in the list must be removed
-        liveObjectList.add(new LiveObject("liveObjectXX"));
-        liveObjectList.add(new LiveObject("liveObjectYY"));
-        liveObjectList.add(new LiveObject("liveObjectZZ"));
-
-        discoveryInfo.updateLiveObjectList();
-
-        assertThat(liveObjectList).isEmpty();
-    }
-
-    @Test
     public void shouldAddActiveLiveObjects() throws Exception {
         discoveryInfo.addActiveLiveObject(new LiveObject("liveObject01"));
         discoveryInfo.addActiveLiveObject(new LiveObject("liveObject02"));
         discoveryInfo.addActiveLiveObject(new LiveObject("liveObject03"));
         discoveryInfo.addActiveLiveObject(new LiveObject("liveObject04"));
 
-        discoveryInfo.updateLiveObjectList();
+        List<LiveObject> allDiscoveredLiveObjects = discoveryInfo.getAllLiveObjects();
 
-        assertThat(discoveryInfo.mLiveObjectList)
+        assertThat(allDiscoveredLiveObjects)
                 .extracting("name", "status")
                 .containsExactly(
                         tuple("liveObject01", LiveObject.STATUS_ACTIVE),
@@ -95,9 +81,9 @@ public class DiscoveryInfoTest {
         discoveryInfo.addSleepingLiveObject(new LiveObject("liveObject03"));
         discoveryInfo.addSleepingLiveObject(new LiveObject("liveObject04"));
 
-        discoveryInfo.updateLiveObjectList();
+        List<LiveObject> allDiscoveredLiveObjects = discoveryInfo.getAllLiveObjects();
 
-        assertThat(discoveryInfo.mLiveObjectList)
+        assertThat(allDiscoveredLiveObjects)
                 .extracting(FIELD_NAME, FIELD_STATUS)
                 .containsExactly(
                         tuple("liveObject01", LiveObject.STATUS_SLEEPING),
@@ -113,9 +99,9 @@ public class DiscoveryInfoTest {
         discoveryInfo.addLostLiveObject(new LiveObject("liveObject03"));
         discoveryInfo.addLostLiveObject(new LiveObject("liveObject04"));
 
-        discoveryInfo.updateLiveObjectList();
+        List<LiveObject> allDiscoveredLiveObjects = discoveryInfo.getAllLiveObjects();
 
-        assertThat(discoveryInfo.mLiveObjectList)
+        assertThat(allDiscoveredLiveObjects)
                 .extracting(FIELD_NAME, FIELD_STATUS)
                 .containsExactly(
                         tuple("liveObject01", LiveObject.STATUS_LOST),
@@ -126,14 +112,12 @@ public class DiscoveryInfoTest {
 
     @Test
     public void shouldAddActiveLiveObjectWithHigherPriority() throws Exception {
-        List<LiveObject> liveObjectList = discoveryInfo.mLiveObjectList;
-
         discoveryInfo.addActiveLiveObject(new LiveObject("liveObject01"));
         discoveryInfo.addSleepingLiveObject(new LiveObject("liveObject01"));
 
-        discoveryInfo.updateLiveObjectList();
+        List<LiveObject> allDiscoveredLiveObjects = discoveryInfo.getAllLiveObjects();
 
-        assertThat(liveObjectList)
+        assertThat(allDiscoveredLiveObjects)
                 .extracting(FIELD_NAME, FIELD_STATUS)
                 .containsExactly(
                         tuple("liveObject01", LiveObject.STATUS_ACTIVE));
@@ -144,9 +128,9 @@ public class DiscoveryInfoTest {
         discoveryInfo.addSleepingLiveObject(new LiveObject("liveObject01"));
         discoveryInfo.addLostLiveObject(new LiveObject("liveObject01"));
 
-        discoveryInfo.updateLiveObjectList();
+        List<LiveObject> allDiscoveredLiveObjects = discoveryInfo.getAllLiveObjects();
 
-        assertThat(discoveryInfo.mLiveObjectList)
+        assertThat(allDiscoveredLiveObjects)
                 .extracting(FIELD_NAME, FIELD_STATUS)
                 .containsExactly(
                         tuple("liveObject01", LiveObject.STATUS_SLEEPING));
@@ -154,11 +138,6 @@ public class DiscoveryInfoTest {
 
     @Test
     public void shouldAddAllTheStoredLiveObjectCorrectly() throws Exception {
-        // live objects stored originally in the list must be removed
-        discoveryInfo.mLiveObjectList.add(new LiveObject("liveObjectXX"));
-        discoveryInfo.mLiveObjectList.add(new LiveObject("liveObjectYY"));
-        discoveryInfo.mLiveObjectList.add(new LiveObject("liveObjectZZ"));
-
         discoveryInfo.addActiveLiveObject(new LiveObject("liveObject01"));
         discoveryInfo.addActiveLiveObject(new LiveObject("liveObject02"));
         discoveryInfo.addActiveLiveObject(new LiveObject("liveObject03"));
@@ -174,9 +153,9 @@ public class DiscoveryInfoTest {
         discoveryInfo.addLostLiveObject(new LiveObject("liveObject06"));
         discoveryInfo.addLostLiveObject(new LiveObject("liveObject07"));
 
-        discoveryInfo.updateLiveObjectList();
+        List<LiveObject> allDiscoveredLiveObjects = discoveryInfo.getAllLiveObjects();
 
-        assertThat(discoveryInfo.mLiveObjectList)
+        assertThat(allDiscoveredLiveObjects)
                 .extracting(FIELD_NAME, FIELD_STATUS)
                 .containsExactly(
                         tuple("liveObject01", LiveObject.STATUS_ACTIVE),
@@ -193,9 +172,9 @@ public class DiscoveryInfoTest {
         stub(dbController.isLiveObjectEmpty(anyString())).toReturn(true);
 
         discoveryInfo.addActiveLiveObject(new LiveObject("liveObject01"));
-        discoveryInfo.updateLiveObjectList();
+        List<LiveObject> allDiscoveredLiveObjects = discoveryInfo.getAllLiveObjects();
 
-        assertThat(discoveryInfo.mLiveObjectList)
+        assertThat(allDiscoveredLiveObjects)
                 .extracting(FIELD_NAME, FIELD_CONNECTED_BEFORE)
                 .containsOnly(tuple("liveObject01", false));
     }
@@ -205,9 +184,9 @@ public class DiscoveryInfoTest {
         stub(dbController.isLiveObjectEmpty(anyString())).toReturn(false);
 
         discoveryInfo.addActiveLiveObject(new LiveObject("liveObject01"));
-        discoveryInfo.updateLiveObjectList();
+        List<LiveObject> allDiscoveredLiveObjects = discoveryInfo.getAllLiveObjects();
 
-        assertThat(discoveryInfo.mLiveObjectList)
+        assertThat(allDiscoveredLiveObjects)
                 .extracting(FIELD_NAME, FIELD_CONNECTED_BEFORE)
                 .containsOnly(tuple("liveObject01", true));
     }
@@ -220,9 +199,9 @@ public class DiscoveryInfoTest {
         discoveryInfo.addActiveLiveObject(new LiveObject("liveObject02"));
         discoveryInfo.addActiveLiveObject(new LiveObject("liveObject03"));
         discoveryInfo.addActiveLiveObject(new LiveObject("liveObject04"));
-        discoveryInfo.updateLiveObjectList();
+        List<LiveObject> allDiscoveredLiveObjects = discoveryInfo.getAllLiveObjects();
 
-        assertThat(discoveryInfo.mLiveObjectList)
+        assertThat(allDiscoveredLiveObjects)
                 .extracting(FIELD_NAME, FIELD_CONNECTED_BEFORE)
                 .containsOnly(
                         tuple("liveObject01", false),
@@ -239,9 +218,9 @@ public class DiscoveryInfoTest {
         discoveryInfo.addActiveLiveObject(new LiveObject("liveObject02"));
         discoveryInfo.addActiveLiveObject(new LiveObject("liveObject03"));
         discoveryInfo.addActiveLiveObject(new LiveObject("liveObject04"));
-        discoveryInfo.updateLiveObjectList();
+        List<LiveObject> allDiscoveredLiveObjects = discoveryInfo.getAllLiveObjects();
 
-        assertThat(discoveryInfo.mLiveObjectList)
+        assertThat(allDiscoveredLiveObjects)
                 .extracting(FIELD_NAME, FIELD_CONNECTED_BEFORE)
                 .containsOnly(
                         tuple("liveObject01", true),
@@ -261,9 +240,9 @@ public class DiscoveryInfoTest {
         discoveryInfo.addActiveLiveObject(new LiveObject("liveObject02"));
         discoveryInfo.addActiveLiveObject(new LiveObject("liveObject03"));
         discoveryInfo.addActiveLiveObject(new LiveObject("liveObject04"));
-        discoveryInfo.updateLiveObjectList();
+        List<LiveObject> allDiscoveredLiveObjects = discoveryInfo.getAllLiveObjects();
 
-        assertThat(discoveryInfo.mLiveObjectList)
+        assertThat(allDiscoveredLiveObjects)
                 .extracting(FIELD_NAME, FIELD_CONNECTED_BEFORE)
                 .containsOnly(
                         tuple("liveObject01", false),
@@ -280,9 +259,9 @@ public class DiscoveryInfoTest {
         discoveryInfo.addActiveLiveObject(new LiveObject("liveObject04"));
 
         discoveryInfo.clearActiveLiveObject();
-        discoveryInfo.updateLiveObjectList();
+        List<LiveObject> allDiscoveredLiveObjects = discoveryInfo.getAllLiveObjects();
 
-        assertThat(discoveryInfo.mLiveObjectList).isEmpty();
+        assertThat(allDiscoveredLiveObjects).isEmpty();
     }
 
     @Test
@@ -293,9 +272,9 @@ public class DiscoveryInfoTest {
         discoveryInfo.addSleepingLiveObject(new LiveObject("liveObject04"));
 
         discoveryInfo.clearSleepingLiveObject();
-        discoveryInfo.updateLiveObjectList();
+        List<LiveObject> allDiscoveredLiveObjects = discoveryInfo.getAllLiveObjects();
 
-        assertThat(discoveryInfo.mLiveObjectList).isEmpty();
+        assertThat(allDiscoveredLiveObjects).isEmpty();
     }
 
     @Test
@@ -306,8 +285,8 @@ public class DiscoveryInfoTest {
         discoveryInfo.addLostLiveObject(new LiveObject("liveObject04"));
 
         discoveryInfo.clearLostLiveObject();
-        discoveryInfo.updateLiveObjectList();
+        List<LiveObject> allDiscoveredLiveObjects = discoveryInfo.getAllLiveObjects();
 
-        assertThat(discoveryInfo.mLiveObjectList).isEmpty();
+        assertThat(allDiscoveredLiveObjects).isEmpty();
     }
 }
