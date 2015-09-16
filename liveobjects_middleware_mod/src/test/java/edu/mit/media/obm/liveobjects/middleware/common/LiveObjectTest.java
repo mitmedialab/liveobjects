@@ -44,7 +44,7 @@ public class LiveObjectTest {
                 fail("should have thrown an exception");
             }
 
-            assertEquals(liveObject.getLiveObjectName(), name);
+            assertEquals(liveObject.getName(), name);
             assertEquals(liveObject.getMapLocation(), null);
         } catch (IllegalArgumentException exception) {
             if (constructable) {
@@ -72,7 +72,7 @@ public class LiveObjectTest {
                 fail("should have thrown an exception");
             }
 
-            assertEquals(liveObject.getLiveObjectName(), name);
+            assertEquals(liveObject.getName(), name);
             assertEquals(liveObject.getMapLocation(), mapLocation);
         } catch (IllegalArgumentException exception) {
             if (constructable) {

@@ -138,7 +138,7 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
     }
 
     public void updateLiveObjectMarker(LiveObject liveObject, boolean currentLocation, boolean visited) {
-        String liveObjectName = liveObject.getLiveObjectName();
+        String liveObjectName = liveObject.getName();
 
         // assumes that each live object has an identical name
         if (mLiveObjectMarkers.containsKey(liveObjectName)) {
@@ -148,13 +148,13 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
 
         Marker marker = addLiveObjectMarker(liveObject, currentLocation, visited);
 
-        mLiveObjectMarkers.put(liveObject.getLiveObjectName(), marker);
+        mLiveObjectMarkers.put(liveObject.getName(), marker);
 
         Log.v(mLiveObjectMarkers.keySet().toString());
     }
 
     private Marker addLiveObjectMarker(LiveObject liveObject, boolean currentLocation, boolean visited) {
-        String liveObjectName = liveObject.getLiveObjectName();
+        String liveObjectName = liveObject.getName();
         MapLocation mapLocation = liveObject.getMapLocation();
 
         checkArgumentRange("X", mapLocation.getX(), 0, NUM_GRID_X - 1);

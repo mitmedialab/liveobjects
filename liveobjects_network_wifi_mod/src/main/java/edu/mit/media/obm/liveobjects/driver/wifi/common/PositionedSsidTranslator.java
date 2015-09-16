@@ -42,7 +42,7 @@ public class PositionedSsidTranslator implements DeviceIdTranslator {
 
     @Override
     public boolean isValidLiveObject(LiveObject liveObject) {
-        int nameLength = liveObject.getLiveObjectName().length();
+        int nameLength = liveObject.getName().length();
 
         if (nameLength < 1 || nameLength > getMaxNameLength()) {
             return false;
@@ -100,7 +100,7 @@ public class PositionedSsidTranslator implements DeviceIdTranslator {
         MapLocation mapLocation = liveObject.getMapLocation();
         String formatString = String.format("%%s%%s%%c%%0%dx%%0%dx%%0%dx",
                 locationXLength, locationYLength, locationIdLength);
-        String ssid = String.format(formatString, ssidPrefix, liveObject.getLiveObjectName(),
+        String ssid = String.format(formatString, ssidPrefix, liveObject.getName(),
                 ssidDelimiter, mapLocation.getX(), mapLocation.getY(), mapLocation.getId());
 
         return ssid;

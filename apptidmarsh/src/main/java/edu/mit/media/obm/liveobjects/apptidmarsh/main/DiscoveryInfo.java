@@ -17,7 +17,7 @@ public class DiscoveryInfo {
     public ArrayList<LiveObject> mLiveObjectList = new ArrayList<>();
     private ArrayList<LiveObject> mActiveLiveObjectList = new ArrayList<>();
     private ArrayList<LiveObject> mSleepingLiveObjectList = new ArrayList<>();
-    public ArrayList<LiveObject> mPreviouslyDetectedLiveObjectList = new ArrayList<>();
+    private ArrayList<LiveObject> mLostLiveObjectList = new ArrayList<>();
 
     @Inject
     public DiscoveryInfo(DbController dbController) {
@@ -31,7 +31,7 @@ public class DiscoveryInfo {
         // add only ones in active list if the same live object exists both in active and in
         // sleeping lists.
         addLiveObjectsWithUniqueNames(mLiveObjectList, mSleepingLiveObjectList);
-        addLiveObjectsWithUniqueNames(mLiveObjectList, mPreviouslyDetectedLiveObjectList);
+        addLiveObjectsWithUniqueNames(mLiveObjectList, mLostLiveObjectList);
     }
 
     private static void addLiveObjectsWithUniqueNames(
@@ -46,8 +46,8 @@ public class DiscoveryInfo {
 
     private static boolean isLiveObjectWithSameNameIncluded(LiveObject liveObject, List<LiveObject> liveObjectList) {
         for (LiveObject liveObjectInList : liveObjectList) {
-            String name = liveObject.getLiveObjectName();
-            String nameInList = liveObjectInList.getLiveObjectName();
+            String name = liveObject.getName();
+            String nameInList = liveObjectInList.getName();
             if (name.equals(nameInList)) {
                 return true;
             }
@@ -67,8 +67,14 @@ public class DiscoveryInfo {
         mSleepingLiveObjectList.add(liveObject);
     }
 
+    public void addLostLiveObject(LiveObject liveObject) {
+        liveObject.setStatus(LiveObject.STATUS_LOST);
+        liveObject.setConnectedBefore(isConnectedBefore(liveObject));
+        mLostLiveObjectList.add(liveObject);
+    }
+
     private boolean isConnectedBefore(LiveObject liveObject) {
-        String liveObjectName = liveObject.getLiveObjectName();
+        String liveObjectName = liveObject.getName();
 
         return !mDbController.isLiveObjectEmpty(liveObjectName);
     }
@@ -79,5 +85,9 @@ public class DiscoveryInfo {
 
     public void clearSleepingLiveObject() {
         mSleepingLiveObjectList.clear();
+    }
+
+    public void  clearLostLiveObject() {
+        mLostLiveObjectList.clear();
     }
 }

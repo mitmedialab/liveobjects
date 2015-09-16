@@ -140,7 +140,7 @@ public class MainFragment extends Fragment {
                 mSelectedLiveObject = mLiveObjectNamesList.get(position);
 
                 mConnectingDialog.setMessage(
-                        "Connecting to " + mSelectedLiveObject.getLiveObjectName());
+                        "Connecting to " + mSelectedLiveObject.getName());
                 mConnectingDialog.show();
 
                 mNetworkController.connect(mSelectedLiveObject);
@@ -235,7 +235,7 @@ public class MainFragment extends Fragment {
                             Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
                             detailIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 
-                            detailIntent.putExtra(DetailActivity.EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
+                            detailIntent.putExtra(DetailActivity.EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getName());
                             startActivityForResult(detailIntent, DETAIL_ACTIVITY_REQUEST_CODE);
                             mSelectedLiveObject = null;
                         }

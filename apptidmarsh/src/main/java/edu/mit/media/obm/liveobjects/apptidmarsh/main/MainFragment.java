@@ -17,8 +17,6 @@ import com.noveogroup.android.log.Log;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +103,7 @@ public class MainFragment extends GroundOverlayMapFragment {
             mSelectedLiveObject = null;
             for (LiveObject liveObject : mDiscoveryInfo.mLiveObjectList) {
                 String markerTitle = marker.getTitle();
-                String liveObjectName = liveObject.getLiveObjectName();
+                String liveObjectName = liveObject.getName();
 
                 if (markerTitle.equals(liveObjectName)) {
                     mSelectedLiveObject = liveObject;
@@ -118,7 +116,7 @@ public class MainFragment extends GroundOverlayMapFragment {
             }
 
             if (mSelectedLiveObject.getStatus() == LiveObject.STATUS_ACTIVE) {
-                mConnectingDialog.setMessage("Connecting to " + mSelectedLiveObject.getLiveObjectName());
+                mConnectingDialog.setMessage("Connecting to " + mSelectedLiveObject.getName());
                 mConnectingDialog.show();
 
                 // disable notification using Bluetooth for more stable connection to WiFi
@@ -130,7 +128,7 @@ public class MainFragment extends GroundOverlayMapFragment {
 //                MapLocation mapLocation = mSelectedLiveObject.getMapLocation();
 //
 //                Bundle arguments = new Bundle();
-//                arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
+//                arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getName());
 //                arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, false);
 //
 //                Intent intent = new Intent(getActivity(), DetailActivity.class);
@@ -170,7 +168,7 @@ public class MainFragment extends GroundOverlayMapFragment {
     public void onResume() {
         super.onResume();
 
-        mDiscoveryInfo.mPreviouslyDetectedLiveObjectList.clear();
+        mDiscoveryInfo.clearLostLiveObject();
 
         List<Map<String, Object>> allLiveObjects = mDbController.getAllLiveObjectsProperties();
         for (Map<String, Object> liveObjectProperties : allLiveObjects) {
@@ -178,13 +176,9 @@ public class MainFragment extends GroundOverlayMapFragment {
             String liveObjectName = provider.getId();
             MapLocation mapLocation = new MapLocation(
                     provider.getMapLocationX(), provider.getMapLocationY(), provider.getMapId());
-            boolean isEmpty = mDbController.isLiveObjectEmpty(liveObjectName);
 
             LiveObject liveObject = new LiveObject(liveObjectName, mapLocation);
-            liveObject.setStatus(LiveObject.STATUS_OUT_OF_SITE);
-            liveObject.setConnectedBefore(!isEmpty);
-
-            mDiscoveryInfo.mPreviouslyDetectedLiveObjectList.add(liveObject);
+            mDiscoveryInfo.addLostLiveObject(liveObject);
         }
 
         mDiscoveryInfo.updateLiveObjectList();
@@ -211,7 +205,7 @@ public class MainFragment extends GroundOverlayMapFragment {
         mDiscoveryInfo.clearActiveLiveObject();
         Log.v("===");
         for (LiveObject liveObject : discoveredLiveObjects) {
-            Log.v(liveObject.getLiveObjectName() + ", " + liveObject.getMapLocation().toString());
+            Log.v(liveObject.getName() + ", " + liveObject.getMapLocation().toString());
             mDiscoveryInfo.addActiveLiveObject(liveObject);
 
             addLiveObjectToDb(liveObject);
@@ -232,7 +226,7 @@ public class MainFragment extends GroundOverlayMapFragment {
             mConnectingDialog.dismiss();
 
             Bundle arguments = new Bundle();
-            arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
+            arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getName());
             arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
 
             // when the selected live objected is connected
@@ -247,7 +241,7 @@ public class MainFragment extends GroundOverlayMapFragment {
 
     private void registerLiveObjectMarkers() {
         for (LiveObject liveObject : mDiscoveryInfo.mLiveObjectList) {
-            boolean currentLocation = (liveObject.getStatus() != LiveObject.STATUS_OUT_OF_SITE);
+            boolean currentLocation = (liveObject.getStatus() != LiveObject.STATUS_LOST);
             boolean connectedBefore = liveObject.getConnectedBefore();
             updateLiveObjectMarker(liveObject, currentLocation, connectedBefore);
         }
@@ -335,7 +329,7 @@ public class MainFragment extends GroundOverlayMapFragment {
 
     private void addLiveObjectToDb(LiveObject liveObject) {
         for (String id : mDbController.getLiveObjectsIds()) {
-            if (id.equals(liveObject.getLiveObjectName())) {
+            if (id.equals(liveObject.getName())) {
                 return;
             }
         }
@@ -348,6 +342,6 @@ public class MainFragment extends GroundOverlayMapFragment {
         emptyProperties.put(MLProjectContract.MAP_LOCATION_Y, mapLocation.getY());
         emptyProperties.put(MLProjectContract.MAP_ID, mapLocation.getId());
         emptyProperties.put(MLProjectContract.IS_FAVORITE, MLProjectContract.IS_FAVORITE_FALSE);
-        mDbController.putLiveObject(liveObject.getLiveObjectName(), emptyProperties);
+        mDbController.putLiveObject(liveObject.getName(), emptyProperties);
     }
 }

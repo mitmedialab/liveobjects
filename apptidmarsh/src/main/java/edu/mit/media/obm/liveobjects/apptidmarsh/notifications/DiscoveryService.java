@@ -83,7 +83,7 @@ public class DiscoveryService extends Service {
 
         Log.d(LOG_TAG, "received InactiveLiveObjectDetectionEvent");
         LiveObject liveObject = event.mLiveObject;
-        String liveObjectName = liveObject.getLiveObjectName();
+        String liveObjectName = liveObject.getName();
 
         Log.d(LOG_TAG, "send a notification for liveobject: " + liveObjectName);
 

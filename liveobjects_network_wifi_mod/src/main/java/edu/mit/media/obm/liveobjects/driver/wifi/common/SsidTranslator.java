@@ -34,6 +34,6 @@ public class SsidTranslator implements DeviceIdTranslator {
 
     @Override
     public String translateFromLiveObject(LiveObject liveObject){
-        return ssidPrefix + liveObject.getLiveObjectName();
+        return ssidPrefix + liveObject.getName();
     }
 }
