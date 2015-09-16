@@ -90,16 +90,6 @@ public class DiscoveryInfoTest {
 
         discoveryInfo.updateLiveObjectList();
 
-        LiveObject[] expectedLiveObjectList = new LiveObject[] {
-                new LiveObject("liveObject01"),
-                new LiveObject("liveObject02"),
-                new LiveObject("liveObject03"),
-                new LiveObject("liveObject04"),
-                new LiveObject("liveObject05"),
-                new LiveObject("liveObject06"),
-                previouslyDetectedLiveObjectList.get(3),
-        };
-
         assertThat(liveObjectList)
                 .extracting("liveObjectName", "status")
                 .containsExactly(
