@@ -36,8 +36,6 @@ import edu.mit.media.obm.liveobjects.app.widget.ExpandIconAnimation;
 import edu.mit.media.obm.liveobjects.app.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
-import edu.mit.media.obm.liveobjects.middleware.control.ConnectionListener;
-import edu.mit.media.obm.liveobjects.middleware.control.DiscoveryListener;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
 import edu.mit.media.obm.shair.liveobjects.R;
 
