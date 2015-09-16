@@ -4,13 +4,16 @@ import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
 
+import org.bouncycastle.util.Store;
 import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -22,9 +25,12 @@ import dagger.Provides;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.stub;
+
+import static org.assertj.core.api.Assertions.*;
 
 /**
  * Created by arata on 9/14/15.
@@ -33,8 +39,6 @@ import static org.mockito.Mockito.stub;
 public class DiscoveryInfoTest {
     @Inject DiscoveryInfo discoveryInfo;
     @Inject DbController dbController;
-
-    private final LiveObject testLiveObject = new LiveObject("test_name");
 
     @Module(injects = DiscoveryInfoTest.class)
     class TestModule {
@@ -95,97 +99,101 @@ public class DiscoveryInfoTest {
                 new LiveObject("liveObject06"),
                 previouslyDetectedLiveObjectList.get(3),
         };
-        assertArrayEquals(expectedLiveObjectList, liveObjectList.toArray());
+
+        assertThat(liveObjectList)
+                .extracting("liveObjectName", "status")
+                .containsExactly(
+                        tuple("liveObject01", LiveObject.STATUS_ACTIVE),
+                        tuple("liveObject02", LiveObject.STATUS_ACTIVE),
+                        tuple("liveObject03", LiveObject.STATUS_ACTIVE),
+                        tuple("liveObject04", LiveObject.STATUS_ACTIVE),
+                        tuple("liveObject05", LiveObject.STATUS_SLEEPING),
+                        tuple("liveObject06", LiveObject.STATUS_SLEEPING),
+                        tuple("liveObject07", LiveObject.STATUS_OUT_OF_SITE));
     }
 
-    private static class StoredLiveObject {
-        String liveObjectName;
-        boolean connectedBefore;
+    @Test
+    public void shouldAddLiveObjectNotConnectedBefore() {
+        stub(dbController.isLiveObjectEmpty(anyString())).toReturn(true);
 
-        public StoredLiveObject(String liveObjectName, boolean connectedBefore) {
-            this.liveObjectName = liveObjectName;
-            this.connectedBefore = connectedBefore;
-        }
-    }
-
-    @DataProvider
-    public static Object[][] provideLiveObjectsForAddTests() {
-        return new Object[][] {
-                {
-                        Arrays.asList(
-                                new StoredLiveObject("liveObject01", false))
-                },
-                {
-                        Arrays.asList(
-                                new StoredLiveObject("liveObject01", true))
-                },
-                {
-                        Arrays.asList(
-                                new StoredLiveObject("liveObject01", false),
-                                new StoredLiveObject("liveObject02", false),
-                                new StoredLiveObject("liveObject03", false),
-                                new StoredLiveObject("liveObject04", false))
-                },
-                {
-                        Arrays.asList(
-                                new StoredLiveObject("liveObject01", true),
-                                new StoredLiveObject("liveObject02", true),
-                                new StoredLiveObject("liveObject03", true),
-                                new StoredLiveObject("liveObject04", true))
-                },
-                {
-                        Arrays.asList(
-                                new StoredLiveObject("liveObject01", true),
-                                new StoredLiveObject("liveObject02", false),
-                                new StoredLiveObject("liveObject03", true),
-                                new StoredLiveObject("liveObject04", false))
-                },
-        };
-    }
-
-    private void stubIsLiveObjectEmpty(List<StoredLiveObject> storedLiveObjects) {
-        for (StoredLiveObject storedLiveObject : storedLiveObjects) {
-            String liveObjectName = storedLiveObject.liveObjectName;
-            boolean isConnectedBefore = storedLiveObject.connectedBefore;
-            stub(dbController.isLiveObjectEmpty(liveObjectName)).toReturn(!isConnectedBefore);
-        }
-    }
-
-    private void analyzeAddedLiveObjects(List<StoredLiveObject> storedLiveObjects, List<LiveObject> resultLiveObjects, int expectedStatus) {
-        assertEquals(storedLiveObjects.size(), resultLiveObjects.size());
-        for (int i = 0; i < storedLiveObjects.size(); i++) {
-            assertEquals(storedLiveObjects.get(i).liveObjectName, resultLiveObjects.get(i).getLiveObjectName());
-            assertEquals(expectedStatus, resultLiveObjects.get(i).getStatus());
-            assertEquals(storedLiveObjects.get(i).connectedBefore, resultLiveObjects.get(i).getConnectedBefore());
-        }
-    }
-
-    @Test @UseDataProvider("provideLiveObjectsForAddTests")
-    public void shouldAddActiveLiveObject(List<StoredLiveObject> storedLiveObjects) throws Exception {
-        stubIsLiveObjectEmpty(storedLiveObjects);
-
-        for (StoredLiveObject storedLiveObject : storedLiveObjects) {
-            LiveObject liveObject = new LiveObject(storedLiveObject.liveObjectName);
-            discoveryInfo.addActiveLiveObject(liveObject);
-        }
-
+        discoveryInfo.addActiveLiveObject(new LiveObject("liveObject01"));
         discoveryInfo.updateLiveObjectList();
 
-        analyzeAddedLiveObjects(storedLiveObjects, discoveryInfo.mLiveObjectList, LiveObject.STATUS_ACTIVE);
+        assertThat(discoveryInfo.mLiveObjectList)
+                .extracting("liveObjectName", "connectedBefore")
+                .containsOnly(tuple("liveObject01", false));
     }
 
-    @Test @UseDataProvider("provideLiveObjectsForAddTests")
-    public void shouldAddSleepingObject(List<StoredLiveObject> storedLiveObjects) throws Exception {
-        stubIsLiveObjectEmpty(storedLiveObjects);
+    @Test
+    public void shouldAddLiveObjectConnectedBefore() {
+        stub(dbController.isLiveObjectEmpty(anyString())).toReturn(false);
 
-        for (StoredLiveObject storedLiveObject : storedLiveObjects) {
-            LiveObject liveObject = new LiveObject(storedLiveObject.liveObjectName);
-            discoveryInfo.addSleepingLiveObject(liveObject);
-        }
-
+        discoveryInfo.addActiveLiveObject(new LiveObject("liveObject01"));
         discoveryInfo.updateLiveObjectList();
 
-        analyzeAddedLiveObjects(storedLiveObjects, discoveryInfo.mLiveObjectList, LiveObject.STATUS_SLEEPING);
+        assertThat(discoveryInfo.mLiveObjectList)
+                .extracting("liveObjectName", "connectedBefore")
+                .containsOnly(tuple("liveObject01", true));
+    }
+
+    @Test
+    public void shouldAddMultipleLiveObjectNotConnectedBefore() {
+        stub(dbController.isLiveObjectEmpty(anyString())).toReturn(true);
+
+        discoveryInfo.addActiveLiveObject(new LiveObject("liveObject01"));
+        discoveryInfo.addActiveLiveObject(new LiveObject("liveObject02"));
+        discoveryInfo.addActiveLiveObject(new LiveObject("liveObject03"));
+        discoveryInfo.addActiveLiveObject(new LiveObject("liveObject04"));
+        discoveryInfo.updateLiveObjectList();
+
+        assertThat(discoveryInfo.mLiveObjectList)
+                .extracting("liveObjectName", "connectedBefore")
+                .containsOnly(
+                        tuple("liveObject01", false),
+                        tuple("liveObject02", false),
+                        tuple("liveObject03", false),
+                        tuple("liveObject04", false));
+    }
+
+    @Test
+    public void shouldAddMultipleLiveObjectConnectedBefore() {
+        stub(dbController.isLiveObjectEmpty(anyString())).toReturn(false);
+
+        discoveryInfo.addActiveLiveObject(new LiveObject("liveObject01"));
+        discoveryInfo.addActiveLiveObject(new LiveObject("liveObject02"));
+        discoveryInfo.addActiveLiveObject(new LiveObject("liveObject03"));
+        discoveryInfo.addActiveLiveObject(new LiveObject("liveObject04"));
+        discoveryInfo.updateLiveObjectList();
+
+        assertThat(discoveryInfo.mLiveObjectList)
+                .extracting("liveObjectName", "connectedBefore")
+                .containsOnly(
+                        tuple("liveObject01", true),
+                        tuple("liveObject02", true),
+                        tuple("liveObject03", true),
+                        tuple("liveObject04", true));
+    }
+
+    @Test
+    public void shouldAddMultipleLiveObjectBothConnectedAndNotConnectedBefore() {
+        stub(dbController.isLiveObjectEmpty("liveObject01")).toReturn(true);
+        stub(dbController.isLiveObjectEmpty("liveObject02")).toReturn(false);
+        stub(dbController.isLiveObjectEmpty("liveObject03")).toReturn(true);
+        stub(dbController.isLiveObjectEmpty("liveObject04")).toReturn(false);
+
+        discoveryInfo.addActiveLiveObject(new LiveObject("liveObject01"));
+        discoveryInfo.addActiveLiveObject(new LiveObject("liveObject02"));
+        discoveryInfo.addActiveLiveObject(new LiveObject("liveObject03"));
+        discoveryInfo.addActiveLiveObject(new LiveObject("liveObject04"));
+        discoveryInfo.updateLiveObjectList();
+
+        assertThat(discoveryInfo.mLiveObjectList)
+                .extracting("liveObjectName", "connectedBefore")
+                .containsOnly(
+                        tuple("liveObject01", false),
+                        tuple("liveObject02", true),
+                        tuple("liveObject03", false),
+                        tuple("liveObject04", true));
     }
 
     @Test
