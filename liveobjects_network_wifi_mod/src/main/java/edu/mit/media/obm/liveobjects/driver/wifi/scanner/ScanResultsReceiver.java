@@ -16,7 +16,6 @@ import javax.inject.Inject;
 
 import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerFacade;
 import edu.mit.media.obm.liveobjects.driver.wifi.event.NetworkDevicesAvailableEvent;
-import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 
@@ -24,9 +23,17 @@ import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
  * Created by arata on 9/11/15.
  */
 public class ScanResultsReceiver extends BroadcastReceiver {
-    @Inject WifiManagerFacade wifiManagerFacade;
-    @Inject DeviceIdTranslator deviceIdTranslator;
-    @Inject Bus bus;
+    WifiManagerFacade wifiManagerFacade;
+    DeviceIdTranslator deviceIdTranslator;
+    Bus bus;
+
+    @Inject
+    public ScanResultsReceiver(
+            WifiManagerFacade wifiManagerFacade, DeviceIdTranslator deviceIdTranslator, Bus bus) {
+        this.wifiManagerFacade = wifiManagerFacade;
+        this.deviceIdTranslator = deviceIdTranslator;
+        this.bus = bus;
+    }
 
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();

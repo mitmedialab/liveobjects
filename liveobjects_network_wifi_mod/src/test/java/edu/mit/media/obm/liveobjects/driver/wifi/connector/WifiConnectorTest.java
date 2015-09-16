@@ -20,19 +20,24 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerFacade;
 import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
-import edu.mit.media.obm.liveobjects.driver.wifi.scanner.ScanResultsReceiver;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 
-import static org.mockito.Mockito.*;
-import static org.testng.Assert.*;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Created by artimo14 on 9/12/15.
@@ -46,10 +51,10 @@ public class WifiConnectorTest extends PowerMockTestCase {
     private static final String VALID_SSID = "valid_ssid";
     private static final String INVALID_SSID = "invalid_ssid";
 
-    @Mock @Inject @Named("application") Context context;
+    @Mock @Inject Context context;
     @Mock @Inject WifiManagerFacade wifiManagerFacade;
-    @Mock @Inject @Named("connector") IntentFilter intentFilter;
-    @Mock @Inject @Named("connector") BroadcastReceiver broadcastReceiver;
+    @Mock @Inject IntentFilter intentFilter;
+    @Mock @Inject BroadcastReceiver broadcastReceiver;
     @Mock @Inject DeviceIdTranslator deviceIdTranslator;
     @Inject WifiConnector wifiConnector;
 
@@ -57,7 +62,7 @@ public class WifiConnectorTest extends PowerMockTestCase {
 
     @Module(injects = WifiConnectorTest.class)
     static class TestModule {
-        @Provides @Named("application") @Singleton
+        @Provides @Singleton
         Context provideContext() {
             return mock(Context.class);
         }
@@ -67,19 +72,19 @@ public class WifiConnectorTest extends PowerMockTestCase {
             return mock(WifiManagerFacade.class);
         }
 
-        @Provides @Named("connector") @Singleton
+        @Provides @Singleton
+        DeviceIdTranslator provideDeviceIdTranslator() {
+            return mock(DeviceIdTranslator.class);
+        }
+
+        @Provides @Singleton
         IntentFilter provideIntentFilter() {
             return mock(IntentFilter.class);
         }
 
-        @Provides @Named("connector") @Singleton
+        @Provides @Singleton
         BroadcastReceiver provideBroadcastReceiver() {
             return mock(NetworkStateChangedReceiver.class);
-        }
-
-        @Provides @Singleton
-        DeviceIdTranslator provideDeviceIdTranslator() {
-            return mock(DeviceIdTranslator.class);
         }
     }
 

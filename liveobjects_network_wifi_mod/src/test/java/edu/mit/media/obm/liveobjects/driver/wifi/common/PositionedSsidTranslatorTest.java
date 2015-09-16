@@ -8,7 +8,8 @@ import org.testng.annotations.Test;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.common.MapLocation;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Created by arata on 9/11/15.
@@ -183,7 +184,7 @@ public class PositionedSsidTranslatorTest {
         LiveObject liveObject = positionedSsidTranslator.translateToLiveObject(deviceId);
         MapLocation mapLocation = liveObject.getMapLocation();
 
-        assertEquals(liveObject.getLiveObjectName(), expectedName);
+        assertEquals(liveObject.getName(), expectedName);
         assertEquals(mapLocation.getX(), expectedX);
         assertEquals(mapLocation.getY(), expectedY);
         assertEquals(mapLocation.getId(), expectedId);

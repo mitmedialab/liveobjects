@@ -1,14 +1,13 @@
 package edu.mit.media.obm.liveobjects.driver.wifi.connector;
 
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.IntentFilter;
 
 import com.noveogroup.android.log.Log;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
-import edu.mit.media.obm.liveobjects.driver.wifi.R;
 import edu.mit.media.obm.liveobjects.driver.wifi.base.BroadcastSubscriber;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.WifiManagerFacade;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
@@ -18,11 +17,22 @@ import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
  * Created by arata on 9/11/15.
  */
 public class WifiConnector extends BroadcastSubscriber {
-    @Inject WifiManagerFacade mWifiManagerFacade;
-    @Inject DeviceIdTranslator mDeviceIdTranslator;
+    WifiManagerFacade mWifiManagerFacade;
+    DeviceIdTranslator mDeviceIdTranslator;
 
-    @Inject @Named("connector") IntentFilter mIntentFilter;
-    @Inject @Named("connector") BroadcastReceiver mBroadcastReceiver;
+    IntentFilter mIntentFilter;
+    BroadcastReceiver mBroadcastReceiver;
+
+    @Inject
+    public WifiConnector(Context context, WifiManagerFacade wifiManagerFacade, DeviceIdTranslator deviceIdTranslator,
+                          IntentFilter intentFilter, BroadcastReceiver broadcastReceiver) {
+        super(context);
+
+        mWifiManagerFacade = wifiManagerFacade;
+        mDeviceIdTranslator = deviceIdTranslator;
+        mIntentFilter = intentFilter;
+        mBroadcastReceiver = broadcastReceiver;
+    }
 
     private int mConnectingNetworkId;
 

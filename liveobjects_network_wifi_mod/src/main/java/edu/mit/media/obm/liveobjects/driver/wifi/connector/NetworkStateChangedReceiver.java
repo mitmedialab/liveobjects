@@ -21,11 +21,19 @@ import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
  * Created by arata on 9/11/15.
  */
 public class NetworkStateChangedReceiver extends BroadcastReceiver {
-    @Inject WifiManagerFacade wifiManagerFacade;
-    @Inject DeviceIdTranslator deviceIdTranslator;
-    @Inject Bus bus;
+    WifiManagerFacade wifiManagerFacade;
+    DeviceIdTranslator deviceIdTranslator;
+    Bus bus;
 
     private String connectingDeviceSsid = null;
+
+    @Inject
+    public NetworkStateChangedReceiver(WifiManagerFacade wifiManagerFacade,
+                                       DeviceIdTranslator deviceIdTranslator, Bus bus) {
+        this.wifiManagerFacade = wifiManagerFacade;
+        this.deviceIdTranslator = deviceIdTranslator;
+        this.bus = bus;
+    }
 
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
@@ -61,9 +69,9 @@ public class NetworkStateChangedReceiver extends BroadcastReceiver {
 
     private String getConnectedDeviceSsid(Intent intent) {
         NetworkInfo networkInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
-        String ssid = networkInfo.getExtraInfo();
+        String ssid = WifiManagerFacade.unquote(networkInfo.getExtraInfo());
 
-        if (ssid == null) {
+        if (ssid == null || "<unknown ssid>".equals(ssid)) {
             // SSID in NetworkInfo may be null depending on the model of the device
             ssid = wifiManagerFacade.getConnectedSsid();
         }
@@ -72,19 +80,13 @@ public class NetworkStateChangedReceiver extends BroadcastReceiver {
     }
 
     private void postEventWithConnectedDeviceSsid(String ssid) {
+        LiveObject connectedLiveObject = (deviceIdTranslator.isValidSsid(ssid) ?
+            deviceIdTranslator.translateToLiveObject(ssid) : null);
+
+        Log.d("connectedLiveObject = " + connectedLiveObject);
+
         NetworkConnectedEvent.State state = getConnectionStatus(ssid);
-        NetworkConnectedEvent event;
-
-        if (deviceIdTranslator.isValidSsid(ssid)) {
-            LiveObject connectedLiveObject = deviceIdTranslator.translateToLiveObject(ssid);
-            Log.d("connectedLiveObject = " + connectedLiveObject);
-
-            event = new NetworkConnectedEvent(
-                    connectedLiveObject.getLiveObjectName(), state);
-        } else {
-            event = new NetworkConnectedEvent(ssid, state);
-        }
-
+        NetworkConnectedEvent event = new NetworkConnectedEvent(connectedLiveObject, state);
         bus.post(event);
     }
 

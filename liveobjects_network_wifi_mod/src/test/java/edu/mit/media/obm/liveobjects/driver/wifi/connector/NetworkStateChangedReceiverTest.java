@@ -9,14 +9,10 @@ import android.net.wifi.WifiManager;
 import com.noveogroup.android.log.Log;
 import com.squareup.otto.Bus;
 
-
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
-
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
-import static org.testng.Assert.*;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -32,6 +28,15 @@ import edu.mit.media.obm.liveobjects.driver.wifi.event.NetworkConnectedEvent;
 import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
+
+import static org.mockito.Mockito.anyObject;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Created by arata on 9/14/15.
@@ -148,25 +153,27 @@ public class NetworkStateChangedReceiverTest extends PowerMockTestCase {
         networkStateChangedReceiver.startMonitoring(VALID_SSID);
         networkStateChangedReceiver.onReceive(dummyContext, intent);
 
-        NetworkConnectedEvent event = new NetworkConnectedEvent(VALID_SSID,
-                NetworkConnectedEvent.State.CONNECTED_TO_TARGET);
-        verify(bus).post(event);
-        assertFalse(networkStateChangedReceiver.isMonitoring());
-    }
-
-    @Test
-    public void shouldPostWithWrongStatusWhenConnectedToNonTargetDevice() throws Exception {
-        networkStateChangedReceiver.startMonitoring(INVALID_SSID);
-        networkStateChangedReceiver.onReceive(dummyContext, intent);
-
-        NetworkConnectedEvent event = new NetworkConnectedEvent(VALID_SSID,
-                NetworkConnectedEvent.State.CONNECTED_TO_NON_TARGET);
+        NetworkConnectedEvent event = new NetworkConnectedEvent(
+                new LiveObject(VALID_SSID), NetworkConnectedEvent.State.CONNECTED_TO_TARGET);
         verify(bus).post(event);
         assertFalse(networkStateChangedReceiver.isMonitoring());
     }
 
     @Test
     public void shouldPostWithWrongStatusWhenConnectedToNonLiveObjectDevice() throws Exception {
+        stub(networkInfo.getExtraInfo()).toReturn(INVALID_SSID);
+
+        networkStateChangedReceiver.startMonitoring(VALID_SSID);
+        networkStateChangedReceiver.onReceive(dummyContext, intent);
+
+        NetworkConnectedEvent event = new NetworkConnectedEvent(
+                null, NetworkConnectedEvent.State.CONNECTED_TO_NON_TARGET);
+        verify(bus).post(event);
+        assertFalse(networkStateChangedReceiver.isMonitoring());
+    }
+
+    @Test
+    public void shouldPostWithWrongStatusWhenConnectedToNonTargetDevice() throws Exception {
         final String ANOTHER_VALID_SSID = "another_valid_ssid";
 
         stub(deviceIdTranslator.isValidSsid(ANOTHER_VALID_SSID)).toReturn(true);
@@ -174,8 +181,8 @@ public class NetworkStateChangedReceiverTest extends PowerMockTestCase {
         networkStateChangedReceiver.startMonitoring(ANOTHER_VALID_SSID);
         networkStateChangedReceiver.onReceive(dummyContext, intent);
 
-        NetworkConnectedEvent event = new NetworkConnectedEvent(VALID_SSID,
-                NetworkConnectedEvent.State.CONNECTED_TO_NON_TARGET);
+        NetworkConnectedEvent event = new NetworkConnectedEvent(
+                new LiveObject(VALID_SSID), NetworkConnectedEvent.State.CONNECTED_TO_NON_TARGET);
         verify(bus).post(event);
         assertFalse(networkStateChangedReceiver.isMonitoring());
     }

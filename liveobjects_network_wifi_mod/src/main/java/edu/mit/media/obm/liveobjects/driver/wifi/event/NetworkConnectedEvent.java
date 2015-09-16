@@ -1,5 +1,7 @@
 package edu.mit.media.obm.liveobjects.driver.wifi.event;
 
+import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
+
 /**
  * Created by artimo14 on 9/12/15.
  */
@@ -11,16 +13,16 @@ public class NetworkConnectedEvent {
         NOT_CONNECTED_FOR_SSID_ACQUISITION_FAILURE
     };
 
-    private final String connectedDeviceName;
+    private final LiveObject liveObject;
     private final State state;
 
-    public NetworkConnectedEvent(String connectedDeviceName, State state) {
-        this.connectedDeviceName = connectedDeviceName;
+    public NetworkConnectedEvent(LiveObject liveObject, State state) {
+        this.liveObject = liveObject;
         this.state = state;
     }
 
-    public String getConnectedDeviceName() {
-        return connectedDeviceName;
+    public LiveObject getConnectedLiveObject() {
+        return liveObject;
     }
 
     public State getState() {
@@ -35,11 +37,11 @@ public class NetworkConnectedEvent {
 
         NetworkConnectedEvent event = (NetworkConnectedEvent) object;
 
-        if (getConnectedDeviceName() != null) {
-            return getConnectedDeviceName().equals(event.getConnectedDeviceName())
+        if (getConnectedLiveObject() != null) {
+            return getConnectedLiveObject().equals(event.getConnectedLiveObject())
                     && getState().equals(event.getState());
         } else {
-            return event.getConnectedDeviceName() == null
+            return event.getConnectedLiveObject() == null
                     && getState().equals(event.getState());
         }
     }

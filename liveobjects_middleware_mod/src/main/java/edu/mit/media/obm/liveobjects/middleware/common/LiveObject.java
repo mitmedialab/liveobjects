@@ -1,21 +1,19 @@
 package edu.mit.media.obm.liveobjects.middleware.common;
 
-import java.util.Map;
-
 /**
  * This class represent a live object discovered through the network.
  * The class is final to force immutability.
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public final class LiveObject {
-    private final String mLiveObjectName;
+    private final String mName;
     private final MapLocation mMapLocation;
     private int mStatus = STATUS_ACTIVE;
     private boolean mConnectedBefore = false;
 
     public static final int STATUS_ACTIVE = 1;
     public static final int STATUS_SLEEPING = 2;
-    public static final int STATUS_OUT_OF_SITE = 3;
+    public static final int STATUS_LOST = 3;
 
     /**
      * Creates a new network device with specified id
@@ -25,7 +23,7 @@ public final class LiveObject {
             throw new IllegalArgumentException();
         }
 
-        mLiveObjectName = liveObjectName;
+        mName = liveObjectName;
         mMapLocation = null;
     }
 
@@ -37,7 +35,7 @@ public final class LiveObject {
             throw new IllegalArgumentException("arguments cannot be null");
         }
 
-        mLiveObjectName = liveObjectName;
+        mName = liveObjectName;
         mMapLocation = mapLocation;
     }
 
@@ -46,8 +44,8 @@ public final class LiveObject {
      *
      * @return Device's id
      */
-    public String getLiveObjectName() {
-        return mLiveObjectName;
+    public String getName() {
+        return mName;
     }
 
     /**
@@ -83,7 +81,7 @@ public final class LiveObject {
 
     @Override
     public String toString() {
-        String stringExpression = getLiveObjectName();
+        String stringExpression = getName();
 
         if (getMapLocation() != null) {
             stringExpression += " " + getMapLocation();
@@ -100,7 +98,7 @@ public final class LiveObject {
 
         LiveObject liveObject = (LiveObject) object;
 
-        if (!getLiveObjectName().equals(liveObject.getLiveObjectName())) {
+        if (!getName().equals(liveObject.getName())) {
             return false;
         }
 

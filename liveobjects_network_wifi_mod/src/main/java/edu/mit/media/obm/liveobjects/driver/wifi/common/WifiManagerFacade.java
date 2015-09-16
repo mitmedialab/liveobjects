@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import edu.mit.media.obm.liveobjects.driver.wifi.R;
-import edu.mit.media.obm.liveobjects.driver.wifi.module.DependencyInjector;
 
 /**
  * Created by arata on 9/2/15.
@@ -24,7 +22,11 @@ public class WifiManagerFacade {
     @Inject Context context;
     @Inject WifiManager wifiManager;
 
-    public WifiManagerFacade() {
+    @Inject
+    public WifiManagerFacade(Context context, WifiManager wifiManager) {
+        this.context = context;
+        this.wifiManager = wifiManager;
+
         Resources resources = context.getResources();
         WIFI_DEFAULT_PASSWORD = resources.getString(R.string.network_password);
     }
@@ -111,11 +113,11 @@ public class WifiManagerFacade {
         return foundConfiguration;
     }
 
-    private String quote(String text) {
+    private static String quote(String text) {
         return String.format("\"%s\"", text);
     }
 
-    private String unquote(String text) {
+    public static String unquote(String text) {
         String unquotedText = text;
 
         if (unquotedText.startsWith("\"")) {
