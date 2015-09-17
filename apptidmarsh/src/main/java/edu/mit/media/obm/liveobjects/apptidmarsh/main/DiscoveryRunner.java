@@ -25,6 +25,8 @@ public class DiscoveryRunner {
     public boolean wifiDiscoveryProcessRunning = false;
     public boolean bluetoothDiscoveryProcessRunning = false;
 
+    private boolean registeredBus = false;
+
     @Inject
     public DiscoveryRunner(NetworkController networkController, LiveObjectNotifier liveObjectNotifier,
                            Bus bus, @Named("network_wifi") Bus networkConnectionBus) {
@@ -35,8 +37,7 @@ public class DiscoveryRunner {
     }
 
     public void startDiscovery() {
-        mBus.register(this);
-        mNetworkConnectionBus.register(this);
+        registerBuses();
 
         if (!wifiDiscoveryProcessRunning) {
             Log.v("starting WiFi discovery");
@@ -52,8 +53,7 @@ public class DiscoveryRunner {
     }
 
     public void stopDiscovery() {
-        mBus.unregister(this);
-        mNetworkConnectionBus.register(this);
+        unregisterBuses();
 
         Log.v("stop discovery");
         /* no way to stop WiFi discovery because it continues running until Broadcast Receiver is
@@ -63,6 +63,24 @@ public class DiscoveryRunner {
         if (bluetoothDiscoveryProcessRunning) {
             mLiveObjectNotifier.cancelWakeUp();
             bluetoothDiscoveryProcessRunning = false;
+        }
+    }
+
+    private void registerBuses() {
+        if (!registeredBus) {
+            mBus.register(this);
+            mNetworkConnectionBus.register(this);
+
+            registeredBus = true;
+        }
+    }
+
+    private void unregisterBuses() {
+        if (registeredBus) {
+            mBus.unregister(this);
+            mNetworkConnectionBus.unregister(this);
+
+            registeredBus = false;
         }
     }
 
