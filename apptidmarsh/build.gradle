@@ -11,8 +11,8 @@ android {
         renderscriptTargetApi 19
         renderscriptSupportModeEnabled true
 
-        versionCode 6
-        versionName "2.0.0"
+        versionCode 7
+        versionName "2.0.1"
 
         multiDexEnabled false
     }
