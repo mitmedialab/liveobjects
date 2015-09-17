@@ -19,34 +19,12 @@ import edu.mit.media.obm.shair.liveobjects.R;
  */
 public class ContentBrowserActivity extends SingleFragmentActivity {
     @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
-    @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
-
-    public static int RESULT_CONNECTION_ERROR = RESULT_FIRST_USER;
-    public static int RESULT_JSON_ERROR = RESULT_FIRST_USER + 1;
 
     ContentBrowserFragment mFragment;
 
     @Override
     protected Fragment createFragment() {
         mFragment = new ContentBrowserFragment();
-
-        mFragment.setOnCancelListener(new DetailFragment.OnErrorListener() {
-            @Override
-            public void onError(Exception exception) {
-                Class exceptionClass = exception.getClass();
-                int result = RESULT_OK;
-
-                if (ConnectException.class.equals(exceptionClass)) {
-                    result = RESULT_CONNECTION_ERROR;
-                } else if (JSONException.class.equals(exceptionClass)) {
-                    result = RESULT_JSON_ERROR;
-                }
-
-                mFragment.cancelAsyncTasks();
-                setResult(result);
-                finish();
-            }
-        });
 
         Bundle arguments = getIntent().getBundleExtra(EXTRA_ARGUMENTS);
         mFragment.setArguments(arguments);

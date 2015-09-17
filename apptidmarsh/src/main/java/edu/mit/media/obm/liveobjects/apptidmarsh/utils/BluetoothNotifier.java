@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 
 import com.noveogroup.android.log.Log;
 
@@ -21,6 +22,7 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
 import edu.mit.media.obm.liveobjects.driver.wifi.common.PositionedSsidTranslator;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
+import edu.mit.media.obm.shair.liveobjects.R;
 
 /**
  * Created by arata on 8/7/15.
@@ -28,18 +30,12 @@ import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 public class BluetoothNotifier extends LiveObjectNotifier {
     @Inject BluetoothAdapter mBluetoothAdapter;
 
-    @BindString(edu.mit.media.obm.liveobjects.driver.wifi.R.string.network_password)
-    String NETWORK_PASSWORD;
-    @BindString(edu.mit.media.obm.liveobjects.driver.wifi.R.string.ssid_prefix)
-    String SSID_PREFIX;
-    @BindString(edu.mit.media.obm.liveobjects.driver.wifi.R.string.ssid_delimiter)
-    String SSID_DELIMITER;
-    @BindInt(edu.mit.media.obm.liveobjects.driver.wifi.R.integer.map_location_x_length)
-    int MAP_LOCATION_X_LENGTH;
-    @BindInt(edu.mit.media.obm.liveobjects.driver.wifi.R.integer.map_location_y_length)
-    int MAP_LOCATION_Y_LENGTH;
-    @BindInt(edu.mit.media.obm.liveobjects.driver.wifi.R.integer.map_location_id_length)
-    int MAP_LOCATION_ID_LENGTH;
+    private String NETWORK_PASSWORD;
+    private String SSID_PREFIX;
+    private String SSID_DELIMITER;
+    private int MAP_LOCATION_X_LENGTH;
+    private int MAP_LOCATION_Y_LENGTH;
+    private int MAP_LOCATION_ID_LENGTH;
 
     private BluetoothDetectionReceiver mBroadcastReceiver = null;
 
@@ -47,7 +43,7 @@ public class BluetoothNotifier extends LiveObjectNotifier {
         super(appContext);
 
         DependencyInjector.inject(this, appContext);
-        ButterKnife.bind(this, (Activity) appContext);
+        setupResources(appContext);
 
         if (mBluetoothAdapter == null) {
             throw new RuntimeException("Failed to get default Bluetooth Adapter");
@@ -60,6 +56,17 @@ public class BluetoothNotifier extends LiveObjectNotifier {
         if (!mBluetoothAdapter.isEnabled()) {
             promptEnablingBluetooth();
         }
+    }
+
+    private void setupResources(Context context) {
+        Resources resources = context.getResources();
+
+        NETWORK_PASSWORD = resources.getString(R.string.network_password);
+        SSID_PREFIX = resources.getString(R.string.ssid_prefix);
+        SSID_DELIMITER = resources.getString(R.string.ssid_delimiter);
+        MAP_LOCATION_X_LENGTH = resources.getInteger(R.integer.map_location_x_length);
+        MAP_LOCATION_Y_LENGTH = resources.getInteger(R.integer.map_location_y_length);
+        MAP_LOCATION_ID_LENGTH = resources.getInteger(R.integer.map_location_id_length);
     }
 
     @Override

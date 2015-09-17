@@ -99,21 +99,7 @@ public class MainFragment extends GroundOverlayMapFragment {
     private class ConnectToLiveObjectListener implements GoogleMap.OnMarkerClickListener {
         @Override
         public boolean onMarkerClick(Marker marker) {
-            // when a live object appearing in the list is clicked, connect to it
-            mSelectedLiveObject = null;
-            for (LiveObject liveObject : mDiscoveryInfo.getAllLiveObjects()) {
-                String markerTitle = marker.getTitle();
-                String liveObjectName = liveObject.getName();
-
-                if (markerTitle.equals(liveObjectName)) {
-                    mSelectedLiveObject = liveObject;
-                }
-            }
-
-            if (mSelectedLiveObject == null) {
-                throw new IllegalStateException(
-                        "clicked live object was not found in the list of detected live objects");
-            }
+            mSelectedLiveObject = findLiveObjectFromMarker(marker);
 
             if (mSelectedLiveObject.getStatus() == LiveObject.STATUS_ACTIVE) {
                 mConnectingDialog.setMessage("Connecting to " + mSelectedLiveObject.getName());
@@ -140,6 +126,27 @@ public class MainFragment extends GroundOverlayMapFragment {
 
             return true;
         }
+    }
+
+    private LiveObject findLiveObjectFromMarker(Marker marker) {
+        // when a live object appearing in the list is clicked, connect to it
+        String markerTitle = marker.getTitle();
+        LiveObject foundLiveObject = null;
+
+        for (LiveObject liveObject : mDiscoveryInfo.getAllLiveObjects()) {
+            String liveObjectName = liveObject.getName();
+
+            if (markerTitle.equals(liveObjectName)) {
+                foundLiveObject = liveObject;
+            }
+        }
+
+        if (foundLiveObject == null) {
+            throw new IllegalStateException(
+                    "clicked live object was not found in the list of detected live objects");
+        }
+
+        return foundLiveObject;
     }
 
     @Override
@@ -217,10 +224,10 @@ public class MainFragment extends GroundOverlayMapFragment {
     public void startContentBrowserActivity(NetworkConnectedEvent event) {
         LiveObject connectedLiveObject = event.getConnectedLiveObject();
 
-        Log.v("onConnected(%s)", connectedLiveObject);
-        if (connectedLiveObject.equals(mSelectedLiveObject)) {
-            mConnectingDialog.dismiss();
+        mConnectingDialog.dismiss();
 
+        Log.v("startContentBrowserActivity(%s)", connectedLiveObject);
+        if (isConnectedToTargetLiveObject(connectedLiveObject)) {
             Bundle arguments = new Bundle();
             arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getName());
             arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
@@ -232,7 +239,14 @@ public class MainFragment extends GroundOverlayMapFragment {
             startActivityForResult(intent, CONTENT_BROWSER_ACTIVITY_REQUEST_CODE);
 
             mSelectedLiveObject = null;
+        } else {
+            Log.v("failed to connect to target live object");
         }
+    }
+
+    private boolean isConnectedToTargetLiveObject(LiveObject connectedLiveObject) {
+        return (connectedLiveObject != null)
+                && connectedLiveObject.equals(mSelectedLiveObject);
     }
 
     private void registerLiveObjectMarkers() {

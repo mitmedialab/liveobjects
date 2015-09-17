@@ -1,5 +1,6 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.detail;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,6 +11,9 @@ import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.noveogroup.android.log.Log;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
@@ -60,14 +64,13 @@ public class ContentBrowserFragment extends Fragment {
         startActivity(intent);
     }
 
-
     String mLiveObjectName;
     boolean mConnectedToLiveObject;
 
 
     private DetailFragment.OnErrorListener mOnErrorListener = null;
 
-    private AsyncTask<String, Void, JSONObject> mSetPropertiesTask = null;
+    private JsonRetrievalTask mSetPropertiesTask = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -92,45 +95,62 @@ public class ContentBrowserFragment extends Fragment {
     private Map<String, Object> fetchProperties(final String liveObjectId) {
         String mediaConfigFileName = MEDIA_CONFIG_FILE_NAME + ".jso";
 
-        mSetPropertiesTask =
-                new AsyncTask<String, Void, JSONObject>() {
-                    @Override
-                    protected JSONObject doInBackground(String... params) {
-                        String configFileName = params[0];
-
-                        InputStream inputStream;
-                        try {
-
-                            ContentId configFileContentId = new ContentId(liveObjectId, DIRECTORY_NAME, configFileName);
-                            // retrieve JSON Object
-                            inputStream = mContentController.getInputStreamContent(configFileContentId);
-
-                            JSONObject jsonConfig = JSONUtil.getJSONFromInputStream(inputStream);
-                            inputStream.close();
-                            return jsonConfig;
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            mOnErrorListener.onError(e);
-                        }
-                        return null;
-                    }
-                }.execute(mediaConfigFileName);
-
+        mSetPropertiesTask = new JsonRetrievalTask(liveObjectId);
 
         Map<String, Object> properties = null;
         try {
+            // wait for completion of async task
             JSONObject jsonProperties = mSetPropertiesTask.get();
+            Exception exception = mSetPropertiesTask.getException();
+            if (exception != null) {
+                throw exception;
+            }
+
             properties = JSONUtil.jsonToMap(jsonProperties);
 
             // add the isFavorite property, which is not present in the remote live-object,
             // and initialize it to false
             properties.put(MLProjectContract.IS_FAVORITE, MLProjectContract.IS_FAVORITE_FALSE);
         } catch (Exception e) {
-            mOnErrorListener.onError(e);
+            Log.e(e);
+            getActivity().finish();
         }
 
         return properties;
+    }
+
+    private class JsonRetrievalTask extends AsyncTask<String, Void, JSONObject> {
+        private Exception mException = null;
+        private final String mLiveObjectId;
+
+        public JsonRetrievalTask(String liveObjectId) {
+            mLiveObjectId = liveObjectId;
+        }
+
+        @Override
+        protected JSONObject doInBackground(String... params) {
+            String configFileName = params[0];
+
+            InputStream inputStream;
+            try {
+                ContentId configFileContentId = new ContentId(mLiveObjectId, DIRECTORY_NAME, configFileName);
+                // retrieve JSON Object
+                inputStream = mContentController.getInputStreamContent(configFileContentId);
+
+                JSONObject jsonConfig = JSONUtil.getJSONFromInputStream(inputStream);
+                inputStream.close();
+
+                return jsonConfig;
+            } catch (Exception e) {
+                // keep exception object for later use
+                mException = e;
+            }
+            return null;
+        }
+
+        public Exception getException() {
+            return mException;
+        }
     }
 
     private void setUIContent(Map<String, Object> liveObjectProperties) {
