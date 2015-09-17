@@ -1,5 +1,6 @@
 package edu.mit.media.obm.liveobjects.apptidmarsh.utils;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -13,21 +14,40 @@ import com.noveogroup.android.log.Log;
 
 import javax.inject.Inject;
 
+import butterknife.BindInt;
+import butterknife.BindString;
+import butterknife.ButterKnife;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
-import edu.mit.media.obm.liveobjects.driver.wifi.PositionedSsidTranslator;
+import edu.mit.media.obm.liveobjects.driver.wifi.common.PositionedSsidTranslator;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
+import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
 
 /**
  * Created by arata on 8/7/15.
  */
 public class BluetoothNotifier extends LiveObjectNotifier {
     @Inject BluetoothAdapter mBluetoothAdapter;
+
+    @BindString(edu.mit.media.obm.liveobjects.driver.wifi.R.string.network_password)
+    String NETWORK_PASSWORD;
+    @BindString(edu.mit.media.obm.liveobjects.driver.wifi.R.string.ssid_prefix)
+    String SSID_PREFIX;
+    @BindString(edu.mit.media.obm.liveobjects.driver.wifi.R.string.ssid_delimiter)
+    String SSID_DELIMITER;
+    @BindInt(edu.mit.media.obm.liveobjects.driver.wifi.R.integer.map_location_x_length)
+    int MAP_LOCATION_X_LENGTH;
+    @BindInt(edu.mit.media.obm.liveobjects.driver.wifi.R.integer.map_location_y_length)
+    int MAP_LOCATION_Y_LENGTH;
+    @BindInt(edu.mit.media.obm.liveobjects.driver.wifi.R.integer.map_location_id_length)
+    int MAP_LOCATION_ID_LENGTH;
+
     private BluetoothDetectionReceiver mBroadcastReceiver = null;
 
     public BluetoothNotifier(Context appContext) {
         super(appContext);
 
         DependencyInjector.inject(this, appContext);
+        ButterKnife.bind(this, (Activity) appContext);
 
         if (mBluetoothAdapter == null) {
             throw new RuntimeException("Failed to get default Bluetooth Adapter");
@@ -90,13 +110,17 @@ public class BluetoothNotifier extends LiveObjectNotifier {
                     Log.d("detected device: " + deviceName);
                 }
 
+                DeviceIdTranslator deviceIdTranslator = new PositionedSsidTranslator(
+                        SSID_PREFIX, SSID_DELIMITER.charAt(0),
+                        MAP_LOCATION_X_LENGTH, MAP_LOCATION_Y_LENGTH, MAP_LOCATION_ID_LENGTH);
+
                 // ToDo; shouldn't use WiFiUtil directly
-                if (deviceName != null && PositionedSsidTranslator.INSTANCE.isLiveObject(deviceName)) {
+                if (deviceName != null && deviceIdTranslator.isValidSsid(deviceName)) {
                     Log.d("trying to connect to BLE device '%s'", deviceName);
                     mBluetoothGatt = device.connectGatt(mContext, true, mGattCallback);
 
                     // ToDo; shouldn't use WiFiUtil directly
-                    LiveObject liveObject = PositionedSsidTranslator.INSTANCE.translateToLiveObject(deviceName);
+                    LiveObject liveObject = deviceIdTranslator.translateToLiveObject(deviceName);
                     mBus.post(new InactiveLiveObjectDetectionEvent(liveObject));
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {

@@ -1,4 +1,4 @@
-package edu.mit.media.obm.liveobjects.driver.wifi;
+package edu.mit.media.obm.liveobjects.driver.wifi.common;
 
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
@@ -7,19 +7,26 @@ import edu.mit.media.obm.liveobjects.middleware.net.DeviceIdTranslator;
  * Specific implementation of DeviceIdTranslator for Wifi
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
-public enum SsidTranslator implements DeviceIdTranslator {
-    INSTANCE;
+public class SsidTranslator implements DeviceIdTranslator {
+    private String ssidPrefix;
 
-    private String SSID_PREFIX;
+    public SsidTranslator(String ssidPrefix) {
+        this.ssidPrefix = ssidPrefix;
+    }
 
     @Override
-    public boolean isLiveObject(String deviceId) {
-        return deviceId.startsWith(SSID_PREFIX);
+    public boolean isValidSsid(String deviceId) {
+        return deviceId.startsWith(ssidPrefix);
+    }
+
+    @Override
+    public boolean isValidLiveObject(LiveObject liveObject) {
+        return true;
     }
 
     @Override
     public LiveObject translateToLiveObject(String deviceId) {
-        int prefixLength = SSID_PREFIX.length();
+        int prefixLength = ssidPrefix.length();
         String liveObjectName = deviceId.substring(prefixLength);
 
         return new LiveObject(liveObjectName);
@@ -27,12 +34,6 @@ public enum SsidTranslator implements DeviceIdTranslator {
 
     @Override
     public String translateFromLiveObject(LiveObject liveObject){
-        return SSID_PREFIX + liveObject.getLiveObjectName();
+        return ssidPrefix + liveObject.getLiveObjectName();
     }
-
-    protected final void setSsidPrefix(String ssidPrefix) {
-        SSID_PREFIX = ssidPrefix;
-    }
-
-
 }

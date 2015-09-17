@@ -16,7 +16,14 @@ public interface DeviceIdTranslator {
      * @param deviceId the network device id to check
      * @return true if the network device is a live object
      */
-    boolean isLiveObject(String deviceId);
+    boolean isValidSsid(String deviceId);
+
+    /**
+     * Checks if the live object instance is a live object
+     * @param liveObject the live object instance to check
+     * @return true if the live object instance is a live object
+     */
+    boolean isValidLiveObject(LiveObject liveObject);
 
     /**
      * Converts a device id into live object name

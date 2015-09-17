@@ -1,5 +1,7 @@
 package edu.mit.media.obm.liveobjects.middleware.net;
 
+import com.squareup.otto.Bus;
+
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 
 /**
@@ -26,10 +28,9 @@ public interface NetworkConnectionManager {
     void stop();
 
     /**
-     * Setting the network listener to receive network events
-     * @param networkListener
+     * Returns event bus that network connection manager posts events
      */
-    void setNetworkListener(NetworkListener networkListener);
+    Bus getEventBus();
 
     /**
      * Starts scan of available live objects

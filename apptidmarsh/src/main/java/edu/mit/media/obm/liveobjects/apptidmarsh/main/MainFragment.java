@@ -18,6 +18,7 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,10 +37,11 @@ import edu.mit.media.obm.liveobjects.apptidmarsh.utils.FinishedDetectingInactive
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.InactiveLiveObjectDetectionEvent;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
 import edu.mit.media.obm.liveobjects.apptidmarsh.widget.MenuActions;
+import edu.mit.media.obm.liveobjects.driver.wifi.WifiNetworkBus;
+import edu.mit.media.obm.liveobjects.driver.wifi.event.NetworkConnectedEvent;
+import edu.mit.media.obm.liveobjects.driver.wifi.event.NetworkDevicesAvailableEvent;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.common.MapLocation;
-import edu.mit.media.obm.liveobjects.middleware.control.ConnectionListener;
-import edu.mit.media.obm.liveobjects.middleware.control.DiscoveryListener;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
 import edu.mit.media.obm.shair.liveobjects.R;
 
@@ -53,18 +55,17 @@ public class MainFragment extends GroundOverlayMapFragment {
     @Inject LiveObjectNotifier mLiveObjectNotifier;
     @Inject Bus mBus;
 
+    @Inject DiscoveryInfo mDiscoveryInfo;
+
+    private Bus mNetworkConnectionBus;
+
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
     @BindString(R.string.arg_connected_to_live_object) String EXTRA_CONNECTED_TO_LIVE_OBJ;
     @BindString(R.string.extra_arguments) String EXTRA_ARGUMENTS;
 
     private ProgressDialog mConnectingDialog;
 
-    private ArrayList<LiveObject> mLiveObjectList = new ArrayList<>();
-    private ArrayList<LiveObject> mActiveLiveObjectList = new ArrayList<>();
-    private ArrayList<LiveObject> mSleepingLiveObjectList = new ArrayList<>();
-    private ArrayList<LiveObject> mPreviouslyDetectedLiveObjectList = new ArrayList<>();
     private LiveObject mSelectedLiveObject;
-    private Marker mClickedMarker;
 
     private boolean isWifiDiscoveryProcessRunning = false;
     private boolean isBluetoothDiscoveryProcessRunning = false;
@@ -76,8 +77,9 @@ public class MainFragment extends GroundOverlayMapFragment {
         ButterKnife.bind(this, rootView);
         DependencyInjector.inject(this, getActivity());
 
+        mNetworkConnectionBus = WifiNetworkBus.getBus();
+
         setupUIElements();
-        initNetworkListeners();
 
         return rootView;
     }
@@ -101,7 +103,7 @@ public class MainFragment extends GroundOverlayMapFragment {
         public boolean onMarkerClick(Marker marker) {
             // when a live object appearing in the list is clicked, connect to it
             mSelectedLiveObject = null;
-            for (LiveObject liveObject : mLiveObjectList) {
+            for (LiveObject liveObject : mDiscoveryInfo.mLiveObjectList) {
                 String markerTitle = marker.getTitle();
                 String liveObjectName = liveObject.getLiveObjectName();
 
@@ -123,10 +125,8 @@ public class MainFragment extends GroundOverlayMapFragment {
                 mLiveObjectNotifier.cancelWakeUp();
 
                 mNetworkController.connect(mSelectedLiveObject);
-
-                mClickedMarker = marker;
             } else if (mSelectedLiveObject.getConnectedBefore()) {
-//                // TODO: 8/24/15 temporarily disabled  
+//                // TODO: 8/24/15 temporarily disabled  @Inject
 //                MapLocation mapLocation = mSelectedLiveObject.getMapLocation();
 //
 //                Bundle arguments = new Bundle();
@@ -150,6 +150,7 @@ public class MainFragment extends GroundOverlayMapFragment {
         super.onStart();
 
         mBus.register(this);
+        mNetworkConnectionBus.register(this);
 
         enableWifi();
 
@@ -169,7 +170,7 @@ public class MainFragment extends GroundOverlayMapFragment {
     public void onResume() {
         super.onResume();
 
-        mPreviouslyDetectedLiveObjectList.clear();
+        mDiscoveryInfo.mPreviouslyDetectedLiveObjectList.clear();
 
         List<Map<String, Object>> allLiveObjects = mDbController.getAllLiveObjectsProperties();
         for (Map<String, Object> liveObjectProperties : allLiveObjects) {
@@ -183,10 +184,10 @@ public class MainFragment extends GroundOverlayMapFragment {
             liveObject.setStatus(LiveObject.STATUS_OUT_OF_SITE);
             liveObject.setConnectedBefore(!isEmpty);
 
-            mPreviouslyDetectedLiveObjectList.add(liveObject);
+            mDiscoveryInfo.mPreviouslyDetectedLiveObjectList.add(liveObject);
         }
 
-        updateLiveObjectList();
+        mDiscoveryInfo.updateLiveObjectList();
         registerLiveObjectMarkers();
     }
 
@@ -197,103 +198,55 @@ public class MainFragment extends GroundOverlayMapFragment {
         super.onStop();
 
         mBus.unregister(this);
+        mNetworkConnectionBus.unregister(this);
 
         mLiveObjectNotifier.cancelWakeUp();
     }
 
-    private void initNetworkListeners() {
-        mNetworkController.setDiscoveryListener(new LiveObjectDiscoveryListener());
-        mNetworkController.setConnectionListener(new LiveObjectConnectionListener());
+    @Subscribe
+    public void updateDiscoveredLiveObjectList(NetworkDevicesAvailableEvent event) {
+        List<LiveObject> discoveredLiveObjects = event.getAvailableLiveObjects();
+
+        Log.d("discovery successfully completed");
+        mDiscoveryInfo.mActiveLiveObjectList.clear();
+        Log.v("===");
+        for (LiveObject liveObject : discoveredLiveObjects) {
+            Log.v(liveObject.getLiveObjectName() + ", " + liveObject.getMapLocation().toString());
+            mDiscoveryInfo.addActiveLiveObject(liveObject);
+
+            addLiveObjectToDb(liveObject);
+        }
+
+        mDiscoveryInfo.updateLiveObjectList();
+        registerLiveObjectMarkers();
+
+        isWifiDiscoveryProcessRunning = false;
     }
 
-    private class LiveObjectDiscoveryListener implements DiscoveryListener {
-        @Override
-        public void onDiscoveryStarted() {
-            Log.d("discovery started");
-        }
+    @Subscribe
+    public void startContentBrowserActivity(NetworkConnectedEvent event) {
+        LiveObject connectedLiveObject = event.getConnectedLiveObject();
 
-        @Override
-        public void onLiveObjectsDiscovered(List<LiveObject> liveObjectList) {
-            Log.d("discovery successfully completed");
-            mActiveLiveObjectList.clear();
-            Log.v("===");
-            for (LiveObject liveObject : liveObjectList) {
-                Log.v(liveObject.getLiveObjectName() + ", " + liveObject.getMapLocation().toString());
-                liveObject.setConnectedBefore(isConnectedBefore(liveObject));
-                mActiveLiveObjectList.add(liveObject);
+        Log.v("onConnected(%s)", connectedLiveObject);
+        if (connectedLiveObject.equals(mSelectedLiveObject)) {
+            mConnectingDialog.dismiss();
 
-                addLiveObjectToDb(liveObject);
-            }
+            Bundle arguments = new Bundle();
+            arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
+            arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
 
-            updateLiveObjectList();
-            registerLiveObjectMarkers();
+            // when the selected live objected is connected
+            // start the corresponding detail activity
+            Intent intent = new Intent(getActivity(), ContentBrowserActivity.class);
+            intent.putExtra(EXTRA_ARGUMENTS, arguments);
+            startActivityForResult(intent, CONTENT_BROWSER_ACTIVITY_REQUEST_CODE);
 
-            isWifiDiscoveryProcessRunning = false;
-        }
-    }
-
-    class LiveObjectConnectionListener implements ConnectionListener {
-        @Override
-        public void onConnected(LiveObject connectedLiveObject) {
-            Log.v("onConnected(%s)", connectedLiveObject);
-            if (connectedLiveObject.equals(mSelectedLiveObject)) {
-                mConnectingDialog.dismiss();
-
-                Bundle arguments = new Bundle();
-                arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getLiveObjectName());
-                arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
-
-                // when the selected live objected is connected
-                // start the corresponding detail activity
-                Intent intent = new Intent(getActivity(), ContentBrowserActivity.class);
-                intent.putExtra(EXTRA_ARGUMENTS, arguments);
-                startActivityForResult(intent, CONTENT_BROWSER_ACTIVITY_REQUEST_CODE);
-
-                mSelectedLiveObject = null;
-            }
-        }
-    }
-
-    private void updateLiveObjectList() {
-        mLiveObjectList.clear();
-        mLiveObjectList.addAll(mActiveLiveObjectList);
-
-        // add only ones in active list if the same live object exists both in active and in
-        // sleeping lists.
-        // ToDo: should use Set<T>
-        for (LiveObject liveObject : mSleepingLiveObjectList) {
-            boolean inActiveList = false;
-
-            for (LiveObject activeLiveObject : mActiveLiveObjectList) {
-                if (liveObject.getLiveObjectName().equals(activeLiveObject.getLiveObjectName())) {
-                    inActiveList = true;
-                    break;
-                }
-            }
-
-            if (!inActiveList) {
-                mLiveObjectList.add(liveObject);
-            }
-        }
-
-        for (LiveObject liveObject : mPreviouslyDetectedLiveObjectList) {
-            boolean inActiveList = false;
-
-            for (LiveObject activeLiveObject : mActiveLiveObjectList) {
-                if (liveObject.getLiveObjectName().equals(activeLiveObject.getLiveObjectName())) {
-                    inActiveList = true;
-                    break;
-                }
-            }
-
-            if (!inActiveList) {
-                mLiveObjectList.add(liveObject);
-            }
+            mSelectedLiveObject = null;
         }
     }
 
     private void registerLiveObjectMarkers() {
-        for (LiveObject liveObject : mLiveObjectList) {
+        for (LiveObject liveObject : mDiscoveryInfo.mLiveObjectList) {
             boolean currentLocation = (liveObject.getStatus() != LiveObject.STATUS_OUT_OF_SITE);
             boolean connectedBefore = liveObject.getConnectedBefore();
             updateLiveObjectMarker(liveObject, currentLocation, connectedBefore);
@@ -332,10 +285,6 @@ public class MainFragment extends GroundOverlayMapFragment {
         }
     }
 
-    private boolean isConnectedBefore(LiveObject liveObject) {
-        return !mDbController.isLiveObjectEmpty(liveObject.getLiveObjectName());
-    }
-
     private void enableWifi() {
         WifiManager wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
         if (!wifiManager.isWifiEnabled()) {
@@ -348,13 +297,11 @@ public class MainFragment extends GroundOverlayMapFragment {
     public void addDetectedBluetoothDevice(InactiveLiveObjectDetectionEvent event) {
         Log.v("addDetectedBluetoothDevice()");
         LiveObject liveObject = event.mLiveObject;
-        liveObject.setStatus(LiveObject.STATUS_SLEEPING);
-        liveObject.setConnectedBefore(isConnectedBefore(liveObject));
-        mSleepingLiveObjectList.add(liveObject);
+        mDiscoveryInfo.addSleepingLiveObject(liveObject);
 
         addLiveObjectToDb(liveObject);
 
-        updateLiveObjectList();
+        mDiscoveryInfo.updateLiveObjectList();
         registerLiveObjectMarkers();
     }
 
@@ -380,7 +327,7 @@ public class MainFragment extends GroundOverlayMapFragment {
 
         if (!isBluetoothDiscoveryProcessRunning) {
             Log.v("starting Bluetooth discovery");
-            mSleepingLiveObjectList.clear();
+            mDiscoveryInfo.mSleepingLiveObjectList.clear();
             mLiveObjectNotifier.wakeUp();
             isBluetoothDiscoveryProcessRunning = true;
         }

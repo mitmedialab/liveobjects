@@ -8,13 +8,6 @@ import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
  * @author Valerio Panzica La Manna <vpanzica@mit.edu>
  */
 public interface NetworkController extends Controller {
-
-    /**
-     * Set the listener for discovery callbacks
-     * @param discoveryListener
-     */
-    public void setDiscoveryListener(DiscoveryListener discoveryListener);
-
     /**
      * Start network controller
      */
@@ -24,13 +17,6 @@ public interface NetworkController extends Controller {
      * Stop network controller
      */
     public void stop();
-
-
-    /**
-     * Set the listener for connection callbacks
-     * @param connectionListener
-     */
-    public void setConnectionListener(ConnectionListener connectionListener);
 
     /**
      * Start discovering live objects

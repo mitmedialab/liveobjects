@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="map_location_coordinate_x_length">2</integer>
-    <integer name="map_location_coordinate_y_length">2</integer>
-    <integer name="map_location_map_id_length">1</integer>
+    <integer name="map_location_x_length">2</integer>
+    <integer name="map_location_y_length">2</integer>
+    <integer name="map_location_id_length">1</integer>
 </resources>
