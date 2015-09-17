@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.BindString;
 import butterknife.ButterKnife;
@@ -53,7 +54,7 @@ public class MainFragment extends GroundOverlayMapFragment {
     @Inject DiscoveryInfo mDiscoveryInfo;
     @Inject DiscoveryRunner mDiscoveryRunner;
 
-    private Bus mNetworkConnectionBus;
+    @Inject @Named("network_wifi") Bus mNetworkConnectionBus;
 
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
     @BindString(R.string.arg_connected_to_live_object) String EXTRA_CONNECTED_TO_LIVE_OBJ;
