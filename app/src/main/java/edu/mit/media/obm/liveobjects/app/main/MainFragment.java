@@ -12,27 +12,23 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.noveogroup.android.log.Log;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import edu.mit.media.obm.liveobjects.app.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.app.LiveObjectsApplication;
+import edu.mit.media.obm.liveobjects.app.detail.DetailActivity;
 import edu.mit.media.obm.liveobjects.app.history.SavedLiveObjectsActivity;
 import edu.mit.media.obm.liveobjects.app.profile.ProfileActivity;
 import edu.mit.media.obm.liveobjects.app.widget.AnimationArrayAdapter;
 import edu.mit.media.obm.liveobjects.app.widget.BitmapEditor;
-import edu.mit.media.obm.liveobjects.app.widget.ExpandIconAnimation;
 import edu.mit.media.obm.liveobjects.app.widget.MenuActions;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
 import edu.mit.media.obm.liveobjects.middleware.common.MiddlewareInterface;
@@ -180,6 +176,8 @@ public class MainFragment extends Fragment {
     }
 
     private void initDiscoveryListener() {
+        /*
+        TODO does not work with new interface
         mNetworkController.setDiscoveryListener(new DiscoveryListener() {
             @Override
             public void onDiscoveryStarted() {
@@ -196,10 +194,11 @@ public class MainFragment extends Fragment {
                 mAdapter.notifyDataSetChanged();
                 mSwipeLayout.setRefreshing(false);
             }
-        });
+        });*/
     }
 
     private void initConnectionListener() {
+        /*
         mNetworkController.setConnectionListener(new ConnectionListener() {
             @Override
             public void onConnected(LiveObject connectedLiveObject) {
@@ -259,6 +258,7 @@ public class MainFragment extends Fragment {
 
             }
         });
+        */
     }
 
     @Override
