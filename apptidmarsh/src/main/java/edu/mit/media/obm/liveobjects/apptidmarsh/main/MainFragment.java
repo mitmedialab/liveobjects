@@ -99,21 +99,7 @@ public class MainFragment extends GroundOverlayMapFragment {
     private class ConnectToLiveObjectListener implements GoogleMap.OnMarkerClickListener {
         @Override
         public boolean onMarkerClick(Marker marker) {
-            // when a live object appearing in the list is clicked, connect to it
-            mSelectedLiveObject = null;
-            for (LiveObject liveObject : mDiscoveryInfo.getAllLiveObjects()) {
-                String markerTitle = marker.getTitle();
-                String liveObjectName = liveObject.getName();
-
-                if (markerTitle.equals(liveObjectName)) {
-                    mSelectedLiveObject = liveObject;
-                }
-            }
-
-            if (mSelectedLiveObject == null) {
-                throw new IllegalStateException(
-                        "clicked live object was not found in the list of detected live objects");
-            }
+            mSelectedLiveObject = findLiveObjectFromMarker(marker);
 
             if (mSelectedLiveObject.getStatus() == LiveObject.STATUS_ACTIVE) {
                 mConnectingDialog.setMessage("Connecting to " + mSelectedLiveObject.getName());
@@ -140,6 +126,27 @@ public class MainFragment extends GroundOverlayMapFragment {
 
             return true;
         }
+    }
+
+    private LiveObject findLiveObjectFromMarker(Marker marker) {
+        // when a live object appearing in the list is clicked, connect to it
+        String markerTitle = marker.getTitle();
+        LiveObject foundLiveObject = null;
+
+        for (LiveObject liveObject : mDiscoveryInfo.getAllLiveObjects()) {
+            String liveObjectName = liveObject.getName();
+
+            if (markerTitle.equals(liveObjectName)) {
+                foundLiveObject = liveObject;
+            }
+        }
+
+        if (foundLiveObject == null) {
+            throw new IllegalStateException(
+                    "clicked live object was not found in the list of detected live objects");
+        }
+
+        return foundLiveObject;
     }
 
     @Override
