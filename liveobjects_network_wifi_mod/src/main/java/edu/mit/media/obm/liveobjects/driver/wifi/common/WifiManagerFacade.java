@@ -64,12 +64,6 @@ public class WifiManagerFacade {
         wifiManager.disableNetwork(networkId);
     }
 
-    public String getConnectedSsid() {
-        String ssid = wifiManager.getConnectionInfo().getSSID();
-
-        return unquote(ssid);
-    }
-
     public List<String> getRegisteredSsids() {
         List<String> registeredSsids = new ArrayList<>();
 
@@ -114,10 +108,18 @@ public class WifiManagerFacade {
     }
 
     private static String quote(String text) {
+        if (text == null) {
+            return null;
+        }
+
         return String.format("\"%s\"", text);
     }
 
     public static String unquote(String text) {
+        if (text == null) {
+            return null;
+        }
+
         String unquotedText = text;
 
         if (unquotedText.startsWith("\"")) {

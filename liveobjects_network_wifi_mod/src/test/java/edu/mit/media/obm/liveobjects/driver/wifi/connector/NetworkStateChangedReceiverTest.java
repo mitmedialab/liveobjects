@@ -190,7 +190,6 @@ public class NetworkStateChangedReceiverTest extends PowerMockTestCase {
     @Test
     public void shouldPostIfFailedToGetConnectedSsid() throws Exception {
         stub(networkInfo.getExtraInfo()).toReturn(null);
-        stub(wifiManagerFacade.getConnectedSsid()).toReturn(null);
 
         networkStateChangedReceiver.startMonitoring(VALID_SSID);
         networkStateChangedReceiver.onReceive(dummyContext, intent);
@@ -216,6 +215,17 @@ public class NetworkStateChangedReceiverTest extends PowerMockTestCase {
 
         verify(bus, times(1)).post(anyObject());
         assertFalse(networkStateChangedReceiver.isMonitoring());
+    }
+
+    @Test
+    public void shouldNotPostWhenConnectedToUnknownSsid() throws Exception {
+        stub(networkInfo.getExtraInfo()).toReturn("<unknown ssid>");
+
+        networkStateChangedReceiver.startMonitoring(VALID_SSID);
+        networkStateChangedReceiver.onReceive(dummyContext, intent);
+
+        verify(bus, never()).post(anyObject());
+        assertTrue(networkStateChangedReceiver.isMonitoring());
     }
 
     @Test
