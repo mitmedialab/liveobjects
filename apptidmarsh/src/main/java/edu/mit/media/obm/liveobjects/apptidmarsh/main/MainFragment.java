@@ -48,10 +48,10 @@ public class MainFragment extends GroundOverlayMapFragment {
     private static final int CONTENT_BROWSER_ACTIVITY_REQUEST_CODE = 1;
 
     @Inject NetworkController mNetworkController;
-    @Inject LiveObjectNotifier mLiveObjectNotifier;
     @Inject Bus mBus;
 
     @Inject DiscoveryInfo mDiscoveryInfo;
+    @Inject DiscoveryRunner mDiscoveryRunner;
 
     private Bus mNetworkConnectionBus;
 
@@ -62,9 +62,6 @@ public class MainFragment extends GroundOverlayMapFragment {
     private ProgressDialog mConnectingDialog;
 
     private LiveObject mSelectedLiveObject;
-
-    private boolean wifiDiscoveryProcessRunning = false;
-    private boolean bluetoothDiscoveryProcessRunning = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -103,8 +100,8 @@ public class MainFragment extends GroundOverlayMapFragment {
                 mConnectingDialog.setMessage("Connecting to " + mSelectedLiveObject.getName());
                 mConnectingDialog.show();
 
-                // disable notification using Bluetooth for more stable connection to WiFi
-                mLiveObjectNotifier.cancelWakeUp();
+                // disable discovery for better stability to connect
+                mDiscoveryRunner.stopDiscovery();
 
                 mNetworkController.connect(mSelectedLiveObject);
             } else if (mSelectedLiveObject.getConnectedBefore()) {
@@ -166,7 +163,7 @@ public class MainFragment extends GroundOverlayMapFragment {
 
 //        mAdapter.notifyDataSetChanged();
 
-        startDiscovery();
+        mDiscoveryRunner.startDiscovery();
     }
 
     @Override
@@ -198,49 +195,7 @@ public class MainFragment extends GroundOverlayMapFragment {
         mBus.unregister(this);
         mNetworkConnectionBus.unregister(this);
 
-        mLiveObjectNotifier.cancelWakeUp();
-    }
-
-    @Subscribe
-    public void updateDiscoveredLiveObjectList(NetworkDevicesAvailableEvent event) {
-        List<LiveObject> discoveredLiveObjects = event.getAvailableLiveObjects();
-
-        Log.d("discovery successfully completed");
-        mDiscoveryInfo.clearActiveLiveObject();
-        Log.v("===");
-        for (LiveObject liveObject : discoveredLiveObjects) {
-            Log.v(liveObject.getName() + ", " + liveObject.getMapLocation().toString());
-            mDiscoveryInfo.addActiveLiveObject(liveObject);
-        }
-
-        registerLiveObjectMarkers();
-
-        wifiDiscoveryProcessRunning = false;
-    }
-
-    @Subscribe
-    public void startContentBrowserActivity(NetworkConnectedEvent event) {
-        LiveObject connectedLiveObject = event.getConnectedLiveObject();
-
-        mConnectingDialog.dismiss();
-
-        Log.v("startContentBrowserActivity(%s)", connectedLiveObject);
-        if (isConnectedToTargetLiveObject(connectedLiveObject)) {
-            Log.v("starting Content Browser Activity");
-            Bundle arguments = new Bundle();
-            arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getName());
-            arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
-
-            // when the selected live objected is connected
-            // start the corresponding detail activity
-            Intent intent = new Intent(getActivity(), ContentBrowserActivity.class);
-            intent.putExtra(EXTRA_ARGUMENTS, arguments);
-            startActivityForResult(intent, CONTENT_BROWSER_ACTIVITY_REQUEST_CODE);
-
-            mSelectedLiveObject = null;
-        } else {
-            Log.v("failed to connect to target live object");
-        }
+        mDiscoveryRunner.stopDiscovery();
     }
 
     private boolean isConnectedToTargetLiveObject(LiveObject connectedLiveObject) {
@@ -297,6 +252,28 @@ public class MainFragment extends GroundOverlayMapFragment {
     }
 
     @Subscribe
+    public void triggerLiveObjectScan(CameraChangeEvent event) {
+        Log.v("triggerLiveObjectScan()");
+
+        mDiscoveryRunner.startDiscovery();
+    }
+
+    @Subscribe
+    public void updateDiscoveredLiveObjectList(NetworkDevicesAvailableEvent event) {
+        List<LiveObject> discoveredLiveObjects = event.getAvailableLiveObjects();
+
+        Log.d("discovery successfully completed");
+        mDiscoveryInfo.clearActiveLiveObject();
+        Log.v("===");
+        for (LiveObject liveObject : discoveredLiveObjects) {
+            Log.v(liveObject.getName() + ", " + liveObject.getMapLocation().toString());
+            mDiscoveryInfo.addActiveLiveObject(liveObject);
+        }
+
+        registerLiveObjectMarkers();
+    }
+
+    @Subscribe
     public void addDetectedBluetoothDevice(InactiveLiveObjectDetectionEvent event) {
         Log.v("addDetectedBluetoothDevice()");
         LiveObject liveObject = event.mLiveObject;
@@ -306,30 +283,33 @@ public class MainFragment extends GroundOverlayMapFragment {
     }
 
     @Subscribe
-    public void triggerLiveObjectScan(CameraChangeEvent event) {
-        Log.v("triggerLiveObjectScan()");
-
-        startDiscovery();
+    public void clearDetectedSleepingLiveObjects(FinishedDetectingInactiveLiveObjectEvent event) {
+        Log.v("clearDetectedSleepingLiveObjects()");
+        mDiscoveryInfo.clearSleepingLiveObject();
     }
 
     @Subscribe
-    public void finalizeBluetoothDetectionProcess(FinishedDetectingInactiveLiveObjectEvent event) {
-        Log.v("finalizeBluetoothDetectionProcess()");
-        bluetoothDiscoveryProcessRunning = false;
-    }
+    public void startContentBrowserActivity(NetworkConnectedEvent event) {
+        LiveObject connectedLiveObject = event.getConnectedLiveObject();
 
-    private void startDiscovery() {
-        if (!wifiDiscoveryProcessRunning) {
-            Log.v("starting WiFi discovery");
-            mNetworkController.startDiscovery();
-            wifiDiscoveryProcessRunning = true;
-        }
+        mConnectingDialog.dismiss();
 
-        if (!bluetoothDiscoveryProcessRunning) {
-            Log.v("starting Bluetooth discovery");
-            mDiscoveryInfo.clearSleepingLiveObject();
-            mLiveObjectNotifier.wakeUp();
-            bluetoothDiscoveryProcessRunning = true;
+        Log.v("startContentBrowserActivity(%s)", connectedLiveObject);
+        if (isConnectedToTargetLiveObject(connectedLiveObject)) {
+            Log.v("starting Content Browser Activity");
+            Bundle arguments = new Bundle();
+            arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getName());
+            arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
+
+            // when the selected live objected is connected
+            // start the corresponding detail activity
+            Intent intent = new Intent(getActivity(), ContentBrowserActivity.class);
+            intent.putExtra(EXTRA_ARGUMENTS, arguments);
+            startActivityForResult(intent, CONTENT_BROWSER_ACTIVITY_REQUEST_CODE);
+
+            mSelectedLiveObject = null;
+        } else {
+            Log.v("failed to connect to target live object");
         }
     }
 }
