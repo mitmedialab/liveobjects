@@ -3,7 +3,6 @@ package edu.mit.media.obm.liveobjects.apptidmarsh.main;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 
 import org.junit.After;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

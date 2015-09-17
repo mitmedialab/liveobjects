@@ -17,7 +17,6 @@ import com.noveogroup.android.log.Log;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +24,6 @@ import javax.inject.Inject;
 
 import butterknife.BindString;
 import butterknife.ButterKnife;
-import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectContract;
 import edu.mit.media.obm.liveobjects.apptidmarsh.data.MLProjectPropertyProvider;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.ContentBrowserActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.detail.DetailActivity;
@@ -65,8 +63,8 @@ public class MainFragment extends GroundOverlayMapFragment {
 
     private LiveObject mSelectedLiveObject;
 
-    private boolean isWifiDiscoveryProcessRunning = false;
-    private boolean isBluetoothDiscoveryProcessRunning = false;
+    private boolean wifiDiscoveryProcessRunning = false;
+    private boolean bluetoothDiscoveryProcessRunning = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -217,7 +215,7 @@ public class MainFragment extends GroundOverlayMapFragment {
 
         registerLiveObjectMarkers();
 
-        isWifiDiscoveryProcessRunning = false;
+        wifiDiscoveryProcessRunning = false;
     }
 
     @Subscribe
@@ -317,21 +315,21 @@ public class MainFragment extends GroundOverlayMapFragment {
     @Subscribe
     public void finalizeBluetoothDetectionProcess(FinishedDetectingInactiveLiveObjectEvent event) {
         Log.v("finalizeBluetoothDetectionProcess()");
-        isBluetoothDiscoveryProcessRunning = false;
+        bluetoothDiscoveryProcessRunning = false;
     }
 
     private void startDiscovery() {
-        if (!isWifiDiscoveryProcessRunning) {
+        if (!wifiDiscoveryProcessRunning) {
             Log.v("starting WiFi discovery");
             mNetworkController.startDiscovery();
-            isWifiDiscoveryProcessRunning = true;
+            wifiDiscoveryProcessRunning = true;
         }
 
-        if (!isBluetoothDiscoveryProcessRunning) {
+        if (!bluetoothDiscoveryProcessRunning) {
             Log.v("starting Bluetooth discovery");
             mDiscoveryInfo.clearSleepingLiveObject();
             mLiveObjectNotifier.wakeUp();
-            isBluetoothDiscoveryProcessRunning = true;
+            bluetoothDiscoveryProcessRunning = true;
         }
     }
 }

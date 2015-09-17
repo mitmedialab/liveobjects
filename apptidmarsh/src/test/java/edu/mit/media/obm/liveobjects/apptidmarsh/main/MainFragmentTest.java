@@ -2,12 +2,14 @@ package edu.mit.media.obm.liveobjects.apptidmarsh.main;
 
 import com.squareup.otto.Bus;
 
+import org.assertj.core.api.Assertions;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.powermock.reflect.Whitebox;
 import org.robolectric.RobolectricTestRunner;
 
 import javax.inject.Inject;
@@ -21,6 +23,8 @@ import edu.mit.media.obm.liveobjects.middleware.control.ContentController;
 import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -32,6 +36,7 @@ public class MainFragmentTest {
     @Mock @Inject DbController mDbController;
     @Mock @Inject ContentController mContentController;
     @Mock @Inject LiveObjectNotifier mLiveObjectNotifier;
+    @Mock @Inject DiscoveryInfo mDiscoveryInfo;
     @Mock @Inject Bus mBus;
 
     @Inject MainFragment mainFragment;
@@ -59,6 +64,11 @@ public class MainFragmentTest {
         }
 
         @Provides @Singleton
+        public DiscoveryInfo provideDiscoveryInfo() {
+            return mock(DiscoveryInfo.class);
+        }
+
+        @Provides @Singleton
         public Bus provideBus() {
             return mock(Bus.class);
         }
@@ -76,7 +86,54 @@ public class MainFragmentTest {
     }
 
     @Test
-    public void testTrue() throws Exception {
-        Assert.assertEquals(true, true);
+    public void shouldStartWifiDiscovery() throws Exception {
+        Whitebox.setInternalState(mainFragment, "wifiDiscoveryProcessRunning", false);
+        Whitebox.setInternalState(mainFragment, "bluetoothDiscoveryProcessRunning", false);
+        Whitebox.invokeMethod(mainFragment, "startDiscovery");
+
+        verify(mNetworkController).startDiscovery();
+        verify(mLiveObjectNotifier).wakeUp();
+        verify(mDiscoveryInfo).clearSleepingLiveObject();
+        assertThat(Whitebox.getInternalState(mainFragment, "wifiDiscoveryProcessRunning")).isEqualTo(true);
+        assertThat(Whitebox.getInternalState(mainFragment, "bluetoothDiscoveryProcessRunning")).isEqualTo(true);
+    }
+
+    @Test
+    public void shouldStartBluetoothDiscovery() throws Exception {
+        Whitebox.setInternalState(mainFragment, "wifiDiscoveryProcessRunning", true);
+        Whitebox.setInternalState(mainFragment, "bluetoothDiscoveryProcessRunning", false);
+        Whitebox.invokeMethod(mainFragment, "startDiscovery");
+
+        verify(mNetworkController, never()).startDiscovery();
+        verify(mLiveObjectNotifier).wakeUp();
+        verify(mDiscoveryInfo).clearSleepingLiveObject();
+        assertThat(Whitebox.getInternalState(mainFragment, "wifiDiscoveryProcessRunning")).isEqualTo(true);
+        assertThat(Whitebox.getInternalState(mainFragment, "bluetoothDiscoveryProcessRunning")).isEqualTo(true);
+    }
+
+    @Test
+    public void shouldNotStartWifiDiscoveryIfAlreadyStarted() throws Exception {
+        Whitebox.setInternalState(mainFragment, "wifiDiscoveryProcessRunning", false);
+        Whitebox.setInternalState(mainFragment, "bluetoothDiscoveryProcessRunning", true);
+        Whitebox.invokeMethod(mainFragment, "startDiscovery");
+
+        verify(mNetworkController).startDiscovery();
+        verify(mLiveObjectNotifier, never()).wakeUp();
+        verify(mDiscoveryInfo, never()).clearSleepingLiveObject();
+        assertThat(Whitebox.getInternalState(mainFragment, "wifiDiscoveryProcessRunning")).isEqualTo(true);
+        assertThat(Whitebox.getInternalState(mainFragment, "bluetoothDiscoveryProcessRunning")).isEqualTo(true);
+    }
+
+    @Test
+    public void shouldNotStartBluetoothDiscoveryIfAlreadyStarted() throws Exception {
+        Whitebox.setInternalState(mainFragment, "wifiDiscoveryProcessRunning", true);
+        Whitebox.setInternalState(mainFragment, "bluetoothDiscoveryProcessRunning", true);
+        Whitebox.invokeMethod(mainFragment, "startDiscovery");
+
+        verify(mNetworkController, never()).startDiscovery();
+        verify(mLiveObjectNotifier, never()).wakeUp();
+        verify(mDiscoveryInfo, never()).clearSleepingLiveObject();
+        assertThat(Whitebox.getInternalState(mainFragment, "wifiDiscoveryProcessRunning")).isEqualTo(true);
+        assertThat(Whitebox.getInternalState(mainFragment, "bluetoothDiscoveryProcessRunning")).isEqualTo(true);
     }
 }
