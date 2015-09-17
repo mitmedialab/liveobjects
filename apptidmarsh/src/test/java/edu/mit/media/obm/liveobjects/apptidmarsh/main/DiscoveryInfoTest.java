@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -49,6 +50,16 @@ public class DiscoveryInfoTest {
     public void setUp() throws Exception {
         ObjectGraph objectGraph = ObjectGraph.create(new TestModule());
         objectGraph.inject(this);
+
+        stub(dbController.getLiveObjectsIds()).toReturn(Arrays.asList(
+                "liveObject01",
+                "liveObject02",
+                "liveObject03",
+                "liveObject04",
+                "liveObject05",
+                "liveObject06",
+                "liveObject07",
+                "liveObject08"));
     }
 
     @After
