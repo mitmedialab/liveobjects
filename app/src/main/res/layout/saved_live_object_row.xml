@@ -11,7 +11,7 @@
         android:layout_marginRight="6dp"
         android:layout_marginTop="6dp"
         android:layout_marginBottom="6dp"
-        android:src="@drawable/ic_launcher"
+        android:src="@mipmap/ic_launcher"
         android:id="@+id/row_item_icon_imageview">
     </ImageView>
 
