@@ -18,7 +18,6 @@ import javax.inject.Inject;
 
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.module.DependencyInjector;
-import edu.mit.media.obm.liveobjects.apptidmarsh.utils.BluetoothNotifier;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.InactiveLiveObjectDetectionEvent;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
 import edu.mit.media.obm.liveobjects.middleware.common.LiveObject;
@@ -38,9 +37,8 @@ public class DiscoveryService extends Service {
 
     private Context mContext;
 
-    private LiveObjectNotifier mLiveObjectNotifier;
-
     @Inject Bus mBus;
+    @Inject LiveObjectNotifier mLiveObjectNotifier;
 
     @Override
     public void onCreate() {
@@ -48,11 +46,8 @@ public class DiscoveryService extends Service {
         DependencyInjector.inject(this, this);
 
         mContext = this;
-        mLiveObjectNotifier = new BluetoothNotifier(mContext);
 
         mBus.register(this);
-
-
     }
 
     @Nullable

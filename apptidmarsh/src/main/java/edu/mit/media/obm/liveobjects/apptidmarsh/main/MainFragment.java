@@ -217,10 +217,10 @@ public class MainFragment extends GroundOverlayMapFragment {
     public void startContentBrowserActivity(NetworkConnectedEvent event) {
         LiveObject connectedLiveObject = event.getConnectedLiveObject();
 
-        Log.v("onConnected(%s)", connectedLiveObject);
-        if (connectedLiveObject.equals(mSelectedLiveObject)) {
-            mConnectingDialog.dismiss();
+        mConnectingDialog.dismiss();
 
+        Log.v("startContentBrowserActivity(%s)", connectedLiveObject);
+        if (isConnectedToTargetLiveObject(connectedLiveObject)) {
             Bundle arguments = new Bundle();
             arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getName());
             arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
@@ -232,7 +232,14 @@ public class MainFragment extends GroundOverlayMapFragment {
             startActivityForResult(intent, CONTENT_BROWSER_ACTIVITY_REQUEST_CODE);
 
             mSelectedLiveObject = null;
+        } else {
+            Log.v("failed to connect to target live object");
         }
+    }
+
+    private boolean isConnectedToTargetLiveObject(LiveObject connectedLiveObject) {
+        return (connectedLiveObject != null)
+                && connectedLiveObject.equals(mSelectedLiveObject);
     }
 
     private void registerLiveObjectMarkers() {
