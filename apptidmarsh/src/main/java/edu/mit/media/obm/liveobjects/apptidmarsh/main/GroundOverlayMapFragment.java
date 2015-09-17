@@ -520,7 +520,14 @@ public class GroundOverlayMapFragment extends SupportMapFragment {
             Log.v(cameraPosition.toString());
 
             mLastCameraPosition = cameraPosition;
-            mBus.post(new CameraChangeEvent());
+
+            CameraChangeEvent cameraChangeEvent = new CameraChangeEvent();
+            try {
+                mBus.post(cameraChangeEvent);
+            }catch(RuntimeException e) {
+                // Event already registered in the bus: --> ignore it
+            }
+
         }
 
         <T extends Comparable<T>> T saturate(T value, Range<T> range) {
