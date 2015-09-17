@@ -54,6 +54,12 @@ public class NetworkStateChangedReceiver extends BroadcastReceiver {
             if (isMonitoring() && isConnectedToNetwork(intent)) {
                 String ssid = getConnectedDeviceSsid(intent);
 
+                // <unknown ssid> is a trap! You cannot connected to the device even though
+                // networkinfo says it's connected. Just ignore it.
+                if ("<unknown ssid>".equals(ssid)) {
+                    return;
+                }
+
                 postEventWithConnectedDeviceSsid(ssid);
                 stopMonitoring();
             }
@@ -69,14 +75,7 @@ public class NetworkStateChangedReceiver extends BroadcastReceiver {
 
     private String getConnectedDeviceSsid(Intent intent) {
         NetworkInfo networkInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
-        String ssid = WifiManagerFacade.unquote(networkInfo.getExtraInfo());
-
-        if (ssid == null || "<unknown ssid>".equals(ssid)) {
-            // SSID in NetworkInfo may be null depending on the model of the device
-            ssid = wifiManagerFacade.getConnectedSsid();
-        }
-
-        return ssid;
+        return WifiManagerFacade.unquote(networkInfo.getExtraInfo());
     }
 
     private void postEventWithConnectedDeviceSsid(String ssid) {

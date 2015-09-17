@@ -18,6 +18,7 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
@@ -85,36 +86,38 @@ public class ContentBrowserFragment extends Fragment {
             mConnectedToLiveObject = arguments.getBoolean(ARG_CONNECTED_TO_LIVE_OBJ);
         }
 
-        Map<String, Object> liveObjectProperties = fetchProperties(mLiveObjectName);
-        mDbController.putLiveObject(mLiveObjectName, liveObjectProperties);
-        setUIContent(mDbController.getProperties(mLiveObjectName));
-
-        return rootView;
-    }
-
-    private Map<String, Object> fetchProperties(final String liveObjectId) {
-        String mediaConfigFileName = MEDIA_CONFIG_FILE_NAME + ".jso";
-
-        mSetPropertiesTask = new JsonRetrievalTask(liveObjectId);
-
-        Map<String, Object> properties = null;
         try {
-            // wait for completion of async task
-            JSONObject jsonProperties = mSetPropertiesTask.get();
-            Exception exception = mSetPropertiesTask.getException();
-            if (exception != null) {
-                throw exception;
-            }
-
-            properties = JSONUtil.jsonToMap(jsonProperties);
-
-            // add the isFavorite property, which is not present in the remote live-object,
-            // and initialize it to false
-            properties.put(MLProjectContract.IS_FAVORITE, MLProjectContract.IS_FAVORITE_FALSE);
+            Map<String, Object> liveObjectProperties = fetchProperties(mLiveObjectName);
+            mDbController.putLiveObject(mLiveObjectName, liveObjectProperties);
+            setUIContent(mDbController.getProperties(mLiveObjectName));
         } catch (Exception e) {
             Log.e(e);
             getActivity().finish();
         }
+
+        return rootView;
+    }
+
+    private Map<String, Object> fetchProperties(final String liveObjectId) throws Exception {
+        String mediaConfigFileName = MEDIA_CONFIG_FILE_NAME + ".jso";
+
+        mSetPropertiesTask = new JsonRetrievalTask(liveObjectId);
+        mSetPropertiesTask.execute(mediaConfigFileName);
+
+        Map<String, Object> properties = null;
+
+        // wait for completion of async task
+        JSONObject jsonProperties = mSetPropertiesTask.get();
+        Exception exception = mSetPropertiesTask.getException();
+        if (exception != null) {
+            throw exception;
+        }
+
+        properties = JSONUtil.jsonToMap(jsonProperties);
+
+        // add the isFavorite property, which is not present in the remote live-object,
+        // and initialize it to false
+        properties.put(MLProjectContract.IS_FAVORITE, MLProjectContract.IS_FAVORITE_FALSE);
 
         return properties;
     }
@@ -131,21 +134,22 @@ public class ContentBrowserFragment extends Fragment {
         protected JSONObject doInBackground(String... params) {
             String configFileName = params[0];
 
-            InputStream inputStream;
             try {
+                Log.v("start downloading JSON");
                 ContentId configFileContentId = new ContentId(mLiveObjectId, DIRECTORY_NAME, configFileName);
                 // retrieve JSON Object
-                inputStream = mContentController.getInputStreamContent(configFileContentId);
+                InputStream inputStream = mContentController.getInputStreamContent(configFileContentId);
 
                 JSONObject jsonConfig = JSONUtil.getJSONFromInputStream(inputStream);
                 inputStream.close();
 
+                Log.v("finished downloading JSON");
                 return jsonConfig;
             } catch (Exception e) {
                 // keep exception object for later use
                 mException = e;
+                return null;
             }
-            return null;
         }
 
         public Exception getException() {

@@ -228,6 +228,7 @@ public class MainFragment extends GroundOverlayMapFragment {
 
         Log.v("startContentBrowserActivity(%s)", connectedLiveObject);
         if (isConnectedToTargetLiveObject(connectedLiveObject)) {
+            Log.v("starting Content Browser Activity");
             Bundle arguments = new Bundle();
             arguments.putString(EXTRA_LIVE_OBJ_NAME_ID, mSelectedLiveObject.getName());
             arguments.putBoolean(EXTRA_CONNECTED_TO_LIVE_OBJ, true);
