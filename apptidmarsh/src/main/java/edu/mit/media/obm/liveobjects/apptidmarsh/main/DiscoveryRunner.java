@@ -5,9 +5,11 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.FinishedDetectingInactiveLiveObjectEvent;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
+import edu.mit.media.obm.liveobjects.driver.wifi.WifiNetworkBus;
 import edu.mit.media.obm.liveobjects.driver.wifi.event.NetworkDevicesAvailableEvent;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
 
@@ -18,19 +20,23 @@ public class DiscoveryRunner {
     NetworkController mNetworkController;
     LiveObjectNotifier mLiveObjectNotifier;
     Bus mBus;
+    Bus mNetworkConnectionBus;
 
-    private boolean wifiDiscoveryProcessRunning = false;
-    private boolean bluetoothDiscoveryProcessRunning = false;
+    public boolean wifiDiscoveryProcessRunning = false;
+    public boolean bluetoothDiscoveryProcessRunning = false;
 
     @Inject
-    public DiscoveryRunner(NetworkController networkController, LiveObjectNotifier liveObjectNotifier, Bus bus) {
+    public DiscoveryRunner(NetworkController networkController, LiveObjectNotifier liveObjectNotifier,
+                           Bus bus, @Named("network_wifi") Bus networkConnectionBus) {
         mNetworkController = networkController;
         mLiveObjectNotifier = liveObjectNotifier;
         mBus = bus;
+        mNetworkConnectionBus = networkConnectionBus;
     }
 
     public void startDiscovery() {
         mBus.register(this);
+        mNetworkConnectionBus.register(this);
 
         if (!wifiDiscoveryProcessRunning) {
             Log.v("starting WiFi discovery");
@@ -47,6 +53,7 @@ public class DiscoveryRunner {
 
     public void stopDiscovery() {
         mBus.unregister(this);
+        mNetworkConnectionBus.register(this);
 
         Log.v("stop discovery");
         /* no way to stop WiFi discovery because it continues running until Broadcast Receiver is
