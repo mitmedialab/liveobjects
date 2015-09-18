@@ -50,11 +50,9 @@ public class MainFragment extends GroundOverlayMapFragment {
 
     @Inject NetworkController mNetworkController;
     @Inject Bus mBus;
-
-    @Inject DiscoveryInfo mDiscoveryInfo;
-    @Inject DiscoveryRunner mDiscoveryRunner;
-
     @Inject @Named("network_wifi") Bus mNetworkConnectionBus;
+
+    @Inject DiscoveryOverseer mDiscoveryOverseer;
 
     @BindString(R.string.arg_live_object_name_id) String EXTRA_LIVE_OBJ_NAME_ID;
     @BindString(R.string.arg_connected_to_live_object) String EXTRA_CONNECTED_TO_LIVE_OBJ;
@@ -102,7 +100,7 @@ public class MainFragment extends GroundOverlayMapFragment {
                 mConnectingDialog.show();
 
                 // disable discovery for better stability to connect
-                mDiscoveryRunner.stopDiscovery();
+                mDiscoveryOverseer.stopDiscovery();
 
                 mNetworkController.connect(mSelectedLiveObject);
             } else if (mSelectedLiveObject.getConnectedBefore()) {
@@ -126,16 +124,7 @@ public class MainFragment extends GroundOverlayMapFragment {
 
     private LiveObject findLiveObjectFromMarker(Marker marker) {
         // when a live object appearing in the list is clicked, connect to it
-        String markerTitle = marker.getTitle();
-        LiveObject foundLiveObject = null;
-
-        for (LiveObject liveObject : mDiscoveryInfo.getAllLiveObjects()) {
-            String liveObjectName = liveObject.getName();
-
-            if (markerTitle.equals(liveObjectName)) {
-                foundLiveObject = liveObject;
-            }
-        }
+        LiveObject foundLiveObject = mDiscoveryOverseer.findLiveObject(marker.getTitle());
 
         if (foundLiveObject == null) {
             throw new IllegalStateException(
@@ -162,29 +151,14 @@ public class MainFragment extends GroundOverlayMapFragment {
             mNetworkController.forgetNetworkConfigurations();
         }
 
-//        mAdapter.notifyDataSetChanged();
-
-        mDiscoveryRunner.startDiscovery();
+        mDiscoveryOverseer.startDiscovery();
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        mDiscoveryInfo.clearLostLiveObject();
-
-        List<Map<String, Object>> allLiveObjects = mDbController.getAllLiveObjectsProperties();
-        for (Map<String, Object> liveObjectProperties : allLiveObjects) {
-            MLProjectPropertyProvider provider = new MLProjectPropertyProvider(liveObjectProperties);
-            String liveObjectName = provider.getId();
-            MapLocation mapLocation = new MapLocation(
-                    provider.getMapLocationX(), provider.getMapLocationY(), provider.getMapId());
-
-            LiveObject liveObject = new LiveObject(liveObjectName, mapLocation);
-            mDiscoveryInfo.addLostLiveObject(liveObject);
-        }
-
-        registerLiveObjectMarkers();
+        mDiscoveryOverseer.synchronizeWithDatabase();
     }
 
     @Override
@@ -196,20 +170,12 @@ public class MainFragment extends GroundOverlayMapFragment {
         mBus.unregister(this);
         mNetworkConnectionBus.unregister(this);
 
-        mDiscoveryRunner.stopDiscovery();
+        mDiscoveryOverseer.stopDiscovery();
     }
 
     private boolean isConnectedToTargetLiveObject(LiveObject connectedLiveObject) {
         return (connectedLiveObject != null)
                 && connectedLiveObject.equals(mSelectedLiveObject);
-    }
-
-    private void registerLiveObjectMarkers() {
-        for (LiveObject liveObject : mDiscoveryInfo.getAllLiveObjects()) {
-            boolean currentLocation = (liveObject.getStatus() != LiveObject.STATUS_LOST);
-            boolean connectedBefore = liveObject.getConnectedBefore();
-            updateLiveObjectMarker(liveObject, currentLocation, connectedBefore);
-        }
     }
 
     @Override
@@ -256,37 +222,16 @@ public class MainFragment extends GroundOverlayMapFragment {
     public void triggerLiveObjectScan(CameraChangeEvent event) {
         Log.v("triggerLiveObjectScan()");
 
-        mDiscoveryRunner.startDiscovery();
+        mDiscoveryOverseer.startDiscovery();
     }
 
     @Subscribe
-    public void updateDiscoveredLiveObjectList(NetworkDevicesAvailableEvent event) {
-        List<LiveObject> discoveredLiveObjects = event.getAvailableLiveObjects();
-
-        Log.d("discovery successfully completed");
-        mDiscoveryInfo.clearActiveLiveObject();
-        Log.v("===");
-        for (LiveObject liveObject : discoveredLiveObjects) {
-            Log.v(liveObject.getName() + ", " + liveObject.getMapLocation().toString());
-            mDiscoveryInfo.addActiveLiveObject(liveObject);
+    private void registerLiveObjectMarkers(DiscoveryOverseer.DiscoveredLiveObjectUpdateEvent event) {
+        for (LiveObject liveObject : event.getLiveObjects()) {
+            boolean currentLocation = (liveObject.getStatus() != LiveObject.STATUS_LOST);
+            boolean connectedBefore = liveObject.getConnectedBefore();
+            updateLiveObjectMarker(liveObject, currentLocation, connectedBefore);
         }
-
-        registerLiveObjectMarkers();
-    }
-
-    @Subscribe
-    public void addDetectedBluetoothDevice(InactiveLiveObjectDetectionEvent event) {
-        Log.v("addDetectedBluetoothDevice()");
-        LiveObject liveObject = event.mLiveObject;
-        mDiscoveryInfo.addSleepingLiveObject(liveObject);
-
-        registerLiveObjectMarkers();
-    }
-
-    @Subscribe
-    public void clearDetectedSleepingLiveObjects(FinishedDetectingInactiveLiveObjectEvent event) {
-        Log.v("clearDetectedSleepingLiveObjects()");
-        mDiscoveryInfo.clearSleepingLiveObject();
     }
 
     @Subscribe
