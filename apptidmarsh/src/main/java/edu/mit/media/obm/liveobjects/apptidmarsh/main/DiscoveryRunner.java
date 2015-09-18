@@ -4,19 +4,21 @@ import com.noveogroup.android.log.Log;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.FinishedDetectingInactiveLiveObjectEvent;
 import edu.mit.media.obm.liveobjects.apptidmarsh.utils.LiveObjectNotifier;
-import edu.mit.media.obm.liveobjects.driver.wifi.WifiNetworkBus;
 import edu.mit.media.obm.liveobjects.driver.wifi.event.NetworkDevicesAvailableEvent;
 import edu.mit.media.obm.liveobjects.middleware.control.NetworkController;
 
 /**
  * Created by arata on 9/17/15.
  */
-public class DiscoveryRunner {
+public class DiscoveryRunner extends BusListener {
     NetworkController mNetworkController;
     LiveObjectNotifier mLiveObjectNotifier;
     Bus mBus;
@@ -25,8 +27,6 @@ public class DiscoveryRunner {
     public boolean wifiDiscoveryProcessRunning = false;
     public boolean bluetoothDiscoveryProcessRunning = false;
 
-    private boolean registeredBus = false;
-
     @Inject
     public DiscoveryRunner(NetworkController networkController, LiveObjectNotifier liveObjectNotifier,
                            Bus bus, @Named("network_wifi") Bus networkConnectionBus) {
@@ -34,6 +34,11 @@ public class DiscoveryRunner {
         mLiveObjectNotifier = liveObjectNotifier;
         mBus = bus;
         mNetworkConnectionBus = networkConnectionBus;
+    }
+
+    @Override
+    protected List<Bus> getBuses() {
+        return Arrays.asList(mBus, mNetworkConnectionBus);
     }
 
     public void startDiscovery() {
@@ -63,24 +68,6 @@ public class DiscoveryRunner {
         if (bluetoothDiscoveryProcessRunning) {
             mLiveObjectNotifier.cancelWakeUp();
             bluetoothDiscoveryProcessRunning = false;
-        }
-    }
-
-    private void registerBuses() {
-        if (!registeredBus) {
-            mBus.register(this);
-            mNetworkConnectionBus.register(this);
-
-            registeredBus = true;
-        }
-    }
-
-    private void unregisterBuses() {
-        if (registeredBus) {
-            mBus.unregister(this);
-            mNetworkConnectionBus.unregister(this);
-
-            registeredBus = false;
         }
     }
 

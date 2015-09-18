@@ -13,6 +13,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.DiscoveryInfo;
+import edu.mit.media.obm.liveobjects.apptidmarsh.main.DiscoveryOverseer;
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.DiscoveryRunner;
 import edu.mit.media.obm.liveobjects.apptidmarsh.main.MainActivity;
 import edu.mit.media.obm.liveobjects.apptidmarsh.media.MediaViewActivity;
@@ -87,5 +88,12 @@ public class ApplicationModule {
     DiscoveryRunner provideDiscoveryRunner(NetworkController networkController, LiveObjectNotifier liveObjectNotifier,
                                            Bus bus, @Named("network_wifi") Bus networkConnectionBus) {
         return new DiscoveryRunner(networkController, liveObjectNotifier, bus, networkConnectionBus);
+    }
+
+    @Provides
+    DiscoveryOverseer provideDiscoveryOverseerDiscoveryOverseer(
+            DbController dbController, DiscoveryInfo discoveryInfo,
+            DiscoveryRunner discoveryRunner, Bus bus, @Named("network_wifi") Bus networkWifiBus) {
+        return new DiscoveryOverseer(dbController, discoveryInfo, discoveryRunner, bus, networkWifiBus);
     }
 }
