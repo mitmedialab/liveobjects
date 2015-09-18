@@ -103,6 +103,8 @@ public class MainFragment extends GroundOverlayMapFragment {
                 mDiscoveryOverseer.stopDiscovery();
 
                 mNetworkController.connect(mSelectedLiveObject);
+            } else if (mSelectedLiveObject.getStatus() == LiveObject.STATUS_SLEEPING) {
+                showToast("Cannot detect Wi-Fi signals. The clicked live object may be restoring from sleep mode.");
             } else if (mSelectedLiveObject.getConnectedBefore()) {
 //                // TODO: 8/24/15 temporarily disabled  @Inject
 //                MapLocation mapLocation = mSelectedLiveObject.getMapLocation();
@@ -196,13 +198,7 @@ public class MainFragment extends GroundOverlayMapFragment {
             }
 
             if (errorMessage != null) {
-                getActivity().runOnUiThread(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                showToast(errorMessage);
 
                 // recreate the MainActivity to reset the UI state
                 MenuActions.goToHome(getActivity());
@@ -214,8 +210,12 @@ public class MainFragment extends GroundOverlayMapFragment {
         WifiManager wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
         if (!wifiManager.isWifiEnabled()) {
             wifiManager.setWifiEnabled(true);
-            Toast.makeText(getActivity(), "Turning on WiFi", Toast.LENGTH_SHORT).show();
+            showToast("Turning on WiFi");
         }
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
     }
 
     @Subscribe

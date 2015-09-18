@@ -64,11 +64,10 @@ public class ScanResultsReceiver extends BroadcastReceiver {
             }
         }
 
-        if (liveObjectList.size() > 0) {
-            // notifies the middleware about the presence of live-object devices
-            // notifies even if no live-objects are discovered
-            NetworkDevicesAvailableEvent event = new NetworkDevicesAvailableEvent(liveObjectList);
-            bus.post(event);
-        }
+        // notifies the middleware about the presence of live-object devices
+        // notifies even if no live-objects are discovered
+        // post an event even when no live objects are detected to notify that a discovery process finished
+        NetworkDevicesAvailableEvent event = new NetworkDevicesAvailableEvent(liveObjectList);
+        bus.post(event);
     }
 }
