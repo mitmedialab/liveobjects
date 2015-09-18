@@ -226,7 +226,7 @@ public class MainFragment extends GroundOverlayMapFragment {
     }
 
     @Subscribe
-    private void registerLiveObjectMarkers(DiscoveryOverseer.DiscoveredLiveObjectUpdateEvent event) {
+    public void registerLiveObjectMarkers(DiscoveryOverseer.DiscoveredLiveObjectUpdateEvent event) {
         for (LiveObject liveObject : event.getLiveObjects()) {
             boolean currentLocation = (liveObject.getStatus() != LiveObject.STATUS_LOST);
             boolean connectedBefore = liveObject.getConnectedBefore();

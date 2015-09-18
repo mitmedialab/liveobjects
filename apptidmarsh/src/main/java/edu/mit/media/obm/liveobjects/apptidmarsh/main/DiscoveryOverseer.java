@@ -4,6 +4,7 @@ import com.noveogroup.android.log.Log;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ import edu.mit.media.obm.liveobjects.middleware.control.DbController;
 /**
  * Created by arata on 9/18/15.
  */
-public class DiscoveryOverseer {
+public class DiscoveryOverseer extends BusListener {
     DbController mDbController;
     DiscoveryInfo mDiscoveryInfo;
     DiscoveryRunner mDiscoveryRunner;
@@ -38,11 +39,18 @@ public class DiscoveryOverseer {
         mNetworkWifiBus = networkWifiBus;
     }
 
+    @Override
+    protected List<Bus> getBuses() {
+        return Arrays.asList(mBus, mNetworkWifiBus);
+    }
+
     public void startDiscovery() {
+        registerBuses();
         mDiscoveryRunner.startDiscovery();
     }
 
     public void stopDiscovery() {
+        unregisterBuses();
         mDiscoveryRunner.stopDiscovery();
     }
 
