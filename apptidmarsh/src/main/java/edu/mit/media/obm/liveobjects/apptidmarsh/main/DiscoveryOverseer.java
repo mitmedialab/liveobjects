@@ -47,6 +47,8 @@ public class DiscoveryOverseer extends BusListener {
     public void startDiscovery() {
         registerBuses();
         mDiscoveryRunner.startDiscovery();
+
+        notifyDiscoveredLiveObjectChanged();
     }
 
     public void stopDiscovery() {
