@@ -88,18 +88,10 @@ public class MainActivity extends SingleFragmentActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-    @Override
-    public void onBackPressed() {
-        mNetWorkController.stop();
-        super.onBackPressed();
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
         Log.d(LOG_TAG, "onDestroy");
         mPeriodicAlarmManager.stopPeriodicService();
     }
-
 }
